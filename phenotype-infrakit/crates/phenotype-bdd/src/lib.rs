@@ -1,4 +1,10 @@
 //! Phenotype BDD - Gherkin-style testing framework with hexagonal architecture
+//! @trace INFRA-001: Multi-Cloud Support
+//! @trace INFRA-002: State Management
+//! @trace INFRA-003: Resource Provisioning
+//! @trace INFRA-004: Secret Management
+//! @trace INFRA-005: Drift Detection
+//! @trace INFRA-006: Plan Generation
 
 #![allow(missing_docs)]
 #![warn(clippy::all)]

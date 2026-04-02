@@ -43,11 +43,54 @@ func RenderTemplate(name string, ctx TemplateContext) (string, error) {
 // ListTemplates returns the list of available template names.
 func ListTemplates() []string {
 	return []string{
+		// Base configs
+		"editorconfig",
+		"gitignore",
+		"gitattributes",
+		"dockerignore",
+		// Task runner
 		"mise.toml",
+		// Git hooks
 		"pre-commit.sh",
 		"pre-push.sh",
+		// CI/CD
 		"ci.yml",
 		"release.yml",
+		// Governance
+		"ADR.md",
+		"FR.md",
+		"GOVERNANCE.md",
+		"PRD.md",
+		"SPEC.md",
+		// BDD Testing
+		"bdd-cargo-toml",
+		"bdd-cucumber-json",
+		"bdd-feature",
+		"bdd-package-json",
+		"bdd-steps-go",
+		"bdd-steps-py",
+		"bdd-steps-rs",
+		"bdd-steps-ts",
+		"bdd-test-go",
+		// Go templates
+		"go-entity",
+		"go-handler",
+		"go-main",
+		"go-service",
+		// Python templates
+		"py-entity",
+		"py-ports",
+		"py-service",
+		// Rust templates
+		"rust-adapters-mod",
+		"rust-application-mod",
+		"rust-domain-mod",
+		"rust-dto",
+		"rust-entity",
+		"rust-lib",
+		"rust-ports",
+		"rust-repository",
+		"rust-service",
 	}
 }
 

@@ -57,7 +57,11 @@ pub fn builder() -> MockBuilder {
 }
 
 /// Create a new stub
-pub fn stub<T, R>(func: impl Fn(T) -> R + 'static) -> Stub<T, R> {
+pub fn stub<T, R>(func: impl Fn(T) -> R + Send + 'static) -> Stub<T, R>
+where
+    T: Clone + Send + 'static,
+    R: Clone + Send + 'static,
+{
     Stub::new(func)
 }
 
@@ -137,7 +141,7 @@ mod tests {
     fn test_mock_registry() {
         let registry = MockRegistry::new();
 
-        let mock_fn = MockFn::new();
+        let mock_fn: MockFn<i32, i32> = MockFn::new();
         registry.register(mock_fn.clone());
 
         let retrieved: MockFn<i32, i32> = registry.get().unwrap();

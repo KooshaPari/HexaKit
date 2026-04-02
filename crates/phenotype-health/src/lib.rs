@@ -7,11 +7,17 @@
 //! external service, memory).
 
 mod checkers;
+mod project;
 #[cfg(test)]
 mod tests;
 
 pub use checkers::{
     CacheHealthChecker, DatabaseHealthChecker, ExternalServiceHealthChecker, MemoryHealthChecker,
+};
+
+pub use project::{
+    DimensionScore, Finding, HealthBand, HealthDimension, HealthSummary, LanguageStack,
+    ProjectHealth, Severity,
 };
 
 use serde::Serialize;

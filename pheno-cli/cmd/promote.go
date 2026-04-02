@@ -13,6 +13,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+var promoteCmd *cobra.Command
+
 func init() {
 	promoteCmd = &cobra.Command{
 		Use:   "promote [channel]",
@@ -23,6 +25,7 @@ func init() {
 	promoteCmd.Flags().String("risk-profile", "low", "risk profile for gate evaluation (low, medium, high)")
 	promoteCmd.Flags().Bool("force", false, "skip gate checks and promote anyway")
 	promoteCmd.Flags().Bool("dry-run", false, "print what would be promoted without making changes")
+	rootCmd.AddCommand(promoteCmd)
 }
 
 func runPromote(cmd *cobra.Command, args []string) error {

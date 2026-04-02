@@ -13,8 +13,8 @@ pub struct Stub<I, O> {
 
 impl<I, O> Stub<I, O>
 where
-    I: Clone + 'static,
-    O: Clone + 'static,
+    I: Clone + Send + 'static,
+    O: Clone + Send + 'static,
 {
     /// Create a new stub with a function
     pub fn new<F>(func: F) -> Self
@@ -68,6 +68,7 @@ where
     pub fn set_func<F>(&self, func: F)
     where
         F: Fn(I) -> O + Send + 'static,
+        I: Clone,
     {
         let mut f = self.func.lock().unwrap();
         *f = Box::new(func);
@@ -76,8 +77,8 @@ where
 
 impl<I, O> Default for Stub<I, O>
 where
-    I: Clone + Default + 'static,
-    O: Clone + Default + 'static,
+    I: Clone + Default + Send + 'static,
+    O: Clone + Default + Send + 'static,
 {
     fn default() -> Self {
         Self::new(|_| Default::default())
@@ -117,13 +118,18 @@ type StubFn<I, O> = Box<dyn Fn(I) -> O + Send + Sync>;
 /// Extension methods for stub functions
 pub trait StubFnExt<I, O> {
     /// Chain another stub after this one
-    fn then(self, next: impl Fn(I) -> O + Send + Sync + 'static) -> StubFn<I, O>;
+    fn then(self, next: impl Fn(I) -> O + Send + Sync + 'static) -> StubFn<I, O>
+    where
+        I: Clone;
 }
 
-impl<I, O: 'static> StubFnExt<I, O> for StubFn<I, O> {
-    fn then(self, next: impl Fn(I) -> O + Send + Sync + 'static) -> StubFn<I, O> {
+impl<I: Clone + 'static, O: 'static> StubFnExt<I, O> for StubFn<I, O> {
+    fn then(self, next: impl Fn(I) -> O + Send + Sync + 'static) -> StubFn<I, O>
+    where
+        I: Clone,
+    {
         Box::new(move |input| {
-            let _result = self(input);
+            let _result = self(input.clone());
             next(input)
         })
     }
@@ -141,14 +147,13 @@ mod tests {
 
     #[test]
     fn test_stub_returns() {
-        let stub = Stub::<(), i32>::returns(42);
-        assert_eq!(stub.call(()), 42);
+        let stub: Stub<(), i32> = Stub::returns(42);
         assert_eq!(stub.call(()), 42);
     }
 
     #[test]
     fn test_stub_call_count() {
-        let stub = Stub::new(|x: i32| x + 1);
+        let stub: Stub<i32, i32> = Stub::new(|x: i32| x + 1);
         stub.call(1);
         stub.call(2);
         stub.call(3);
@@ -157,7 +162,7 @@ mod tests {
 
     #[test]
     fn test_stub_recorded_calls() {
-        let stub = Stub::new(|x: i32| x * 2);
+        let stub: Stub<i32, i32> = Stub::new(|x: i32| x * 2);
         stub.call(1);
         stub.call(2);
         stub.call(3);
@@ -166,7 +171,7 @@ mod tests {
 
     #[test]
     fn test_stub_reset() {
-        let stub = Stub::new(|x: i32| x);
+        let stub: Stub<i32, i32> = Stub::new(|x: i32| x);
         stub.call(1);
         stub.call(2);
         assert_eq!(stub.call_count(), 2);
@@ -178,7 +183,7 @@ mod tests {
 
     #[test]
     fn test_stub_set_func() {
-        let stub = Stub::new(|x: i32| x + 1);
+        let stub: Stub<i32, i32> = Stub::new(|x: i32| x + 1);
         assert_eq!(stub.call(5), 6);
 
         stub.set_func(|x| x * 2);

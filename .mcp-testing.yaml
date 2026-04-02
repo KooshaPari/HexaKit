@@ -1,5 +1,5 @@
-# MCP (Model Context Protocol) Configuration for Cross-Project AI Testing
-# Enables AI agents to orchestrate testing across NanoVMS, AgilePlus, and thegent
+# MCP (Model Context Protocol) Configuration for Cross-Project Testing
+# Modern free testing stack: Vitest + Playwright + pytest
 
 version: "1.0"
 
@@ -11,52 +11,44 @@ servers:
     args: ["@anthropic-ai/mcp-playwright", "start"]
     env:
       PLAYWRIGHT_BROWSERS_PATH: "0"
-    description: "Browser automation for NanoVMS web dashboard tests"
-    
-  # TestRigor MCP for plain English test execution
-  testrigor:
-    command: curl
-    args: 
-      - "-X"
-      - "POST"
-      - "https://api.testrigor.com/v2/test-suites/{TEST_SUITE_ID}/execute"
-      - "-H"
-      - "Authorization: Bearer ${TESTRIGOR_API_KEY}"
-    env:
-      TESTRIGOR_API_KEY: "${TESTRIGOR_API_KEY}"
-    description: "Natural language test execution for AgilePlus specs"
-    
-  # Applitools MCP for visual testing
-  applitools:
-    command: python3
-    args: ["tests/visual-tui-testing.py"]
-    env:
-      APPLITOOLS_API_KEY: "${APPLITOOLS_API_KEY}"
-    description: "Visual regression testing for thegent TUI"
-    
-  # Qodo MCP for AI test generation
-  qodo:
-    command: qodo
-    args: ["generate", "--config", ".qodo.yaml"]
-    env:
-      QODO_API_KEY: "${QODO_API_KEY}"
-    description: "AI-powered test generation for all projects"
-    
-  # KaneAI MCP for conversation testing
-  kaneai:
-    command: python3
-    args: ["tests/kaneai-runner.py"]
-    env:
-      KANEAI_API_KEY: "${KANEAI_API_KEY}"
-    description: "Multi-turn conversation testing for agents"
-    
-  # Local test runner MCP
-  local-tests:
+    description: "Browser automation for E2E and visual regression tests"
+
+  # Vitest MCP for unit tests
+  vitest:
+    command: npx
+    args: ["vitest", "run", "--reporter=json"]
+    description: "Fast unit testing with Vite"
+    coverage:
+      provider: v8
+      thresholds:
+        lines: 80
+
+  # pytest MCP for Python tests
+  pytest:
+    command: pytest
+    args: ["--json-report", "--json-report-file=report.json"]
+    description: "Python testing with coverage"
+    coverage:
+      tool: pytest-cov
+      thresholds:
+        lines: 80
+
+  # Cucumber MCP for BDD tests
+  cucumber:
+    command: npx
+    args: ["@cucumber/cucumber", "run"]
+    description: "Gherkin BDD test execution"
+    patterns:
+      - "tests/bdd/**/*.feature"
+
+  # Cargo MCP for Rust tests
+  cargo:
     command: cargo
-    args: ["test", "--workspace"]
-    cwd: "${PROJECT_ROOT}"
-    description: "Local test execution via cargo test"
-    
+    args: ["test", "--workspace", "--", "--format=json"]
+    description: "Rust test execution with cargo"
+    features:
+      - test-utils
+
   # GitHub Actions MCP for CI orchestration
   github-actions:
     command: gh
@@ -70,101 +62,81 @@ test_workflows:
   nano_vms_vm_lifecycle:
     description: "Test NanoVMS VM tier isolation end-to-end"
     steps:
-      - server: qodo
-        action: "generate_tests"
+      - server: vitest
+        action: "run_tests"
         params:
-          target: "adapters/"
-          language: "rust"
-          coverage_threshold: 80
+          pattern: "tests/**/*.test.ts"
       - server: playwright
         action: "run_tests"
         params:
-          spec: "tests/playwright/vm-lifecycle.spec.ts"
-          browsers: ["chromium"]
-      - server: local-tests
-        action: "cargo_test"
+          spec: "tests/playwright/**/*.spec.ts"
+          browsers: ["chromium", "firefox", "webkit"]
+      - server: cargo
+        action: "test"
         params:
-          package: "nano-vms-core"
+          package: "nanovms-core"
           features: ["test-utils"]
-    
+
   agileplus_bidirectional_sync:
     description: "Test AgilePlus Plane.so integration"
     steps:
-      - server: testrigor
-        action: "execute_suite"
+      - server: cucumber
+        action: "run"
         params:
-          suite: "agileplus-sync"
-          scenarios: [
-            "Pull features from Plane.so",
-            "Push features to Plane.so",
-            "Detect sync conflicts"
-          ]
+          features: "tests/bdd/**/*.feature"
       - server: playwright
         action: "run_tests"
         params:
-          spec: "tests/playwright/dashboard-sync.spec.ts"
+          spec: "tests/playwright/**/*.spec.ts"
           visual_checks: true
-      - server: applitools
-        action: "visual_regression"
-        params:
-          app_name: "agileplus-dashboard"
-    
+
   thegent_agent_conversations:
     description: "Test thegent multi-agent orchestration"
     steps:
-      - server: kaneai
-        action: "run_conversations"
+      - server: pytest
+        action: "run"
         params:
-          scenarios: "tests/kaneai-conversations.yaml"
-      - server: applitools
-        action: "visual_tui_check"
+          pattern: "tests/**/test_*.py"
+      - server: vitest
+        action: "run_tests"
         params:
-          app_name: "thegent"
-          states: [
-            "main_menu",
-            "research_mode",
-            "multi_agent_orchestration"
-          ]
-      - server: local-tests
-        action: "cargo_test"
-        params:
-          package: "thegent-agent-framework"
+          pattern: "tests/**/*.test.ts"
 
-# Self-Healing Configuration
+# Self-Healing Configuration (Free alternatives)
 self_healing:
   enabled: true
   strategies:
     - name: "smart_locator_update"
       description: "Update Playwright locators when UI changes"
       trigger: "test_failure_rate > 30%"
-      action: "retrain_locators"
-    
+      action: "suggest_fixes"
+
     - name: "test_auto_update"
       description: "Auto-update tests when spec changes"
       trigger: "spec_commit"
-      action: "regenerate_tests"
-    
+      action: "suggest_regeneration"
+
     - name: "visual_baseline_refresh"
       description: "Update visual baselines for intentional changes"
       trigger: "manual_approval"
       action: "accept_new_baseline"
 
-# AI Test Generation Rules
+# Test Generation Rules (Free alternatives)
 generation_rules:
   test_first:
     description: "Generate tests before implementation"
     enabled: true
-    
+
   fr_traceability:
     description: "Every test must trace to a Functional Requirement"
     enabled: true
-    pattern: "// Traces to: FR-{PROJECT}-{NNN}"
-    
+    pattern: "# Traces to: FR-{PROJECT}-{NNN}"
+
   coverage_requirements:
     unit_tests: 80
     integration_tests: 70
     e2e_tests: 50
-    
+
   behavior_focus:
     description: "Test behavior, not implementation"
     enabled: true
@@ -183,13 +155,7 @@ notifications:
     webhook: "${SLACK_WEBHOOK_URL}"
     channels:
       - "#testing-alerts"
-      - "#ai-agent-dev"
-    
-  email:
-    on_failure: true
-    recipients:
-      - "team@phenotype.dev"
-    
+
   dashboard:
     url: "https://dashboard.phenotype.dev/testing"
     refresh_interval: "5m"
@@ -201,6 +167,4 @@ metrics:
     - test_duration
     - flakiness_rate
     - coverage_delta
-    - ai_generation_time
-    - human_review_time
     - defect_escape_rate

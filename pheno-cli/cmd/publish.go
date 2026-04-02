@@ -13,6 +13,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+var publishCmd *cobra.Command
+
 func init() {
 	publishCmd = &cobra.Command{
 		Use:   "publish",
@@ -23,6 +25,7 @@ func init() {
 	publishCmd.Flags().String("version", "", "version to publish (overrides auto-detection)")
 	publishCmd.Flags().String("channel", "alpha", "release channel (alpha, canary, beta, rc, prod)")
 	publishCmd.Flags().Bool("dry-run", false, "print what would be published without making changes")
+	rootCmd.AddCommand(publishCmd)
 }
 
 func runPublish(cmd *cobra.Command, args []string) error {
