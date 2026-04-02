@@ -1,4 +1,8 @@
 //! Error types for agileplus-p2p.
+//!
+//! Uses phenotype-error-core for canonical error types.
+
+pub use phenotype_error_core::{DomainError, RepositoryError, StorageError};
 
 use thiserror::Error;
 
@@ -34,7 +38,7 @@ pub enum SyncError {
     Serialization(#[from] serde_json::Error),
 
     #[error("Event store error: {0}")]
-    EventStore(String),
+    EventStore(#[from] RepositoryError),
 
     #[error("Peer discovery error: {0}")]
     Discovery(#[from] PeerDiscoveryError),
@@ -62,13 +66,13 @@ impl From<async_nats::ConnectError> for SyncError {
 #[derive(Debug, Error)]
 pub enum ConnectionError {
     #[error("Could not connect to device registry: {0}")]
-    RegistryUnavailable(String),
+    RegistryUnavailable(#[from] StorageError),
 
     #[error("Device already registered with different ID")]
     ConflictingRegistration,
 
     #[error("SQLite error: {0}")]
-    Database(String),
+    Database(#[from] RepositoryError),
 
     #[error("Tailscale query failed: {0}")]
     TailscaleQuery(#[from] PeerDiscoveryError),

@@ -1,22 +1,12 @@
 //! EventStore trait — async append-only event storage.
+//!
+//! Uses phenotype-error-core::RepositoryError for canonical error handling.
 
 use agileplus_domain::domain::event::Event;
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 
-#[derive(Debug, thiserror::Error)]
-pub enum EventError {
-    #[error("Event not found: {0}")]
-    NotFound(String),
-    #[error("Duplicate sequence: {0}")]
-    DuplicateSequence(String),
-    #[error("Storage error: {0}")]
-    StorageError(String),
-    #[error("Invalid hash: {0}")]
-    InvalidHash(String),
-    #[error("Sequence gap: expected {expected}, got {actual}")]
-    SequenceGap { expected: i64, actual: i64 },
-}
+pub use phenotype_error_core::RepositoryError as EventError;
 
 #[async_trait]
 pub trait EventStore: Send + Sync {

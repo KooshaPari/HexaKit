@@ -25,10 +25,7 @@ impl InterceptorChain {
     }
 
     /// Add an interceptor to the chain
-    pub fn add(
-        &mut self,
-        interceptor: impl InterceptorPort<Error = Error> + 'static,
-    ) {
+    pub fn add(&mut self, interceptor: impl InterceptorPort<Error = Error> + 'static) {
         self.interceptors.push(Arc::new(interceptor));
     }
 

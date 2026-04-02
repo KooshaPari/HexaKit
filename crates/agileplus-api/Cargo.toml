@@ -6,6 +6,7 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+phenotype-error-core = { path = "../phenotype-error-core" }
 agileplus-domain = { path = "../agileplus-domain" }
 agileplus-dashboard = { path = "../agileplus-dashboard" }
 axum.workspace = true
@@ -37,3 +38,5 @@ tokio = { version = "1", features = ["full"] }
 axum-test = "19"
 tempfile = "3"
 chrono = { version = "0.4", features = ["serde"] }
+
+[workspace]

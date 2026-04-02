@@ -7,6 +7,7 @@ rust-version.workspace = true
 description = "P2P sync via Tailscale — peer discovery and event replication with vector clocks"
 
 [dependencies]
+phenotype-error-core = { path = "../phenotype-error-core" }
 agileplus-domain = { path = "../agileplus-domain" }
 agileplus-events = { path = "../agileplus-events" }
 agileplus-sync = { path = "../agileplus-sync" }
@@ -29,3 +30,5 @@ tokio-retry = "0.3"
 
 [dev-dependencies]
 tokio .workspace = true
+
+[workspace]

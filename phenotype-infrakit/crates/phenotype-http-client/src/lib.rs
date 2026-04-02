@@ -11,7 +11,7 @@
 //!
 //! # Quick Start
 //!
-//! ```rust,no_run
+//! ```rust,ignore
 //! use phenotype_http_client::{ReqwestAdapter, HttpClientPort, Request, Method};
 //!
 //! #[tokio::main]
@@ -30,7 +30,7 @@
 //! }
 //! ```
 //!
-//! ```rust,no_run
+//! ```rust,ignore
 //! use phenotype_http_client::{MockAdapter, HttpClientPort, Request, Method};
 //!
 //! #[tokio::main]

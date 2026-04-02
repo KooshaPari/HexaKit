@@ -7,6 +7,7 @@ rust-version.workspace = true
 description = "Sync orchestrator for AgilePlus — conflict detection, resolution, and NATS integration"
 
 [dependencies]
+phenotype-error-core = { path = "../phenotype-error-core" }
 agileplus-domain = { path = "../agileplus-domain" }
 agileplus-events = { path = "../agileplus-events" }
 serde.workspace = true
@@ -22,3 +23,5 @@ tracing.workspace = true
 
 [dev-dependencies]
 tokio = { version = "1", features = ["full"] }
+
+[workspace]

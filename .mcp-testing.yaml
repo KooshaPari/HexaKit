@@ -1,0 +1,206 @@
+# MCP (Model Context Protocol) Configuration for Cross-Project AI Testing
+# Enables AI agents to orchestrate testing across NanoVMS, AgilePlus, and thegent
+
+version: "1.0"
+
+# MCP Servers for Testing Orchestration
+servers:
+  # Playwright MCP for browser-based testing
+  playwright:
+    command: npx
+    args: ["@anthropic-ai/mcp-playwright", "start"]
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: "0"
+    description: "Browser automation for NanoVMS web dashboard tests"
+    
+  # TestRigor MCP for plain English test execution
+  testrigor:
+    command: curl
+    args: 
+      - "-X"
+      - "POST"
+      - "https://api.testrigor.com/v2/test-suites/{TEST_SUITE_ID}/execute"
+      - "-H"
+      - "Authorization: Bearer ${TESTRIGOR_API_KEY}"
+    env:
+      TESTRIGOR_API_KEY: "${TESTRIGOR_API_KEY}"
+    description: "Natural language test execution for AgilePlus specs"
+    
+  # Applitools MCP for visual testing
+  applitools:
+    command: python3
+    args: ["tests/visual-tui-testing.py"]
+    env:
+      APPLITOOLS_API_KEY: "${APPLITOOLS_API_KEY}"
+    description: "Visual regression testing for thegent TUI"
+    
+  # Qodo MCP for AI test generation
+  qodo:
+    command: qodo
+    args: ["generate", "--config", ".qodo.yaml"]
+    env:
+      QODO_API_KEY: "${QODO_API_KEY}"
+    description: "AI-powered test generation for all projects"
+    
+  # KaneAI MCP for conversation testing
+  kaneai:
+    command: python3
+    args: ["tests/kaneai-runner.py"]
+    env:
+      KANEAI_API_KEY: "${KANEAI_API_KEY}"
+    description: "Multi-turn conversation testing for agents"
+    
+  # Local test runner MCP
+  local-tests:
+    command: cargo
+    args: ["test", "--workspace"]
+    cwd: "${PROJECT_ROOT}"
+    description: "Local test execution via cargo test"
+    
+  # GitHub Actions MCP for CI orchestration
+  github-actions:
+    command: gh
+    args: ["workflow", "run", "--repo", "${REPO}", "${WORKFLOW}"]
+    env:
+      GITHUB_TOKEN: "${GITHUB_TOKEN}"
+    description: "Trigger GitHub Actions workflows for cross-repo testing"
+
+# Testing Workflows
+test_workflows:
+  nano_vms_vm_lifecycle:
+    description: "Test NanoVMS VM tier isolation end-to-end"
+    steps:
+      - server: qodo
+        action: "generate_tests"
+        params:
+          target: "adapters/"
+          language: "rust"
+          coverage_threshold: 80
+      - server: playwright
+        action: "run_tests"
+        params:
+          spec: "tests/playwright/vm-lifecycle.spec.ts"
+          browsers: ["chromium"]
+      - server: local-tests
+        action: "cargo_test"
+        params:
+          package: "nano-vms-core"
+          features: ["test-utils"]
+    
+  agileplus_bidirectional_sync:
+    description: "Test AgilePlus Plane.so integration"
+    steps:
+      - server: testrigor
+        action: "execute_suite"
+        params:
+          suite: "agileplus-sync"
+          scenarios: [
+            "Pull features from Plane.so",
+            "Push features to Plane.so",
+            "Detect sync conflicts"
+          ]
+      - server: playwright
+        action: "run_tests"
+        params:
+          spec: "tests/playwright/dashboard-sync.spec.ts"
+          visual_checks: true
+      - server: applitools
+        action: "visual_regression"
+        params:
+          app_name: "agileplus-dashboard"
+    
+  thegent_agent_conversations:
+    description: "Test thegent multi-agent orchestration"
+    steps:
+      - server: kaneai
+        action: "run_conversations"
+        params:
+          scenarios: "tests/kaneai-conversations.yaml"
+      - server: applitools
+        action: "visual_tui_check"
+        params:
+          app_name: "thegent"
+          states: [
+            "main_menu",
+            "research_mode",
+            "multi_agent_orchestration"
+          ]
+      - server: local-tests
+        action: "cargo_test"
+        params:
+          package: "thegent-agent-framework"
+
+# Self-Healing Configuration
+self_healing:
+  enabled: true
+  strategies:
+    - name: "smart_locator_update"
+      description: "Update Playwright locators when UI changes"
+      trigger: "test_failure_rate > 30%"
+      action: "retrain_locators"
+    
+    - name: "test_auto_update"
+      description: "Auto-update tests when spec changes"
+      trigger: "spec_commit"
+      action: "regenerate_tests"
+    
+    - name: "visual_baseline_refresh"
+      description: "Update visual baselines for intentional changes"
+      trigger: "manual_approval"
+      action: "accept_new_baseline"
+
+# AI Test Generation Rules
+generation_rules:
+  test_first:
+    description: "Generate tests before implementation"
+    enabled: true
+    
+  fr_traceability:
+    description: "Every test must trace to a Functional Requirement"
+    enabled: true
+    pattern: "// Traces to: FR-{PROJECT}-{NNN}"
+    
+  coverage_requirements:
+    unit_tests: 80
+    integration_tests: 70
+    e2e_tests: 50
+    
+  behavior_focus:
+    description: "Test behavior, not implementation"
+    enabled: true
+    avoid:
+      - "Testing internal methods"
+      - "Testing private functions"
+      - "Testing implementation details"
+    prefer:
+      - "Testing public APIs"
+      - "Testing user journeys"
+      - "Testing observable outcomes"
+
+# Notification & Reporting
+notifications:
+  slack:
+    webhook: "${SLACK_WEBHOOK_URL}"
+    channels:
+      - "#testing-alerts"
+      - "#ai-agent-dev"
+    
+  email:
+    on_failure: true
+    recipients:
+      - "team@phenotype.dev"
+    
+  dashboard:
+    url: "https://dashboard.phenotype.dev/testing"
+    refresh_interval: "5m"
+
+# Metrics Collection
+metrics:
+  enabled: true
+  collectors:
+    - test_duration
+    - flakiness_rate
+    - coverage_delta
+    - ai_generation_time
+    - human_review_time
+    - defect_escape_rate

@@ -7,46 +7,41 @@ use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use serde_json::json;
 
-/// Errors returned by API handlers.
-///
-/// Each variant maps to a specific HTTP status code and produces a JSON body:
-/// `{"error": "<message>"}`.
-#[derive(Debug, thiserror::Error)]
-pub enum ApiError {
-    #[error("{0}")]
-    NotFound(String),
-    #[error("{0}")]
-    BadRequest(String),
-    #[error("{0}")]
-    Unauthorized(String),
-    #[error("{0}")]
-    Conflict(String),
-    #[error("{0}")]
-    Template(String),
-    #[error("internal server error")]
-    Internal(String),
+pub use phenotype_error_core::ApiError;
+
+/// Response wrapper for ApiError that implements axum's `IntoResponse`.
+#[derive(Debug)]
+pub struct ApiResponse(pub ApiError);
+
+impl From<ApiError> for ApiResponse {
+    fn from(err: ApiError) -> Self {
+        ApiResponse(err)
+    }
 }
 
-impl IntoResponse for ApiError {
+impl IntoResponse for ApiResponse {
     fn into_response(self) -> Response {
-        let (status, message) = match &self {
-            ApiError::NotFound(m) => (StatusCode::NOT_FOUND, m.clone()),
-            ApiError::BadRequest(m) => (StatusCode::BAD_REQUEST, m.clone()),
-            ApiError::Unauthorized(m) => (StatusCode::UNAUTHORIZED, m.clone()),
-            ApiError::Conflict(m) => (StatusCode::CONFLICT, m.clone()),
-            ApiError::Template(m) => {
-                tracing::error!("template render error: {m}");
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    "template render error".to_string(),
-                )
+        let (status, message) = match &self.0 {
+            ApiError::BadRequest(msg) => (StatusCode::BAD_REQUEST, msg.clone()),
+            ApiError::Unauthorized(msg) => (StatusCode::UNAUTHORIZED, msg.clone()),
+            ApiError::Forbidden(msg) => (StatusCode::FORBIDDEN, msg.clone()),
+            ApiError::NotFound { resource, id } => {
+                (StatusCode::NOT_FOUND, format!("{resource} {id} not found"))
             }
-            ApiError::Internal(m) => {
-                tracing::error!("internal API error: {m}");
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    "internal server error".to_string(),
-                )
+            ApiError::Conflict(msg) => (StatusCode::CONFLICT, msg.clone()),
+            ApiError::RateLimited => (StatusCode::TOO_MANY_REQUESTS, "rate limited".to_string()),
+            ApiError::Timeout => (StatusCode::GATEWAY_TIMEOUT, "timeout".to_string()),
+            ApiError::Internal(msg) => {
+                tracing::error!("internal API error: {msg}");
+                (StatusCode::INTERNAL_SERVER_ERROR, "internal server error".to_string())
+            }
+            ApiError::Domain(domain_err) => {
+                tracing::error!("domain error: {domain_err}");
+                (StatusCode::UNPROCESSABLE_ENTITY, domain_err.to_string())
+            }
+            ApiError::Repository(repo_err) => {
+                tracing::error!("repository error: {repo_err}");
+                (StatusCode::INTERNAL_SERVER_ERROR, "data access error".to_string())
             }
         };
         (status, Json(json!({"error": message}))).into_response()
@@ -55,13 +50,19 @@ impl IntoResponse for ApiError {
 
 impl From<agileplus_domain::error::DomainError> for ApiError {
     fn from(e: agileplus_domain::error::DomainError) -> Self {
+        use phenotype_error_core::DomainError;
+        use agileplus_domain::error::DomainError as AgileDomainError;
+        
         match e {
-            agileplus_domain::error::DomainError::NotFound(m) => ApiError::NotFound(m),
-            agileplus_domain::error::DomainError::Conflict(m) => ApiError::Conflict(m),
-            agileplus_domain::error::DomainError::InvalidTransition { from, to, reason } => {
-                ApiError::Conflict(format!("invalid transition {from} -> {to}: {reason}"))
+            AgileDomainError::NotFound(msg) => ApiError::NotFound { 
+                resource: "entity".to_string(), 
+                id: msg 
+            },
+            AgileDomainError::Conflict(msg) => ApiError::Conflict(msg),
+            AgileDomainError::InvalidTransition { from, to, .. } => {
+                ApiError::Domain(DomainError::InvalidStateTransition { from, to })
             }
-            other => ApiError::Internal(other.to_string()),
+            other => ApiError::Domain(DomainError::Other(other.to_string())),
         }
     }
 }

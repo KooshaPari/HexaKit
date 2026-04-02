@@ -1,4 +1,6 @@
 //! Typed cache store with serde serialization.
+//!
+//! Uses phenotype-error-core::StorageError for canonical error handling.
 
 use crate::pool::CachePool;
 use async_trait::async_trait;
@@ -6,17 +8,7 @@ use redis::AsyncCommands;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 
-#[derive(Debug, thiserror::Error)]
-pub enum CacheError {
-    #[error("Serialization error: {0}")]
-    SerializationError(String),
-    #[error("Redis error: {0}")]
-    RedisError(String),
-    #[error("Key not found")]
-    NotFound,
-    #[error("Connection error: {0}")]
-    ConnectionError(String),
-}
+pub use phenotype_error_core::StorageError as CacheError;
 
 #[async_trait]
 pub trait CacheStore: Send + Sync {
@@ -62,17 +54,17 @@ impl CacheStore for RedisCacheStore {
             .pool
             .get_connection()
             .await
-            .map_err(|e| CacheError::ConnectionError(e.to_string()))?;
+            .map_err(|e| CacheError::Connection(e.to_string()))?;
 
         let value: Option<String> = conn
             .get(key)
             .await
-            .map_err(|e| CacheError::RedisError(e.to_string()))?;
+            .map_err(|e| CacheError::Other(format!("redis error: {e}")))?;
 
         match value {
             Some(v) => serde_json::from_str(&v)
                 .map(Some)
-                .map_err(|e| CacheError::SerializationError(e.to_string())),
+                .map_err(|e| CacheError::Other(format!("serialization error: {e}"))),
             None => Ok(None),
         }
     }
@@ -87,16 +79,16 @@ impl CacheStore for RedisCacheStore {
             .pool
             .get_connection()
             .await
-            .map_err(|e| CacheError::ConnectionError(e.to_string()))?;
+            .map_err(|e| CacheError::Connection(e.to_string()))?;
 
         let serialized = serde_json::to_string(value)
-            .map_err(|e| CacheError::SerializationError(e.to_string()))?;
+            .map_err(|e| CacheError::Other(format!("serialization error: {e}")))?;
 
         let ttl_secs = ttl.unwrap_or(self.default_ttl).as_secs() as i64;
 
         conn.set_ex::<_, _, ()>(key, &serialized, ttl_secs as u64)
             .await
-            .map_err(|e| CacheError::RedisError(e.to_string()))?;
+            .map_err(|e| CacheError::Other(format!("redis error: {e}")))?;
 
         Ok(())
     }
@@ -106,11 +98,11 @@ impl CacheStore for RedisCacheStore {
             .pool
             .get_connection()
             .await
-            .map_err(|e| CacheError::ConnectionError(e.to_string()))?;
+            .map_err(|e| CacheError::Connection(e.to_string()))?;
 
         conn.del::<_, ()>(key)
             .await
-            .map_err(|e| CacheError::RedisError(e.to_string()))?;
+            .map_err(|e| CacheError::Other(format!("redis error: {e}")))?;
 
         Ok(())
     }
@@ -120,10 +112,10 @@ impl CacheStore for RedisCacheStore {
             .pool
             .get_connection()
             .await
-            .map_err(|e| CacheError::ConnectionError(e.to_string()))?;
+            .map_err(|e| CacheError::Connection(e.to_string()))?;
 
         conn.exists(key)
             .await
-            .map_err(|e| CacheError::RedisError(e.to_string()))
+            .map_err(|e| CacheError::Other(format!("redis error: {e}")))
     }
 }
