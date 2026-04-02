@@ -36,12 +36,12 @@ func (a *RestAdapter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // RestRequest represents an HTTP request
 type RestRequest struct {
-	Method       string
-	Path         string
-	Headers      map[string]string
-	Body         json.RawMessage
-	QueryParams  map[string]string
-	PathParams   map[string]string
+	Method      string
+	Path        string
+	Headers     map[string]string
+	Body        json.RawMessage
+	QueryParams map[string]string
+	PathParams  map[string]string
 }
 
 // RestResponse represents an HTTP response
@@ -102,5 +102,5 @@ func QueryParam(r *http.Request, name string) string {
 
 // PathParam gets a path parameter
 func PathParam(r *http.Request, name string) string {
-	return r.Context().Value("path."+name).(string)
+	return r.Context().Value("path." + name).(string)
 }

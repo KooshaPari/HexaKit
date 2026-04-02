@@ -81,10 +81,10 @@ func (t Time) ToTime() time.Time {
 
 // BaseDomainEvent provides common domain event functionality
 type BaseDomainEvent struct {
-	eventType    string
-	occurredAt   Time
-	aggregateID  EntityID
-	metadata     map[string]string
+	eventType   string
+	occurredAt  Time
+	aggregateID EntityID
+	metadata    map[string]string
 }
 
 // NewBaseDomainEvent creates a new base domain event

@@ -55,8 +55,8 @@ type EventHandler interface {
 // Filter represents query filters
 type Filter struct {
 	Conditions []Condition
-	Limit     int
-	Offset    int
+	Limit      int
+	Offset     int
 }
 
 // Condition represents a single filter condition

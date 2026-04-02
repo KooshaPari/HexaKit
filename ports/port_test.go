@@ -93,7 +93,7 @@ func TestFilter_Chained(t *testing.T) {
 func TestOperators(t *testing.T) {
 	tests := []struct {
 		op      Operator
-		 Display string
+		Display string
 	}{
 		{OpEq, "eq"},
 		{OpNe, "ne"},
@@ -117,8 +117,8 @@ func TestOperators(t *testing.T) {
 
 func TestHealthStatus(t *testing.T) {
 	status := HealthStatus{
-		Status:    "healthy",
-		Message:   "all systems operational",
+		Status:  "healthy",
+		Message: "all systems operational",
 	}
 
 	if status.Status != "healthy" {
@@ -238,7 +238,7 @@ func TestUnitOfWorkInterface(t *testing.T) {
 
 // MockUnitOfWork implements UnitOfWork for testing
 type mockUnitOfWork struct {
-	committed bool
+	committed  bool
 	rolledBack bool
 }
 

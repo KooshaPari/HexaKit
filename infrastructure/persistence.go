@@ -10,7 +10,7 @@ import (
 
 // InMemoryRepository is an in-memory implementation of Repository
 type InMemoryRepository[T any] struct {
-	mu      sync.RWMutex
+	mu       sync.RWMutex
 	entities map[string]T
 }
 

@@ -83,7 +83,7 @@ func MustNewNonEmptyString(value string) *NonEmptyString {
 
 // Money represents a monetary value
 type Money struct {
-	amount   int64  // stored in cents
+	amount   int64 // stored in cents
 	currency string
 }
 

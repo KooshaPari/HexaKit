@@ -4,8 +4,8 @@ import "time"
 
 // DTO represents a Data Transfer Object
 type DTO[T any] struct {
-	Data      T         `json:"data"`
-	Meta      DtoMeta   `json:"meta,omitempty"`
+	Data      T          `json:"data"`
+	Meta      DtoMeta    `json:"meta,omitempty"`
 	Paginated *Paginated `json:"paginated,omitempty"`
 }
 
@@ -50,9 +50,9 @@ func NewPaginated(page, pageSize int, total int64) *Paginated {
 
 // Command represents a command DTO
 type Command struct {
-	Type      string                 `json:"type"`
-	Payload   map[string]interface{} `json:"payload"`
-	Metadata  map[string]string      `json:"metadata,omitempty"`
+	Type     string                 `json:"type"`
+	Payload  map[string]interface{} `json:"payload"`
+	Metadata map[string]string      `json:"metadata,omitempty"`
 }
 
 // NewCommand creates a new command
@@ -72,9 +72,9 @@ func (c *Command) WithMetadata(key, value string) *Command {
 
 // Query represents a query DTO
 type Query struct {
-	Type       string       `json:"type"`
+	Type       string        `json:"type"`
 	Filters    []QueryFilter `json:"filters,omitempty"`
-	Pagination *Pagination  `json:"pagination,omitempty"`
+	Pagination *Pagination   `json:"pagination,omitempty"`
 }
 
 // NewQuery creates a new query

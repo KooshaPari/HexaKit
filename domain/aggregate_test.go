@@ -38,7 +38,7 @@ func TestBaseAggregate_AddEvent(t *testing.T) {
 
 	event := &testEvent{
 		BaseDomainEvent: *NewBaseDomainEvent("test.event", id),
-		data:           "test",
+		data:            "test",
 	}
 
 	agg.AddEvent(event)
