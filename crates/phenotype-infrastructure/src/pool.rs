@@ -31,13 +31,16 @@ impl Default for PoolConfig {
 }
 
 /// A pooled connection that returns to pool on drop
-pub struct PooledConnection<C> {
+pub struct PooledConnection<C>
+where
+    C: Send + 'static,
+{
     inner: Option<C>,
     pool: Arc<InnerPool<C>>,
     created_at: Instant,
 }
 
-impl<C> PooledConnection<C> {
+impl<C: Send + 'static> PooledConnection<C> {
     pub fn get(&self) -> &C {
         self.inner.as_ref().unwrap()
     }
@@ -47,7 +50,7 @@ impl<C> PooledConnection<C> {
     }
 }
 
-impl<C> Drop for PooledConnection<C> {
+impl<C: Send + 'static> Drop for PooledConnection<C> {
     fn drop(&mut self) {
         if let Some(conn) = self.inner.take() {
             self.pool.return_connection(conn, self.created_at);
@@ -65,7 +68,7 @@ pub trait ConnectionFactory: Send + Sync + 'static {
 }
 
 struct InnerPool<C> {
-    connections: Mutex<Vec<(C, Instant)>>,
+    connections: Arc<Mutex<Vec<(C, Instant)>>>,
     sem: Semaphore,
     factory: Box<dyn ConnectionFactory<Connection = C>>,
     config: PoolConfig,
@@ -91,7 +94,7 @@ impl<C: Send + 'static> ConnectionPool<C> {
         F: ConnectionFactory<Connection = C> + 'static,
     {
         let inner = Arc::new(InnerPool {
-            connections: Mutex::new(Vec::with_capacity(config.max_size)),
+            connections: Arc::new(Mutex::new(Vec::with_capacity(config.max_size))),
             sem: Semaphore::new(config.max_size),
             factory: Box::new(factory),
             config: config.clone(),
@@ -158,7 +161,10 @@ impl<C: Send + 'static> ConnectionPool<C> {
 }
 
 impl<C> InnerPool<C> {
-    fn return_connection(&self, conn: C, created_at: Instant) {
+    fn return_connection(&self, conn: C, created_at: Instant)
+    where
+        C: Send + 'static,
+    {
         let conn_id = &conn as *const C as usize;
         self.in_use.remove(&conn_id);
 

@@ -98,23 +98,28 @@ impl RateLimiter {
     }
 
     pub async fn check_key(&self, key: &str, tokens: u32) -> bool {
-        let bucket = self
-            .buckets
-            .entry(key.to_string())
-            .or_insert_with(|| TokenBucket::new(self.config.clone()))
-            .clone();
-
-        bucket.try_acquire(tokens).await
+        // Use get_mut if exists, otherwise insert
+        let result = match self.buckets.get_mut(key) {
+            Some(bucket) => bucket.try_acquire(tokens).await,
+            None => {
+                let bucket = TokenBucket::new(self.config.clone());
+                let result = bucket.try_acquire(tokens).await;
+                self.buckets.insert(key.to_string(), bucket);
+                result
+            }
+        };
+        result
     }
 
     pub async fn acquire_key(&self, key: &str, tokens: u32) {
-        let bucket = self
-            .buckets
-            .entry(key.to_string())
-            .or_insert_with(|| TokenBucket::new(self.config.clone()))
-            .clone();
-
-        bucket.acquire(tokens).await;
+        match self.buckets.get_mut(key) {
+            Some(bucket) => bucket.acquire(tokens).await,
+            None => {
+                let bucket = TokenBucket::new(self.config.clone());
+                bucket.acquire(tokens).await;
+                self.buckets.insert(key.to_string(), bucket);
+            }
+        };
     }
 }
 

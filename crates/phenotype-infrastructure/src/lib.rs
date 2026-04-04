@@ -6,7 +6,6 @@
 //! - Rate limiting
 //! - Bulkhead patterns
 
-use std::sync::Arc;
 use thiserror::Error;
 
 pub mod pool;
@@ -27,8 +26,8 @@ pub enum InfrastructureError {
     BulkheadFull(String),
     #[error("Timeout: {0}")]
     Timeout(String),
-    #[error(transparent)]
-    Other(Arc<std::sync::Arc<std::string::String>>),
+    #[error("Other: {0}")]
+    Other(String),
 }
 
 pub use pool::{ConnectionPool, PooledConnection, PoolConfig};

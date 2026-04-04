@@ -6,20 +6,27 @@
 use std::path::PathBuf;
 use tempfile::TempDir;
 
+/// Base trait for test fixtures.
+pub trait Fixture: Sized {
+    /// Create a new fixture.
+    fn new() -> std::io::Result<Self>;
+}
+
 /// Temporary directory fixture that auto-cleans on drop.
 pub struct TempDirFixture {
     _temp: TempDir,
     path: PathBuf,
 }
 
-impl TempDirFixture {
-    /// Creates a new temporary directory.
-    pub fn new() -> std::io::Result<Self> {
+impl Fixture for TempDirFixture {
+    fn new() -> std::io::Result<Self> {
         let temp = TempDir::new()?;
         let path = temp.path().to_path_buf();
         Ok(Self { _temp: temp, path })
     }
+}
 
+impl TempDirFixture {
     /// Returns the path to the temporary directory.
     pub fn path(&self) -> &PathBuf {
         &self.path
@@ -44,13 +51,14 @@ pub struct MockServer {
     _temp: TempDir,
 }
 
-impl MockServer {
-    /// Creates a new mock server.
-    pub fn new() -> std::io::Result<Self> {
+impl Fixture for MockServer {
+    fn new() -> std::io::Result<Self> {
         let temp = TempDir::new()?;
         Ok(Self { _temp: temp })
     }
+}
 
+impl MockServer {
     /// Returns the server URL.
     pub fn url(&self) -> String {
         "http://127.0.0.1:0".to_string()

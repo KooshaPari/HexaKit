@@ -132,14 +132,14 @@ pub struct SecurityAlert {
 
 impl AlertSource {
     /// Get short name for display
-    pub fn short_name(&self) -> &'static str {
+    pub fn short_name(&self) -> String {
         match self {
-            AlertSource::Snyk => "SNYK",
-            AlertSource::CodeQL => "CODEQL",
-            AlertSource::CargoAudit => "CARGO",
-            AlertSource::Dependabot => "DEPND",
-            AlertSource::Trivy => "TRIVY",
-            AlertSource::Custom(s) => s,
+            AlertSource::Snyk => "SNYK".to_string(),
+            AlertSource::CodeQL => "CODEQL".to_string(),
+            AlertSource::CargoAudit => "CARGO".to_string(),
+            AlertSource::Dependabot => "DEPND".to_string(),
+            AlertSource::Trivy => "TRIVY".to_string(),
+            AlertSource::Custom(s) => s.clone(),
         }
     }
 }
