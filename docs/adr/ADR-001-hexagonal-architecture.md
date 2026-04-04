@@ -1,168 +1,121 @@
-# ADR-001: Hexagonal Architecture Design Decisions
+# ADR-001: Hexagonal Architecture with Ports & Adapters
 
-**Status**: Accepted  
-**Date**: 2026-03-25  
+**Status**: Accepted
+**Date**: 2026-03-25
 **Deciders**: Phenotype Architecture Team
+
+---
 
 ## Context
 
-go-hex is a hexagonal architecture toolkit for Go that provides a foundation for building maintainable, testable applications following Clean Architecture principles.
+The phenotype-go-kit repository needs a scalable architecture that supports:
+- Multiple transport adapters (REST, gRPC, CLI)
+- Multiple storage backends (PostgreSQL, MongoDB, Redis)
+- Plugin-based extensibility
+- Testability and maintainability
 
-## Decision Drivers
+Current state has mixed concerns with infrastructure code co-located with domain logic.
 
-- Need for consistent architecture across Phenotype Go projects
-- Support for domain-driven design patterns
-- Testability requirements (TDD/BDD)
-- Clear separation between domain logic and infrastructure
-- Type safety and compile-time checks
+---
 
-## Decisions
+## Decision
 
-### 1. Package Structure
+We will adopt **Hexagonal Architecture** (also known as Ports & Adapters) with the following principles:
 
-**Decision**: Four-layer hexagonal structure:
-- `domain/` - Pure business logic, no external dependencies
-- `application/` - Use cases, DTOs, handlers
-- `ports/` - Interface definitions (InputPort, OutputPort)
-- `infrastructure/` - Adapters (REST, persistence, messaging)
+### 1. Dependency Rule
+Outer layers depend on inner layers. Never the reverse.
 
-**Rationale**: Follows Clean Architecture principles with dependency inversion pointing toward the domain layer.
-
-### 2. Entity ID Type
-
-**Decision**: Use `uuid.UUID` as `EntityID`
-
-```go
-type EntityID = uuid.UUID
+```
+Adapters → Ports → Domain
 ```
 
-**Rationale**: 
-- UUIDs provide natural key strategy for distributed systems
-- No database round-trip needed for ID generation
-- Good performance with database indexes
+### 2. Ports (Interfaces)
 
-### 3. Value Objects
+**Inbound Ports (Driving)**:
+- `UseCase` - Standard use case interface
+- `CommandHandler` - CQRS command processing
+- `QueryHandler` - CQRS query processing
+- `EventHandler` - Domain event handling
 
-**Decision**: Value objects implement `ValueObject` interface with `Equals()` and `String()` methods
+**Outbound Ports (Driven)**:
+- `Repository` - Data persistence
+- `Cache` - Caching operations
+- `EventPublisher` - Event distribution
+- `ExternalService` - HTTP calls
+- `SecretStore` - Secret management
 
-```go
-type ValueObject interface {
-    Equals(ValueObject) bool
-    String() string
-}
+### 3. Directory Structure
+
+```
+phenotype-go-kit/
+├── contracts/              # Ports (interfaces)
+│   ├── ports/
+│   │   ├── inbound/      # Driving ports
+│   │   └── outbound/     # Driven ports
+│   ├── models/           # Domain models
+│   └── plugins/          # Plugin contracts
+├── internal/              # Private code
+│   ├── domain/           # Domain entities, services
+│   ├── application/       # Use cases, commands, queries
+│   └── adapters/         # Concrete implementations
+│       ├── primary/      # REST, gRPC handlers
+│       └── secondary/    # DB, Cache, External
+└── pkg/                  # Public libraries
 ```
 
-**Rationale**:
-- Immutable by design
-- Compared by value, not identity
-- Enables domain modeling with strong types (Email, Money, etc.)
+### 4. Plugin System
 
-### 4. Domain Events
+Dynamic loading of plugins following the `Plugin` interface:
+- Registry pattern for plugin management
+- Manifest-based configuration
+- Health monitoring and lifecycle management
 
-**Decision**: Events implement `DomainEvent` interface for event sourcing
-
-```go
-type DomainEvent interface {
-    EventType() string
-    OccurredAt() Time
-    AggregateID() EntityID
-}
-```
-
-**Rationale**:
-- Enables event sourcing and CQRS patterns
-- Time wrapped to prevent infrastructure leakage
-- Supports eventual consistency
-
-### 5. Ports (Interfaces)
-
-**Decision**: Marker interfaces for port classification
-
-```go
-type InputPort interface { isInputPort() }
-type OutputPort interface { isOutputPort() }
-```
-
-**Rationale**:
-- Clear separation of driving vs driven ports
-- Enables dependency injection
-- Framework-agnostic
-
-### 6. Repository Pattern
-
-**Decision**: Generic Repository interface with CRUD operations
-
-```go
-type Repository[T any] interface {
-    Save(ctx context.Context, entity T) (T, error)
-    FindByID(ctx context.Context, id string) (T, error)
-    Delete(ctx context.Context, id string) error
-    FindAll(ctx context.Context) ([]T, error)
-}
-```
-
-**Rationale**:
-- Type-safe with generics
-- Supports various persistence backends
-- Enables mock testing
-
-### 7. Use Case Pattern
-
-**Decision**: Function-based use cases with generic types
-
-```go
-type UseCase[I, O any] interface {
-    Execute(ctx context.Context, input I) (O, error)
-}
-```
-
-**Rationale**:
-- Flexible for commands and queries (CQRS)
-- Function adapters enable simple implementations
-- Clear input/output contracts
-
-### 8. Error Handling
-
-**Decision**: Domain errors with error codes, application errors wrapping domain errors
-
-```go
-type DomainError struct {
-    Code    string
-    Message string
-    Err     error
-}
-```
-
-**Rationale**:
-- Structured errors for better logging
-- Error codes enable client handling
-- Error wrapping preserves context
-
-## xDD Methodologies Applied
-
-| Category | Methodologies |
-|----------|---------------|
-| Development | TDD, BDD, DDD, ATDD, SDD |
-| Design | SOLID, DRY, KISS, GRASP, SoC |
-| Architecture | Clean, Hexagonal, Ports & Adapters, CQRS, EDA |
-| Quality | Unit Testing, Property-Based Testing |
-| Process | CI/CD, Code Review |
+---
 
 ## Consequences
 
 ### Positive
 - Clear separation of concerns
-- High testability
-- Easy to swap infrastructure implementations
-- Supports event-driven architectures
+- Easy to test with mock adapters
+- Multiple transport options
+- Plugin extensibility
+- Independent development of layers
 
 ### Negative
-- More boilerplate for simple applications
-- Learning curve for team members new to hexagonal architecture
-- Additional abstraction layers may impact performance
+- Initial complexity overhead
+- More interfaces to maintain
+- Learning curve for team
+
+### Risks
+- Over-engineering for simple features → Mitigate with YAGNI
+- Interface explosion → Mitigate with GRASP/ISP
+
+---
+
+## Alternatives Considered
+
+### 1. Clean Architecture (Microsoft)
+Similar to hexagonal but with explicit use cases layer. Chosen hexagonal for simpler port concept.
+
+### 2. Onion Architecture
+Similar layering but no explicit adapters concept. Chosen hexagonal for clearer adapter naming.
+
+### 3. Layered Architecture
+Simpler but leads to dependency violations. Not chosen for scalability.
+
+### 4. Microservices
+Overkill for library. Not chosen.
+
+---
+
+## Implementation
+
+See [contracts/README.md](../../contracts/README.md) for detailed implementation.
+
+---
 
 ## References
 
-- [Hexagonal Architecture by Alistair Cockburn](https://alistair.cockburn.us/hexagonal-architecture/)
-- [Clean Architecture by Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-- [Domain-Driven Design by Eric Evans](https://www.domainlanguage.com/ddd/)
+- [Ports and Adapters - Alistair Cockburn](https://alistair.cockburn.us/strategic-use-of-package-structure/)
+- [Hexagonal Architecture - Siemens](https://hexagonalarchitecture.org/)
+- [Clean Architecture - Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)

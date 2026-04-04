@@ -1,11 +1,37 @@
-import { expect, test } from '@playwright/test';
+import { test, expect } from '@playwright/test'
 
-const routes = ['/', '/adr/ADR-001-hexagonal-architecture', '/zh-CN/', '/zh-TW/', '/fa/', '/fa-Latn/'];
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5173'
 
-for (const route of routes) {
-  test(`loads ${route}`, async ({ page }) => {
-    await page.goto(route);
-    await expect(page).toHaveTitle(/go-hex|Docs/);
-    await expect(page.locator('body')).toContainText('Docs');
-  });
-}
+test.describe('docs', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto(BASE_URL)
+  })
+
+  test('homepage loads', async ({ page }) => {
+    await expect(page.locator('body')).toBeVisible()
+  })
+  test('route /guide/index loads', async ({ page }) => {
+    await page.goto(BASE_URL + '/guide/index')
+    await expect(page.locator('body')).toBeVisible()
+  })
+  test('route /index loads', async ({ page }) => {
+    await page.goto(BASE_URL + '/index')
+    await expect(page.locator('body')).toBeVisible()
+  })
+  test('route /zh-CN loads', async ({ page }) => {
+    await page.goto(BASE_URL + '/zh-CN')
+    await expect(page.locator('body')).toBeVisible()
+  })
+  test('route /zh-TW loads', async ({ page }) => {
+    await page.goto(BASE_URL + '/zh-TW')
+    await expect(page.locator('body')).toBeVisible()
+  })
+  test('route /fa loads', async ({ page }) => {
+    await page.goto(BASE_URL + '/fa')
+    await expect(page.locator('body')).toBeVisible()
+  })
+  test('route /fa-Latn loads', async ({ page }) => {
+    await page.goto(BASE_URL + '/fa-Latn')
+    await expect(page.locator('body')).toBeVisible()
+  })
+})

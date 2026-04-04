@@ -1,202 +1,154 @@
-# Go-Hex: Hexagonal Architecture Kit for Go
+# phenotype-go-kit
 
-A lightweight, dependency-free hexagonal architecture kit for Go applications.
+[![CI](https://github.com/KooshaPari/phenotype-go-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/KooshaPari/phenotype-go-kit/actions/workflows/ci.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/KooshaPari/phenotype-go-kit.svg)](https://pkg.go.dev/github.com/KooshaPari/phenotype-go-kit)
 
-## Philosophy
+Go infrastructure toolkit extracted from the Phenotype ecosystem. Small, focused packages for logging, data structures, polling, and registries.
 
-Go-Hex provides the structural patterns for building applications with **Hexagonal Architecture** (Ports & Adapters) while respecting Go's idioms and simplicity.
+## Packages
 
-## Architecture
+| Package | Description |
+|---------|-------------|
+| [`logctx`](logctx/) | Context-scoped `slog.Logger` injection and retrieval |
+| [`ringbuffer`](ringbuffer/) | Generic fixed-capacity circular buffer |
+| [`waitfor`](waitfor/) | Polling with exponential backoff, configurable timeout, and testable clocks |
+| [`registry`](registry/) | Generic thread-safe key-value registry with owner tracking, ref counting, and change hooks |
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                     Adapters Layer                       │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐            │
-│  │   REST   │  │   gRPC   │  │    CLI    │            │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘            │
-└────────┼─────────────┼─────────────┼──────────────────┘
-         │             │             │
-         ▼             ▼             ▼
-┌─────────────────────────────────────────────────────────┐
-│                       Ports Layer                        │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐            │
-│  │  Input   │  │  Output  │  │  Domain  │            │
-│  │  Ports   │  │  Ports   │  │  Events  │            │
-│  └──────────┘  └──────────┘  └──────────┘            │
-└─────────────────────────────────────────────────────────┘
-         │             │             │
-         ▼             ▼             ▼
-┌─────────────────────────────────────────────────────────┐
-│                      Domain Layer                        │
-│  Pure business logic - ZERO external dependencies       │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐            │
-│  │ Entities │  │ValueObjs │  │Aggregates│            │
-│  └──────────┘  └──────────┘  └──────────┘            │
-└─────────────────────────────────────────────────────────┘
-         │             │             │
-         ▼             ▼             ▼
-┌─────────────────────────────────────────────────────────┐
-│                   Application Layer                      │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐            │
-│  │ UseCases │  │   DTOs   │  │ Handlers │            │
-│  └──────────┘  └──────────┘  └──────────┘            │
-└─────────────────────────────────────────────────────────┘
-```
-
-## Installation
+## Install
 
 ```bash
-go get github.com/phenotype-dev/go-hex
+go get github.com/KooshaPari/phenotype-go-kit
 ```
 
-## Quick Start
+Requires Go 1.22+.
+
+## Usage
+
+### logctx
+
+Attach a `*slog.Logger` to a `context.Context` and retrieve it anywhere downstream.
+`From` panics if no logger has been injected — this is intentional: a missing logger is a
+programmer error and should fail loudly.
 
 ```go
-package main
-
 import (
     "context"
-    
-    "github.com/phenotype-dev/go-hex/domain"
-    "github.com/phenotype-dev/go-hex/ports"
-    "github.com/phenotype-dev/go-hex/application"
+    "log/slog"
+
+    "github.com/KooshaPari/phenotype-go-kit/logctx"
 )
 
-// 1. Define your domain entity
-type Order struct {
-    domain.BaseEntity
-    Items     []OrderItem
-    Status    OrderStatus
-    TotalCents int64
-}
+ctx := logctx.WithLogger(context.Background(), slog.Default())
+logger := logctx.From(ctx)
+logger.Info("hello from context logger")
+```
 
-type OrderStatus string
+### ringbuffer
 
-const (
-    OrderStatusPending   OrderStatus = "pending"
-    OrderStatusConfirmed OrderStatus = "confirmed"
-    OrderStatusShipped   OrderStatus = "shipped"
+A generic, fixed-capacity circular buffer. When full, `Push` overwrites the oldest entry.
+
+```go
+import "github.com/KooshaPari/phenotype-go-kit/ringbuffer"
+
+rb := ringbuffer.New[int](3)
+rb.Push(1)
+rb.Push(2)
+rb.Push(3)
+rb.Push(4)           // overwrites 1
+items := rb.GetAll() // [2, 3, 4] — oldest first
+fmt.Println(rb.Len()) // 3
+fmt.Println(rb.Cap()) // 3
+```
+
+### waitfor
+
+Poll a condition with exponential backoff until it returns `true`, an error occurs, or the
+timeout expires. Integrates with [`github.com/coder/quartz`](https://github.com/coder/quartz)
+for deterministic testing.
+
+```go
+import (
+    "context"
+    "time"
+
+    "github.com/KooshaPari/phenotype-go-kit/waitfor"
 )
 
-// 2. Define your repository port (driven port)
-type OrderRepository interface {
-    Save(ctx context.Context, order *Order) (*Order, error)
-    FindByID(ctx context.Context, id domain.EntityID) (*Order, error)
-    FindAll(ctx context.Context) ([]*Order, error)
-}
-
-// 3. Define your use case (input port)
-type CreateOrderInput struct {
-    CustomerID string
-    Items     []OrderItemInput
-}
-
-type CreateOrderOutput struct {
-    OrderID domain.EntityID
-}
-
-type CreateOrderUseCase interface {
-    Execute(ctx context.Context, input CreateOrderInput) (CreateOrderOutput, error)
-}
-
-// 4. Implement the use case
-type createOrderUseCase struct {
-    repo OrderRepository
-}
-
-func NewCreateOrderUseCase(repo OrderRepository) *createOrderUseCase {
-    return &createOrderUseCase{repo: repo}
-}
-
-func (uc *createOrderUseCase) Execute(ctx context.Context, input CreateOrderInput) (CreateOrderOutput, error) {
-    order := &Order{
-        BaseEntity: *domain.NewBaseEntity(domain.NewEntityID()),
-        Status:     OrderStatusPending,
-        TotalCents: calculateTotal(input.Items),
-    }
-    
-    saved, err := uc.repo.Save(ctx, order)
-    if err != nil {
-        return CreateOrderOutput{}, err
-    }
-    
-    return CreateOrderOutput{OrderID: saved.ID()}, nil
-}
-
-// 5. Create your adapter (REST handler)
-type OrderHandler struct {
-    createOrderUC CreateOrderUseCase
-}
-
-func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
-    var input CreateOrderInput
-    json.NewDecoder(r.Body).Decode(&input)
-    
-    output, err := h.createOrderUC.Execute(r.Context(), input)
-    if err != nil {
-        http.Error(w, err.Error(), 500)
-        return
-    }
-    
-    json.NewEncoder(w).Encode(output)
+err := waitfor.WaitFor(ctx, waitfor.WaitTimeout{
+    Timeout:     10 * time.Second,
+    MinInterval: 50 * time.Millisecond,
+    MaxInterval: 500 * time.Millisecond,
+    InitialWait: false, // check condition immediately before first sleep
+}, func() (bool, error) {
+    return isReady(), nil
+})
+if err != nil {
+    // err is waitfor.ErrTimedOut or a condition error
 }
 ```
 
-## Core Patterns
+`After` is a helper that returns a channel that fires after a duration using any
+`quartz.Clock` (pass `nil` for the real clock):
 
-### Domain Layer
+```go
+<-waitfor.After(nil, 5*time.Second)
+```
 
-- **Entity**: Objects with identity
-- **ValueObject**: Immutable objects compared by value
-- **Aggregate**: Cluster of domain objects treated as one unit
-- **DomainEvent**: Something happened that's significant to the business
-- **DomainService**: Operation that doesn't belong to an entity
+### registry
 
-### Ports Layer
+A generic, thread-safe key-value store with owner-scoped lifecycle management. Multiple owners
+may hold the same key; the entry is removed only when the last owner unregisters. An optional
+`Hook` interface observes all changes.
 
-- **InputPort (Driving)**: Interface used by adapters to trigger use cases
-- **OutputPort (Driven)**: Interface implemented by infrastructure for external concerns
+```go
+import "github.com/KooshaPari/phenotype-go-kit/registry"
 
-### Application Layer
+type ServiceInfo struct{ Port int }
 
-- **UseCase**: Single unit of application logic
-- **Command**: Input for write operations
-- **Query**: Input for read operations
-- **DTO**: Data transfer objects
+reg := registry.New[string, ServiceInfo]()
 
-### Infrastructure Layer
+// Two owners register the same key.
+reg.Register("owner-a", "api-svc", ServiceInfo{Port: 8080})
+reg.Register("owner-b", "api-svc", ServiceInfo{Port: 8080})
 
-- **Adapters**: Concrete implementations of output ports
-- **REST**, **gRPC**, **CLI**: Driving adapters
+svc, ok := reg.Get("api-svc") // (ServiceInfo{8080}, true)
+count := reg.Count("api-svc") // 2
 
-## Testing
+// Removing one owner decrements the ref count.
+reg.Unregister("owner-a")
+count = reg.Count("api-svc") // 1
+
+// Removing the last owner deletes the entry.
+reg.Unregister("owner-b")
+_, ok = reg.Get("api-svc") // (zero, false)
+
+// Snapshot of all live entries.
+all := reg.List() // map[string]ServiceInfo
+```
+
+Implement the `Hook` interface to observe changes:
+
+```go
+type myHook struct{}
+
+func (h *myHook) OnRegister(ownerID string, key string, value ServiceInfo) {
+    fmt.Printf("registered %s by %s\n", key, ownerID)
+}
+func (h *myHook) OnUnregister(ownerID string) {
+    fmt.Printf("unregistered owner %s\n", ownerID)
+}
+
+reg.SetHook(&myHook{})
+```
+
+## Development
 
 ```bash
-go test ./...        # Run all tests
-go test -cover ./... # With coverage
-go vet ./...         # Lint
-go fmt ./...         # Format
+go test -race ./...   # Run all tests with race detector
+go vet ./...          # Static analysis
+gofumpt -l .          # Format check
+golangci-lint run     # Full lint suite
 ```
-
-## Best Practices
-
-| Principle | Implementation |
-|-----------|----------------|
-| **SOLID** | DIP via ports, SRP via layers |
-| **DRY** | Shared port interfaces |
-| **KISS** | Simple interfaces, clear names |
-| **GRASP** | Application Service pattern |
-| **PoLA** | Descriptive error types |
-
-## Comparison with Alternatives
-
-| Feature | go-hex | go-clean | go-kit |
-|---------|--------|----------|--------|
-| Hexagonal-first | ✅ | ❌ | ❌ |
-| Zero deps in domain | ✅ | ❌ | ❌ |
-| Generic ports | ✅ | ❌ | ❌ |
-| Event sourcing | ✅ | ❌ | ❌ |
-| CQRS support | ✅ | ❌ | ✅ |
 
 ## License
 

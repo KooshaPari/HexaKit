@@ -3,40 +3,24 @@
 ## Supported Versions
 
 | Version | Supported          |
-|---------|--------------------|
-| 1.x     | :white_check_mark: |
-| < 1.0   | :x:                |
+| ------- | ------------------ |
+| 0.1.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
-We take the security of **HexaGo** seriously. If you discover a security vulnerability, please do NOT open a public issue. Instead, report it privately.
+If you discover a security vulnerability, please report it responsibly:
 
-### What to include
+1. **DO NOT** create a public GitHub issue for security vulnerabilities.
+2. Send a private report to the maintainers via:
+   - Email (if available)
+   - GitHub's [Private vulnerability reporting](https://github.com/KooshaPari/phenotype-go-kit/security/advisories/new)
 
-- A detailed description of the vulnerability
-- Steps to reproduce (proof of concept)
-- Potential impact
-- Any suggested fixes or mitigations
+## Security Best Practices
 
-We will acknowledge your report within 48 hours.
+When using this library:
 
-## Security Considerations
-
-When using HexaGo in your projects:
-
-- **Domain Layer**: Keep domain logic free of external dependencies
-- **Port Interfaces**: Validate all input at adapter boundaries
-- **Secrets**: Use environment variables for sensitive configuration
-- **Logging**: Avoid logging sensitive data
-
-## Dependency Scanning
-
-HexaGo uses Go's native vulnerability scanning:
-
-- `go vuln` for dependency vulnerabilities
-- Dependabot for automated updates
-- CI/CD security scanning
-
----
-
-Thank you for helping keep the community secure!
+- Keep dependencies up to date
+- Follow principle of least privilege
+- Validate all inputs
+- Use TLS for all network connections
+- Never log sensitive information

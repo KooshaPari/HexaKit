@@ -11,7 +11,7 @@
 ## Installation
 
 ```bash
-cargo add HexaGo
+cargo add template-lang-go
 ```
 
 ## Configuration
@@ -24,7 +24,7 @@ name: my-project
 ## Usage
 
 ```rust
-use HexaGo::Client;
+use template_lang_go::Client;
 
 #[tokio::main]
 async fn main() {

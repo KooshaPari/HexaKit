@@ -1,138 +1,42 @@
-# HexaGo — Specification
+# Go Template Specification
 
-Lightweight, dependency-free hexagonal architecture kit for Go applications.
+> Phenotype Template: Go Template
 
-## Architecture
+**Version**: 1.0 | **Status**: Stable | **Last Updated**: 2026-04-02
 
-```
-┌───────────────────────────────────────────────┐
-│             Adapters (Infrastructure)          │
-│  ┌───────┐  ┌───────┐  ┌───────┐  ┌───────┐ │
-│  │ REST  │  │ gRPC  │  │  CLI  │  │  DB   │ │
-│  └───┬───┘  └───┬───┘  └───┬───┘  └───┬───┘ │
-└──────┼──────────┼──────────┼──────────┼──────┘
-       │          │          │          │
-       ▼          ▼          ▼          ▼
-┌───────────────────────────────────────────────┐
-│                Ports (Interfaces)              │
-│  ┌────────────┐         ┌────────────┐        │
-│  │ InputPorts │         │ OutputPorts│        │
-│  │ (driving)  │         │  (driven)  │        │
-│  └────────────┘         └────────────┘        │
-└───────────────────────────────────────────────┘
-       │                        │
-       ▼                        ▼
-┌──────────────────┐  ┌────────────────────────┐
-│   Domain Layer   │  │   Application Layer    │
-│  Pure Go, 0 deps │  │  UseCases, DTOs        │
-│  Entities, VOs,  │  │  Commands, Queries     │
-│  Aggregates      │  │  Handlers              │
-└──────────────────┘  └────────────────────────┘
+## Overview
+
+Template for Go projects in the Phenotype ecosystem.
+
+**Features**:
+- Standard Go project layout
+- Pre-configured CI/CD
+- Standard tooling integration
+- Documentation structure
+
+## Quick Start
+
+```bash
+# Use template
+copier copy gh:KooshaPari/template-lang-go ./my-project
+
+# Or
+mkdir my-project && cd my-project
+curl -sL https://github.com/KooshaPari/template-lang-go/archive/main.tar.gz | tar xz --strip-components=1
 ```
 
-## Components
-
-| Package | Role | Key Types |
-|---------|------|-----------|
-| domain | Core building blocks | BaseEntity, ValueObject, AggregateRoot, DomainEvent |
-| ports | Interface contracts | InputPort, OutputPort, Repository, EventStore |
-| application | Use case orchestration | UseCase, Command, Query, DTO |
-
-## Data Models
-
-```go
-type EntityID string
-
-type BaseEntity struct {
-    id        EntityID
-    createdAt time.Time
-    updatedAt time.Time
-}
-
-type ValueObject interface {
-    Equals(other ValueObject) bool
-}
-
-type AggregateRoot interface {
-    ID() EntityID
-    DomainEvents() []DomainEvent
-    ClearEvents()
-}
-
-type DomainEvent interface {
-    EventName() string
-    OccurredAt() time.Time
-}
-```
-
-## API Design
-
-```go
-// Port definition (input - driving)
-type CreateOrderInput struct {
-    CustomerID string
-    Items      []OrderItemInput
-}
-
-type CreateOrderUseCase interface {
-    Execute(ctx context.Context, input CreateOrderInput) (CreateOrderOutput, error)
-}
-
-// Port definition (output - driven)
-type OrderRepository interface {
-    Save(ctx context.Context, order *Order) (*Order, error)
-    FindByID(ctx context.Context, id domain.EntityID) (*Order, error)
-}
-
-// Adapter (REST)
-type OrderHandler struct {
-    uc CreateOrderUseCase
-}
-
-func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
-    var input CreateOrderInput
-    json.NewDecoder(r.Body).Decode(&input)
-    output, err := h.uc.Execute(r.Context(), input)
-    // handle response
-}
-```
-
-## Package Layout
+## Structure
 
 ```
-go-hex/
-├── domain/
-│   ├── entity.go
-│   ├── value_object.go
-│   ├── aggregate.go
-│   └── event.go
-├── ports/
-│   ├── input_port.go
-│   ├── output_port.go
-│   └── repository.go
-├── application/
-│   ├── usecase.go
-│   ├── command.go
-│   └── query.go
-└── go.mod
+my-project/
+├── src/              # Source code
+├── tests/            # Test files
+├── docs/             # Documentation
+├── .github/          # GitHub Actions
+├── README.md         # Project README
+└── LICENSE           # MIT License
 ```
 
-## Performance Targets
+## License
 
-| Metric | Target |
-|--------|--------|
-| Zero external dependencies | domain package |
-| Go version | 1.21+ |
-| Build time | < 3s |
-| Test suite | < 5s |
-| go vet | 0 issues |
-| Test coverage | > 90% |
-
-## Quality Gates
-
-- `go build ./...` — clean build
-- `go test -cover ./...` — coverage > 90%
-- `go vet ./...` — no issues
-- `go fmt ./...` — formatted
-- Domain layer imports zero external packages
-- All public interfaces documented
+MIT

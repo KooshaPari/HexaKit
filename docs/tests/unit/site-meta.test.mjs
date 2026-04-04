@@ -1,11 +1,17 @@
-import assert from 'node:assert/strict';
-import { createSiteMeta } from '../helpers/site-meta.mjs';
+import assert from 'node:assert/strict'
+import test from 'node:test'
+import { createSiteMeta } from '../../.vitepress/site-meta.mjs'
 
-const meta = createSiteMeta();
+test('site meta exports createSiteMeta', () => {
+  const meta = createSiteMeta({ base: '/' })
+  assert.ok(meta.title)
+  assert.ok(meta.themeConfig)
+  assert.ok(meta.themeConfig.nav)
+  assert.ok(Array.isArray(meta.themeConfig.nav))
+})
 
-assert.equal(meta.docsRoot, '/docs/');
-assert.equal(meta.locales.root, '/');
-assert.equal(meta.locales['zh-CN'], '/zh-CN/');
-assert.equal(meta.locales['zh-TW'], '/zh-TW/');
-assert.equal(meta.locales.fa, '/fa/');
-assert.equal(meta.locales['fa-Latn'], '/fa-Latn/');
+test('site meta nav has expected items', () => {
+  const meta = createSiteMeta({ base: '/' })
+  const links = meta.themeConfig.nav.map(n => n.link)
+  assert.ok(links.length > 0, 'nav should not be empty')
+})

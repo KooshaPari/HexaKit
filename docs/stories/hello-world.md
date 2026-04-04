@@ -8,12 +8,12 @@
 
 ## Objective
 
-Run your first HexaGo operation.
+Run your first template-lang-go operation.
 
 ## Implementation
 
 ```rust
-use HexaGo::Client;
+use template_lang_go::Client;
 
 #[tokio::main]
 async fn main() {
@@ -26,5 +26,5 @@ async fn main() {
 ## Output
 
 ```
-Hello from HexaGo!
+Hello from template-lang-go!
 ```

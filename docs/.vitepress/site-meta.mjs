@@ -1,12 +1,12 @@
-export function createSiteMeta() {
+export function createSiteMeta({ base = '/' } = {}) {
   return {
-    docsRoot: '/docs/',
-    locales: {
-      root: '/',
-      'zh-CN': '/zh-CN/',
-      'zh-TW': '/zh-TW/',
-      fa: '/fa/',
-      'fa-Latn': '/fa-Latn/',
+    base,
+    title: 'phenotype-go-kit',
+    description: 'Documentation',
+    themeConfig: {
+      nav: [
+        { text: 'Home', link: base || '/' },
+      ],
     },
-  };
+  }
 }

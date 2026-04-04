@@ -1,6 +1,6 @@
 # Test Coverage Matrix
 
-**Project**: HexaGo  
+**Project**: phenotype-go-kit  
 **Document Version**: 1.0  
 **Last Updated**: 2026-04-02
 

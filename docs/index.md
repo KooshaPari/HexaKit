@@ -1,23 +1,16 @@
 ---
-audience: [developers, agents, pms]
+layout: home
+hero:
+  name: phenotype-go-kit
+  text: Go infrastructure toolkit for the Phenotype ecosystem
+  actions:
+    - theme: brand
+      text: Get Started
+      link: /guide/
 ---
-
-# Docs
-
-This docs tree is the canonical landing surface for the go-hex kit.
 
 ## Start Here
 
-- `README.md` for the architecture overview and usage notes
-- `docs/adr/` for architecture decision records
-
-## Operating Model
-
-Keep the kit focused on:
-
-- Hexagonal architecture
-- Ports and adapters
-- Small, composable abstractions
-- Go idioms over framework-heavy patterns
-
-Keep wave-specific work in `docs/sessions/<YYYYMMDD-descriptive-name>/`.
+- [Worklog](./WORKLOG.md)
+- [Guide](./guide/)
+- [Architecture Decisions](./adr/)

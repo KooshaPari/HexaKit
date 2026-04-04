@@ -1,2 +1,7 @@
-# Default ownership
-* @kooshapari
+# Repository governance
+# Primary maintainer for this repository
+* @KooshaPari
+
+# Documentation
+docs/ @KooshaPari
+*.md @KooshaPari

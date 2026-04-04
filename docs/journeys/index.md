@@ -3,9 +3,9 @@ layout: doc
 title: User Journeys
 ---
 
-# HexaGo User Journeys
+# template-lang-go User Journeys
 
-> Visual workflows for HexaGo
+> Visual workflows for template-lang-go
 
 ## Quick Navigation
 

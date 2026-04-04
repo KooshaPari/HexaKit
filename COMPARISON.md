@@ -1,66 +1,76 @@
-# Go-Hex Feature Comparison Matrix
-
-## Overview
-
-Go-Hex is a lightweight hexagonal architecture kit for Go that provides structural patterns without forcing specific frameworks or dependencies on your domain.
+# Comparison Matrix
 
 ## Feature Comparison
 
-| Feature | go-hex | go-clean | go-kit | go-tddd | buffalo |
-|---------|--------|----------|--------|---------|---------|
-| **Architecture** |
-| Hexagonal/Ports&Adapters | ✅ | ⚠️ | ⚠️ | ⚠️ | ❌ |
-| Clean Architecture layers | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ |
-| Onion Architecture | ⚠️ | ⚠️ | ❌ | ⚠️ | ❌ |
-| **Domain Layer** |
-| Zero external deps | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Entity base types | ✅ | ⚠️ | ❌ | ⚠️ | ⚠️ |
-| Value object helpers | ✅ | ⚠️ | ❌ | ✅ | ❌ |
-| Aggregate root support | ✅ | ⚠️ | ❌ | ⚠️ | ❌ |
-| **Ports (Interfaces)** |
-| Generic Repository[T] | ✅ | ❌ | ❌ | ❌ | ❌ |
-| UnitOfWork interface | ✅ | ❌ | ✅ | ❌ | ❌ |
-| EventStore interface | ✅ | ❌ | ✅ | ❌ | ❌ |
-| MessageBus interface | ✅ | ❌ | ✅ | ❌ | ❌ |
-| **Application Layer** |
-| UseCase[T,O] interface | ✅ | ⚠️ | ⚠️ | ✅ | ⚠️ |
-| Command/Query separation | ✅ | ❌ | ⚠️ | ✅ | ❌ |
-| DTO helpers | ✅ | ⚠️ | ✅ | ✅ | ⚠️ |
-| **Quality** |
-| Type-safe generics | ✅ | ⚠️ | ⚠️ | ✅ | ❌ |
-| Context propagation | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Error wrapping | ✅ | ✅ | ✅ | ✅ | ✅ |
+This document compares **phenotype-go-kit** with similar tools in the Go infrastructure toolkit space.
 
-## When to Use
+| Repository | Purpose | Key Features | Language/Framework | Maturity | Comparison |
+|------------|---------|--------------|-------------------|----------|------------|
+| **phenotype-go-kit (this repo)** | Go infrastructure toolkit | logctx, ringbuffer, waitfor, registry | Go | Stable | Phenotype ecosystem |
+| [zerolog](https://github.com/rs/zerolog) | Logging | Zero allocation, JSON, Structured | Go | Stable | Production logging |
+| [zap](https://github.com/uber-go/zap) | Logging | High performance, Structured | Go | Stable | Uber's logging |
+| [slog](https://github.com/golang/example) | Standard logging | Go 1.21+, Structured | Go | Stable | stdlib solution |
+| [goval](https://github.com/mitchellh/go-watcher) | Polling/waiting | Retry logic | Go | Stable | Retry polling |
+| [go-redis](https://github.com/redis/go-redis) | Redis client | Redis operations | Go | Stable | Redis integration |
 
-### Use go-hex when:
+## Detailed Feature Comparison
 
-- ✅ You want strict hexagonal architecture
-- ✅ You need zero dependencies in domain layer
-- ✅ You want generic, reusable port interfaces
-- ✅ You prefer explicit architecture over convention
-- ✅ You need event sourcing or CQRS support
+### Packages
 
-### Consider alternatives when:
+| Package | phenotype-go-kit | zerolog | zap | slog |
+|---------|-----------------|---------|-----|------|
+| logctx | ✅ | ❌ | ❌ | ✅ (via context) |
+| ringbuffer | ✅ | ❌ | ❌ | ❌ |
+| waitfor | ✅ | ❌ | ❌ | ❌ |
+| registry | ✅ | ❌ | ❌ | ❌ |
 
-- ⚠️ You prefer convention over configuration → go-clean
-- ⚠️ You need microservices with observability → go-kit
-- ⚠️ You're building a monolith with Rails-like DX → buffalo
-- ❌ You want simple CRUD apps → Use direct database access
+### logctx Features
+
+| Feature | phenotype-go-kit | slog (stdlib) | zerolog | zap |
+|---------|-----------------|---------------|---------|-----|
+| Context-scoped | ✅ | ✅ | ❌ | ❌ |
+| slog integration | ✅ | ✅ | ❌ | ❌ |
+| Panic on missing | ✅ | ❌ | N/A | N/A |
+| Type-safe | ✅ | ✅ | N/A | N/A |
+
+### waitfor Features
+
+| Feature | phenotype-go-kit | goval | golang.org/x/sync |
+|---------|-----------------|-------|--------------------|
+| Exponential backoff | ✅ | ✅ | ✅ (ErrWait) |
+| Configurable timeout | ✅ | ✅ | ❌ |
+| Testable clocks | ✅ | ❌ | ❌ |
+| Initial wait option | ✅ | ❌ | ❌ |
+
+### registry Features
+
+| Feature | phenotype-go-kit | sync.Map | redis |
+|---------|-----------------|----------|-------|
+| Generic types | ✅ | ❌ | N/A |
+| Owner tracking | ✅ | ❌ | ❌ |
+| Ref counting | ✅ | ❌ | ❌ |
+| Change hooks | ✅ | ❌ | ❌ |
 
 ## Unique Value Proposition
 
-1. **Domain-first**: Domain layer has ZERO external dependencies
-2. **Generics-native**: Leverages Go 1.18+ generics for type-safe ports
-3. **Framework-agnostic**: No assumptions about web frameworks, ORMs, etc.
-4. **Minimal footprint**: Small, focused package with no bloat
-5. **Explicit over implicit**: Clear separation makes architecture visible
+phenotype-go-kit provides:
 
-## Alternatives Reference
+1. **Context-Scoped Logging**: `logctx` for request-bound logger injection
+2. **Circular Buffer**: Generic ring buffer for bounded queues
+3. **Polling with Backoff**: `waitfor` with exponential backoff and testable clocks
+4. **Owner-Based Registry**: Ref-counted registry with lifecycle management
 
-| Library | GitHub | Focus |
-|---------|--------|-------|
-| go-hex | [phenotype-dev/go-hex](https://github.com/phenotype-dev/go-hex) | Hexagonal Architecture Kit |
-| go-clean | [livepros/go-clean](https://github.com/qiangxue/go-clean) | Clean Architecture template |
-| go-kit | [go-kit/kit](https://github.com/go-kit/kit) | Microservices toolkit |
-| go-tddd | [checkr/go-flipr](https://github.com/checkr/flagr) | TDD-ready structure |
+## Packages
+
+| Package | Description |
+|---------|-------------|
+| `logctx` | Context-scoped slog.Logger injection and retrieval |
+| `ringbuffer` | Generic fixed-capacity circular buffer |
+| `waitfor` | Polling with exponential backoff and configurable timeout |
+| `registry` | Generic thread-safe key-value registry with owner tracking |
+
+## References
+
+- zerolog: [rs/zerolog](https://github.com/rs/zerolog)
+- zap: [uber-go/zap](https://github.com/uber-go/zap)
+- slog: [golang/example](https://github.com/golang/example)

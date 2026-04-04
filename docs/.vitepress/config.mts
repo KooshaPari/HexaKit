@@ -1,27 +1,27 @@
-import { defineConfig } from 'vitepress';
-import { createSiteMeta } from './site-meta.mjs';
+import { defineConfig } from 'vitepress'
 
-const siteMeta = createSiteMeta();
+const isPagesBuild = process.env.GITHUB_ACTIONS === 'true' || process.env.GITHUB_PAGES === 'true'
+const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1] || 'phenotype-go-kit'
+const docsBase = isPagesBuild ? `/${repoName}/` : '/'
 
 export default defineConfig({
-  title: 'go-hex',
-  description: 'Hexagonal architecture kit for Go',
+  title: 'phenotype-go-kit',
+  description: 'Go infrastructure toolkit extracted from the Phenotype ecosystem',
   lang: 'en-US',
-  srcDir: '.',
-  outDir: '../.vitepress-dist',
-  head: [['meta', { name: 'theme-color', content: '#0f766e' }]],
+  base: docsBase,
+  lastUpdated: true,
+  cleanUrls: true,
   themeConfig: {
-    nav: [
-      { text: 'Home', link: siteMeta.locales.root },
-      { text: 'ADR', link: '/adr/ADR-001-hexagonal-architecture' },
-    ],
-    sidebar: [
-      { text: 'Start', items: [{ text: 'Docs', link: '/' }] },
-      {
-        text: 'Reference',
-        items: [{ text: 'ADR-001', link: '/adr/ADR-001-hexagonal-architecture' }],
-      },
-    ],
-    socialLinks: [],
+    siteTitle: 'phenotype-go-kit',
+    nav: [{ text: 'Guide', link: '/guide/' }],
+    sidebar: {
+      '/guide/': [
+        { text: 'Guide', items: [{ text: 'Getting Started', link: '/guide/' }] }
+      ]
+    },
+    socialLinks: [{ icon: 'github', link: `https://github.com/KooshaPari/${repoName}` }],
+    search: { provider: 'local' }
   },
-});
+  markdown: { lineNumbers: true },
+  ignoreDeadLinks: true
+})
