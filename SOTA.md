@@ -1,278 +1,1914 @@
-# State of the Art — HexaKit Technology Landscape
+# HexaKit — State of the Art Research
 
-**Version:** 1.0  
-**Status:** Active  
-**Updated:** 2026-04-04
-
----
-
-## Overview
-
-This document captures the state-of-the-art technology decisions, competitive landscape analysis, and rationale for key architectural choices in the HexaKit repos shelf.
+__Version:__ 1.0  
+__Status:__ Active Research  
+__Updated:__ 2026-04-04
 
 ---
 
-## Technology Adoption Philosophy
+## Table of Contents
 
-**Aggressive adoption of preview/dev versions is encouraged across ALL languages and frameworks.**
-
-### General Principles
-
-- Do NOT gradually migrate — switch completely to new versions
-- Do NOT be scared of non-release versions (dev, preview, rc, nightly)
-- Always prefer the latest available version, even if preview
-- Rollback is always possible if issues arise
-- Prefer native/compiler rewrites over legacy implementations
-
----
-
-## Language Targets
-
-| Language | Current Preview/Nightly | Primary | Legacy Escape |
-|----------|------------------------|---------|--------------|
-| **TypeScript** | TypeScript 7 native (Go-based) | `tsgo` | `tsc` |
-| **Rust** | Nightly compiler, Edition 2024 | Latest nightly | None |
-| **Go** | Go 1.24+ | Latest stable | None |
-| **Python** | Python 3.14 dev | `uv`, `ruff`, `rye` | `pip` + `venv` |
-| **Bun** | Bun 1.2+ | Bun | Node.js |
+1. [Introduction](#introduction)
+2. [Research Methodology](#research-methodology)
+3. [Monorepo Architecture Patterns](#monorepo-architecture-patterns)
+4. [Polyrepo Management Strategies](#polyrepo-management-strategies)
+5. [Rust Workspace Patterns](#rust-workspace-patterns)
+6. [Local-First Development](#local-first-development)
+7. [AI-Augmented Development](#ai-augmented-development)
+8. [Event Sourcing Architectures](#event-sourcing-architectures)
+9. [Hash-Chained Audit Systems](#hash-chained-audit-systems)
+10. [Policy-Driven Quality Gates](#policy-driven-quality-gates)
+11. [Hexagonal Architecture](#hexagonal-architecture)
+12. [MCP Protocol Analysis](#mcp-protocol-analysis)
+13. [Code Generation Systems](#code-generation-systems)
+14. [Template and Scaffolding Systems](#template-and-scaffolding-systems)
+15. [Agent Orchestration Patterns](#agent-orchestration-patterns)
+16. [Comparative Analysis](#comparative-analysis)
+17. [Gap Analysis](#gap-analysis)
+18. [Recommendations](#recommendations)
+19. [References](#references)
 
 ---
 
-## Core Technology Choices
+## Introduction
 
-### 1. Rust as Systems Language
+### Purpose
 
-**Decision:** Rust (Edition 2021/2024) for all performance-critical infrastructure.
+This document captures the state of the art (SOTA) research relevant to HexaKit — the Phenotype repos shelf. It synthesizes findings from industry practices, academic research, and open-source implementations to inform architectural decisions.
 
-**Rationale:**
-- Memory safety without GC (critical for long-running agent processes)
-- Zero-cost abstractions enable high-throughput event processing
-- Rich type system enforces correctness at compile time
-- Excellent async story with Tokio
+### Scope
 
-**Alternatives Considered:**
-- C++: Rejected — no memory safety guarantees, manual resource management
-- Zig: Deferred — ecosystem immature, tooling gaps
-- Go: Rejected for core — GC pauses unacceptable for real-time agent dispatch
+Research covers:
 
-### 2. TypeScript 7 Native (Go-based Compiler)
+- Repository organization patterns (monorepo vs polyrepo)
+- Rust workspace architectures
+- Local-first development principles
+- AI-augmented development workflows
+- Event sourcing and audit trail systems
+- Policy-driven quality enforcement
+- Hexagonal architecture implementations
+- Model Context Protocol (MCP) standards
+- Code generation and scaffolding systems
+- Multi-agent orchestration
 
-**Decision:** TypeScript 7 via `tsgo` as primary, `tsc` as legacy escape hatch.
+### Research Questions
 
-**Rationale:**
-- 5-10x faster type checking than tsc
-- Native Go implementation aligns with Phenotype Go projects
-- Full type-system compatibility with TypeScript 6.x
-
-**Alternatives Considered:**
-- TypeScript 6.x only: Rejected — not aggressive enough
-- ocaml/purescript: Rejected — ecosystem mismatch
-
-### 3. Python 3.14 with uv
-
-**Decision:** Python 3.14 (dev) with `uv` package manager, `ruff` linter.
-
-**Rationale:**
-- `uv` is 10-100x faster than pip
-- Python 3.14 brings performance improvements (no GIL removal yet but better async)
-- Ruff is 10-100x faster than flake8+black
-
-**Alternatives Considered:**
-- Python 3.13: Rejected — 3.14 is available in CI
-- Poetry: Rejected — slower than uv, more complex
-
-### 4. Bun as JavaScript Runtime
-
-**Decision:** Bun 1.2+ as primary, Node.js as legacy escape hatch.
-
-**Rationale:**
-- Bun is 3-5x faster than Node.js for typical workloads
-- Native TypeScript support (no transpilation step)
-- Drop-in Node.js compatibility
-
-### 5. SQLite for Local-First Storage
-
-**Decision:** SQLite (bundled) as sole persistence layer for local-first operation.
-
-**Rationale:**
-- Zero-dependency deployment
-- Full offline operation
-- No connection management overhead
-- Sufficient for single-developer workloads
-
-**Alternatives Considered:**
-- PostgreSQL: Rejected — requires running server, breaks local-first
-- SurrealDB: Rejected — immature embedding story
-- Redis: Rejected — requires separate process, overhead
+1. How do successful organizations manage 30+ interrelated repositories?
+2. What patterns enable effective AI agent integration across polyrepo boundaries?
+3. How can local-first principles be applied to development infrastructure?
+4. What audit trail mechanisms provide tamper-evident governance?
+5. How do hexagonal architectures scale across language boundaries?
 
 ---
 
-## Architecture Patterns
+## Research Methodology
 
-### Hexagonal (Ports & Adapters) Architecture
+### Sources
 
-**Decision:** All crates follow hexagonal architecture with port traits and adapter implementations.
+| Category | Sources |
+|----------|---------|
+| Industry | Google, Facebook, Twitter, Uber monorepo practices |
+| Academic | Papers on event sourcing, distributed systems, formal methods |
+| Open Source | Bazel, Buck2, Pants, Nx, Turborepo, Cargo workspaces |
+| Standards | MCP specification, gRPC, OpenTelemetry |
+| Tools | Git worktrees, SQLite, NATS, Protobuf |
 
-**Structure:**
+### Evaluation Criteria
+
+Each pattern or technology evaluated against:
+
+- __Scalability:__ Handles 30+ repositories, 100+ crates
+- __Maintainability:__ Clear boundaries, minimal coupling
+- __Observability:__ Audit trails, metrics, tracing
+- __AI-Friendliness:__ Structured, parseable, context-rich
+- __Local-First:__ Works offline, minimal external deps
+- __Performance:__ Fast builds, efficient CI/CD
+
+---
+
+## Monorepo Architecture Patterns
+
+### Google-Style Monorepo
+
+Google operates one of the largest monorepos with billions of lines of code.
+
+__Trunk-Based Development__
+
+- Single main branch
+- Frequent small commits
+- Automated testing at scale
+
+__Build System Integration__
+
+- Blaze (internal) / Bazel (open source)
+- Hermetic builds
+- Remote caching and execution
+
+__Code Ownership__
+
+- OWNERS files define reviewers
+- Fine-grained permissions
+- Automated assignment
+
+__Findings for HexaKit__
+
+Google's approach requires massive infrastructure investment. The hermetic build concept applies well to Rust's deterministic builds, but the single-repository constraint conflicts with HexaKit's polyrepo reality.
+
+Verdict: __Partially applicable__ — build hermeticity yes, single repo no.
+
+### Facebook-Style Monorepo
+
+Facebook (Meta) uses a monorepo for mobile and web development:
+
+__Repository Structure__
+
+- `fbandroid/` — Android code
+- `fbobjc/` — iOS code
+- `xplat/` — Cross-platform code
+- `scripts/` — Build and CI scripts
+
+__Buck Build System__
+
+- Rule-based builds
+- Fine-grained dependencies
+- Remote execution
+
+__Code Mods__
+
+- Automated refactoring at scale
+- AST-based transformations
+- Codemod tools
+
+__Findings for HexaKit__
+
+Facebook's codemod approach is highly relevant for AI-augmented development. The cross-platform directory structure provides a pattern for HexaKit's language-specific organization.
+
+Verdict: __Highly applicable__ — codemod patterns, directory structure.
+
+### Uber-Style Monorepo
+
+Uber's Go monorepo at peak:
+
+- 4,000+ Go engineers
+- 100+ million lines of Go
+- 1,000+ services
+- One build
+
+__Challenges Encountered__
+
+- Build times grew to 20+ minutes
+- IDE performance degraded
+- Test flakiness increased
+- Dependency conflicts
+
+__Solutions Implemented__
+
+- Module-based organization
+- Selective test execution
+- Remote build execution
+- Automated dependency management
+
+__Findings for HexaKit__
+
+Uber's experience demonstrates monorepo limits. Their migration toward modules supports HexaKit's polyrepo choice.
+
+Verdict: __Validation__ — polyrepo justified for scale.
+
+### Twitter-Style Polyrepo with Pants
+
+Twitter uses Pants build system across multiple repositories:
+
+__Pants Build System__
+
+- Fine-grained build graph
+- Parallel execution
+- Remote caching
+- Multiple language support
+
+__Repository Organization__
+
+- Core libraries in dedicated repos
+- Services in separate repos
+- Shared via artifact publishing
+
+__Dependency Management__
+
+- Internal artifact repository
+- Semantic versioning
+- Automated updates
+
+__Findings for HexaKit__
+
+Pants' multi-language support and fine-grained builds align with HexaKit's polyglot requirements.
+
+Verdict: __Highly applicable__ — build system patterns, artifact management.
+
+---
+
+## Polyrepo Management Strategies
+
+### Repository Sprawl Solutions
+
+__Problem Definition__
+
+Managing 30+ independent repositories creates:
+
+- Context switching overhead
+- Inconsistent tooling
+- Cross-repo refactoring challenges
+- Dependency version drift
+- Onboarding complexity
+
+__Solution Categories__
+
+| Approach | Tool Examples | Trade-offs |
+|----------|---------------|------------|
+| Meta-repo | git-repo, mr | Adds layer, complexity |
+| Monorepo migration | Bazel, Nx | High switching cost |
+| Workspace managers | Cargo workspaces, pnpm | Language-specific |
+| Shelf organization | HexaKit approach | Manual coordination |
+| Service catalog | Backstage | Documentation only |
+
+### Git Worktree Patterns
+
+__Git Worktree Basics__
+
+Git worktrees allow multiple working directories linked to a single repository:
+
+```bash
+# Create worktree for feature branch
+git worktree add .worktrees/feature-branch -b feature-branch
+
+# Switch to worktree
+cd .worktrees/feature-branch
+
+# Clean up when done
+git worktree remove .worktrees/feature-branch
 ```
-Domain (business logic) ← Port Traits (interfaces) ← Adapters (implementations)
+
+__Benefits__
+
+- No stashing/switching overhead
+- Parallel development contexts
+- Clean separation of concerns
+- Preserved build caches per worktree
+
+__HexaKit Adaptation__
+
+HexaKit uses worktrees as primary branch management strategy:
+
+```
+repos/
+├── worktrees/
+│   ├── agileplus/
+│   │   ├── feat/auth-refactor/
+│   │   └── fix/connection-leak/
+│   ├── thegent/
+│   │   └── feat/mcp-v2/
+│   └── helioscli/
+│       └── chore/update-deps/
 ```
 
-**Benefits:**
-- Domain logic testable with in-memory stubs
-- Adapters swappable at runtime
-- New backends require only new adapter crate
+### Dependency Synchronization
 
-**Key Ports:**
-| Port | Purpose |
-|------|---------|
-| `StoragePort` | Persistence operations |
-| `VcsPort` | Version control operations |
-| `AgentPort` | AI agent dispatch |
-| `ObservabilityPort` | Tracing, metrics, logging |
+__Version Drift Problem__
 
-### Event Sourcing with Hash Chains
+In polyrepo setups, shared dependencies diverge:
 
-**Decision:** Every state mutation produces an `Event` + `AuditEntry`, both append-only with SHA-256 hash chains.
+| Dependency | Repo A | Repo B | Repo C |
+|------------|--------|--------|--------|
+| tokio | 1.35 | 1.36 | 1.34 |
+| serde | 1.0.193 | 1.0.195 | 1.0.190 |
+| axum | 0.7 | 0.6 | 0.7 |
 
-**Benefits:**
-- Tamper detection for any entry
-- Full event-sourcing capability
-- Reconstruction of state from event stream
+__Synchronization Strategies__
 
-### gRPC + Protobuf for Services
+1. __Centralized Version Registry__
+   - Single source of truth for versions
+   - Automated propagation
+   - Renovate/Dependabot integration
 
-**Decision:** All inter-service contracts defined in `.proto` files, generated via `tonic-build` + `prost`.
+2. __Cargo Workspaces (Per-Project)__
+   - Unified versions within project
+   - Workspace-level dependency management
+   - Single Cargo.lock
 
-**Benefits:**
-- Strongly-typed, versioned contracts
-- Buf linting catches API regressions
-- Bidirectional streaming available
+3. __Minimal Shared Dependencies__
+   - Reduce inter-repo coupling
+   - Prefer internal abstractions
+   - Version APIs, not implementations
 
----
+4. __Automated Update Pipelines__
+   - Weekly dependency refresh
+   - CI validation gates
+   - Automated rollback on failure
 
-## Agent Integration Patterns
+### Cross-Repository Refactoring
 
-### MCP (Model Context Protocol)
+__Challenge__
 
-**Decision:** All AI agent integrations use MCP as the primary protocol.
+Refactoring shared abstractions across 30+ repos:
 
-**Implementation:**
-- Python MCP server (`agileplus-mcp`) using FastMCP 3.0
-- MCP SDKs in Go, Python, TypeScript (`platforms/thegent/`)
-- gRPC bridge between Python MCP and Rust core
+```
+Before: phenotype_cache::Cache
+After:  phenotype_storage::CachePort
 
-**Benefits:**
-- Standardized AI agent protocol
-- Rich tool/resource/prompt primitives
-- Server-initiated sampling support
+Impact: 12 repositories need updates
+```
 
-### Worktree Isolation
+__Solutions__
 
-**Decision:** Each agent work package runs in an isolated git worktree.
+| Approach | Implementation | Cost |
+|----------|----------------|------|
+| Script-based | find + sed + PR | Medium |
+| AST-based | rust-analyzer + transforms | High |
+| Gradual | Deprecation + migration window | Low |
+| API shim | Compatibility layer | Medium |
 
-**Benefits:**
-- No cross-WP file conflicts
-- Clean branch per feature/WP
-- Parallel agent execution without interference
+HexaKit approach: __Gradual with API shims__
 
----
-
-## Observability Stack
-
-### OpenTelemetry
-
-**Decision:** OpenTelemetry for all observability with OTLP export.
-
-**Components:**
-- `tracing` for structured logging and spans
-- `opentelemetry-otlp` for trace export
-- `tracing-opentelemetry` for span correlation
-
-**Benefits:**
-- Backend-agnostic (Jaeger, Grafana Tempo, Honeycomb)
-- Automatic span correlation across async boundaries
-- Metrics collection per command
+- Deprecation notices in version N
+- Migration guide published
+- Breaking change in version N+2
+- Automated detection via CI
 
 ---
 
-## Competitive Landscape
+## Rust Workspace Patterns
 
-### Similar Systems
+### Workspace Architecture Patterns
 
-| System | Comparison | Differentiation |
-|--------|------------|-----------------|
-| **OpenSpec** | Simple 3-command planning | Lacks AI agent integration, no governance |
-| **spec-kitty** | Structured specs, worktree isolation | Lacks hash-chained audit, no MCP |
-| **bmad** | Enterprise depth, role-based agents | Heavy, complex, not local-first |
-| **GSD** | Automation, parallel execution | Lacks spec-driven development |
+__Single Crate per Package__
 
-### Key Differentiators for HexaKit
+```
+crates/
+├── phenotype-core/
+│   └── src/lib.rs
+├── phenotype-events/
+│   └── src/lib.rs
+└── phenotype-storage/
+    └── src/lib.rs
+```
 
-1. **Local-first**: No server required, full offline operation
-2. **Governance-verified**: Hash-chained audit + evidence-driven transitions
-3. **AI-native**: MCP-first integration with Claude Code, Codex, Cursor
-4. **Polyglot**: Multi-language support with strong typing across all
+Benefits:
+
+- Clear boundaries
+- Independent versioning
+- Minimal rebuilds
+
+Trade-offs:
+
+- More Cargo.toml management
+- Dependency duplication
+
+__Multi-Crate Workspace__
+
+```
+agileplus/
+├── Cargo.toml          # Workspace root
+├── crates/
+│   ├── core/
+│   ├── git-adapter/
+│   ├── sqlite-adapter/
+│   └── mcp-server/
+└── tests/
+    └── integration/
+```
+
+Benefits:
+
+- Shared dependencies
+- Unified build
+- Cross-crate testing
+
+Trade-offs:
+
+- Larger build graph
+- Version coupling
+
+__HexaKit Approach: Hierarchical Workspaces__
+
+```
+HexaKit/
+├── phenotype-infrakit/     # Foundation workspace
+│   ├── Cargo.toml          # 8 crates
+│   └── crates/
+├── agileplus/              # Application workspace
+│   ├── Cargo.toml          # 22 crates
+│   └── crates/
+└── heliosCLI/              # CLI workspace
+    ├── Cargo.toml          # 3 crates
+    └── crates/
+```
+
+Each workspace is independent but follows consistent patterns.
+
+### Crate Organization Patterns
+
+__Hexagonal Crate Structure__
+
+```rust
+// phenotype-storage/src/lib.rs
+
+// Public API (ports)
+pub mod ports {
+    pub trait StoragePort: Send + Sync {
+        fn get(&self, key: &str) -> Result<Option<Vec<u8>>, StorageError>;
+        fn set(&self, key: &str, value: Vec<u8>) -> Result<(), StorageError>;
+    }
+}
+
+// Domain logic
+mod domain {
+    pub struct StorageEngine;
+    impl StorageEngine {
+        pub fn new(port: Arc<dyn StoragePort>) -> Self;
+    }
+}
+
+// Adapter implementations (behind features)
+#[cfg(feature = "sqlite")]
+pub mod adapters {
+    pub mod sqlite;
+}
+```
+
+__Feature-Gated Adapters__
+
+```toml
+[features]
+default = ["sqlite"]
+sqlite = ["dep:rusqlite"]
+redis = ["dep:redis"]
+postgres = ["dep:tokio-postgres"]
+```
+
+Benefits:
+
+- Minimal dependencies by default
+- Pay for what you use
+- Testable in isolation
+
+### Inter-Workspace Dependencies
+
+__Dependency Patterns__
+
+| Relationship | Pattern | Example |
+|--------------|---------|---------|
+| Foundation -> App | Pub dependency | phenotype-core -> agileplus |
+| App -> App | Optional integration | thegent -> agileplus |
+| App -> Foundation | Never (circular) | N/A |
+| Parallel | Shared foundation only | Both use phenotype-core |
+
+__Version Management__
+
+```toml
+# phenotype-core Cargo.toml
+[package]
+name = "phenotype-core"
+version = "0.1.0"
+
+# agileplus Cargo.toml
+[dependencies]
+phenotype-core = { path = "../phenotype-infrakit/crates/phenotype-core", version = "0.1.0" }
+```
+
+Local path for development, version for publishing.
 
 ---
 
-## Security Posture
+## Local-First Development
 
-### Credentials Management
+### Local-First Principles
 
-- OS keychain (macOS Keychain, Linux Secret Service, Windows Credential Manager)
-- File-based fallback with `zeroize` for memory sanitization
-- No plaintext credentials on disk
+From Ink & Switch research:
 
-### Audit Integrity
+1. __Offline Capability:__ Works without internet
+2. __Data Ownership:__ User controls their data
+3. __Collaboration:__ Sync when connected
+4. __Longevity:__ Data outlives apps
+5. __Privacy:__ Sensitive data stays local
 
-- SHA-256 hash chains for tamper detection
-- Append-only event store
-- Verifiable chain integrity via `validate` command
+__Application to HexaKit__
 
-### SAST/DAST
+| Principle | HexaKit Implementation |
+|-----------|------------------------|
+| Offline | SQLite-based storage, no cloud deps |
+| Ownership | Local git repos, self-hosted |
+| Collaboration | Git-based sync, PR workflow |
+| Longevity | Plain text specs, markdown docs |
+| Privacy | Local LLM inference option |
 
-| Tool | Purpose | Integration |
-|------|---------|-------------|
-| `cargo-audit` | Dependency vulnerabilities | CI gate |
-| `cargo-deny` | License compliance, banned deps | CI gate |
-| `semgrep` | Static analysis | CI gate |
-| `trivy` | Container scanning | CI gate |
-| `gitguardian` | Secrets detection | CI gate |
+### SQLite as Local-First Store
+
+__Why SQLite__
+
+- Single file database
+- Zero external dependencies
+- ACID transactions
+- Cross-platform
+- Language bindings for everything
+- Battle-tested (trillions of deployments)
+
+__Schema Evolution Pattern__
+
+```rust
+// Migration system
+pub struct Migration {
+    pub version: u32,
+    pub name: &'static str,
+    pub up: &'static str,
+    pub down: Option<&'static str>,
+}
+
+pub const MIGRATIONS: &[Migration] = &[
+    Migration {
+        version: 1,
+        name: "initial_schema",
+        up: include_str!("migrations/001_initial.sql"),
+        down: None,
+    },
+    // ...
+];
+```
+
+__Local Sync Architecture__
+
+```
+┌─────────────────┐     ┌──────────────┐     ┌─────────────────┐
+│   Local SQLite  │────▶│   Git Sync   │◀────│   Local SQLite  │
+│   (Developer A) │     │   (Push/Pull)│     │   (Developer B) │
+└─────────────────┘     └──────────────┘     └─────────────────┘
+```
+
+### Git-Based State Management
+
+__Spec-as-Code Pattern__
+
+```
+kitty-specs/
+├── FEATURE-001/
+│   ├── SPEC.md              # Human-readable spec
+│   ├── state.json           # Machine-readable state
+│   └── work-packages/
+│       ├── WP-001.md
+│       └── WP-002.md
+```
+
+__Audit Trail via Git__
+
+Every state change is a git commit:
+
+```bash
+# Plan feature
+agileplus specify --title "Auth System" --id FEATURE-001
+# Creates: kitty-specs/FEATURE-001/SPEC.md
+
+git add kitty-specs/FEATURE-001/
+git commit -m "feat(spec): auth system specification"
+
+# Update work package status
+agileplus status FEATURE-001 --wp WP-001 --state implementing
+
+git add kitty-specs/FEATURE-001/state.json
+git commit -m "feat(spec): auth system WP-001 in progress"
+```
+
+### No External Dependencies Principle
+
+__Self-Contained Toolchain__
+
+HexaKit tooling must work without:
+
+- Cloud services (AWS, GCP, Azure)
+- External databases (RDS, Cloud SQL)
+- SaaS integrations (Jira, Linear, Notion)
+- Network connectivity (optional sync)
+
+__Verification__
+
+```bash
+# Test in network-isolated environment
+unshare -n -- cargo test --workspace
+
+# All tests should pass
+```
 
 ---
 
-## Future Considerations
+## AI-Augmented Development
 
-### Technology Watch List
+### Current State of AI Development Tools
 
-| Technology | Status | Evaluation Date |
-|------------|--------|-----------------|
-| Rust Edition 2024 | Monitor | 2026-Q3 |
-| Zig 0.14 | Research | 2026-Q4 |
-| Python 3.15 | Monitor | 2026-Q4 |
-| TypeScript 8 | Monitor | 2027-Q1 |
+__Code Completion__
 
-### Potential Migrations
+- GitHub Copilot
+- Amazon CodeWhisperer
+- Tabnine
+- Continue.dev
 
-| From | To | Trigger |
-|------|----|---------|
-| `tsc` | `tsgo` | TS7 Go-based stable |
-| `pip` | `uv` | Complete (already done) |
-| `flake8+black` | `ruff` | Complete (already done) |
+__Code Generation__
+
+- Claude Code
+- Codex
+- Cursor
+- Aider
+
+__Review and Analysis__
+
+- CodeRabbit
+- PR-Agent
+- Muse (HexaKit internal)
+
+__Testing__
+
+- CodiumAI
+- Auto-generated tests
+
+### Model Context Protocol (MCP)
+
+__MCP Architecture__
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│    Host     │────▶│   Client    │────▶│   Server    │
+│ (Claude Code│     │ (Stdio/SSE) │     │ (MCP Tools) │
+│  /Cursor)   │     │             │     │             │
+└─────────────┘     └─────────────┘     └─────────────┘
+                                              │
+                                              ▼
+                                        ┌─────────────┐
+                                        │   Resources │
+                                        │   Tools     │
+                                        │   Prompts   │
+                                        └─────────────┘
+```
+
+__MCP Server Implementation Patterns__
+
+1. __Resource-Based__
+   - Expose files, data, content
+   - URI-addressable
+   - Subscription support
+
+2. __Tool-Based__
+   - Expose functions/procedures
+   - JSON-RPC calling convention
+   - Type-safe schemas
+
+3. __Prompt-Based__
+   - Pre-defined prompt templates
+   - Parameterized
+   - Composable
+
+__HexaKit MCP Servers__
+
+| Server | Purpose | Implementation |
+|--------|---------|----------------|
+| agileplus-mcp | Spec management | Rust + JSON-RPC |
+| thegent-mcp | Agent platform | Python + stdio |
+| helios-mcp | CLI integration | Rust + stdio |
+
+### AI Agent Integration Patterns
+
+__Context Injection__
+
+```rust
+// Include relevant context in prompts
+pub fn build_prompt(spec_id: &str) -> String {
+    let spec = load_spec(spec_id);
+    let related_specs = find_related(spec_id);
+    let worklog = load_worklog(spec_id);
+    
+    format!(
+        r#"You are implementing {spec_id}.
+
+Specification:
+{spec}
+
+Related Work:
+{related_specs}
+
+Context from previous agents:
+{worklog}
+
+Proceed with implementation."#
+    )
+}
+```
+
+__Chain-of-Thought Verification__
+
+```rust
+// Require reasoning before action
+pub trait Agent {
+    fn think(&self, context: &Context) -> Reasoning;
+    fn act(&self, reasoning: &Reasoning) -> Action;
+    fn verify(&self, action: &Action) -> Verification;
+}
+```
+
+__Multi-Agent Orchestration__
+
+| Agent | Role | Specialization |
+|-------|------|----------------|
+| Forge | Implementation | Coding, refactoring |
+| Muse | Review | Quality, style, correctness |
+| Sage | Research | Investigation, analysis |
+| Helios | Testing | Runtime, verification |
+
+### Prompt Engineering for Agents
+
+__Structured Output Requirements__
+
+```rust
+/// All agent outputs must follow this structure
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AgentOutput {
+    /// What the agent understood
+    pub understanding: String,
+    
+    /// Approach taken
+    pub approach: String,
+    
+    /// Changes made
+    pub changes: Vec<Change>,
+    
+    /// Verification performed
+    pub verification: Verification,
+    
+    /// Known issues or follow-ups
+    pub known_issues: Vec<String>,
+}
+```
+
+__Context Window Management__
+
+- Prioritize relevant files
+- Summarize large files
+- Use directory structure for navigation
+- Cache parsed ASTs
+
+---
+
+## Event Sourcing Architectures
+
+### Event Sourcing Fundamentals
+
+__Core Concepts__
+
+| Concept | Definition |
+|---------|------------|
+| Event | Immutable record of something that happened |
+| Event Store | Append-only log of all events |
+| Aggregate | Cluster of objects treated as a unit |
+| Projection | Read model derived from events |
+| Command | Request to change state |
+
+__Event Structure__
+
+```rust
+pub struct Event {
+    /// Unique identifier
+    pub id: Uuid,
+    
+    /// Event type (e.g., "FeatureCreated")
+    pub event_type: String,
+    
+    /// Aggregate ID
+    pub aggregate_id: String,
+    
+    /// Sequence number within aggregate
+    pub sequence: u64,
+    
+    /// When it happened
+    pub timestamp: DateTime<Utc>,
+    
+    /// Who/what caused it
+    pub actor: Actor,
+    
+    /// Event payload
+    pub payload: serde_json::Value,
+    
+    /// Cryptographic hash for integrity
+    pub hash: String,
+    
+    /// Previous event hash (chaining)
+    pub previous_hash: Option<String>,
+}
+```
+
+### Event Store Implementations
+
+__SQLite Event Store__
+
+```sql
+CREATE TABLE events (
+    id BLOB PRIMARY KEY,              -- UUID
+    event_type TEXT NOT NULL,
+    aggregate_id TEXT NOT NULL,
+    sequence INTEGER NOT NULL,
+    timestamp TEXT NOT NULL,
+    actor_type TEXT NOT NULL,
+    actor_id TEXT NOT NULL,
+    payload BLOB NOT NULL,            -- JSON
+    hash BLOB NOT NULL,               -- SHA-256
+    previous_hash BLOB,
+    
+    UNIQUE(aggregate_id, sequence)
+);
+
+CREATE INDEX idx_events_aggregate ON events(aggregate_id, sequence);
+CREATE INDEX idx_events_type ON events(event_type);
+CREATE INDEX idx_events_timestamp ON events(timestamp);
+```
+
+__Append-Only Guarantee__
+
+```rust
+impl EventStore {
+    pub fn append(&self, event: &Event) -> Result<()> {
+        // Verify sequence number
+        let last = self.get_last_sequence(&event.aggregate_id)?;
+        if event.sequence != last + 1 {
+            return Err(Error::ConcurrencyViolation);
+        }
+        
+        // Verify hash chain
+        if let Some(prev) = &event.previous_hash {
+            let last_hash = self.get_last_hash(&event.aggregate_id)?;
+            if last_hash.as_ref() != Some(prev) {
+                return Err(Error::HashChainBroken);
+            }
+        }
+        
+        // Insert with transaction
+        self.db.execute(
+            "INSERT INTO events (...) VALUES (...)",
+            params![...]
+        )?;
+        
+        Ok(())
+    }
+}
+```
+
+### Projection Patterns
+
+__Read Model Rebuild__
+
+```rust
+pub trait Projection {
+    type View;
+    
+    fn init() -> Self::View;
+    fn apply(view: &mut Self::View, event: &Event);
+}
+
+// Example: Feature status projection
+pub struct FeatureStatusProjection;
+
+impl Projection for FeatureStatusProjection {
+    type View = HashMap<String, FeatureStatus>;
+    
+    fn init() -> Self::View {
+        HashMap::new()
+    }
+    
+    fn apply(view: &mut Self::View, event: &Event) {
+        match event.event_type.as_str() {
+            "FeatureCreated" => {
+                let data: FeatureCreated = serde_json::from_value(event.payload.clone()).unwrap();
+                view.insert(event.aggregate_id.clone(), FeatureStatus::Planned);
+            }
+            "WorkPackageStarted" => {
+                view.insert(event.aggregate_id.clone(), FeatureStatus::Implementing);
+            }
+            "FeatureCompleted" => {
+                view.insert(event.aggregate_id.clone(), FeatureStatus::Done);
+            }
+            _ => {}
+        }
+    }
+}
+```
+
+__Live Projection Update__
+
+```rust
+pub struct LiveProjection<P: Projection> {
+    projection: P::View,
+    last_event_id: Option<Uuid>,
+}
+
+impl<P: Projection> LiveProjection<P> {
+    pub fn refresh(&mut self, store: &EventStore) -> Result<()> {
+        let events = store.get_since(self.last_event_id)?;
+        for event in events {
+            P::apply(&mut self.projection, &event);
+            self.last_event_id = Some(event.id);
+        }
+        Ok(())
+    }
+}
+```
+
+---
+
+## Hash-Chained Audit Systems
+
+### Cryptographic Audit Trail
+
+__Hash Chain Structure__
+
+```
+Event 1:
+  id: uuid-1
+  payload: {...}
+  hash: SHA256(payload) = hash-1
+  previous_hash: null
+
+Event 2:
+  id: uuid-2
+  payload: {...}
+  hash: SHA256(payload + hash-1) = hash-2
+  previous_hash: hash-1
+
+Event 3:
+  id: uuid-3
+  payload: {...}
+  hash: SHA256(payload + hash-2) = hash-3
+  previous_hash: hash-2
+```
+
+__Verification Algorithm__
+
+```rust
+pub fn verify_chain(events: &[Event]) -> Result<(), AuditError> {
+    for (i, event) in events.iter().enumerate() {
+        // Verify individual hash
+        let computed = compute_hash(&event.payload, event.previous_hash.as_ref());
+        if computed != event.hash {
+            return Err(AuditError::HashMismatch { index: i });
+        }
+        
+        // Verify chain continuity
+        if i > 0 {
+            let prev = &events[i - 1];
+            if event.previous_hash != Some(prev.hash.clone()) {
+                return Err(AuditError::ChainBroken { index: i });
+            }
+        }
+    }
+    Ok(())
+}
+```
+
+### Tamper Evidence
+
+__Detection Capabilities__
+
+| Attack Vector | Detection Mechanism |
+|---------------|---------------------|
+| Event deletion | Hash chain breaks |
+| Event modification | Hash mismatch |
+| Sequence reordering | Hash chain breaks |
+| Backdated events | Timestamp anomalies |
+| Replay attacks | Sequence uniqueness |
+
+__Merkle Tree Variant__
+
+For batch verification:
+
+```rust
+pub struct MerkleNode {
+    pub hash: [u8; 32],
+    pub left: Option<Box<MerkleNode>>,
+    pub right: Option<Box<MerkleNode>>,
+}
+
+pub fn build_merkle_tree(events: &[Event]) -> MerkleNode {
+    let leaves: Vec<MerkleNode> = events
+        .iter()
+        .map(|e| MerkleNode {
+            hash: e.hash,
+            left: None,
+            right: None,
+        })
+        .collect();
+    
+    build_tree_recursive(leaves)
+}
+```
+
+---
+
+## Policy-Driven Quality Gates
+
+### Policy as Code
+
+__Policy Structure__
+
+```rust
+pub struct Policy {
+    pub id: String,
+    pub version: String,
+    pub applies_to: Vec<String>, // File patterns
+    pub rules: Vec<Rule>,
+}
+
+pub struct Rule {
+    pub id: String,
+    pub name: String,
+    pub severity: Severity,
+    pub condition: Condition,
+    pub message: String,
+}
+
+pub enum Condition {
+    FileSize { max_lines: usize },
+    TestCoverage { min_percent: f64 },
+    NoTodo, // No TODO/FIXME in production code
+    FrTraceability, // All tests trace to FR
+}
+```
+
+__Policy Engine__
+
+```rust
+pub struct PolicyEngine {
+    policies: Vec<Policy>,
+}
+
+impl PolicyEngine {
+    pub fn check(&self, target: &Target) -> Vec<Violation> {
+        let mut violations = Vec::new();
+        
+        for policy in &self.policies {
+            if !policy.applies_to.iter().any(|p| target.matches(p)) {
+                continue;
+            }
+            
+            for rule in &policy.rules {
+                if let Some(violation) = self.check_rule(rule, target) {
+                    violations.push(violation);
+                }
+            }
+        }
+        
+        violations
+    }
+}
+```
+
+### Quality Gates
+
+__Pre-Commit Gates__
+
+| Gate | Tool | Enforcement |
+|------|------|-------------|
+| Formatting | rustfmt, ruff | Auto-fix |
+| Linting | clippy, oxlint | Block commit |
+| Type checking | cargo check, pyright | Block commit |
+| File size | custom | Block commit |
+| Test traceability | custom | Block commit |
+
+__CI Gates__
+
+| Gate | Tool | Enforcement |
+|------|------|-------------|
+| Unit tests | cargo test | Block merge |
+| Integration tests | custom | Block merge |
+| Security scan | cargo audit | Block merge |
+| License check | cargo deny | Block merge |
+| Documentation | link checker | Block merge |
+
+__Policy Examples__
+
+```yaml
+# .policy.yml
+version: "1.0"
+
+policies:
+  - id: file-size
+    applies_to: ["**/*.rs", "**/*.py", "**/*.ts"]
+    rules:
+      - id: soft-limit
+        severity: warning
+        condition:
+          type: file_size
+          max_lines: 350
+        message: "File exceeds soft limit of 350 lines"
+      
+      - id: hard-limit
+        severity: error
+        condition:
+          type: file_size
+          max_lines: 500
+        message: "File exceeds hard limit of 500 lines"
+
+  - id: test-traceability
+    applies_to: ["**/*.rs"]
+    rules:
+      - id: fr-trace
+        severity: error
+        condition:
+          type: fr_traceability
+        message: "Tests must include FR trace comment"
+```
+
+---
+
+## Hexagonal Architecture
+
+### Ports and Adapters Pattern
+
+__Core Definition__
+
+Hexagonal architecture (aka Ports and Adapters) separates:
+
+- __Domain:__ Business logic, pure, no external deps
+- __Ports:__ Interfaces defining what the domain needs
+- __Adapters:__ Implementations of ports
+
+__Structure__
+
+```
+┌─────────────────────────────────────────┐
+│              Application                │
+│  ┌─────────────────────────────────┐  │
+│  │         Domain Core             │  │
+│  │   ┌─────────────────────────┐   │  │
+│  │   │    Business Logic       │   │  │
+│  │   │    (No external deps)    │   │  │
+│  │   └─────────────────────────┘   │  │
+│  │              │                    │  │
+│  │   ┌─────────┴─────────┐            │  │
+│  │   │     Ports         │            │  │
+│  │   │  ┌───┐ ┌───┐ ┌───┐ │            │  │
+│  │   │  │ A │ │ B │ │ C │ │            │  │
+│  │   │  └───┘ └───┘ └───┘ │            │  │
+│  │   └─────────┬─────────┘            │  │
+│  └─────────────┼──────────────────────┘  │
+└────────────────┼──────────────────────────┘
+                 │
+        ┌────────┴────────┐
+        │    Adapters     │
+        │ ┌───┐ ┌───┐ ┌───┐ │
+        │ │ A'│ │ B'│ │ C'│ │
+        │ └───┘ └───┘ └───┘ │
+        └───────────────────┘
+```
+
+### Rust Implementation
+
+__Port Definition__
+
+```rust
+// src/ports/mod.rs
+
+pub trait StoragePort: Send + Sync {
+    fn get(&self, key: &str) -> Result<Option<Vec<u8>>, StorageError>;
+    fn set(&self, key: &str, value: Vec<u8>) -> Result<(), StorageError>;
+    fn delete(&self, key: &str) -> Result<(), StorageError>;
+    fn list(&self, prefix: &str) -> Result<Vec<String>, StorageError>;
+}
+
+pub trait VcsPort: Send + Sync {
+    fn clone(&self, url: &str, path: &Path) -> Result<(), VcsError>;
+    fn commit(&self, path: &Path, message: &str) -> Result<String, VcsError>;
+    fn diff(&self, path: &Path) -> Result<Vec<Change>, VcsError>;
+}
+```
+
+__Domain Implementation__
+
+```rust
+// src/domain/spec_engine.rs
+
+pub struct SpecEngine {
+    storage: Arc<dyn StoragePort>,
+    vcs: Arc<dyn VcsPort>,
+}
+
+impl SpecEngine {
+    pub fn new(storage: Arc<dyn StoragePort>, vcs: Arc<dyn VcsPort>) -> Self {
+        Self { storage, vcs }
+    }
+    
+    pub fn create_spec(&self, spec: &Spec) -> Result<SpecId, DomainError> {
+        // Pure business logic
+        self.validate_spec(spec)?;
+        
+        let id = SpecId::generate();
+        let serialized = serde_json::to_vec(spec)?;
+        
+        // Use ports, not implementations
+        self.storage.set(&id.to_string(), serialized)?;
+        
+        Ok(id)
+    }
+    
+    fn validate_spec(&self, spec: &Spec) -> Result<(), DomainError> {
+        if spec.title.is_empty() {
+            return Err(DomainError::InvalidSpec("Title required".into()));
+        }
+        // ... more validation
+        Ok(())
+    }
+}
+```
+
+__Adapter Implementations__
+
+```rust
+// src/adapters/sqlite_storage.rs
+
+pub struct SqliteStorage {
+    pool: SqlitePool,
+}
+
+#[async_trait]
+impl StoragePort for SqliteStorage {
+    async fn get(&self, key: &str) -> Result<Option<Vec<u8>>, StorageError> {
+        let row = sqlx::query("SELECT value FROM kv WHERE key = ?")
+            .bind(key)
+            .fetch_optional(&self.pool)
+            .await?;
+        
+        Ok(row.map(|r| r.get(0)))
+    }
+    
+    // ...
+}
+```
+
+```rust
+// src/adapters/git_vcs.rs
+
+pub struct GitVcs {
+    executable: PathBuf,
+}
+
+impl VcsPort for GitVcs {
+    fn clone(&self, url: &str, path: &Path) -> Result<(), VcsError> {
+        Command::new(&self.executable)
+            .args(["clone", url, path.to_str().unwrap()])
+            .status()?;
+        Ok(())
+    }
+    
+    // ...
+}
+```
+
+### Multi-Language Hexagonal
+
+__Pattern for Cross-Language Boundaries__
+
+```
+phenotype-core (Rust)
+  │ defines
+  ▼
+┌─────────────────┐
+│   gRPC Service  │◀──── thegent (Python)
+│   (Port Adapter)│
+└─────────────────┘
+  │
+  ▼
+agileplus (Rust)
+```
+
+__Protobuf Port Definitions__
+
+```protobuf
+// ports/storage.proto
+syntax = "proto3";
+
+service StorageService {
+    rpc Get(GetRequest) returns (GetResponse);
+    rpc Set(SetRequest) returns (SetResponse);
+}
+
+message GetRequest {
+    string key = 1;
+}
+
+message GetResponse {
+    bytes value = 1;
+    bool found = 2;
+}
+```
+
+---
+
+## MCP Protocol Analysis
+
+### MCP Specification Deep Dive
+
+__Protocol Version: 2024-11-05__
+
+MCP establishes three primitives:
+
+1. __Resources__ — Context and data
+2. __Tools__ — Functions agents can call
+3. __Prompts__ — Pre-defined templates
+
+__Transport Layer__
+
+| Transport | Use Case | Implementation |
+|-----------|----------|----------------|
+| stdio | Local tools, CLI | stdin/stdout |
+| SSE | Remote, streaming | HTTP/SSE |
+| WebSocket | Real-time bidirectional | ws:// |
+
+__Message Format__
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "agileplus_specify",
+    "arguments": {
+      "title": "Auth System",
+      "description": "..."
+    }
+  }
+}
+```
+
+### MCP Server Implementation
+
+__Server Capabilities__
+
+```rust
+pub struct ServerCapabilities {
+    pub resources: bool,
+    pub tools: bool,
+    pub prompts: bool,
+    pub logging: bool,
+}
+
+pub struct McpServer {
+    capabilities: ServerCapabilities,
+    tools: HashMap<String, Box<dyn Tool>>,
+    resources: HashMap<String, Box<dyn Resource>>,
+}
+```
+
+__Tool Definition__
+
+```rust
+#[derive(schemars::JsonSchema, serde::Serialize, serde::Deserialize)]
+pub struct SpecifyArgs {
+    pub title: String,
+    pub description: String,
+    #[serde(default)]
+    pub priority: Priority,
+}
+
+pub struct SpecifyTool {
+    engine: Arc<SpecEngine>,
+}
+
+#[async_trait]
+impl Tool for SpecifyTool {
+    fn name(&self) -> String {
+        "agileplus_specify".into()
+    }
+    
+    fn schema(&self) -> Value {
+        serde_json::to_value(SpecifyArgs::schema()).unwrap()
+    }
+    
+    async fn call(&self, args: Value) -> Result<Value, ToolError> {
+        let args: SpecifyArgs = serde_json::from_value(args)?;
+        let spec = self.engine.specify(args.title, args.description).await?;
+        Ok(serde_json::to_value(spec)?)
+    }
+}
+```
+
+### Resource Patterns
+
+__URI Structure__
+
+```
+kitty-spec://features/FEATURE-001
+kitty-spec://plans/PLAN-001
+worklog://research/2026-04-04-mcp-analysis
+```
+
+__Resource Implementation__
+
+```rust
+pub struct SpecResource {
+    storage: Arc<dyn StoragePort>,
+}
+
+#[async_trait]
+impl Resource for SpecResource {
+    fn uri(&self) -> String {
+        "kitty-spec://{feature_id}".into()
+    }
+    
+    fn mime_type(&self) -> String {
+        "text/markdown".into()
+    }
+    
+    async fn read(&self, uri: &str) -> Result<ResourceContent, ResourceError> {
+        let feature_id = parse_feature_id(uri)?;
+        let spec = self.storage.get(&feature_id).await?;
+        Ok(ResourceContent {
+            mime_type: self.mime_type(),
+            text: spec.markdown_content(),
+        })
+    }
+}
+```
+
+---
+
+## Code Generation Systems
+
+### Codegen Patterns
+
+__Template-Based Generation__
+
+```rust
+// templates/crate/Cargo.toml.hbs
+[package]
+name = "{{name}}"
+version = "{{version}}"
+edition = "2024"
+
+[dependencies]
+{{#each dependencies}}
+{{name}} = "{{version}}"
+{{/each}}
+```
+
+__AST-Based Generation__
+
+```rust
+use quote::quote;
+use syn;
+
+pub fn generate_port_trait(name: &str, methods: &[Method]) -> TokenStream {
+    let methods_tokens = methods.iter().map(|m| {
+        let name = &m.name;
+        let inputs = &m.inputs;
+        let output = &m.output;
+        quote! {
+            fn #name(#inputs) -> #output;
+        }
+    });
+    
+    quote! {
+        pub trait #name: Send + Sync {
+            #(#methods_tokens)*
+        }
+    }
+}
+```
+
+### Scaffold Generation
+
+__Kit Templates (HexaKit)__
+
+| Kit | Languages | Purpose |
+|-----|-----------|---------|
+| HexaPy | Python | Python services |
+| HexaGo | Go | Go microservices |
+| HexaType | TypeScript | Web apps |
+| hexagon-rs | Rust | Rust crates |
+| hexagon-ts | TypeScript | Node libraries |
+| hexagon-python | Python | Python packages |
+
+__Generation Workflow__
+
+```bash
+# 1. Select template
+hexakit new --template hexagon-rs --name my-crate
+
+# 2. Interactive prompts
+Description: My awesome crate
+Author: Koosha Paridehpour
+Features: [x] async [x] cli [ ] web
+
+# 3. Generate structure
+my-crate/
+├── Cargo.toml        # Configured
+├── src/
+│   ├── lib.rs        # With features
+│   ├── ports/
+│   ├── domain/
+│   └── adapters/
+├── tests/
+└── .github/
+    └── workflows/
+
+# 4. Initialize git
+git init && git add . && git commit -m "Initial commit"
+```
+
+---
+
+## Template and Scaffolding Systems
+
+### Template Engine Requirements
+
+__Must Support__
+
+- Conditional blocks
+- Loops
+- Variable substitution
+- Partials/includes
+- Filters/transforms
+
+__HexaKit Template Structure__
+
+```
+templates/
+├── rust/
+│   ├── service/
+│   │   ├── Cargo.toml.hbs
+│   │   ├── src/
+│   │   │   └── main.rs.hbs
+│   │   └── .template.yml
+│   └── library/
+│       └── ...
+├── python/
+│   └── package/
+│       └── ...
+├── typescript/
+│   └── webapp/
+│       └── ...
+└── go/
+    └── service/
+        └── ...
+```
+
+__.template.yml Configuration__
+
+```yaml
+name: rust-service
+description: Rust HTTP service with hexagonal architecture
+variables:
+  - name: project_name
+    prompt: "Project name"
+    required: true
+    
+  - name: description
+    prompt: "Description"
+    default: "A Rust service"
+    
+  - name: features
+    prompt: "Features"
+    type: multiselect
+    options:
+      - http
+      - grpc
+      - sqlite
+      - redis
+      - metrics
+      
+conditionals:
+  - when: features contains "http"
+    include: src/adapters/http.rs
+    
+  - when: features contains "grpc"
+    include: proto/service.proto
+```
+
+---
+
+## Agent Orchestration Patterns
+
+### Multi-Agent Coordination
+
+__Coordination Patterns__
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Centralized | Simple workflows | Single point of failure |
+| Hierarchical | Complex tasks | Latency |
+| Peer-to-peer | Collaborative | Complexity |
+| Market-based | Resource allocation | Overhead |
+
+__HexaKit Hierarchical Pattern__
+
+```
+              ┌─────────┐
+              │  User   │
+              └────┬────┘
+                   │
+              ┌────▼────┐
+              │  Forge  │ (Primary)
+              └────┬────┘
+                   │
+       ┌───────────┼───────────┐
+       │           │           │
+   ┌───▼───┐   ┌──▼───┐   ┌───▼───┐
+   │  Muse │   │ Sage │   │ Helios│
+   └───┬───┘   └──┬───┘   └───┬───┘
+       │          │           │
+       └──────────┴───────────┘
+                  │
+             ┌────▼────┐
+             │  Result │
+             └─────────┘
+```
+
+### Agent Communication Protocol
+
+__Message Types__
+
+```rust
+pub enum Message {
+    TaskAssignment {
+        task_id: Uuid,
+        description: String,
+        context: Context,
+        deadline: Option<DateTime<Utc>>,
+    },
+    
+    ProgressUpdate {
+        task_id: Uuid,
+        status: TaskStatus,
+        completed: f64, // 0.0 to 1.0
+        notes: String,
+    },
+    
+    Question {
+        from: AgentId,
+        to: AgentId,
+        question: String,
+        context: Context,
+    },
+    
+    Answer {
+        question_id: Uuid,
+        answer: String,
+    },
+    
+    Completion {
+        task_id: Uuid,
+        result: Result<Artifact, Error>,
+        worklog: Worklog,
+    },
+}
+```
+
+---
+
+## Comparative Analysis
+
+### Repository Management Tools
+
+| Tool | Type | Scale | AI-Friendly | Local-First | Best For |
+|------|------|-------|-------------|-------------|----------|
+| Bazel | Build | Large | ✓ | ✗ | Google-scale monorepo |
+| Nx | Build | Medium | ✓ | Partial | JS monorepos |
+| Cargo | Build | Small | ✓ | ✓ | Rust workspaces |
+| git-repo | Meta | Any | ✗ | ✓ | Android-style |
+| Pants | Build | Medium | ✓ | ✓ | Polyglot builds |
+| HexaKit | Shelf | Medium | ✓ | ✓ | 30+ repos, AI-native |
+
+### Event Store Solutions
+
+| Solution | Language | Hash-Chain | SQLite | Performance | Best For |
+|----------|----------|------------|--------|-------------|----------|
+| EventStoreDB | .NET | ✗ | ✗ | High | Enterprise |
+| Apache Kafka | Java | ✗ | ✗ | Very High | Streaming |
+| NATS JetStream | Go | ✗ | ✗ | High | Messaging |
+| SQLite custom | Any | ✓ | ✓ | Medium | Local-first |
+| HexaKit events | Rust | ✓ | ✓ | Medium | Embedded audit |
+
+### MCP Implementations
+
+| Implementation | Language | Tools | Resources | Prompts | Maturity |
+|----------------|----------|-------|-----------|---------|----------|
+| Official SDK | TypeScript | ✓ | ✓ | ✓ | Alpha |
+| FastMCP | Python | ✓ | ✓ | ✗ | Community |
+| HexaKit MCP | Rust/Python | ✓ | ✓ | ✓ | Custom |
+
+---
+
+## Gap Analysis
+
+### Identified Gaps
+
+__Gap 1: Cross-Repository Refactoring Tools__
+
+__Problem:__ No existing tool handles refactoring across 30+ independent repositories.
+
+__Current State:__ Manual find/replace or script-based.
+
+__Gap Severity:__ High
+
+__Potential Solutions:__
+
+- AST-based multi-repo refactoring tool
+- Language server protocol extension
+- AI-powered refactoring agent
+
+__Gap 2: Unified Dependency Visualization__
+
+__Problem:__ No clear view of dependency graph across all HexaKit repos.
+
+__Current State:__ Per-project Cargo.lock/package-lock.
+
+__Gap Severity:__ Medium
+
+__Potential Solutions:__
+
+- Shelf-level dependency index
+- Graph visualization tool
+- Automated drift detection
+
+__Gap 3: Agent Work Context Preservation__
+
+__Problem:__ Agent context lost between sessions.
+
+__Current State:__ Worklogs manually maintained.
+
+__Gap Severity:__ Medium
+
+__Potential Solutions:__
+
+- Automatic worklog generation
+- Session state serialization
+- Persistent agent memory
+
+__Gap 4: Cross-Language Policy Enforcement__
+
+__Problem:__ Quality gates vary by language, no unified policy engine.
+
+__Current State:__ Per-language tooling.
+
+__Gap Severity:__ Medium
+
+__Potential Solutions:__
+
+- Unified policy engine
+- AST-based rule engine
+- Common policy DSL
+
+__Gap 5: Local LLM Integration__
+
+__Problem:__ Full offline operation requires local LLM support.
+
+__Current State:__ Cloud-dependent.
+
+__Gap Severity:__ Low
+
+__Potential Solutions:__
+
+- Ollama/llama.cpp integration
+- Model quantization
+- Fallback chain
+
+---
+
+## Recommendations
+
+### Architecture Recommendations
+
+__REC-001: Maintain Polyrepo with Shelf Organization__
+
+__Rationale:__ Uber's experience shows monorepo limits at scale. Git worktrees provide sufficient isolation without infrastructure overhead.
+
+__Priority:__ High
+
+__Status:__ Already implemented
+
+__REC-002: SQLite as Primary Event Store__
+
+__Rationale:__ Hash-chained SQLite provides tamper-evident audit trail without external dependencies.
+
+__Priority:__ High
+
+__Status:__ Implemented in phenotype-events
+
+__REC-003: MCP as Primary AI Integration Protocol__
+
+__Rationale:__ Emerging standard with wide adoption. Type-safe, structured, designed for AI agents.
+
+__Priority:__ High
+
+__Status:__ Implementing across projects
+
+__REC-004: Hexagonal Architecture for All New Crates__
+
+__Rationale:__ Clean separation enables testing, swapping implementations, language boundaries.
+
+__Priority:__ High
+
+__Status:__ Policy in place
+
+__REC-005: Hierarchical Agent Organization__
+
+__Rationale:__ Matches team structures, enables specialization, clear responsibility.
+
+__Priority:__ Medium
+
+__Status:__ Partially implemented
+
+### Tooling Recommendations
+
+__REC-006: Develop Cross-Repo Refactoring Tool__
+
+__Description:__ AST-based tool for coordinated changes across repositories.
+
+__Priority:__ Medium
+
+__Effort:__ 2-4 weeks
+
+__REC-007: Unified Dependency Dashboard__
+
+__Description:__ Visualize and alert on dependency drift across HexaKit.
+
+__Priority:__ Low
+
+__Effort:__ 1 week
+
+__REC-008: Automated Worklog Generation__
+
+__Description:__ Capture agent actions, decisions, context automatically.
+
+__Priority:__ Medium
+
+__Effort:__ 1-2 weeks
+
+### Process Recommendations
+
+__REC-009: Weekly Dependency Sync Review__
+
+__Description:__ Automated PRs for dependency updates, weekly review.
+
+__Priority:__ Medium
+
+__Owner:__ Helios agent
+
+__REC-010: ADR-Required for Cross-Project Changes__
+
+__Description:__ Any change affecting multiple projects requires ADR.
+
+__Priority:__ High
+
+__Status:__ Policy in place
 
 ---
 
 ## References
 
-- [ADR-001: Rust Workspace Monorepo](./ADR.md#adr-001-rust-workspace-monorepo-with-22-crates)
-- [ADR-002: Hexagonal Architecture](./ADR.md#adr-002-hexagonal-architecture-with-portadapter-pattern)
-- [ADR-003: SQLite Local-First](./ADR.md#adr-003-sqlite-as-local-first-storage-with-optional-external-sync)
-- [ADR-004: Hash-Chained Audit Log](./ADR.md#adr-004-sha-256-hash-chained-immutable-audit-log-and-event-store)
-- [ADR-005: gRPC Services](./ADR.md#adr-005-grpc-service-layer-with-tonic--protobuf-for-mcp-and-inter-service-communication)
+### Papers and Articles
+
+1. __"Local-First Software"__ — Ink & Switch (2019)
+   - Local-first principles and implementation
+
+2. __"Why Google Stores Billions of Lines of Code in a Single Repository"__ — Potvin, Levenberg (2015)
+   - Google monorepo experience
+
+3. __"Event Sourcing"__ — Fowler, Martin
+   - Pattern fundamentals
+
+4. __"Hexagonal Architecture"__ — Cockburn, Alistair
+   - Ports and adapters pattern
+
+5. __"MCP Specification"__ — Anthropic (2024)
+   - Model Context Protocol standard
+
+### Open Source Projects
+
+| Project | URL | Relevance |
+|---------|-----|-----------|
+| Bazel | https://bazel.build | Build system patterns |
+| Buck2 | https://buck2.build | Meta's build system |
+| Pants | https://pantsbuild.org | Multi-language builds |
+| Nx | https://nx.dev | Monorepo tooling |
+| NATS | https://nats.io | Event streaming |
+| SQLite | https://sqlite.org | Local-first storage |
+
+### Books
+
+- __"Domain-Driven Design"__ — Eric Evans
+- __"Implementing Domain-Driven Design"__ — Vaughn Vernon
+- __"Building Microservices"__ — Sam Newman
+- __"Rust for Rustaceans"__ — Jon Gjengset
+
+### Standards
+
+- __JSON-RPC 2.0__ — MCP transport
+- __OpenAPI 3.0__ — API specifications
+- __Semantic Versioning 2.0__ — Version management
+- __Conventional Commits__ — Commit message format
 
 ---
 
-**Document Owner:** Architecture Team  
-**Last Updated:** 2026-04-04  
-**Next Review:** 2026-07-04
+__Document Owner:__ Sage (Research Agent)  
+__Last Updated:__ 2026-04-04  
+__Status:__ Active Research — Continuous Updates Expected

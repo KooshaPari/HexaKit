@@ -1,6 +1,5 @@
 //! Stub implementations for test doubles
 
-use super::Result;
 use std::sync::{Arc, Mutex};
 
 /// A simple stub that returns a fixed value or executes a closure
@@ -116,6 +115,7 @@ impl StubBuilder {
 pub type StubFn<I, O> = Box<dyn Fn(I) -> O + Send + Sync>;
 
 /// Extension methods for stub functions
+#[allow(dead_code)]
 pub trait StubFnExt<I, O> {
     /// Chain another stub after this one
     fn then(self, next: impl Fn(I) -> O + Send + Sync + 'static) -> StubFn<I, O>

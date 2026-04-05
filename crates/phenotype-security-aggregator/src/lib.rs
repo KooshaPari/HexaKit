@@ -8,7 +8,6 @@ use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use phenotype_health::{DimensionScore, Finding, Severity};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use tracing::debug;
 
 /// Aggregates security alerts from multiple sources

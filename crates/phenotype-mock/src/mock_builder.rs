@@ -1,6 +1,6 @@
 //! Mock builder for constructing mock instances
 
-use super::{MockError, Result, Verifiable};
+use super::{Result, Verifiable};
 use std::any::Any;
 use std::collections::HashMap;
 

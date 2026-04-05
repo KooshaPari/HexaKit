@@ -1,7 +1,6 @@
 //! Mock function implementations
 
 use super::{MockError, Result, Verifiable};
-use std::any::Any;
 use std::sync::{Arc, Mutex};
 
 /// A generic mock function that can be configured with expectations
@@ -27,7 +26,7 @@ where
     }
 
     /// Configure an expectation for this mock
-    pub fn expect_call(&mut self) -> MockExpectation<I, O> {
+    pub fn expect_call(&mut self) -> MockExpectation<'_, I, O> {
         MockExpectation {
             mock: self,
             expected_arg: None,
@@ -156,6 +155,7 @@ where
 /// Result builder for mock calls
 #[derive(Debug)]
 pub struct MockResult<T> {
+    #[allow(dead_code)]
     value: T,
     times: usize,
 }

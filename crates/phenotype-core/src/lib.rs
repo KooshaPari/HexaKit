@@ -151,7 +151,7 @@ pub mod time {
 
 /// HTTP client re-exports
 pub mod http {
-    pub use phenotype_http_client_core::*;
+    
 }
 
 /// External crate re-exports for convenience
