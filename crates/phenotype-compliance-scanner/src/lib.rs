@@ -2,7 +2,21 @@
 //!
 //! Provides compliance scanning functionality for security and policy enforcement.
 
-use phenotype_error_core::{Error, Result};
+use thiserror::Error;
+
+/// Result type for compliance operations
+pub type Result<T> = std::result::Result<T, ComplianceError>;
+
+/// Error type for compliance scanner
+#[derive(Error, Debug)]
+pub enum ComplianceError {
+    #[error("IO error: {0}")]
+    Io(#[from] std::io::Error),
+    #[error("Regex error: {0}")]
+    Regex(#[from] regex::Error),
+    #[error("Other error: {0}")]
+    Other(String),
+}
 
 /// Compliance check result
 #[derive(Debug, Clone)]

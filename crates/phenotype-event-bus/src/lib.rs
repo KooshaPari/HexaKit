@@ -33,7 +33,7 @@ impl std::fmt::Display for EventId {
 
 /// Event envelope with metadata
 #[derive(Debug, Clone, Serialize, serde::Deserialize)]
-pub struct EventEnvelope<T> {
+pub struct EventEnvelope<T: Clone> {
     pub id: EventId,
     pub timestamp: u64,
     pub source: String,
@@ -42,7 +42,7 @@ pub struct EventEnvelope<T> {
     pub causation_id: Option<String>,
 }
 
-impl<T> EventEnvelope<T> {
+impl<T: Clone> EventEnvelope<T> {
     pub fn new(source: impl Into<String>, payload: T) -> Self {
         Self {
             id: EventId::new(),
@@ -90,7 +90,7 @@ pub enum EventBusError {
 /// Event bus trait for pluggable backends
 #[async_trait]
 pub trait EventBus: Send + Sync + 'static {
-    type Event: Serialize + DeserializeOwned + Send + Sync + Debug + 'static;
+    type Event: Serialize + DeserializeOwned + Send + Sync + Clone + Debug + 'static;
 
     /// Publish an event to the bus
     async fn publish(&self, event: EventEnvelope<Self::Event>) -> Result<(), EventBusError>;
@@ -108,7 +108,7 @@ pub trait EventBus: Send + Sync + 'static {
             + 'static;
 
     /// Request-response pattern
-    async fn request<T: Serialize + DeserializeOwned + Send + Sync + Debug + 'static>(
+    async fn request<T: Serialize + DeserializeOwned + Send + Sync + Clone + Debug + 'static>(
         &self,
         subject: &str,
         payload: T,

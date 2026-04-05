@@ -113,7 +113,7 @@ impl StubBuilder {
 }
 
 /// A stub function that delegates to a closure
-type StubFn<I, O> = Box<dyn Fn(I) -> O + Send + Sync>;
+pub type StubFn<I, O> = Box<dyn Fn(I) -> O + Send + Sync>;
 
 /// Extension methods for stub functions
 pub trait StubFnExt<I, O> {

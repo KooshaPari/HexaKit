@@ -12,13 +12,13 @@ pub struct Priority(u8);
 
 impl Priority {
     /// Lowest priority (default).
-    pub const LOWEST: u8 = 0;
+    pub const LOWEST: Self = Self(0);
     /// Default configuration priority.
-    pub const DEFAULT: u8 = 50;
+    pub const DEFAULT: Self = Self(50);
     /// Environment variable priority.
-    pub const ENV: u8 = 75;
+    pub const ENV: Self = Self(75);
     /// Highest priority (user overrides).
-    pub const HIGHEST: u8 = 100;
+    pub const HIGHEST: Self = Self(100);
 
     /// Creates a new priority with the given value.
     pub const fn new(value: u8) -> Self {
@@ -126,24 +126,6 @@ impl EnvConfig {
     }
 }
 
-impl ConfigLoader for EnvConfig {
-    type Error = std::env::VarError;
-
-    fn load<T: DeserializeOwned + Serialize>(&self) -> Result<T, Self::Error> {
-        // For simple env loading, we parse the entire env as JSON
-        let env_vars: std::collections::HashMap<String, String> =
-            std::env::vars().collect();
-
-        let json = serde_json::to_string(&env_vars)?;
-
-        serde_json::from_str(&json).map_err(|_| std::env::VarError::NotPresent)
-    }
-
-    fn source_name(&self) -> &str {
-        "environment"
-    }
-}
-
 /// File-based configuration source.
 #[derive(Debug, Clone)]
 pub struct FileConfig {
@@ -185,10 +167,22 @@ impl FileConfig {
         let content = std::fs::read_to_string(&self.path)?;
 
         match self.format {
-            ConfigFormat::Json => serde_json::from_str(&content).map_err(FileConfigError::Parse),
-            ConfigFormat::Toml => toml::from_str(&content).map_err(FileConfigError::Parse),
-            ConfigFormat::Yaml => serde_yaml::from_str(&content).map_err(FileConfigError::Parse),
+            ConfigFormat::Json => serde_json::from_str(&content).map_err(|e| FileConfigError::Parse(e.to_string())),
+            ConfigFormat::Toml => toml::from_str(&content).map_err(|e| FileConfigError::Parse(e.to_string())),
+            ConfigFormat::Yaml => serde_yaml::from_str(&content).map_err(|e| FileConfigError::Parse(e.to_string())),
         }
+    }
+}
+
+impl ConfigLoader for FileConfig {
+    type Error = FileConfigError;
+
+    fn load<T: DeserializeOwned + Serialize>(&self) -> Result<T, Self::Error> {
+        self.load()
+    }
+
+    fn source_name(&self) -> &str {
+        self.path.to_str().unwrap_or("file")
     }
 }
 
@@ -216,10 +210,8 @@ impl From<toml::de::Error> for FileConfigError {
 
 /// Merges multiple configuration sources.
 pub fn merge_configs<T: DeserializeOwned + Serialize + Default>(
-    sources: &[&dyn ConfigLoader],
-) -> Result<T, Box<dyn std::error::Error>>
-where
-    <dyn ConfigLoader>::Error: 'static,
+    sources: &[impl ConfigLoader],
+) -> Result<T, Box<dyn std::error::Error + Send + Sync>>
 {
     let mut merged = serde_json::Map::new();
 
@@ -235,7 +227,7 @@ where
     }
 
     serde_json::from_value(serde_json::Value::Object(merged))
-        .map_err(|e| Box::new(e) as Box<dyn std::error::Error>)
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync>)
 }
 
 #[cfg(test)]

@@ -8,12 +8,12 @@ use tokio::sync::mpsc;
 use tokio::sync::RwLock;
 
 /// In-memory event bus for testing
-pub struct InMemoryEventBus<T: Serialize + DeserializeOwned + Send + Sync + Debug + 'static> {
+pub struct InMemoryEventBus<T: Serialize + DeserializeOwned + Send + Sync + Clone + Debug + 'static> {
     subscribers: Arc<DashMap<String, Vec<mpsc::UnboundedSender<EventEnvelope<T>>>>>,
     closed: Arc<RwLock<bool>>,
 }
 
-impl<T: Serialize + DeserializeOwned + Send + Sync + Debug + 'static> Default
+impl<T: Serialize + DeserializeOwned + Send + Sync + Clone + Debug + 'static> Default
     for InMemoryEventBus<T>
 {
     fn default() -> Self {
@@ -21,7 +21,7 @@ impl<T: Serialize + DeserializeOwned + Send + Sync + Debug + 'static> Default
     }
 }
 
-impl<T: Serialize + DeserializeOwned + Send + Sync + Debug + 'static> InMemoryEventBus<T> {
+impl<T: Serialize + DeserializeOwned + Send + Sync + Clone + Debug + 'static> InMemoryEventBus<T> {
     pub fn new() -> Self {
         Self {
             subscribers: Arc::new(DashMap::new()),
@@ -31,7 +31,7 @@ impl<T: Serialize + DeserializeOwned + Send + Sync + Debug + 'static> InMemoryEv
 }
 
 #[async_trait]
-impl<T: Serialize + DeserializeOwned + Send + Sync + Debug + 'static> EventBus
+impl<T: Serialize + DeserializeOwned + Send + Sync + Clone + Debug + 'static> EventBus
     for InMemoryEventBus<T>
 {
     type Event = T;
@@ -97,7 +97,7 @@ impl<T: Serialize + DeserializeOwned + Send + Sync + Debug + 'static> EventBus
         Ok(Subscription::new(sub_id, subject.to_string()))
     }
 
-    async fn request<R: Serialize + DeserializeOwned + Send + Sync + Debug + 'static>(
+    async fn request<R: Serialize + DeserializeOwned + Send + Sync + Clone + Debug + 'static>(
         &self,
         _subject: &str,
         _payload: R,

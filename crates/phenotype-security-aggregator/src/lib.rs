@@ -12,9 +12,16 @@ use std::collections::HashMap;
 use tracing::debug;
 
 /// Aggregates security alerts from multiple sources
-#[derive(Debug, Clone)]
 pub struct SecurityAggregator {
     sources: Vec<Box<dyn SecuritySource>>,
+}
+
+impl std::fmt::Debug for SecurityAggregator {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("SecurityAggregator")
+            .field("sources", &self.sources.len())
+            .finish()
+    }
 }
 
 impl SecurityAggregator {
@@ -64,10 +71,11 @@ impl SecurityAggregator {
             .filter(|a| matches!(a.severity, Severity::Warning))
             .count();
 
-        let score = 100.0_f32
-            .saturating_sub(critical as f32 * 25.0)
-            .saturating_sub(high as f32 * 10.0)
-            .saturating_sub(medium as f32 * 2.0);
+        let score = (100.0_f32
+            - critical as f32 * 25.0
+            - high as f32 * 10.0
+            - medium as f32 * 2.0)
+            .max(0.0);
 
         let findings: Vec<Finding> = all_alerts
             .iter()

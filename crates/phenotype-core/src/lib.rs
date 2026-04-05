@@ -99,7 +99,7 @@ pub mod health {
 
 /// Telemetry re-exports
 pub mod telemetry {
-    pub use phenotype_telemetry::{MetricsRecorder, SpanContext, TelemetryConfig};
+    pub use phenotype_telemetry::{MetricsRecorder, SpanContext, Telemetry, TelemetryError};
 }
 
 /// Port traits re-exports
@@ -116,14 +116,12 @@ pub mod contracts {
 
 /// Retry re-exports
 pub mod retry {
-    pub use phenotype_retry::{RetryError, RetryPolicy};
+    pub use phenotype_retry::{Error as RetryError, Result as RetryResult};
 }
 
 /// Async traits re-exports
 pub mod async_traits {
-    pub use phenotype_async_traits::{
-        AsyncDrop, AsyncDropper, AsyncFuture, AsyncIterator, BoxStream,
-    };
+    pub use phenotype_async_traits::{AsyncDropper, AsyncFuture, AsyncIterator};
 }
 
 /// State machine re-exports
@@ -133,17 +131,17 @@ pub mod state_machine {
 
 /// Policy engine re-exports
 pub mod policy {
-    pub use phenotype_policy_engine::{PolicyEngine, PolicyResult, RuleSet};
+    pub use phenotype_policy_engine::{PolicyEngine, PolicyResult, Policy, Rule};
 }
 
 /// Cache re-exports
 pub mod cache {
-    pub use phenotype_cache_adapter::TwoTierCache;
+    pub use phenotype_cache_adapter::CacheAdapter;
 }
 
 /// String utilities re-exports
 pub mod string {
-    pub use phenotype_string::StringExt;
+    pub use phenotype_string::{Error as StringError, Result as StringResult};
 }
 
 /// Time utilities re-exports
@@ -153,17 +151,11 @@ pub mod time {
 
 /// HTTP client re-exports
 pub mod http {
-    pub use phenotype_http_client_core::{HttpClient, RequestBuilder, Response, ResponseError};
+    pub use phenotype_http_client_core::*;
 }
 
 /// External crate re-exports for convenience
 pub mod external {
-    /// ULID for sortable IDs
-    pub use ulid::Ulid;
-
-    /// DashMap for concurrent collections
-    pub use dashmap::DashMap;
-
     /// Serde for serialization
     pub use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
@@ -175,9 +167,6 @@ pub mod external {
 
     /// Tokio for async runtime
     pub use tokio;
-
-    /// Tracing for logging
-    pub use tracing;
 }
 
 /// Prelude module for wildcard imports
