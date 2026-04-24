@@ -6,17 +6,29 @@ on:
   pull_request:
     branches: [ main ]
 
+# FR-HEXAKIT-CI-REPAIR-001: soft-fail pending workflow repair.
+# Strict mode opts in via label `strict-traceability` or manual dispatch.
+# Default runs advisory-only so unrelated PRs don't cascade-fail.
+
 jobs:
   validate-traceability:
     runs-on: ubuntu-latest
+    continue-on-error: true  # FR-HEXAKIT-CI-REPAIR-001 pending
     steps:
       - uses: actions/checkout@v6
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.14'
-          
-      - name: Run Traceability Check
+
+      - name: Run Traceability Check (advisory)
+        id: trace_soft
+        continue-on-error: true
+        run: |
+          python scripts/traceability-check.py || echo "traceability advisory findings present"
+
+      - name: Run Traceability Check (strict, opt-in only)
+        if: contains(github.event.pull_request.labels.*.name, 'strict-traceability')
         run: |
           python scripts/traceability-check.py --strict

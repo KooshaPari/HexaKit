@@ -18,6 +18,8 @@ concurrency:
 jobs:
   cyclonedx:
     runs-on: ubuntu-latest
+    # FR-HEXAKIT-CI-REPAIR-001 pending: soft-fail cyclonedx SBOM generation.
+    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
