@@ -127,13 +127,13 @@ gh api repos/KooshaPari/phenotype-infrakit/branches/specs/main/protection \
 **Deliverables:**
 - [ ] Create `.commit-template` at repo root
   ```
-  <type>(<scope>): <subject>
+  &lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;
 
-  <body>
+  &lt;body&gt;
 
-  Spec-Traces: <FR-XXX, ADR-YYY, ...>
+  Spec-Traces: &lt;FR-XXX, ADR-YYY, ...&gt;
   Related-Issues: #123, #456
-  Co-Authored-By: <agent-name> <agent@phenotype.local>
+  Co-Authored-By: &lt;agent-name&gt; &lt;agent@phenotype.local&gt;
   ```
 
 - [ ] Git config (auto-applied in CI):
@@ -291,7 +291,7 @@ gh api repos/KooshaPari/phenotype-infrakit/branches/specs/main/protection \
   - Warn if pushing >5 commits (batch size too large)
 
 - [ ] Create `AGENT_WORKFLOW.md` (see separate document)
-  - How to create feature branches: `specs/agent-<name>-<task-id>`
+  - How to create feature branches: `specs/agent-&lt;name&gt;-&lt;task-id&gt;`
   - Commit message format with examples
   - How to handle conflicts
   - How to merge (auto or manual review)
@@ -356,7 +356,7 @@ gh api repos/KooshaPari/phenotype-infrakit/branches/specs/main/protection \
 
   ## Data Flow
 
-  specs/agent-<name>-<task>  → GitHub Event → Merge Orchestrator
+  specs/agent-&lt;name&gt;-&lt;task&gt;  → GitHub Event → Merge Orchestrator
                                 ↓
                          ┌──────┴──────┐
                          ↓             ↓
@@ -386,7 +386,7 @@ gh api repos/KooshaPari/phenotype-infrakit/branches/specs/main/protection \
 
   impl MergeOrchestrator {
       /// Watch for agent branches and auto-merge
-      pub async fn run(&self) -> Result<()> {
+      pub async fn run(&self) -> Result&lt;()&gt; {
           let mut ticker = interval(Duration::from_secs(300)); // 5 min
 
           loop {
@@ -408,7 +408,7 @@ gh api repos/KooshaPari/phenotype-infrakit/branches/specs/main/protection \
           }
       }
 
-      fn attempt_merge(&self, branch: &str) -> Result<(), MergeError> {
+      fn attempt_merge(&self, branch: &str) -> Result&lt;(), MergeError&gt; {
           // Implementation in Task 1.7
           todo!()
       }
@@ -565,7 +565,7 @@ gh api repos/KooshaPari/phenotype-infrakit/branches/specs/main/protection \
       &self,
       repo: &Repository,
       branch: &str,
-  ) -> Result<MergeResult, MergeError> {
+  ) -> Result&lt;MergeResult, MergeError&gt; {
       // 1. Fetch latest from origin
       repo.find_remote("origin")?
           .fetch(&[branch], None, None)?;
@@ -623,7 +623,7 @@ gh api repos/KooshaPari/phenotype-infrakit/branches/specs/main/protection \
           &self,
           branch: &str,
           conflict_details: &str,
-      ) -> Result<String> {
+      ) -> Result&lt;String&gt; {
           // Create issue with conflict details, ask for manual review
           todo!()
       }
@@ -716,7 +716,7 @@ gh api repos/KooshaPari/phenotype-infrakit/branches/specs/main/protection \
 
   **Agent Name:** [e.g., phenosdk-decomposer]
   **Task ID:** [e.g., FR-PHENOSDK-001]
-  **Branch:** specs/agent-<name>-<task-id>
+  **Branch:** specs/agent-&lt;name&gt;-&lt;task-id&gt;
 
   ## Changes
   - [ ] FUNCTIONAL_REQUIREMENTS.md updated
@@ -749,7 +749,7 @@ gh api repos/KooshaPari/phenotype-infrakit/branches/specs/main/protection \
   git commit -am "specs: add FR-PHENOSDK-001
 
   Spec-Traces: FR-PHENOSDK-001
-  Co-Authored-By: phenosdk-decomposer <agent@phenotype.local>"
+  Co-Authored-By: phenosdk-decomposer &lt;agent@phenotype.local&gt;"
 
   # Pre-push validation
   git push origin specs/agent-phenosdk-decomposer-fr001
@@ -794,7 +794,7 @@ gh api repos/KooshaPari/phenotype-infrakit/branches/specs/main/protection \
   ## SSOT Phase 1 Governance
 
   All specs live on `specs/main` branch:
-  - Push to `specs/agent-<name>-<task>` branches only
+  - Push to `specs/agent-&lt;name&gt;-&lt;task&gt;` branches only
   - Commit format: Include `Spec-Traces: FR-XXX-NNN`
   - Auto-merge: Clean branches merge within 5 minutes
   - Manual review: Conflicts trigger GitHub issue

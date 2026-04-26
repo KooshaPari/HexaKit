@@ -162,7 +162,7 @@ mod sentry_tests {
         let _guard = init_sentry();
 
         // Simulate async operation failure
-        let result: Result<(), Box<dyn std::error::Error>> =
+        let result: Result<(), Box&lt;dyn std::error::Error&gt;> =
             Err("Async operation failed".into());
 
         if let Err(e) = result {

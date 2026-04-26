@@ -60,15 +60,15 @@ pub struct PostgresqlStorage {
 }
 
 impl PostgresqlStorage {
-    pub async fn new(database_url: &str) -> Result<Self> {
+    pub async fn new(database_url: &str) -> Result&lt;Self&gt; {
         let pool = PgPool::connect(database_url).await?;
         Ok(Self { pool })
     }
 }
 
 impl StoragePort for PostgresqlStorage {
-    async fn read_spec(&self, feature_id: &FeatureId) -> Result<Spec> {
-        let row = sqlx::query_as::<_, (String, String)>(
+    async fn read_spec(&self, feature_id: &FeatureId) -> Result&lt;Spec&gt; {
+        let row = sqlx::query_as::&lt;_, (String, String)&gt;(
             "SELECT title, content FROM specs WHERE feature_id = $1"
         )
         .bind(feature_id.as_str())
@@ -78,7 +78,7 @@ impl StoragePort for PostgresqlStorage {
         Ok(Spec::parse(&row.1)?)
     }
 
-    async fn write_spec(&self, feature_id: &FeatureId, spec: &Spec) -> Result<()> {
+    async fn write_spec(&self, feature_id: &FeatureId, spec: &Spec) -> Result&lt;()&gt; {
         sqlx::query(
             "INSERT INTO specs (feature_id, title, content) VALUES ($1, $2, $3)
              ON CONFLICT(feature_id) DO UPDATE SET content = $3"
@@ -92,8 +92,8 @@ impl StoragePort for PostgresqlStorage {
         Ok(())
     }
 
-    async fn list_features(&self) -> Result<Vec<FeatureId>> {
-        let rows = sqlx::query_scalar::<_, String>(
+    async fn list_features(&self) -> Result&lt;Vec&lt;FeatureId&gt;&gt; {
+        let rows = sqlx::query_scalar::&lt;_, String&gt;(
             "SELECT feature_id FROM specs ORDER BY created_at DESC"
         )
         .fetch_all(&self.pool)
@@ -115,11 +115,11 @@ use agileplus_adapters::storage::PostgresqlStorage;
 use agileplus_ports::StoragePort;
 
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() -> Result&lt;()&gt; {
     let config = load_config()?;
 
     // Register storage adapter based on config
-    let storage: Box<dyn StoragePort> = match config.storage.backend.as_str() {
+    let storage: Box&lt;dyn StoragePort&gt; = match config.storage.backend.as_str() {
         "file" => Box::new(FileStorage::new(&config.storage.path)?),
         "postgresql" => Box::new(PostgresqlStorage::new(&config.database_url).await?),
         other => panic!("Unknown storage backend: {}", other),
@@ -152,7 +152,7 @@ impl MercurialVcs {
         Self { repo_path }
     }
 
-    fn hg(&self, args: &[&str]) -> Result<String> {
+    fn hg(&self, args: &[&str]) -> Result&lt;String&gt; {
         let output = Command::new("hg")
             .current_dir(&self.repo_path)
             .args(args)
@@ -167,20 +167,20 @@ impl MercurialVcs {
 }
 
 impl VcsPort for MercurialVcs {
-    fn create_branch(&self, name: &str, base: &str) -> Result<()> {
+    fn create_branch(&self, name: &str, base: &str) -> Result&lt;()&gt; {
         // Mercurial: create bookmark instead of branch
         self.hg(&["bookmark", "-r", base, name])?;
         Ok(())
     }
 
-    fn create_worktree(&self, path: &Path, branch: &str) -> Result<()> {
+    fn create_worktree(&self, path: &Path, branch: &str) -> Result&lt;()&gt; {
         // Mercurial: clone with specific revision
         self.hg(&["clone", "-r", branch, ".", path.to_string_lossy().as_ref()])?;
         Ok(())
     }
 
-    fn commit(&self, message: &str, files: &[PathBuf]) -> Result<CommitId> {
-        let file_args: Vec<&str> = files
+    fn commit(&self, message: &str, files: &[PathBuf]) -> Result&lt;CommitId&gt; {
+        let file_args: Vec&lt;&str&gt; = files
             .iter()
             .map(|p| p.to_string_lossy().as_ref())
             .collect();
@@ -193,7 +193,7 @@ impl VcsPort for MercurialVcs {
         Ok(CommitId::from(hash))
     }
 
-    fn merge(&self, source: &str, target: &str) -> Result<MergeResult> {
+    fn merge(&self, source: &str, target: &str) -> Result&lt;MergeResult&gt; {
         // Checkout target branch
         self.hg(&["checkout", target])?;
 
@@ -244,7 +244,7 @@ impl JiraSync {
         format!("Bearer {}", self.api_token)
     }
 
-    async fn make_request(&self, method: &str, path: &str, body: Option<&str>) -> Result<String> {
+    async fn make_request(&self, method: &str, path: &str, body: Option&lt;&str&gt;) -> Result&lt;String&gt; {
         let url = format!("{}/rest/api/3{}", self.base_url, path);
 
         let response = match method {
@@ -263,7 +263,7 @@ impl JiraSync {
 }
 
 impl SyncPort for JiraSync {
-    async fn push_issues(&self, issues: &[Issue]) -> Result<()> {
+    async fn push_issues(&self, issues: &[Issue]) -> Result&lt;()&gt; {
         for issue in issues {
             let body = serde_json::json!({
                 "fields": {
@@ -280,7 +280,7 @@ impl SyncPort for JiraSync {
         Ok(())
     }
 
-    async fn pull_issues(&self) -> Result<Vec<Issue>> {
+    async fn pull_issues(&self) -> Result&lt;Vec&lt;Issue&gt;&gt; {
         let response = self.make_request("GET", "/search?jql=project=AGILE", None).await?;
         let json: serde_json::Value = serde_json::from_str(&response)?;
 
@@ -298,7 +298,7 @@ impl SyncPort for JiraSync {
         Ok(issues)
     }
 
-    async fn update_status(&self, id: &IssueId, status: Status) -> Result<()> {
+    async fn update_status(&self, id: &IssueId, status: Status) -> Result&lt;()&gt; {
         let body = serde_json::json!({
             "fields": {
                 "status": { "name": status.to_string() }
@@ -357,7 +357,7 @@ agent:
 ```rust
 // crates/agileplus-cli/src/registry.rs
 
-pub fn create_storage(config: &Config) -> Result<Box<dyn StoragePort>> {
+pub fn create_storage(config: &Config) -> Result<Box&lt;dyn StoragePort&gt;> {
     match config.storage.backend.as_str() {
         "file" => Ok(Box::new(FileStorage::new(&config.storage.path)?)),
         "postgresql" => {
@@ -368,7 +368,7 @@ pub fn create_storage(config: &Config) -> Result<Box<dyn StoragePort>> {
     }
 }
 
-pub fn create_vcs(config: &Config) -> Result<Box<dyn VcsPort>> {
+pub fn create_vcs(config: &Config) -> Result<Box&lt;dyn VcsPort&gt;> {
     match config.vcs.backend.as_str() {
         "git" => Ok(Box::new(GitVcs::new("."))),
         "mercurial" => Ok(Box::new(MercurialVcs::new("."))),
@@ -376,18 +376,18 @@ pub fn create_vcs(config: &Config) -> Result<Box<dyn VcsPort>> {
     }
 }
 
-pub fn create_sync_backends(config: &Config) -> Result<Vec<Box<dyn SyncPort>>> {
+pub fn create_sync_backends(config: &Config) -> Result<Vec<Box&lt;dyn SyncPort&gt;>> {
     let mut backends = Vec::new();
 
     for sync_config in &config.sync.backends {
         match sync_config.sync_type.as_str() {
             "plane" => {
                 let adapter = PlaneSync::new(&sync_config.config)?;
-                backends.push(Box::new(adapter) as Box<dyn SyncPort>);
+                backends.push(Box::new(adapter) as Box&lt;dyn SyncPort&gt;);
             }
             "github" => {
                 let adapter = GitHubSync::new(&sync_config.config)?;
-                backends.push(Box::new(adapter) as Box<dyn SyncPort>);
+                backends.push(Box::new(adapter) as Box&lt;dyn SyncPort&gt;);
             }
             other => eprintln!("Unknown sync backend: {}", other),
         }
@@ -460,7 +460,7 @@ pub struct AnalyzeArgs {
     pub output: String,
 }
 
-pub async fn execute(args: AnalyzeArgs, ctx: &Context) -> anyhow::Result<()> {
+pub async fn execute(args: AnalyzeArgs, ctx: &Context) -> anyhow::Result&lt;()&gt; {
     let feature = ctx.storage
         .get_feature_by_slug(&args.feature)
         .await?
@@ -493,7 +493,7 @@ enum Commands {
     Analyze(commands::analyze::AnalyzeArgs),
 }
 
-async fn run(cli: Cli) -> anyhow::Result<()> {
+async fn run(cli: Cli) -> anyhow::Result&lt;()&gt; {
     let ctx = Context::new(&cli.global).await?;
 
     match cli.command {
@@ -514,7 +514,7 @@ use agileplus_domain::domain::feature::Feature;
 
 pub struct AnalysisReport {
     pub feature_slug: String,
-    pub issues: Vec<ConsistencyIssue>,
+    pub issues: Vec&lt;ConsistencyIssue&gt;,
     pub score: u8,  // 0-100
 }
 
@@ -529,7 +529,7 @@ impl Engine {
         &self,
         feature: &Feature,
         cross_check: bool,
-    ) -> Result<AnalysisReport, DomainError> {
+    ) -> Result&lt;AnalysisReport, DomainError&gt; {
         let spec = self.vcs.read_artifact(&feature.slug, "spec.md").await?;
         let plan = self.vcs.read_artifact(&feature.slug, "plan.md").await.ok();
         let wps = self.storage.list_wps_by_feature(feature.id).await?;
@@ -573,7 +573,7 @@ pub enum DomainEvent {
         from: FeatureState,
         to: FeatureState,
         actor: String,
-        timestamp: DateTime<Utc>,
+        timestamp: DateTime&lt;Utc&gt;,
         audit_entry_id: i64,
     },
     WorkPackageStateChanged {
@@ -582,14 +582,14 @@ pub enum DomainEvent {
         from: WpState,
         to: WpState,
         actor: String,
-        timestamp: DateTime<Utc>,
+        timestamp: DateTime&lt;Utc&gt;,
     },
     AgentCompleted {
         job_id: String,
         feature_slug: String,
         wp_id: String,
         success: bool,
-        commits: Vec<String>,
+        commits: Vec&lt;String&gt;,
     },
 
     // Add your new event here:
@@ -608,7 +608,7 @@ pub enum DomainEvent {
 // crates/agileplus-engine/src/analyze.rs
 
 impl Engine {
-    pub async fn analyze_feature(...) -> Result<AnalysisReport> {
+    pub async fn analyze_feature(...) -> Result&lt;AnalysisReport&gt; {
         // ... analysis logic ...
 
         // Publish event

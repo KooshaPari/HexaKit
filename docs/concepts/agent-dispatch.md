@@ -128,7 +128,7 @@ pub struct AgentConfig {
     pub kind: AgentKind,          // ClaudeCode or Codex
     pub max_review_cycles: u32,   // How many review-fix-review loops
     pub timeout_secs: u64,        // Max time before killing agent
-    pub extra_args: Vec<String>,  // Agent-specific flags
+    pub extra_args: Vec&lt;String&gt;,  // Agent-specific flags
 }
 ```
 
@@ -152,7 +152,7 @@ pub struct AgentTask {
     pub feature_slug: String,       // "user-authentication"
     pub prompt_path: PathBuf,       // Path to generated prompt file
     pub worktree_path: PathBuf,     // Path to git worktree
-    pub context_files: Vec<PathBuf>, // Additional context files
+    pub context_files: Vec&lt;PathBuf&gt;, // Additional context files
 }
 ```
 
@@ -162,9 +162,9 @@ Agents have access to **25 hidden sub-commands** for fine-grained control. These
 
 ### Branch Management (4 commands)
 ```bash
-agileplus branch create <name> <base>
-agileplus branch checkout <name>
-agileplus branch delete <name>
+agileplus branch create &lt;name&gt; &lt;base&gt;
+agileplus branch checkout &lt;name&gt;
+agileplus branch delete &lt;name&gt;
 agileplus branch current
 ```
 
@@ -172,45 +172,45 @@ agileplus branch current
 ```bash
 agileplus commit create -m "message"
 agileplus commit amend -m "new message"
-agileplus commit fixup <commit_hash>
+agileplus commit fixup &lt;commit_hash&gt;
 agileplus commit list
-agileplus commit show <hash>
+agileplus commit show &lt;hash&gt;
 ```
 
 ### Artifact Management (4 commands)
 ```bash
-agileplus artifact write <path> <content>
-agileplus artifact read <path>
-agileplus artifact hash <path>
+agileplus artifact write &lt;path&gt; &lt;content&gt;
+agileplus artifact read &lt;path&gt;
+agileplus artifact hash &lt;path&gt;
 agileplus artifact list
 ```
 
 ### Governance Operations (4 commands)
 ```bash
-agileplus governance check <transition>
-agileplus governance enforce <transition>
+agileplus governance check &lt;transition&gt;
+agileplus governance enforce &lt;transition&gt;
 agileplus governance status
 agileplus governance audit
 ```
 
 ### WP Management (4 commands)
 ```bash
-agileplus wp status <wp_id>
-agileplus wp complete <wp_id>
-agileplus wp block <wp_id> <reason>
-agileplus wp unblock <wp_id>
+agileplus wp status &lt;wp_id&gt;
+agileplus wp complete &lt;wp_id&gt;
+agileplus wp block &lt;wp_id&gt; &lt;reason&gt;
+agileplus wp unblock &lt;wp_id&gt;
 ```
 
 ### CI/CD Operations (2 commands)
 ```bash
-agileplus ci run <suite>
-agileplus ci status <job_id>
+agileplus ci run &lt;suite&gt;
+agileplus ci status &lt;job_id&gt;
 ```
 
 ### Query Operations (2 commands)
 ```bash
-agileplus query spec <feature_slug>
-agileplus query plan <feature_slug>
+agileplus query spec &lt;feature_slug&gt;
+agileplus query plan &lt;feature_slug&gt;
 ```
 
 Each sub-command is **logged to an append-only JSONL audit trail** with:
@@ -240,8 +240,8 @@ When an agent finishes (successfully or with errors), the dispatcher captures:
 ```rust
 pub struct AgentResult {
     pub success: bool,
-    pub pr_url: Option<String>,    // If PR was created
-    pub commits: Vec<String>,      // Commit hashes
+    pub pr_url: Option&lt;String&gt;,    // If PR was created
+    pub commits: Vec&lt;String&gt;,      // Commit hashes
     pub stdout: String,            // Full agent output
     pub stderr: String,            // Error messages
     pub exit_code: i32,            // Exit status
@@ -435,7 +435,7 @@ Vector clocks ensure causal ordering when events arrive from multiple devices:
 
 ```rust
 pub struct VectorClock {
-    pub clocks: HashMap<String, u64>, // device_id → logical_time
+    pub clocks: HashMap&lt;String, u64&gt;, // device_id → logical_time
 }
 ```
 

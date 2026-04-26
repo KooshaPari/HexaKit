@@ -52,7 +52,7 @@ history:
 ---
 
 ## Markdown Formatting
-Wrap HTML/XML tags in backticks: `` `<div>` ``, `` `<script>` ``
+Wrap HTML/XML tags in backticks: `` `<div>` ``, `` `&lt;script&gt;` ``
 Use language identifiers in code blocks: ````python`, ````bash`
 
 ---
@@ -88,9 +88,9 @@ spec-kitty implement WP03 --base WP01
 ### Architectural Constraints
 - **Pure domain logic**: This code lives in `agileplus-core` which has NO I/O dependencies. No database, no filesystem, no network.
 - **Compiler-enforced safety**: Use Rust enums with exhaustive match. The compiler must reject any transition handler that doesn't cover all states.
-- **Result types**: All fallible operations return `Result<T, DomainError>`. Skip transitions return `Result<TransitionResult, DomainError>` where `TransitionResult` can be `Ok` or `Warning(String)`.
+- **Result types**: All fallible operations return `Result&lt;T, DomainError&gt;`. Skip transitions return `Result&lt;TransitionResult, DomainError&gt;` where `TransitionResult` can be `Ok` or `Warning(String)`.
 - **Serde derives**: All domain types derive `Serialize, Deserialize` for SQLite storage and gRPC serialization.
-- **Chrono for timestamps**: Use `chrono::DateTime<Utc>` for all timestamp fields.
+- **Chrono for timestamps**: Use `chrono::DateTime&lt;Utc&gt;` for all timestamp fields.
 
 ### Dependency on WP01
 - WP01 provides the crate structure (`crates/agileplus-core/`) with empty module stubs.
@@ -128,9 +128,9 @@ spec-kitty implement WP03 --base WP01
          /// Git branch to merge completed work into.
          pub target_branch: String,
          /// When the feature was created.
-         pub created_at: DateTime<Utc>,
+         pub created_at: DateTime&lt;Utc&gt;,
          /// Last modification timestamp.
-         pub updated_at: DateTime<Utc>,
+         pub updated_at: DateTime&lt;Utc&gt;,
      }
      ```
   3. Implement a `Feature::new()` constructor that:
@@ -166,7 +166,7 @@ spec-kitty implement WP03 --base WP01
      }
      ```
   3. Implement `FeatureState::ordinal()` returning `u8` (0-7) for ordering comparisons.
-  4. Implement `FeatureState::next()` returning `Option<FeatureState>` -- the single valid forward transition. Returns `None` for `Retrospected`.
+  4. Implement `FeatureState::next()` returning `Option&lt;FeatureState&gt;` -- the single valid forward transition. Returns `None` for `Retrospected`.
   5. Implement `FeatureState::display_name()` returning a human-readable string.
   6. Define `StateTransition`:
      ```rust
@@ -174,7 +174,7 @@ spec-kitty implement WP03 --base WP01
      pub struct StateTransition {
          pub from: FeatureState,
          pub to: FeatureState,
-         pub skipped: Vec<FeatureState>,  // states skipped (empty for normal transitions)
+         pub skipped: Vec&lt;FeatureState&gt;,  // states skipped (empty for normal transitions)
      }
      ```
   7. Implement `Display` for `StateTransition` formatting as `"specified -> researched"`.
@@ -201,7 +201,7 @@ spec-kitty implement WP03 --base WP01
          },
      }
      ```
-  2. Implement `FeatureState::transition(self, target: FeatureState) -> Result<TransitionResult, DomainError>`:
+  2. Implement `FeatureState::transition(self, target: FeatureState) -> Result&lt;TransitionResult, DomainError&gt;`:
      - If `target == self`: return `Err(DomainError::NoOpTransition)`
      - If `target.ordinal() < self.ordinal()`: return `Err(DomainError::InvalidTransition { from: self, to: target, reason: "backward transitions are not allowed" })`
      - If `target == self.next().unwrap()`: return `Ok(TransitionResult::Ok(StateTransition { from: self, to: target, skipped: vec![] }))`
@@ -221,7 +221,7 @@ spec-kitty implement WP03 --base WP01
          // ... existing variants
      }
      ```
-  4. Implement `Feature::transition(&mut self, target: FeatureState) -> Result<TransitionResult, DomainError>`:
+  4. Implement `Feature::transition(&mut self, target: FeatureState) -> Result&lt;TransitionResult, DomainError&gt;`:
      - Calls `self.state.transition(target)`
      - On success, updates `self.state = target` and `self.updated_at = Utc::now()`
      - Returns the `TransitionResult` for the caller to handle (logging, audit)
@@ -257,14 +257,14 @@ spec-kitty implement WP03 --base WP01
          pub title: String,
          pub state: WpState,
          pub sequence: i32,
-         pub file_scope: Vec<String>,
+         pub file_scope: Vec&lt;String&gt;,
          pub acceptance_criteria: String,
-         pub agent_id: Option<String>,
-         pub pr_url: Option<String>,
-         pub pr_state: Option<PrState>,
-         pub worktree_path: Option<String>,
-         pub created_at: DateTime<Utc>,
-         pub updated_at: DateTime<Utc>,
+         pub agent_id: Option&lt;String&gt;,
+         pub pr_url: Option&lt;String&gt;,
+         pub pr_state: Option&lt;PrState&gt;,
+         pub worktree_path: Option&lt;String&gt;,
+         pub created_at: DateTime&lt;Utc&gt;,
+         pub updated_at: DateTime&lt;Utc&gt;,
      }
      ```
   4. Define `PrState` enum: `Open`, `Review`, `ChangesRequested`, `Approved`, `Merged`.
@@ -278,11 +278,11 @@ spec-kitty implement WP03 --base WP01
      - `Review -> Doing` (changes requested)
      - `Blocked -> Planned` (blocker resolved)
   7. Implement `WorkPackage::transition()` using `can_transition_to`.
-  8. Implement `WorkPackage::has_file_overlap(other: &WorkPackage) -> Vec<String>` returning overlapping file paths.
+  8. Implement `WorkPackage::has_file_overlap(other: &WorkPackage) -> Vec&lt;String&gt;` returning overlapping file paths.
 - **Files**: `crates/agileplus-core/src/domain/work_package.rs`
 - **Parallel?**: Yes -- can run alongside T012-T014 once shared types (DateTime, DomainError) exist.
 - **Validation**: WP can be created, transitioned through valid states; file overlap detection returns correct paths.
-- **Notes**: The WP state machine is simpler than Feature because WPs don't have a governance contract per state. The `Blocked` state is special -- it can be entered from `Planned` or `Doing` and can only exit to `Planned` (reset). The `file_scope` is a `Vec<String>` of relative file paths that this WP modifies -- used by the scheduler for parallelism decisions (FR-038).
+- **Notes**: The WP state machine is simpler than Feature because WPs don't have a governance contract per state. The `Blocked` state is special -- it can be entered from `Planned` or `Doing` and can only exit to `Planned` (reset). The `file_scope` is a `Vec&lt;String&gt;` of relative file paths that this WP modifies -- used by the scheduler for parallelism decisions (FR-038).
 
 ### Subtask T016 -- Implement `WpDependency` and dependency-aware scheduling logic (FR-039)
 
@@ -312,20 +312,20 @@ spec-kitty implement WP03 --base WP01
      ```rust
      pub struct DependencyGraph {
          /// Adjacency list: wp_id -> list of wp_ids it depends on
-         edges: HashMap<i64, Vec<WpDependency>>,
+         edges: HashMap&lt;i64, Vec&lt;WpDependency&gt;&gt;,
      }
      ```
   3. Implement `DependencyGraph::new(wps: &[WorkPackage], deps: &[WpDependency]) -> Self`.
   4. Implement `DependencyGraph::add_file_overlap_edges(&mut self, wps: &[WorkPackage])`:
      - For each pair of WPs, check `has_file_overlap`
      - If overlap exists AND no explicit dependency, add a `FileOverlap` edge from higher-sequence to lower-sequence WP
-  5. Implement `DependencyGraph::ready_wps(&self, done: &HashSet<i64>) -> Vec<i64>`:
+  5. Implement `DependencyGraph::ready_wps(&self, done: &HashSet&lt;i64&gt;) -> Vec&lt;i64&gt;`:
      - Returns WP IDs whose ALL dependencies are in the `done` set
      - These WPs can be dispatched in parallel
-  6. Implement `DependencyGraph::has_cycle(&self) -> Option<Vec<i64>>`:
+  6. Implement `DependencyGraph::has_cycle(&self) -> Option&lt;Vec&lt;i64&gt;&gt;`:
      - Topological sort-based cycle detection
      - Returns the cycle path if found, None if acyclic
-  7. Implement `DependencyGraph::execution_order(&self) -> Result<Vec<Vec<i64>>, DomainError>`:
+  7. Implement `DependencyGraph::execution_order(&self) -> Result&lt;Vec&lt;Vec&lt;i64&gt;&gt;, DomainError&gt;`:
      - Returns layers of parallelizable WPs (topological sort grouped by level)
      - Layer 0: WPs with no deps; Layer 1: WPs depending only on Layer 0; etc.
 - **Files**: `crates/agileplus-core/src/domain/work_package.rs` (or `domain/dependencies.rs`)
@@ -490,7 +490,7 @@ Reviewers should verify:
 **When adding an entry**:
 1. Scroll to the bottom of this Activity Log section
 2. **APPEND the new entry at the END** (do NOT prepend or insert in middle)
-3. Use exact format: `- YYYY-MM-DDTHH:MM:SSZ – agent_id – lane=<lane> – <action>`
+3. Use exact format: `- YYYY-MM-DDTHH:MM:SSZ – agent_id – lane=&lt;lane&gt; – &lt;action&gt;`
 4. Timestamp MUST be current time in UTC
 5. Lane MUST match the frontmatter `lane:` field exactly
 

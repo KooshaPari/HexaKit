@@ -59,7 +59,7 @@ Implement Axum extractor for authentication:
 ```rust
 async fn list_features(
     ApiKey: _,  // extractor ensures key is valid
-    state: State<AppState>,
+    state: State&lt;AppState&gt;,
 ) -> impl IntoResponse { ... }
 ```
 

@@ -31,7 +31,7 @@ Add Server-Sent Events connection to base.html:
 
 **Implementation:**
 ```html
-<div hx-ext="sse" sse-connect="/api/stream?api_key={{ api_key }}">
+<div hx-ext="sse" sse-connect="/api/stream?api_key=&#123;&#123; api_key }}">
   <!-- Page content receives SSE events -->
 </div>
 ```
@@ -44,10 +44,10 @@ Add Server-Sent Events connection to base.html:
 
 **Example in kanban.html:**
 ```html
-<div id="feature-{{ feature.id }}"
+<div id="feature-&#123;&#123; feature.id }}"
      class="feature-card"
      hx-swap="outerHTML"
-     hx-trigger="sse:feature_updated[id==feature-{{ feature.id }}]">
+     hx-trigger="sse:feature_updated[id==feature-&#123;&#123; feature.id }}]">
   ...
 </div>
 ```
@@ -59,24 +59,24 @@ Implement drag-and-drop state transitions:
 **Alpine component:**
 ```html
 <div x-data="kanbanBoard()" class="kanban">
-  <template x-for="column in columns" :key="column.state">
+  &lt;template x-for="column in columns" :key="column.state"&gt;
     <div class="kanban-column"
          @drop="handleDrop($event, column.state)"
          @dragover.prevent
          @dragenter="$el.classList.add('drag-over')">
-      <template x-for="feature in column.features" :key="feature.id">
+      &lt;template x-for="feature in column.features" :key="feature.id"&gt;
         <div draggable="true"
              @dragstart="startDrag($event, feature.id)"
              @dragend="$el.classList.remove('dragging')"
              class="feature-card">
-          {{ feature.title }}
+          &#123;&#123; feature.title }}
         </div>
-      </template>
+      &lt;/template&gt;
     </div>
-  </template>
+  &lt;/template&gt;
 </div>
 
-<script>
+&lt;script&gt;
 function kanbanBoard() {
   return {
     columns: [],
@@ -103,7 +103,7 @@ function kanbanBoard() {
     }
   }
 }
-</script>
+&lt;/script&gt;
 ```
 
 **Behavior:**
@@ -119,14 +119,14 @@ Add interactive transition buttons on feature cards and detail page:
 **On feature cards:**
 ```html
 <div class="feature-card-actions">
-  <button hx-post="/api/features/{{ feature.id }}/transition"
+  <button hx-post="/api/features/&#123;&#123; feature.id }}/transition"
           hx-vals='{"target_state": "implementing"}'
           hx-confirm="Transition to implementing?"
           hx-swap="outerHTML"
           class="btn btn-sm btn-primary">
     → Implementing
   </button>
-  <button hx-post="/api/features/{{ feature.id }}/transition"
+  <button hx-post="/api/features/&#123;&#123; feature.id }}/transition"
           hx-vals='{"target_state": "researched"}'
           hx-confirm="Move back to researched?"
           class="btn btn-sm btn-secondary">
@@ -141,12 +141,12 @@ Add interactive transition buttons on feature cards and detail page:
   <h3 class="font-bold">Transition to:</h3>
   <div class="flex gap-2 flex-wrap">
     {% for state in available_transitions %}
-      <button hx-post="/api/features/{{ feature.id }}/transition"
-              hx-vals='{"target_state": "{{ state }}"}'
-              hx-confirm="Transition to {{ state }}?"
+      <button hx-post="/api/features/&#123;&#123; feature.id }}/transition"
+              hx-vals='{"target_state": "&#123;&#123; state }}"}'
+              hx-confirm="Transition to &#123;&#123; state }}?"
               hx-swap="outerHTML swap:1s"
-              class="btn btn-{{ state }}">
-        {{ state }}
+              class="btn btn-&#123;&#123; state }}">
+        &#123;&#123; state }}
       </button>
     {% endfor %}
   </div>
@@ -171,16 +171,16 @@ Display real-time agent activity:
      hx-swap="innerHTML swap:0.5s">
   <h3 class="font-bold mb-3">Agent Activity</h3>
 
-  <template x-for="agent in agents">
+  &lt;template x-for="agent in agents"&gt;
     <div class="flex items-center gap-2 py-2">
       <span :class="`status-indicator ${agent.status}`"></span>
       <div>
-        <div class="font-mono text-sm">{{ agent.name }}</div>
-        <div class="text-xs text-zinc-400">{{ agent.current_task }}</div>
-        <div class="text-xs text-zinc-500">{{ agent.last_action_ago }}</div>
+        <div class="font-mono text-sm">&#123;&#123; agent.name }}</div>
+        <div class="text-xs text-zinc-400">&#123;&#123; agent.current_task }}</div>
+        <div class="text-xs text-zinc-500">&#123;&#123; agent.last_action_ago }}</div>
       </div>
     </div>
-  </template>
+  &lt;/template&gt;
 </div>
 ```
 
@@ -217,23 +217,23 @@ Implement interactive event timeline with expandable details:
 ```html
 <div id="event-timeline" class="space-y-2">
   <div x-data="{ expanded: null }">
-    <template x-for="event in events" :key="event.id">
+    &lt;template x-for="event in events" :key="event.id"&gt;
       <div class="border-l-2 border-zinc-700 pl-4 py-2"
            @click="expanded = expanded === event.id ? null : event.id"
            class="cursor-pointer hover:bg-zinc-800 p-2 rounded">
         <div class="flex justify-between text-sm">
-          <span class="font-mono font-bold">{{ event.event_type }}</span>
-          <span class="text-zinc-500">{{ event.relative_time }}</span>
+          <span class="font-mono font-bold">&#123;&#123; event.event_type }}</span>
+          <span class="text-zinc-500">&#123;&#123; event.relative_time }}</span>
         </div>
-        <div class="text-xs text-zinc-400">{{ event.actor }} • {{ event.summary }}</div>
+        <div class="text-xs text-zinc-400">&#123;&#123; event.actor }} • &#123;&#123; event.summary }}</div>
 
         <div x-show="expanded === event.id"
              x-transition
              class="mt-2 bg-zinc-800 p-3 rounded font-mono text-xs overflow-x-auto">
-          <pre>{{ event.payload_json }}</pre>
+          <pre>&#123;&#123; event.payload_json }}</pre>
         </div>
       </div>
-    </template>
+    &lt;/template&gt;
   </div>
 </div>
 ```
@@ -273,13 +273,13 @@ Implement settings interface for configuration:
         <label class="block">
           <span class="text-sm">Workspace Slug</span>
           <input type="text" id="plane-workspace"
-                 value="{{ config.plane_workspace }}"
+                 value="&#123;&#123; config.plane_workspace }}"
                  class="input mt-1">
         </label>
         <label class="block">
           <span class="text-sm">Project ID</span>
           <input type="text" id="plane-project"
-                 value="{{ config.plane_project }}"
+                 value="&#123;&#123; config.plane_project }}"
                  class="input mt-1">
         </label>
         <label class="flex items-center gap-2">
@@ -293,10 +293,10 @@ Implement settings interface for configuration:
     <div class="border-b border-zinc-700 pb-6">
       <h2 class="font-bold mb-3">Service URLs</h2>
       <div class="space-y-3 text-xs">
-        <div>NATS: {{ config.nats_url }}</div>
-        <div>Dragonfly: {{ config.dragonfly_url }}</div>
-        <div>Neo4j: {{ config.neo4j_url }}</div>
-        <div>MinIO: {{ config.minio_url }}</div>
+        <div>NATS: &#123;&#123; config.nats_url }}</div>
+        <div>Dragonfly: &#123;&#123; config.dragonfly_url }}</div>
+        <div>Neo4j: &#123;&#123; config.neo4j_url }}</div>
+        <div>MinIO: &#123;&#123; config.minio_url }}</div>
       </div>
     </div>
 

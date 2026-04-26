@@ -120,7 +120,7 @@ Implement `export_state(db, output_dir)` in `crates/agileplus-p2p/src/export.rs`
 pub async fn export_state(
     db: &SqlitePool,
     output_dir: &Path,
-) -> Result<ExportStats, ExportError> {
+) -> Result&lt;ExportStats, ExportError&gt; {
     // For each entity in the database:
     // 1. Export all events to events/{entity_type}/{entity_id}.jsonl
     //    - Append new events to existing file (preserves append-only semantics)
@@ -157,7 +157,7 @@ Implement `import_state(input_dir, db)` in `crates/agileplus-p2p/src/import.rs`:
 pub async fn import_state(
     input_dir: &Path,
     db: &SqlitePool,
-) -> Result<ImportStats, ImportError> {
+) -> Result&lt;ImportStats, ImportError&gt; {
     // 1. Read event JSONL files from events/
     //    - Parse each line as JSON
     //    - For each event, check if already in SQLite (compare by hash)
@@ -219,7 +219,7 @@ Provide CLI command:
 pub async fn resolve_git_conflicts(
     repo_dir: &Path,
     db: &SqlitePool,
-) -> Result<ConflictResolution, ResolutionError> {
+) -> Result&lt;ConflictResolution, ResolutionError&gt; {
     // Detect unmerged paths in .agileplus/sync/
     // Apply conflict resolution rules
     // Stage resolved files

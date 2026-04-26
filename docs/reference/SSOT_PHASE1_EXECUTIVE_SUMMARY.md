@@ -37,7 +37,7 @@ A **unified specification governance system** that enables 50+ agents to contrib
 **What:** A protected, linear-history branch that serves as the single source of truth for all specifications.
 
 **How It Works:**
-- Agents create feature branches: `specs/agent-<name>-<task-id>`
+- Agents create feature branches: `specs/agent-&lt;name&gt;-&lt;task-id&gt;`
 - Make changes to spec files (FR, ADR, PLAN, UJ)
 - Push to agent branch
 - GitHub Actions auto-validates (markdown, Spec-Traces, FR↔Test coverage)

@@ -8,7 +8,7 @@ Centralized error handling for the Phenotype ecosystem.
 use phenotype_error_core::{ApiError, DomainError, RepositoryError};
 
 // Use built-in error types
-pub fn fetch_user(id: UserId) -> Result<User, ApiError> {
+pub fn fetch_user(id: UserId) -> Result&lt;User, ApiError&gt; {
     find_user(id)?
         .ok_or_else(|| ApiError::NotFound(format!("User {} not found", id)))
 }
@@ -32,7 +32,7 @@ pub enum MyError {
 ```rust
 use phenotype_error_core::prelude::*;
 
-fn fallible_operation() -> Result<Value, ApiError> {
+fn fallible_operation() -> Result&lt;Value, ApiError&gt; {
     external_api_call()
         .map_err(|e| ApiError::External(e.to_string()))
         .context("Calling external API")?

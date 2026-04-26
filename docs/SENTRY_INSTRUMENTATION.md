@@ -176,7 +176,7 @@ For CI/CD pipelines:
 2. **Use in GitHub Actions workflows:**
    ```yaml
    env:
-     SENTRY_DSN: ${{ secrets.SENTRY_DSN_AGILEPLUS }}
+     SENTRY_DSN: $&#123;&#123; secrets.SENTRY_DSN_AGILEPLUS }}
    ```
 
 3. **Add to .env during CI:**
@@ -242,7 +242,7 @@ fn main() {
 ```rust
 use sentry::integrations::anyhow::capture_anyhow;
 
-fn operation_with_context() -> anyhow::Result<()> {
+fn operation_with_context() -> anyhow::Result&lt;()&gt; {
     let result = some_fallible_operation()
         .context("Failed to perform operation")?;
 

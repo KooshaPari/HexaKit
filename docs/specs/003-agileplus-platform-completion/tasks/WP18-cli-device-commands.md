@@ -57,8 +57,8 @@ DEVICE ID                          HOSTNAME          TAILSCALE IP   STATUS    LA
 - `unreachable`: Device not reachable on Tailscale network
 
 **Flags:**
-- `--timeout <seconds>`: Connection timeout per peer (default: 2)
-- `--port <port>`: Custom AgilePlus port (default: 3000)
+- `--timeout &lt;seconds&gt;`: Connection timeout per peer (default: 2)
+- `--port &lt;port&gt;`: Custom AgilePlus port (default: 3000)
 - `--json`: Output as JSON instead of table
 
 **Error handling:**
@@ -110,9 +110,9 @@ Sync completed successfully.
 ```
 
 **Flags:**
-- `--peer <device-id>`: Sync with specific peer
+- `--peer &lt;device-id&gt;`: Sync with specific peer
 - `--all`: Sync with all discovered peers
-- `--strategy <strategy>`: Conflict resolution strategy: `local-wins`, `remote-wins`, `merge` (default: `local-wins`)
+- `--strategy &lt;strategy&gt;`: Conflict resolution strategy: `local-wins`, `remote-wins`, `merge` (default: `local-wins`)
 - `--dry-run`: Show what would be synced without applying changes
 - `--verbose`: Show event-by-event details
 
@@ -183,7 +183,7 @@ Health Check:
 
 - [ ] `agileplus device discover` lists peers with status and AgilePlus version
 - [ ] `agileplus device sync --all` discovers and syncs with all online peers
-- [ ] `agileplus device sync --peer <id>` syncs with specified peer
+- [ ] `agileplus device sync --peer &lt;id&gt;` syncs with specified peer
 - [ ] `agileplus device sync` auto-syncs if single peer found
 - [ ] Sync reports show events sent/received and conflicts resolved
 - [ ] `agileplus device status` shows local device and sync vectors

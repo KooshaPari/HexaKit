@@ -292,7 +292,7 @@ SSOT (Single Source of Truth) establishes canonical specification governance acr
 
 **For Agents:**
 - Reference `docs/reference/SSOT_PHASE1_AGENT_WORKFLOW.md` (Day 4 deliverable)
-- Follow branch pattern: `specs/agent-<name>-<task>`
+- Follow branch pattern: `specs/agent-&lt;name&gt;-&lt;task&gt;`
 - Include `Spec-Traces: FR-XXX-NNN` in every commit
 
 ---

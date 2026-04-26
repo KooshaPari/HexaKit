@@ -52,7 +52,7 @@ history:
 ---
 
 ## Markdown Formatting
-Wrap HTML/XML tags in backticks: `` `<div>` ``, `` `<script>` ``
+Wrap HTML/XML tags in backticks: `` `<div>` ``, `` `&lt;script&gt;` ``
 Use language identifiers in code blocks: ````python`, ````bash`
 
 ---
@@ -193,7 +193,7 @@ spec-kitty implement WP01
 
 - **Purpose**: Create all adapter crate directories with correct Cargo.toml files declaring their dependencies on `agileplus-domain` and their external crates. Each must compile as an empty library. Agent dispatch, review, and external integration crates are NOT included -- they belong in separate repos.
 - **Steps**:
-  1. For each of the 6 adapter crates, create `crates/<name>/Cargo.toml` and `crates/<name>/src/lib.rs`.
+  1. For each of the 6 adapter crates, create `crates/&lt;name&gt;/Cargo.toml` and `crates/&lt;name&gt;/src/lib.rs`.
   2. Crate-specific dependencies (workspace deps where possible):
      - **agileplus-cli**: `agileplus-domain`, `clap = { version = "4", features = ["derive"] }`, `tokio.workspace`
      - **agileplus-api**: `agileplus-domain`, `axum = "0.8"`, `tokio.workspace`, `serde.workspace`, `serde_json.workspace`
@@ -298,7 +298,7 @@ spec-kitty implement WP01
 - **Steps**:
   1. Add the `agileplus-proto` repository as a git submodule at `proto/`:
      ```bash
-     git submodule add <agileplus-proto-repo-url> proto
+     git submodule add &lt;agileplus-proto-repo-url&gt; proto
      git submodule update --init --recursive
      ```
   2. Verify `proto/agileplus.proto` is present in the submodule. It should define services including `AgilePlusCore` with methods covering Feature, WorkPackage, AuditEntry, etc.
@@ -315,7 +315,7 @@ spec-kitty implement WP01
   4. Create `buf.gen.yaml` for code generation configuration.
   5. Add `build.rs` to `agileplus-grpc` crate for tonic-build:
      ```rust
-     fn main() -> Result<(), Box<dyn std::error::Error>> {
+     fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
          tonic_build::compile_protos("../../proto/agileplus.proto")?;
          Ok(())
      }
@@ -413,7 +413,7 @@ Reviewers should verify:
 **When adding an entry**:
 1. Scroll to the bottom of this Activity Log section
 2. **APPEND the new entry at the END** (do NOT prepend or insert in middle)
-3. Use exact format: `- YYYY-MM-DDTHH:MM:SSZ – agent_id – lane=<lane> – <action>`
+3. Use exact format: `- YYYY-MM-DDTHH:MM:SSZ – agent_id – lane=&lt;lane&gt; – &lt;action&gt;`
 4. Timestamp MUST be current time in UTC
 5. Lane MUST match the frontmatter `lane:` field exactly
 

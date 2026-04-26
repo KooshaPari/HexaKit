@@ -131,7 +131,7 @@ Display and follow service logs:
 - Options:
   - `--follow` / `-f` (stream logs)
   - `--lines N` (show last N lines, default 100)
-  - `--since <duration>` (e.g., `--since 1h`)
+  - `--since &lt;duration&gt;` (e.g., `--since 1h`)
 - If no service specified: show combined logs for all services
 
 **Examples:**
@@ -156,11 +156,11 @@ agileplus platform logs neo4j --since 30m  # Neo4j logs from last 30m
 Query and display event log:
 
 **Options:**
-- `--feature <slug>` (filter by feature)
-- `--since <duration>` (e.g., `1h`, `7d`, `2025-03-01`)
-- `--type <event_type>` (e.g., `feature_created`, `state_changed`)
-- `--actor <name>` (e.g., `spec-kitty`, `sync-oracle`)
-- `--entity-type <type>` (e.g., `feature`, `work-package`)
+- `--feature &lt;slug&gt;` (filter by feature)
+- `--since &lt;duration&gt;` (e.g., `1h`, `7d`, `2025-03-01`)
+- `--type &lt;event_type&gt;` (e.g., `feature_created`, `state_changed`)
+- `--actor &lt;name&gt;` (e.g., `spec-kitty`, `sync-oracle`)
+- `--entity-type &lt;type&gt;` (e.g., `feature`, `work-package`)
 - `--format [table|json|jsonl]` (default: table)
 - `--limit N` (default: 50)
 
@@ -199,13 +199,13 @@ agileplus events --since 1h --format json
 agileplus events --feature auth-flow --since 24h
 ```
 
-### T089: `agileplus dashboard [open|port <N>]`
+### T089: `agileplus dashboard [open|port &lt;N&gt;]`
 
 Launch and manage dashboard:
 
 **Subcommands:**
 - `open`: Launch default browser to dashboard URL
-- `port <N>`: Configure dashboard port (default 8080, write to config)
+- `port &lt;N&gt;`: Configure dashboard port (default 8080, write to config)
 
 **Examples:**
 ```bash

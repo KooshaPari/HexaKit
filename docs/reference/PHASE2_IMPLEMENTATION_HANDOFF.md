@@ -134,7 +134,7 @@ interface State {
   isLoading: boolean;
 }
 
-export class ModuleErrorBoundary extends React.Component<Props, State> {
+export class ModuleErrorBoundary extends React.Component&lt;Props, State&gt; {
   constructor(props: Props) {
     super(props);
     this.state = { hasError: false, isLoading: true };
@@ -147,7 +147,7 @@ export class ModuleErrorBoundary extends React.Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ padding: '20px', textAlign: 'center', color: 'red' }}>
+        <div style=&#123;&#123; padding: '20px', textAlign: 'center', color: 'red' }}>
           <h2>Failed to load {this.props.moduleName}</h2>
           <p>Please refresh the page or try again later.</p>
         </div>
@@ -279,7 +279,7 @@ feat(phase2): configure AgilePlus as Module Federation host
 - Verify npm run dev works on http://localhost:3000
 
 Traces to: FEDERATED_HYBRID_ARCHITECTURE (Phase 2.1)
-Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
+Co-Authored-By: Claude Haiku 4.5 &lt;noreply@anthropic.com&gt;
 ```
 
 ---

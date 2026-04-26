@@ -93,7 +93,7 @@ Implement the agent dispatch service in the separate `agileplus-agents` repo. Th
    - `crates/agileplus-agent-service` (use `--bin` for the service entrypoint)
 4. Add the shared proto definitions as a git submodule at `proto/`:
    ```bash
-   git submodule add <proto-repo-url> proto
+   git submodule add &lt;proto-repo-url&gt; proto
    ```
 5. Create a root `Makefile` with targets: `build`, `test`, `proto-gen`, `docker-build`.
 6. Add a `.github/workflows/ci.yml` for Rust build + test on push.
@@ -117,8 +117,8 @@ Implement the agent dispatch service in the separate `agileplus-agents` repo. Th
 2. Define `AgentDispatchAdapter`:
    ```rust
    pub struct AgentDispatchAdapter {
-       vcs: Arc<dyn VcsPort + Send + Sync>,
-       jobs: Arc<DashMap<String, AgentJob>>,
+       vcs: Arc&lt;dyn VcsPort + Send + Sync&gt;,
+       jobs: Arc<DashMap&lt;String, AgentJob&gt;>,
    }
    ```
    Where `AgentJob` tracks running agent state:
@@ -127,12 +127,12 @@ Implement the agent dispatch service in the separate `agileplus-agents` repo. Th
        task: AgentTask,
        config: AgentConfig,
        status: AgentStatus,
-       handle: Option<JoinHandle<AgentResult>>,
+       handle: Option&lt;JoinHandle&lt;AgentResult&gt;&gt;,
    }
    ```
 
 3. Implement constructor:
-   - `pub fn new(vcs: Arc<dyn VcsPort + Send + Sync>) -> Self`
+   - `pub fn new(vcs: Arc&lt;dyn VcsPort + Send + Sync&gt;) -> Self`
 
 4. Implement `AgentPort` for `AgentDispatchAdapter`:
    - `dispatch`: Synchronous dispatch -- spawn agent, wait for completion, return result.
@@ -164,7 +164,7 @@ Implement the agent dispatch service in the separate `agileplus-agents` repo. Th
    pub async fn spawn_claude_code(
        task: &AgentTask,
        config: &AgentConfig,
-   ) -> Result<AgentResult, DomainError>
+   ) -> Result&lt;AgentResult, DomainError&gt;
    ```
 
 3. Build the command:
@@ -221,7 +221,7 @@ Implement the agent dispatch service in the separate `agileplus-agents` repo. Th
    pub async fn spawn_codex(
        task: &AgentTask,
        config: &AgentConfig,
-   ) -> Result<AgentResult, DomainError>
+   ) -> Result&lt;AgentResult, DomainError&gt;
    ```
 
 3. Build the command:
@@ -264,7 +264,7 @@ Implement the agent dispatch service in the separate `agileplus-agents` repo. Th
        vcs: &dyn VcsPort,
        task: AgentTask,
        config: &AgentConfig,
-   ) -> Result<AgentResult, DomainError>
+   ) -> Result&lt;AgentResult, DomainError&gt;
    ```
 
 3. Dispatch flow:
@@ -287,7 +287,7 @@ Implement the agent dispatch service in the separate `agileplus-agents` repo. Th
        task: AgentTask,
        config: &AgentConfig,
        num_agents: usize,
-   ) -> Result<Vec<AgentResult>, DomainError>
+   ) -> Result&lt;Vec&lt;AgentResult&gt;, DomainError&gt;
    ```
    - Spawn `num_agents` instances in parallel via `tokio::join!` or `futures::future::join_all`.
    - Each agent works in the same worktree (they coordinate via git commits).
@@ -321,7 +321,7 @@ Implement the agent dispatch service in the separate `agileplus-agents` repo. Th
        wp_id: &str,
        description: &PrDescription,
        target_branch: &str,
-   ) -> Result<String, DomainError>  // returns PR URL
+   ) -> Result&lt;String, DomainError&gt;  // returns PR URL
    ```
 
 3. Build PR via `gh` CLI:
@@ -340,7 +340,7 @@ Implement the agent dispatch service in the separate `agileplus-agents` repo. Th
        pub wp_id: String,
        pub wp_title: String,
        pub goal: String,              // From WP prompt
-       pub fr_references: Vec<String>, // e.g., ["FR-001", "FR-010"]
+       pub fr_references: Vec&lt;String&gt;, // e.g., ["FR-001", "FR-010"]
        pub acceptance_criteria: String, // Markdown checklist
        pub context_summary: String,    // Brief spec/plan summary
    }
@@ -371,7 +371,7 @@ Implement the agent dispatch service in the separate `agileplus-agents` repo. Th
 **Files**: `crates/agileplus-agent-dispatch/src/pr_loop.rs`
 
 **Validation**:
-- PR title follows format: `WP0x: <title>`.
+- PR title follows format: `WP0x: &lt;title&gt;`.
 - PR body contains all sections: goal, FR references, acceptance criteria, context.
 - `gh pr create` is called with correct arguments.
 - PR URL is parsed from output.
@@ -393,7 +393,7 @@ Implement the agent dispatch service in the separate `agileplus-agents` repo. Th
        agent_config: &AgentConfig,
        task: &AgentTask,
        max_cycles: u32,
-   ) -> Result<ReviewLoopResult, DomainError>
+   ) -> Result&lt;ReviewLoopResult, DomainError&gt;
    ```
 
 3. Define `ReviewLoopResult`:
@@ -403,7 +403,7 @@ Implement the agent dispatch service in the separate `agileplus-agents` repo. Th
        pub cycles_used: u32,
        pub final_review_status: ReviewStatus,
        pub final_ci_status: CiStatus,
-       pub comment_history: Vec<Vec<ReviewComment>>,
+       pub comment_history: Vec&lt;Vec&lt;ReviewComment&gt;&gt;,
    }
    ```
 
@@ -468,7 +468,7 @@ Implement the agent dispatch service in the separate `agileplus-agents` repo. Th
 3. Implement the gRPC server in `crates/agileplus-agent-service/src/main.rs`:
    ```rust
    #[tokio::main]
-   async fn main() -> Result<(), Box<dyn std::error::Error>> {
+   async fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
        let addr = "[::1]:50052".parse()?;
        let dispatcher = AgentDispatchServiceImpl::new(/* inject AgentDispatchAdapter */);
        Server::builder()
@@ -485,7 +485,7 @@ Implement the agent dispatch service in the separate `agileplus-agents` repo. Th
 5. Add a gRPC health check endpoint using `tonic-health`:
    ```rust
    let (mut health_reporter, health_service) = tonic_health::server::health_reporter();
-   health_reporter.set_serving::<AgentDispatchServiceServer<_>>().await;
+   health_reporter.set_serving::&lt;AgentDispatchServiceServer&lt;_&gt;&gt;().await;
    ```
 6. Wire `agileplus-agent-dispatch` as a workspace dependency in `agileplus-agent-service/Cargo.toml`.
 7. Update the Makefile `proto-gen` target to regenerate Rust bindings from `proto/agents.proto`.

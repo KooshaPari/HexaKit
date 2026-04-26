@@ -84,11 +84,11 @@ Every state transition (both feature and WP) produces an **immutable audit entry
 pub struct AuditEntry {
     pub id: i64,
     pub feature_id: i64,
-    pub wp_id: Option<i64>,              // WP ID if transition was for a WP
-    pub timestamp: DateTime<Utc>,
+    pub wp_id: Option&lt;i64&gt;,              // WP ID if transition was for a WP
+    pub timestamp: DateTime&lt;Utc&gt;,
     pub actor: String,                   // "human:alice" or "agent:claude-code"
     pub transition: String,               // "created->specified"
-    pub evidence_refs: Vec<EvidenceRef>,  // links to supporting evidence
+    pub evidence_refs: Vec&lt;EvidenceRef&gt;,  // links to supporting evidence
     pub prev_hash: [u8; 32],             // SHA-256 of previous entry
     pub hash: [u8; 32],                  // SHA-256 of this entry
 }
@@ -131,14 +131,14 @@ pub struct GovernanceContract {
     pub id: i64,
     pub feature_id: i64,
     pub version: i32,
-    pub rules: Vec<GovernanceRule>,
-    pub bound_at: DateTime<Utc>,
+    pub rules: Vec&lt;GovernanceRule&gt;,
+    pub bound_at: DateTime&lt;Utc&gt;,
 }
 
 pub struct GovernanceRule {
     pub transition: String,              // e.g., "validated->shipped"
-    pub required_evidence: Vec<EvidenceRequirement>,
-    pub policy_refs: Vec<String>,        // references to active policies
+    pub required_evidence: Vec&lt;EvidenceRequirement&gt;,
+    pub policy_refs: Vec&lt;String&gt;,        // references to active policies
 }
 ```
 
@@ -155,8 +155,8 @@ pub struct Evidence {
     pub fr_id: String,                   // functional requirement, e.g., "FR-004"
     pub evidence_type: EvidenceType,     // TestResult, CiOutput, ReviewApproval, etc.
     pub artifact_path: String,           // link to artifact (test report, scan results)
-    pub metadata: Option<serde_json::Value>,
-    pub created_at: DateTime<Utc>,
+    pub metadata: Option&lt;serde_json::Value&gt;,
+    pub created_at: DateTime&lt;Utc&gt;,
 }
 ```
 
@@ -168,7 +168,7 @@ pub struct PolicyRule {
     pub domain: PolicyDomain,            // Security, Quality, Compliance, Performance
     pub rule: PolicyDefinition,
     pub active: bool,
-    pub created_at: DateTime<Utc>,
+    pub created_at: DateTime&lt;Utc&gt;,
 }
 
 pub enum PolicyCheck {
@@ -334,7 +334,7 @@ If an attacker modifies Entry 0 (e.g., changes the actor from `human:alice` to `
 
 ```rust
 impl AuditChain {
-    pub fn verify_chain(&self) -> Result<(), AuditChainError> {
+    pub fn verify_chain(&self) -> Result&lt;(), AuditChainError&gt; {
         let mut prev_hash = [0u8; 32]; // Genesis hash is all zeros
 
         for entry in &self.entries {

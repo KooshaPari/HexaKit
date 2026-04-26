@@ -58,7 +58,7 @@ documented edge cases.
 - **No external services**: Zero network calls in any integration test.
 - **Async tests**: Use `#[tokio::test]` since storage operations are async.
 - **Determinism**: Tests must not share state. Each test function creates its own storage adapter.
-- **FR traceability**: Every test function MUST include a comment `// Traces to: <FR>` or a
+- **FR traceability**: Every test function MUST include a comment `// Traces to: &lt;FR&gt;` or a
   `#[doc = "Traces to: FR-XXX-NNN"]` attribute referencing the spec requirement it validates.
 - **Descriptive names**: Test names should describe the scenario, not the implementation.
   Example: `module_hierarchy_create_and_tree_list` not `test_create_module`.
@@ -387,7 +387,7 @@ pub async fn store_feature(storage: &dyn StoragePort, slug: &str) -> i64 {
 }
 
 /// Store a Module and return its assigned id.
-pub async fn store_module(storage: &dyn StoragePort, name: &str, parent: Option<i64>) -> i64 {
+pub async fn store_module(storage: &dyn StoragePort, name: &str, parent: Option&lt;i64&gt;) -> i64 {
     let m = agileplus_domain::domain::module::Module::new(name, parent);
     storage.create_module(&m).await.expect("store_module failed")
 }
@@ -396,7 +396,7 @@ pub async fn store_module(storage: &dyn StoragePort, name: &str, parent: Option<
 pub async fn store_cycle(
     storage: &dyn StoragePort,
     name: &str,
-    scope: Option<i64>,
+    scope: Option&lt;i64&gt;,
 ) -> i64 {
     use super::helpers::date;
     let c = agileplus_domain::domain::cycle::Cycle::new(

@@ -153,7 +153,7 @@ FR-1: Users can log in with email and password
   - Rate limit: 5 attempts per minute per IP
 
 FR-2: JWT tokens are validated on subsequent requests
-  - Check Authorization: Bearer <token>
+  - Check Authorization: Bearer &lt;token&gt;
   - Validate signature and expiration
   - Return 401 if invalid
 
@@ -221,7 +221,7 @@ Agent Constraints
   ✗ Cannot run: cargo test (will run at review time)
 
 Commit Convention
-  Format: feat(WP02): <description>
+  Format: feat(WP02): &lt;description&gt;
   Examples:
     - feat(WP02): implement login endpoint with JWT
     - feat(WP02): add rate limiting for login attempts
@@ -278,7 +278,7 @@ pub struct LoginResponse {
 }
 
 #[post("/api/auth/login")]
-pub async fn login(req: web::Json<LoginRequest>) -> HttpResult<HttpResponse> {
+pub async fn login(req: web::Json&lt;LoginRequest&gt;) -> HttpResult&lt;HttpResponse&gt; {
     // Validate email/password
     let user = User::find_by_email(&req.email)
         .await
@@ -495,7 +495,7 @@ agent:
     RUST_LOG: info
     DATABASE_URL: postgresql://localhost/testdb
     REDIS_URL: redis://localhost:6379
-    JWT_SECRET: ${{ secrets.JWT_SECRET }}  # Injected at runtime
+    JWT_SECRET: $&#123;&#123; secrets.JWT_SECRET }}  # Injected at runtime
 ```
 
 ### What Agents CAN Do

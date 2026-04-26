@@ -405,7 +405,7 @@ Agents interact with the state machine through the `agileplus governance` subcom
 | `shipped → retrospected` | No | Human-led retrospective |
 | Any → `cancelled` | No | Human decision only |
 
-Agents must check `agileplus governance check <transition>` before attempting any transition:
+Agents must check `agileplus governance check &lt;transition&gt;` before attempting any transition:
 
 ```bash
 agileplus governance check implementing->validated

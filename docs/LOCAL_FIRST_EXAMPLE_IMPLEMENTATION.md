@@ -55,7 +55,7 @@ pub struct Config {
 pub struct NatsConfig {
     pub url: String,
     pub jetstream_domain: String,
-    pub auth_token: Option<String>,
+    pub auth_token: Option&lt;String&gt;,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -96,7 +96,7 @@ pub struct LoggingConfig {
 }
 
 impl Config {
-    pub fn from_env() -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn from_env() -> Result<Self, Box&lt;dyn std::error::Error&gt;> {
         Ok(Config {
             nats: NatsConfig {
                 url: env::var("NATS_URL").unwrap_or_else(|_| "nats://localhost:4222".to_string()),
@@ -165,19 +165,19 @@ use std::sync::Arc;
 pub struct Infrastructure {
     pub nats: async_nats::Client,
     pub jetstream: async_nats::jetstream::Context,
-    pub redis_pool: bb8::Pool<bb8_redis::RedisConnectionManager>,
+    pub redis_pool: bb8::Pool&lt;bb8_redis::RedisConnectionManager&gt;,
     pub neo4j: neo4rs::Graph,
     pub s3: aws_sdk_s3::Client,
 
     // Readiness flags
-    pub nats_ready: Arc<AtomicBool>,
-    pub redis_ready: Arc<AtomicBool>,
-    pub neo4j_ready: Arc<AtomicBool>,
-    pub s3_ready: Arc<AtomicBool>,
+    pub nats_ready: Arc&lt;AtomicBool&gt;,
+    pub redis_ready: Arc&lt;AtomicBool&gt;,
+    pub neo4j_ready: Arc&lt;AtomicBool&gt;,
+    pub s3_ready: Arc&lt;AtomicBool&gt;,
 }
 
 impl Infrastructure {
-    pub async fn initialize(config: &Config) -> Result<Self, Box<dyn std::error::Error>> {
+    pub async fn initialize(config: &Config) -> Result<Self, Box&lt;dyn std::error::Error&gt;> {
         tracing::info!("Initializing infrastructure...");
 
         let nats_ready = Arc::new(AtomicBool::new(false));
@@ -242,7 +242,7 @@ impl Infrastructure {
 use crate::config::NatsConfig;
 use async_nats::jetstream;
 
-pub async fn initialize(config: &NatsConfig) -> Result<async_nats::Client, Box<dyn std::error::Error>> {
+pub async fn initialize(config: &NatsConfig) -> Result<async_nats::Client, Box&lt;dyn std::error::Error&gt;> {
     let client = async_nats::connect(&config.url).await?;
 
     // Test connection
@@ -253,7 +253,7 @@ pub async fn initialize(config: &NatsConfig) -> Result<async_nats::Client, Box<d
 
 pub async fn create_streams(
     jetstream: &jetstream::Context,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), Box&lt;dyn std::error::Error&gt;> {
     // Create WP Events Stream
     jetstream
         .get_or_create_stream(jetstream::stream::Config {
@@ -286,7 +286,7 @@ pub async fn create_streams(
 pub async fn create_consumer(
     stream: &jetstream::Stream,
     consumer_name: &str,
-) -> Result<jetstream::consumer::Consumer, Box<dyn std::error::Error>> {
+) -> Result<jetstream::consumer::Consumer, Box&lt;dyn std::error::Error&gt;> {
     Ok(stream
         .create_consumer(jetstream::consumer::PullConsumer {
             durable_name: Some(consumer_name.to_string()),
@@ -303,11 +303,11 @@ pub async fn create_consumer(
         .await?)
 }
 
-pub async fn publish_event<T: serde::Serialize>(
+pub async fn publish_event&lt;T: serde::Serialize&gt;(
     jetstream: &jetstream::Context,
     subject: &str,
     event: &T,
-) -> Result<jetstream::PublishAckFuture, Box<dyn std::error::Error>> {
+) -> Result<jetstream::PublishAckFuture, Box&lt;dyn std::error::Error&gt;> {
     let payload = serde_json::to_vec(event)?;
     Ok(jetstream.publish(subject, payload.into()).await?)
 }
@@ -327,7 +327,7 @@ use std::time::Duration;
 
 pub async fn initialize(
     config: &RedisConfig,
-) -> Result<bb8::Pool<RedisConnectionManager>, Box<dyn std::error::Error>> {
+) -> Result<bb8::Pool&lt;RedisConnectionManager&gt;, Box&lt;dyn std::error::Error&gt;> {
     let manager = RedisConnectionManager::new(config.url.as_str())?;
 
     let pool = bb8::Pool::builder()
@@ -338,26 +338,26 @@ pub async fn initialize(
 
     // Test connection
     let mut conn = pool.get().await?;
-    redis::cmd("PING").query_async::<_, String>(&mut *conn).await?;
+    redis::cmd("PING").query_async::&lt;_, String&gt;(&mut *conn).await?;
 
     Ok(pool)
 }
 
 pub struct RedisCache {
-    pool: bb8::Pool<RedisConnectionManager>,
+    pool: bb8::Pool&lt;RedisConnectionManager&gt;,
 }
 
 impl RedisCache {
-    pub fn new(pool: bb8::Pool<RedisConnectionManager>) -> Self {
+    pub fn new(pool: bb8::Pool&lt;RedisConnectionManager&gt;) -> Self {
         RedisCache { pool }
     }
 
-    pub async fn set_snapshot<T: serde::Serialize>(
+    pub async fn set_snapshot&lt;T: serde::Serialize&gt;(
         &self,
         wp_id: &str,
         snapshot: &T,
         ttl_secs: usize,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    ) -> Result<(), Box&lt;dyn std::error::Error&gt;> {
         use redis::AsyncCommands;
         let mut conn = self.pool.get().await?;
 
@@ -368,15 +368,15 @@ impl RedisCache {
         Ok(())
     }
 
-    pub async fn get_snapshot<T: serde::de::DeserializeOwned>(
+    pub async fn get_snapshot&lt;T: serde::de::DeserializeOwned&gt;(
         &self,
         wp_id: &str,
-    ) -> Result<Option<T>, Box<dyn std::error::Error>> {
+    ) -> Result<Option&lt;T&gt;, Box&lt;dyn std::error::Error&gt;> {
         use redis::AsyncCommands;
         let mut conn = self.pool.get().await?;
 
         let key = format!("snapshot:{}", wp_id);
-        let json: Option<String> = conn.get(&key).await?;
+        let json: Option&lt;String&gt; = conn.get(&key).await?;
 
         match json {
             Some(j) => Ok(Some(serde_json::from_str(&j)?)),
@@ -389,7 +389,7 @@ impl RedisCache {
         key: &str,
         limit: i32,
         window_secs: usize,
-    ) -> Result<bool, Box<dyn std::error::Error>> {
+    ) -> Result<bool, Box&lt;dyn std::error::Error&gt;> {
         use redis::AsyncCommands;
         let mut conn = self.pool.get().await?;
 
@@ -413,7 +413,7 @@ impl RedisCache {
 use crate::config::Neo4jConfig;
 use neo4rs::Graph;
 
-pub async fn initialize(config: &Neo4jConfig) -> Result<Graph, Box<dyn std::error::Error>> {
+pub async fn initialize(config: &Neo4jConfig) -> Result<Graph, Box&lt;dyn std::error::Error&gt;> {
     let graph = Graph::new(&config.url, &config.user, &config.password).await?;
 
     // Verify connection
@@ -426,7 +426,7 @@ pub async fn initialize(config: &Neo4jConfig) -> Result<Graph, Box<dyn std::erro
     Ok(graph)
 }
 
-async fn initialize_schema(graph: &Graph) -> Result<(), Box<dyn std::error::Error>> {
+async fn initialize_schema(graph: &Graph) -> Result<(), Box&lt;dyn std::error::Error&gt;> {
     // Create indexes for WorkPackage
     graph
         .execute(
@@ -471,7 +471,7 @@ impl WorkPackageGraph {
         id: &str,
         title: &str,
         status: &str,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    ) -> Result<(), Box&lt;dyn std::error::Error&gt;> {
         let query = "
             CREATE (wp:WorkPackage {
                 id: $id,
@@ -499,7 +499,7 @@ impl WorkPackageGraph {
         &self,
         from_id: &str,
         to_id: &str,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    ) -> Result<(), Box&lt;dyn std::error::Error&gt;> {
         let query = "
             MATCH (from:WorkPackage {id: $from_id}),
                   (to:WorkPackage {id: $to_id})
@@ -518,7 +518,7 @@ impl WorkPackageGraph {
         Ok(())
     }
 
-    pub async fn get_dependencies(&self, wp_id: &str) -> Result<Vec<String>, Box<dyn std::error::Error>> {
+    pub async fn get_dependencies(&self, wp_id: &str) -> Result<Vec&lt;String&gt;, Box&lt;dyn std::error::Error&gt;> {
         let query = "
             MATCH (wp:WorkPackage {id: $id})-[:DEPENDS_ON]->(dep:WorkPackage)
             RETURN dep.id AS dependent_id
@@ -531,7 +531,7 @@ impl WorkPackageGraph {
 
         let mut deps = Vec::new();
         while let Ok(Some(row)) = result.next().await {
-            deps.push(row.get::<String>("dependent_id")?);
+            deps.push(row.get::&lt;String&gt;("dependent_id")?);
         }
 
         Ok(deps)
@@ -541,7 +541,7 @@ impl WorkPackageGraph {
         &self,
         from_id: &str,
         to_id: &str,
-    ) -> Result<Option<Vec<String>>, Box<dyn std::error::Error>> {
+    ) -> Result<Option&lt;Vec&lt;String&gt;&gt;, Box&lt;dyn std::error::Error&gt;> {
         let query = "
             MATCH path = shortestPath(
                 (from:WorkPackage {id: $from})-[:BLOCKS*]->(to:WorkPackage {id: $to})
@@ -578,7 +578,7 @@ use crate::config::S3Config;
 use aws_sdk_s3::Client;
 use std::path::Path;
 
-pub async fn initialize(config: &S3Config) -> Result<Client, Box<dyn std::error::Error>> {
+pub async fn initialize(config: &S3Config) -> Result<Client, Box&lt;dyn std::error::Error&gt;> {
     let s3_config = aws_sdk_s3::config::Builder::from(
         &aws_config::load_from_env().await
     )
@@ -593,7 +593,7 @@ pub async fn initialize(config: &S3Config) -> Result<Client, Box<dyn std::error:
     Ok(client)
 }
 
-async fn ensure_bucket(client: &Client, bucket_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+async fn ensure_bucket(client: &Client, bucket_name: &str) -> Result<(), Box&lt;dyn std::error::Error&gt;> {
     match client.head_bucket().bucket(bucket_name).send().await {
         Ok(_) => Ok(()),
         Err(_) => {
@@ -621,7 +621,7 @@ impl ArtifactStore {
         &self,
         wp_id: &str,
         file_path: &Path,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+    ) -> Result<String, Box&lt;dyn std::error::Error&gt;> {
         let body = aws_sdk_s3::primitives::ByteStream::from_path(file_path).await?;
 
         let key = format!("wp-{}/snapshot-{}.tar.gz", wp_id, chrono::Utc::now().timestamp());
@@ -642,7 +642,7 @@ impl ArtifactStore {
     pub async fn download_snapshot(
         &self,
         key: &str,
-    ) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    ) -> Result<Vec&lt;u8&gt;, Box&lt;dyn std::error::Error&gt;> {
         let obj = self
             .client
             .get_object()
@@ -658,7 +658,7 @@ impl ArtifactStore {
     pub async fn list_snapshots(
         &self,
         wp_id: &str,
-    ) -> Result<Vec<String>, Box<dyn std::error::Error>> {
+    ) -> Result<Vec&lt;String&gt;, Box&lt;dyn std::error::Error&gt;> {
         let prefix = format!("wp-{}/", wp_id);
         let resp = self
             .client
@@ -721,8 +721,8 @@ pub struct ReadyResponse {
 }
 
 pub async fn health(
-    State(infra): State<Arc<Infrastructure>>,
-) -> (StatusCode, Json<HealthResponse>) {
+    State(infra): State&lt;Arc&lt;Infrastructure&gt;&gt;,
+) -> (StatusCode, Json&lt;HealthResponse&gt;) {
     let status = HealthResponse {
         status: "ok".to_string(),
         timestamp: chrono::Utc::now().to_rfc3339(),
@@ -742,8 +742,8 @@ pub async fn health(
 }
 
 pub async fn ready(
-    State(infra): State<Arc<Infrastructure>>,
-) -> Result<(StatusCode, Json<ReadyResponse>), StatusCode> {
+    State(infra): State&lt;Arc&lt;Infrastructure&gt;&gt;,
+) -> Result&lt;(StatusCode, Json&lt;ReadyResponse&gt;), StatusCode&gt; {
     if infra.are_all_ready() {
         Ok((
             StatusCode::OK,
@@ -757,7 +757,7 @@ pub async fn ready(
     }
 }
 
-pub fn routes() -> Router<Arc<Infrastructure>> {
+pub fn routes() -> Router&lt;Arc&lt;Infrastructure&gt;&gt; {
     Router::new()
         .route("/health", get(health))
         .route("/ready", get(ready))
@@ -787,7 +787,7 @@ use config::Config;
 use infrastructure::Infrastructure;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
     // Load configuration
     let config = Config::from_env()?;
 
@@ -1012,7 +1012,7 @@ processes:
 
 ```rust
 #[tokio::test]
-async fn test_full_integration() -> Result<(), Box<dyn std::error::Error>> {
+async fn test_full_integration() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
     // Connect to all services
     let nats = async_nats::connect("nats://localhost:4222").await?;
     let jetstream = async_nats::jetstream::new(nats.clone());

@@ -168,7 +168,7 @@ PHASE 3: CLI Refactor & Cutover (2 days)
   - Generic cache
   - Both types support all three services
 - Testing patterns reused
-  - ServiceTestContext<T>
+  - ServiceTestContext&lt;T&gt;
   - Reusable test suites
   - Shared fixtures
 - Full codebase impact
@@ -299,7 +299,7 @@ Commands (State-Changing):
 
 Queries (Read-Only):
 ├─ get_metadata(id) → Metadata
-├─ list_retrospectives(from, to) → Vec<Metadata>
+├─ list_retrospectives(from, to) → Vec&lt;Metadata&gt;
 
 Compute (Expensive):
 └─ compute_aggregates(id) → AggregateResult (cached)

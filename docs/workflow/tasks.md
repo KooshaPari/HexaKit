@@ -244,17 +244,17 @@ Work packages form a dependency DAG (directed acyclic graph):
 
 ```mermaid
 graph TD
-    WP01["WP01: Database<br/>(0 dependencies)"]
+    WP01["WP01: Database&lt;br/&gt;(0 dependencies)"]
 
-    WP02["WP02: Models<br/>(depends: WP01)"]
+    WP02["WP02: Models&lt;br/&gt;(depends: WP01)"]
 
-    WP03["WP03: SendGrid<br/>(depends: WP02)"]
-    WP04["WP04: Queue<br/>(depends: WP02, WP03)"]
-    WP06["WP06: API<br/>(depends: WP02)"]
+    WP03["WP03: SendGrid&lt;br/&gt;(depends: WP02)"]
+    WP04["WP04: Queue&lt;br/&gt;(depends: WP02, WP03)"]
+    WP06["WP06: API&lt;br/&gt;(depends: WP02)"]
 
-    WP05["WP05: Handlers<br/>(depends: WP04)"]
+    WP05["WP05: Handlers&lt;br/&gt;(depends: WP04)"]
 
-    WP07["WP07: Tests<br/>(depends: WP05, WP06)"]
+    WP07["WP07: Tests&lt;br/&gt;(depends: WP05, WP06)"]
 
     WP01 --> WP02
     WP02 --> WP03

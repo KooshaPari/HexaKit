@@ -73,7 +73,7 @@ Optional but recommended:
 
 ### Positive
 
-- Uniform `mise run <task>` invocation across all 47 repos
+- Uniform `mise run &lt;task&gt;` invocation across all 47 repos
 - pheno-cli can drive lint/test/build/audit without repo-type detection
 - Tool versions pinned in `mise.toml` eliminate "works on my machine" issues
 - Single config file replaces up to 4 separate version-pin files

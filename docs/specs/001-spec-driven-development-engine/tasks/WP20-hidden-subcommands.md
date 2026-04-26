@@ -92,9 +92,9 @@ sub-commands are discoverable only by agents reading `AGENTS.md` and the generat
 
 - Sub-commands must NOT appear in `--help` output for any primary command.
 - Every sub-command must have a machine-readable metadata struct for agent introspection.
-- Sub-command names follow the pattern `<category>:<action>` using only lowercase
+- Sub-command names follow the pattern `&lt;category&gt;:&lt;action&gt;` using only lowercase
   alphanumerics and hyphens.
-- All sub-commands must be invocable via `agileplus subcommand <name> [args...]`
+- All sub-commands must be invocable via `agileplus subcommand &lt;name&gt; [args...]`
   (hidden clap subcommand passthrough) as well as via SlashCommand tool format.
 - Argument validation must happen at the registry layer before dispatch, so individual
   handler files stay focused on business logic only.
@@ -219,8 +219,8 @@ pub struct SubCommandMeta {
 Implement a `SubCommandRegistry` with:
 
 - `fn all() -> &'static [SubCommandMeta]` — returns the static slice of all registered sub-commands.
-- `fn lookup(name: &str) -> Option<&'static SubCommandMeta>` — case-insensitive lookup by name.
-- `fn validate_args(name: &str, args: &[String]) -> Result<(), SubCommandError>` — check required
+- `fn lookup(name: &str) -> Option&lt;&'static SubCommandMeta&gt;` — case-insensitive lookup by name.
+- `fn validate_args(name: &str, args: &[String]) -> Result&lt;(), SubCommandError&gt;` — check required
   args are present before dispatch.
 
 The registry must be populated via a `inventory!` or `lazy_static!` pattern so that adding
@@ -257,7 +257,7 @@ the resolved storage port, sync adapter handles, and the audit logger).
 - Return created item ID.
 - Audit entry: item_id.
 
-All three handlers must return `Result<SubCommandOutput, SubCommandError>` where
+All three handlers must return `Result&lt;SubCommandOutput, SubCommandError&gt;` where
 `SubCommandOutput` is a newtype over `serde_json::Value`.
 
 ---
@@ -273,7 +273,7 @@ Wire to domain governance logic from WP13 (`GovernanceContract`, `PolicyEvaluato
 - Required args: `feature_id`.
 - Load the feature's `GovernanceContract` from storage.
 - Evaluate all contract rules against the current feature state.
-- Return a `GateReport { passed: Vec<RuleName>, failed: Vec<RuleName>, warnings: Vec<String> }`.
+- Return a `GateReport { passed: Vec&lt;RuleName&gt;, failed: Vec&lt;RuleName&gt;, warnings: Vec&lt;String&gt; }`.
 - Non-zero exit code if any required gate fails.
 
 `governance:evaluate-policy`:
@@ -286,7 +286,7 @@ Wire to domain governance logic from WP13 (`GovernanceContract`, `PolicyEvaluato
 - Required args: `feature_id`.
 - Walk the artifact chain (spec -> plan -> WPs -> tasks).
 - Verify each artifact exists, has a valid hash, and links correctly to its parent.
-- Return `ChainVerificationReport { valid: bool, broken_links: Vec<ArtifactRef>, missing: Vec<ArtifactRef> }`.
+- Return `ChainVerificationReport { valid: bool, broken_links: Vec&lt;ArtifactRef&gt;, missing: Vec&lt;ArtifactRef&gt; }`.
 
 All three must produce machine-readable JSON output for agent consumption and human-readable
 tabular output when a `--human` flag is provided (default: JSON).
@@ -315,7 +315,7 @@ Wire to `PlaneSyncAdapter` and `GitHubSyncAdapter` from WP19.
 - No required args. Optional: `feature_id` to scope the pull.
 - Poll both Plane.so and GitHub for status updates on all open mirrored items.
 - Write updated statuses back to local storage.
-- Return a diff of changed statuses: `Vec<StatusChange { item_id, old_status, new_status, source }>`.
+- Return a diff of changed statuses: `Vec&lt;StatusChange { item_id, old_status, new_status, source }&gt;`.
 
 Sync sub-commands must handle rate-limiting gracefully (retry with backoff, surface wait
 time in audit log). If an adapter is not configured, the sub-command must return a clear
@@ -336,7 +336,7 @@ Wire to `VcsPort` (WP13) and shell execution via `std::process::Command`.
 
 `git:branch-from-wp`:
 - Required args: `wp_id`.
-- Derive branch name from WP metadata: `<feature_slug>-<wp_id_lowercase>`.
+- Derive branch name from WP metadata: `&lt;feature_slug&gt;-&lt;wp_id_lowercase&gt;`.
 - Call `VcsPort.create_branch(branch_name)`.
 - Return `{ branch_name, created_at }`.
 
@@ -349,19 +349,19 @@ Wire to `VcsPort` (WP13) and shell execution via `std::process::Command`.
 `devops:lint-and-format`:
 - No required args. Optional: `--fix` flag.
 - Run `cargo fmt [--check]` and `cargo clippy -- -D warnings`.
-- Return structured output: `{ fmt_passed: bool, clippy_passed: bool, diagnostics: Vec<String> }`.
+- Return structured output: `{ fmt_passed: bool, clippy_passed: bool, diagnostics: Vec&lt;String&gt; }`.
 
 `devops:conventional-commit`:
 - Required args: `message`.
 - Parse the message against the conventional commit spec (feat/fix/chore/docs/refactor/test/ci).
 - If `--generate` flag is set, generate a commit message from staged diff summary.
-- Return `{ valid: bool, parsed: Option<ConventionalCommit>, suggestion: Option<String> }`.
+- Return `{ valid: bool, parsed: Option&lt;ConventionalCommit&gt;, suggestion: Option&lt;String&gt; }`.
 
 `devops:run-ci-checks`:
 - No required args.
 - Run in sequence: fmt check, clippy, `cargo test --workspace`, `cargo audit`.
 - Short-circuit on first failure unless `--all` flag is set.
-- Return `CiReport { steps: Vec<CiStep { name, passed, output }> }`.
+- Return `CiReport { steps: Vec&lt;CiStep { name, passed, output }&gt; }`.
 
 All shell invocations must capture stdout and stderr separately and include them in the
 `SubCommandOutput`. Working directory must default to the workspace root but be
@@ -380,12 +380,12 @@ overridable via `--cwd`.
 
 `context:load-spec`:
 - Required args: `feature_id`.
-- Read `kitty-specs/<feature_id>/spec.md` from disk.
+- Read `kitty-specs/&lt;feature_id&gt;/spec.md` from disk.
 - Emit contents as a fenced markdown block to stdout for agent ingestion.
 
 `context:load-plan`:
 - Required args: `feature_id`.
-- Read `kitty-specs/<feature_id>/plan.md` from disk.
+- Read `kitty-specs/&lt;feature_id&gt;/plan.md` from disk.
 - Emit contents as a fenced markdown block.
 
 `context:load-constitution`:
@@ -455,10 +455,10 @@ Each entry schema:
 {
   "entry_type": "pre_dispatch" | "post_dispatch",
   "timestamp": "2026-02-27T00:00:00Z",
-  "caller": "user" | "agent:<agent_name>",
+  "caller": "user" | "agent:&lt;agent_name&gt;",
   "subcommand": "triage:classify",
   "args": { "input": "..." },
-  "invocation_id": "<uuid>",
+  "invocation_id": "&lt;uuid&gt;",
   // post_dispatch only:
   "result_status": "ok" | "error",
   "error_code": null | "AdapterNotConfigured" | ...,
@@ -468,10 +468,10 @@ Each entry schema:
 
 Implementation requirements:
 
-- `AuditLogger` struct with an `Arc<Mutex<BufWriter<File>>>` interior so it can be
+- `AuditLogger` struct with an `Arc&lt;Mutex&lt;BufWriter&lt;File&gt;&gt;&gt;` interior so it can be
   cloned across threads safely.
-- `fn log_pre(&self, invocation: &InvocationContext) -> Result<(), AuditError>`
-- `fn log_post(&self, invocation: &InvocationContext, result: &SubCommandResult) -> Result<(), AuditError>`
+- `fn log_pre(&self, invocation: &InvocationContext) -> Result&lt;(), AuditError&gt;`
+- `fn log_post(&self, invocation: &InvocationContext, result: &SubCommandResult) -> Result&lt;(), AuditError&gt;`
 - Audit writes must not block the main execution path — use a bounded channel with
   a background writer thread.
 - On test builds, the logger must support an in-memory backend for assertions.

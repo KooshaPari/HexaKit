@@ -187,7 +187,7 @@ api_key = "sk-1234567890abcdef"
 ### Issue: TruffleHog finds old secret in history
 **Solution:** Rewrite Git history (BFG Repo-Cleaner)
 ```bash
-bfg --delete-files <filename>
+bfg --delete-files &lt;filename&gt;
 git reflog expire --expire-unreachable=now --all
 git gc --prune=now
 ```

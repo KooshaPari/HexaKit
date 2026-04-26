@@ -69,7 +69,7 @@ pub struct WorkPackageEvent {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
     // Connect to NATS server
     let client = async_nats::connect("nats://localhost:4222").await?;
 
@@ -111,7 +111,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Consume messages with exactly-once semantics
     let mut messages = consumer.messages().await?;
     while let Ok(msg) = messages.next().await {
-        match serde_json::from_slice::<WorkPackageEvent>(&msg.payload) {
+        match serde_json::from_slice::&lt;WorkPackageEvent&gt;(&msg.payload) {
             Ok(event) => {
                 println!("Processing event: {:?}", event);
                 msg.ack().await?;
@@ -131,7 +131,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ```rust
 // Exactly-once processing pattern
-async fn process_wp_events(jetstream: &jetstream::Context) -> Result<()> {
+async fn process_wp_events(jetstream: &jetstream::Context) -> Result&lt;()&gt; {
     let stream = jetstream.get_stream("wp-events").await?;
 
     let consumer = stream
@@ -248,7 +248,7 @@ use bb8_redis::RedisConnectionManager;
 use std::time::Duration;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
     // Create connection manager for Dragonfly
     let manager = RedisConnectionManager::new("redis://localhost:6379")?;
     let pool = bb8::Pool::builder()

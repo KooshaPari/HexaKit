@@ -58,7 +58,7 @@ Create a canonical error crate consolidating all error types from 8+ crates into
 2. [ ] Create `crates/agileplus-errors/Cargo.toml`
 3. [ ] Create `crates/agileplus-errors/src/lib.rs` with all error variants
 4. [ ] Define error hierarchy: `AgileError` (root) → category-specific errors
-5. [ ] Implement `From<...>` conversions for common error types
+5. [ ] Implement `From&lt;...&gt;` conversions for common error types
 6. [ ] Replace all local error enums with re-exports
 7. [ ] Update Cargo.toml dependencies to use agileplus-errors
 8. [ ] Write error classification tests

@@ -42,9 +42,9 @@ Implement the git adapter in `crates/agileplus-git/` that fulfills the `VcsPort`
 ### Success Criteria
 
 1. `GitVcsAdapter` implements every method of `VcsPort`.
-2. Worktree operations create/list/cleanup worktrees at `.worktrees/<feature-slug>-<WP-id>/`.
+2. Worktree operations create/list/cleanup worktrees at `.worktrees/&lt;feature-slug&gt;-&lt;WP-id&gt;/`.
 3. Branch operations create, checkout, merge, and detect conflicts using git2.
-4. Artifact operations read/write files in `kitty-specs/<feature>/` paths.
+4. Artifact operations read/write files in `kitty-specs/&lt;feature&gt;/` paths.
 5. Integration tests pass using temporary git repositories (not the real repo).
 6. All git2 errors are mapped to `DomainError` variants.
 7. No use of `std::process::Command("git", ...)` -- pure git2.
@@ -52,8 +52,8 @@ Implement the git adapter in `crates/agileplus-git/` that fulfills the `VcsPort`
 ## Context & Constraints
 
 - **Library**: `git2` crate (libgit2 bindings). See `research.md` R2 for decision rationale. git2 is used by cargo itself.
-- **Worktree convention**: `.worktrees/<feature-slug>-<WP-id>/` relative to repo root. See `plan.md` section 3.
-- **Artifact layout**: All spec artifacts live in `kitty-specs/<feature>/` as defined in `data-model.md` "Git Artifact Layout".
+- **Worktree convention**: `.worktrees/&lt;feature-slug&gt;-&lt;WP-id&gt;/` relative to repo root. See `plan.md` section 3.
+- **Artifact layout**: All spec artifacts live in `kitty-specs/&lt;feature&gt;/` as defined in `data-model.md` "Git Artifact Layout".
 - **Platform**: Must work on macOS (primary) and Linux (CI). Be aware of case-insensitive filesystems on macOS.
 - **No CLI shelling**: All operations via git2 API. This ensures type safety, proper error handling, and testability.
 - **Thread safety**: git2 `Repository` is not `Send`. Use `parking_lot::Mutex` or open a fresh `Repository` handle per operation.
@@ -76,14 +76,14 @@ Implement the git adapter in `crates/agileplus-git/` that fulfills the `VcsPort`
    ```
    Note: Do NOT store `git2::Repository` in the struct (it's not `Send`). Instead, open a fresh handle in each method:
    ```rust
-   fn open_repo(&self) -> Result<Repository, DomainError> {
+   fn open_repo(&self) -> Result&lt;Repository, DomainError&gt; {
        Repository::open(&self.repo_path).map_err(|e| DomainError::Vcs(e.to_string()))
    }
    ```
 
 3. Implement constructor:
-   - `pub fn new(repo_path: PathBuf) -> Result<Self, DomainError>` -- verify path is a valid git repo.
-   - `pub fn from_current_dir() -> Result<Self, DomainError>` -- discover repo from CWD using `Repository::discover`.
+   - `pub fn new(repo_path: PathBuf) -> Result&lt;Self, DomainError&gt;` -- verify path is a valid git repo.
+   - `pub fn from_current_dir() -> Result&lt;Self, DomainError&gt;` -- discover repo from CWD using `Repository::discover`.
 
 4. Define a `DomainError` mapping from `git2::Error`:
    - `NotFound` -> `DomainError::NotFound`
@@ -110,18 +110,18 @@ Implement the git adapter in `crates/agileplus-git/` that fulfills the `VcsPort`
 
 2. **create_worktree**:
    ```rust
-   async fn create_worktree(&self, feature_slug: &str, wp_id: &str) -> Result<PathBuf, DomainError>
+   async fn create_worktree(&self, feature_slug: &str, wp_id: &str) -> Result&lt;PathBuf, DomainError&gt;
    ```
-   - Compute worktree path: `<repo_root>/.worktrees/<feature_slug>-<wp_id>/`
+   - Compute worktree path: `&lt;repo_root&gt;/.worktrees/&lt;feature_slug&gt;-&lt;wp_id&gt;/`
    - Create the directory if it doesn't exist.
-   - Create a branch: `<feature_slug>-<wp_id>` based on current HEAD (or a specified base).
+   - Create a branch: `&lt;feature_slug&gt;-&lt;wp_id&gt;` based on current HEAD (or a specified base).
    - Use `repo.worktree(name, path, opts)` to create the git worktree.
    - git2 API: `Repository::worktree()` creates a worktree. Use `WorktreeAddOptions` to set the branch.
    - Return the absolute path to the worktree.
 
 3. **list_worktrees**:
    ```rust
-   async fn list_worktrees(&self) -> Result<Vec<WorktreeInfo>, DomainError>
+   async fn list_worktrees(&self) -> Result&lt;Vec&lt;WorktreeInfo&gt;, DomainError&gt;
    ```
    - Use `repo.worktrees()` to get worktree names.
    - For each, use `repo.find_worktree(name)` to get details.
@@ -130,7 +130,7 @@ Implement the git adapter in `crates/agileplus-git/` that fulfills the `VcsPort`
 
 4. **cleanup_worktree**:
    ```rust
-   async fn cleanup_worktree(&self, worktree_path: &Path) -> Result<(), DomainError>
+   async fn cleanup_worktree(&self, worktree_path: &Path) -> Result&lt;(), DomainError&gt;
    ```
    - Validate the path is under `.worktrees/`.
    - Use `repo.find_worktree(name)` then `worktree.prune(opts)` with force option.
@@ -145,7 +145,7 @@ Implement the git adapter in `crates/agileplus-git/` that fulfills the `VcsPort`
 - Create a worktree, verify directory exists and contains a valid git checkout.
 - List worktrees, verify the created worktree appears.
 - Cleanup worktree, verify directory removed and `git worktree list` no longer shows it.
-- Worktree name follows convention: `<feature_slug>-<wp_id>`.
+- Worktree name follows convention: `&lt;feature_slug&gt;-&lt;wp_id&gt;`.
 
 ---
 
@@ -158,7 +158,7 @@ Implement the git adapter in `crates/agileplus-git/` that fulfills the `VcsPort`
 
 2. **create_branch**:
    ```rust
-   async fn create_branch(&self, branch_name: &str, base: &str) -> Result<(), DomainError>
+   async fn create_branch(&self, branch_name: &str, base: &str) -> Result&lt;(), DomainError&gt;
    ```
    - Resolve `base` to a commit: `repo.revparse_single(base)?.peel_to_commit()?`
    - Create branch: `repo.branch(branch_name, &commit, false)?`
@@ -166,7 +166,7 @@ Implement the git adapter in `crates/agileplus-git/` that fulfills the `VcsPort`
 
 3. **checkout_branch**:
    ```rust
-   async fn checkout_branch(&self, branch_name: &str) -> Result<(), DomainError>
+   async fn checkout_branch(&self, branch_name: &str) -> Result&lt;(), DomainError&gt;
    ```
    - Resolve branch to reference: `repo.find_branch(branch_name, BranchType::Local)?`
    - Set HEAD: `repo.set_head(refname)?`
@@ -174,7 +174,7 @@ Implement the git adapter in `crates/agileplus-git/` that fulfills the `VcsPort`
 
 4. **merge_to_target**:
    ```rust
-   async fn merge_to_target(&self, source: &str, target: &str) -> Result<MergeResult, DomainError>
+   async fn merge_to_target(&self, source: &str, target: &str) -> Result&lt;MergeResult, DomainError&gt;
    ```
    - Checkout target branch.
    - Get annotated commit for source: `repo.find_annotated_commit(oid)?`
@@ -187,7 +187,7 @@ Implement the git adapter in `crates/agileplus-git/` that fulfills the `VcsPort`
 
 5. **detect_conflicts**:
    ```rust
-   async fn detect_conflicts(&self, source: &str, target: &str) -> Result<Vec<ConflictInfo>, DomainError>
+   async fn detect_conflicts(&self, source: &str, target: &str) -> Result&lt;Vec&lt;ConflictInfo&gt;, DomainError&gt;
    ```
    - Perform a dry-run merge analysis without committing.
    - Use `repo.merge_trees()` on the two branch trees with the merge base.
@@ -207,23 +207,23 @@ Implement the git adapter in `crates/agileplus-git/` that fulfills the `VcsPort`
 
 ### T041: Implement artifact operations
 
-**Purpose**: Read and write spec/plan/audit artifacts in the `kitty-specs/<feature>/` directory structure.
+**Purpose**: Read and write spec/plan/audit artifacts in the `kitty-specs/&lt;feature&gt;/` directory structure.
 
 **Steps**:
 1. Create `crates/agileplus-git/src/artifact.rs`.
 
 2. **read_artifact**:
    ```rust
-   async fn read_artifact(&self, feature_slug: &str, relative_path: &str) -> Result<String, DomainError>
+   async fn read_artifact(&self, feature_slug: &str, relative_path: &str) -> Result&lt;String, DomainError&gt;
    ```
-   - Compute full path: `<repo_root>/kitty-specs/<feature_slug>/<relative_path>`
+   - Compute full path: `&lt;repo_root&gt;/kitty-specs/&lt;feature_slug&gt;/&lt;relative_path&gt;`
    - Read file contents via `std::fs::read_to_string()`.
    - Return `DomainError::NotFound` if file doesn't exist.
    - Note: This reads from the working directory, not from git objects. This is intentional -- artifacts are always read from the current working tree state.
 
 3. **write_artifact**:
    ```rust
-   async fn write_artifact(&self, feature_slug: &str, relative_path: &str, content: &str) -> Result<(), DomainError>
+   async fn write_artifact(&self, feature_slug: &str, relative_path: &str, content: &str) -> Result&lt;(), DomainError&gt;
    ```
    - Compute full path, create parent directories if needed.
    - Write content via `std::fs::write()`.
@@ -232,15 +232,15 @@ Implement the git adapter in `crates/agileplus-git/` that fulfills the `VcsPort`
 
 4. **artifact_exists**:
    ```rust
-   async fn artifact_exists(&self, feature_slug: &str, relative_path: &str) -> Result<bool, DomainError>
+   async fn artifact_exists(&self, feature_slug: &str, relative_path: &str) -> Result&lt;bool, DomainError&gt;
    ```
    - Check `Path::exists()` for the computed path.
 
 5. **scan_feature_artifacts**:
    ```rust
-   async fn scan_feature_artifacts(&self, feature_slug: &str) -> Result<FeatureArtifacts, DomainError>
+   async fn scan_feature_artifacts(&self, feature_slug: &str) -> Result&lt;FeatureArtifacts, DomainError&gt;
    ```
-   - Base path: `<repo_root>/kitty-specs/<feature_slug>/`
+   - Base path: `&lt;repo_root&gt;/kitty-specs/&lt;feature_slug&gt;/`
    - Read `meta.json` if present.
    - Read `audit/chain.jsonl` if present.
    - Glob `evidence/**/*` for evidence file paths.
@@ -265,7 +265,7 @@ Implement the git adapter in `crates/agileplus-git/` that fulfills the `VcsPort`
 
 2. Implement a scanning function:
    ```rust
-   pub fn scan_all_features(&self) -> Result<Vec<String>, DomainError>
+   pub fn scan_all_features(&self) -> Result&lt;Vec&lt;String&gt;, DomainError&gt;
    ```
    - List directories under `kitty-specs/` in the working tree.
    - Filter to directories containing `meta.json`.
@@ -273,11 +273,11 @@ Implement the git adapter in `crates/agileplus-git/` that fulfills the `VcsPort`
 
 3. Implement commit history extraction:
    ```rust
-   pub fn get_feature_history(&self, feature_slug: &str) -> Result<Vec<CommitInfo>, DomainError>
+   pub fn get_feature_history(&self, feature_slug: &str) -> Result&lt;Vec&lt;CommitInfo&gt;, DomainError&gt;
    ```
-   - Walk the commit log filtered to paths under `kitty-specs/<feature_slug>/`.
+   - Walk the commit log filtered to paths under `kitty-specs/&lt;feature_slug&gt;/`.
    - Use `repo.revwalk()` with path filtering.
-   - Return `CommitInfo { oid: String, message: String, author: String, timestamp: DateTime<Utc> }`.
+   - Return `CommitInfo { oid: String, message: String, author: String, timestamp: DateTime&lt;Utc&gt; }`.
 
 4. This supports `rebuild_from_git` in WP06: the SQLite adapter calls `scan_all_features()` to discover features, then `scan_feature_artifacts()` for each to extract data.
 
@@ -362,7 +362,7 @@ Implement the git adapter in `crates/agileplus-git/` that fulfills the `VcsPort`
 3. **Path safety**: All paths computed relative to repo root. No path traversal vulnerabilities.
 4. **Thread safety**: Verify `GitVcsAdapter` is `Send + Sync`. No stored `Repository` references.
 5. **Test isolation**: Every test uses a fresh temp repo. No test depends on another test's state.
-6. **Worktree convention**: Paths match `.worktrees/<feature-slug>-<wp-id>/` exactly.
+6. **Worktree convention**: Paths match `.worktrees/&lt;feature-slug&gt;-&lt;wp-id&gt;/` exactly.
 7. **Artifact staging**: `write_artifact` stages but does not commit.
 
 ## Activity Log

@@ -92,14 +92,14 @@ and issue-to-cycle relationship. Use the existing `sync_mappings` infrastructure
    pub struct PlaneCreateModuleRequest {
        pub name: String,
        #[serde(skip_serializing_if = "Option::is_none")]
-       pub description: Option<String>,
+       pub description: Option&lt;String&gt;,
    }
 
    #[derive(Debug, Deserialize)]
    pub struct PlaneModuleResponse {
        pub id: String,       // Plane's UUID
        pub name: String,
-       pub description: Option<String>,
+       pub description: Option&lt;String&gt;,
    }
    ```
 
@@ -110,7 +110,7 @@ and issue-to-cycle relationship. Use the existing `sync_mappings` infrastructure
    pub async fn create_module(
        &self,
        req: &PlaneCreateModuleRequest,
-   ) -> Result<PlaneModuleResponse, SyncError> {
+   ) -> Result&lt;PlaneModuleResponse, SyncError&gt; {
        let url = format!(
            "{}/api/v1/workspaces/{}/projects/{}/modules/",
            self.base_url, self.workspace_slug, self.project_id
@@ -128,7 +128,7 @@ and issue-to-cycle relationship. Use the existing `sync_mappings` infrastructure
                resp.status()
            )));
        }
-       resp.json::<PlaneModuleResponse>().await.map_err(|e| SyncError::Deserialize(e.to_string()))
+       resp.json::&lt;PlaneModuleResponse&gt;().await.map_err(|e| SyncError::Deserialize(e.to_string()))
    }
 
    /// Update a Module name/description in Plane.so (PATCH).
@@ -136,17 +136,17 @@ and issue-to-cycle relationship. Use the existing `sync_mappings` infrastructure
        &self,
        plane_module_id: &str,
        req: &PlaneCreateModuleRequest,
-   ) -> Result<(), SyncError> { ... }
+   ) -> Result&lt;(), SyncError&gt; { ... }
 
    /// Delete a Module in Plane.so.
-   pub async fn delete_module(&self, plane_module_id: &str) -> Result<(), SyncError> { ... }
+   pub async fn delete_module(&self, plane_module_id: &str) -> Result&lt;(), SyncError&gt; { ... }
 
    /// Add a Plane issue to a Plane module.
    pub async fn add_issue_to_module(
        &self,
        plane_module_id: &str,
        plane_issue_id: &str,
-   ) -> Result<(), SyncError> { ... }
+   ) -> Result&lt;(), SyncError&gt; { ... }
    ```
 
 4. Write unit tests with mock HTTP server:
@@ -174,7 +174,7 @@ and issue-to-cycle relationship. Use the existing `sync_mappings` infrastructure
    pub struct PlaneCreateCycleRequest {
        pub name: String,
        #[serde(skip_serializing_if = "Option::is_none")]
-       pub description: Option<String>,
+       pub description: Option&lt;String&gt;,
        pub start_date: String,   // "YYYY-MM-DD"
        pub end_date: String,     // "YYYY-MM-DD"
    }
@@ -183,8 +183,8 @@ and issue-to-cycle relationship. Use the existing `sync_mappings` infrastructure
    pub struct PlaneCycleResponse {
        pub id: String,
        pub name: String,
-       pub start_date: Option<String>,
-       pub end_date: Option<String>,
+       pub start_date: Option&lt;String&gt;,
+       pub end_date: Option&lt;String&gt;,
    }
    ```
 
@@ -194,7 +194,7 @@ and issue-to-cycle relationship. Use the existing `sync_mappings` infrastructure
    pub async fn create_cycle(
        &self,
        req: &PlaneCreateCycleRequest,
-   ) -> Result<PlaneCycleResponse, SyncError> {
+   ) -> Result&lt;PlaneCycleResponse, SyncError&gt; {
        let url = format!(
            "{}/api/v1/workspaces/{}/projects/{}/cycles/",
            self.base_url, self.workspace_slug, self.project_id
@@ -206,16 +206,16 @@ and issue-to-cycle relationship. Use the existing `sync_mappings` infrastructure
        &self,
        plane_cycle_id: &str,
        req: &PlaneCreateCycleRequest,
-   ) -> Result<(), SyncError> { ... }
+   ) -> Result&lt;(), SyncError&gt; { ... }
 
-   pub async fn delete_cycle(&self, plane_cycle_id: &str) -> Result<(), SyncError> { ... }
+   pub async fn delete_cycle(&self, plane_cycle_id: &str) -> Result&lt;(), SyncError&gt; { ... }
 
    /// Add a Plane issue to a Plane cycle.
    pub async fn add_issue_to_cycle(
        &self,
        plane_cycle_id: &str,
        plane_issue_id: &str,
-   ) -> Result<(), SyncError> {
+   ) -> Result&lt;(), SyncError&gt; {
        let url = format!(
            "{}/api/v1/workspaces/{}/projects/{}/cycles/{}/cycle-issues/",
            self.base_url, self.workspace_slug, self.project_id, plane_cycle_id
@@ -251,7 +251,7 @@ and record the sync mapping. Traces to FR-P01, FR-P02, FR-P05.
        client: &PlaneClient,
        storage: &dyn StoragePort,
        module: &Module,
-   ) -> Result<(), SyncError> {
+   ) -> Result&lt;(), SyncError&gt; {
        // Check if a sync mapping already exists for this module
        let existing = storage.get_sync_mapping("module", module.id).await
            .map_err(|e| SyncError::Storage(e.to_string()))?;
@@ -321,7 +321,7 @@ and record the sync mapping. Traces to FR-P01, FR-P02, FR-P05.
    pub struct PlaneModuleData {
        pub id: String,
        pub name: String,
-       pub description: Option<String>,
+       pub description: Option&lt;String&gt;,
    }
 
    #[derive(Debug, Deserialize)]
@@ -334,8 +334,8 @@ and record the sync mapping. Traces to FR-P01, FR-P02, FR-P05.
    pub struct PlaneCycleData {
        pub id: String,
        pub name: String,
-       pub start_date: Option<String>,
-       pub end_date: Option<String>,
+       pub start_date: Option&lt;String&gt;,
+       pub end_date: Option&lt;String&gt;,
    }
    ```
 
@@ -345,7 +345,7 @@ and record the sync mapping. Traces to FR-P01, FR-P02, FR-P05.
    pub async fn handle_webhook(
        payload: &[u8],
        storage: &dyn StoragePort,
-   ) -> Result<(), SyncError> {
+   ) -> Result&lt;(), SyncError&gt; {
        // Parse event type from JSON (read "event" field first)
        let event_envelope: serde_json::Value = serde_json::from_slice(payload)
            .map_err(|e| SyncError::Deserialize(e.to_string()))?;
@@ -407,18 +407,18 @@ Traces to FR-P04, FR-P05.
        &self,
        entity_type: &str,
        local_id: i64,
-   ) -> impl Future<Output = Result<Option<SyncMapping>, DomainError>> + Send;
+   ) -> impl Future<Output = Result&lt;Option&lt;SyncMapping&gt;, DomainError&gt;> + Send;
 
    fn upsert_sync_mapping(
        &self,
        mapping: SyncMapping,
-   ) -> impl Future<Output = Result<(), DomainError>> + Send;
+   ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
 
    fn get_sync_mapping_by_plane_id(
        &self,
        entity_type: &str,
        plane_id: &str,
-   ) -> impl Future<Output = Result<Option<SyncMapping>, DomainError>> + Send;
+   ) -> impl Future<Output = Result&lt;Option&lt;SyncMapping&gt;, DomainError&gt;> + Send;
    ```
 
 3. Define `SyncMapping` struct in domain if not already defined:
@@ -429,7 +429,7 @@ Traces to FR-P04, FR-P05.
        pub local_id: i64,
        pub plane_id: String,
        pub entity_type: String,
-       pub last_synced_at: DateTime<Utc>,
+       pub last_synced_at: DateTime&lt;Utc&gt;,
    }
    ```
 
@@ -444,7 +444,7 @@ Traces to FR-P04, FR-P05.
        storage: &dyn StoragePort,
        feature: &Feature,
        module_id: i64,
-   ) -> Result<(), SyncError> {
+   ) -> Result&lt;(), SyncError&gt; {
        // Get Plane issue id for the feature
        let feature_mapping = storage.get_sync_mapping("feature", feature.id).await
            .map_err(|e| SyncError::Storage(e.to_string()))?;

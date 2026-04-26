@@ -101,17 +101,17 @@ middleware stack.
 1. Define the shared application state:
    ```rust
    #[derive(Clone)]
-   pub struct AppState<S: StoragePort, V: VcsPort, O: ObservabilityPort> {
-       pub storage: Arc<S>,
-       pub vcs: Arc<V>,
-       pub telemetry: Arc<O>,
-       pub config: Arc<AppConfig>,
+   pub struct AppState&lt;S: StoragePort, V: VcsPort, O: ObservabilityPort&gt; {
+       pub storage: Arc&lt;S&gt;,
+       pub vcs: Arc&lt;V&gt;,
+       pub telemetry: Arc&lt;O&gt;,
+       pub config: Arc&lt;AppConfig&gt;,
    }
    ```
 
 2. Build the router with route groups:
    ```rust
-   pub fn create_router<S, V, O>(state: AppState<S, V, O>) -> Router
+   pub fn create_router&lt;S, V, O&gt;(state: AppState&lt;S, V, O&gt;) -> Router
    where
        S: StoragePort + Send + Sync + 'static,
        V: VcsPort + Send + Sync + 'static,
@@ -146,7 +146,7 @@ middleware stack.
 
 5. Set up the server startup integrated with the existing `serve` command:
    ```rust
-   pub async fn start_api(addr: SocketAddr, state: AppState<...>) -> Result<()> {
+   pub async fn start_api(addr: SocketAddr, state: AppState&lt;...&gt;) -> Result&lt;()&gt; {
        let app = create_router(state);
        let listener = tokio::net::TcpListener::bind(addr).await?;
        axum::serve(listener, app).await?;
@@ -178,9 +178,9 @@ services through port traits.
 1. Implement feature handlers:
    ```rust
    pub async fn list_features(
-       State(state): State<AppState<impl StoragePort, impl VcsPort, impl ObservabilityPort>>,
-       Query(params): Query<FeatureListParams>,
-   ) -> Result<Json<Vec<FeatureResponse>>, ApiError> {
+       State(state): State<AppState&lt;impl StoragePort, impl VcsPort, impl ObservabilityPort&gt;>,
+       Query(params): Query&lt;FeatureListParams&gt;,
+   ) -> Result&lt;Json&lt;Vec&lt;FeatureResponse&gt;&gt;, ApiError&gt; {
        let features = if let Some(state_filter) = params.state {
            state.storage.list_features_by_state(&state_filter).await?
        } else {
@@ -190,9 +190,9 @@ services through port traits.
    }
 
    pub async fn get_feature(
-       State(state): State<AppState<...>>,
-       Path(slug): Path<String>,
-   ) -> Result<Json<FeatureResponse>, ApiError> {
+       State(state): State&lt;AppState&lt;...&gt;&gt;,
+       Path(slug): Path&lt;String&gt;,
+   ) -> Result&lt;Json&lt;FeatureResponse&gt;, ApiError&gt; {
        let feature = state.storage.get_feature_by_slug(&slug).await
            .map_err(|_| ApiError::NotFound(format!("Feature '{slug}' not found")))?;
        Ok(Json(feature.into()))
@@ -202,10 +202,10 @@ services through port traits.
 2. Implement work package handlers:
    ```rust
    pub async fn list_work_packages(
-       State(state): State<AppState<...>>,
-       Path(slug): Path<String>,
-       Query(params): Query<WpListParams>,
-   ) -> Result<Json<Vec<WorkPackageResponse>>, ApiError> {
+       State(state): State&lt;AppState&lt;...&gt;&gt;,
+       Path(slug): Path&lt;String&gt;,
+       Query(params): Query&lt;WpListParams&gt;,
+   ) -> Result&lt;Json&lt;Vec&lt;WorkPackageResponse&gt;&gt;, ApiError&gt; {
        let feature = state.storage.get_feature_by_slug(&slug).await?;
        let wps = state.storage.list_wps_by_feature(feature.id).await?;
        Ok(Json(wps.into_iter().map(WorkPackageResponse::from).collect()))
@@ -215,18 +215,18 @@ services through port traits.
 3. Implement governance handlers:
    ```rust
    pub async fn get_governance(
-       State(state): State<AppState<...>>,
-       Path(slug): Path<String>,
-   ) -> Result<Json<GovernanceResponse>, ApiError> {
+       State(state): State&lt;AppState&lt;...&gt;&gt;,
+       Path(slug): Path&lt;String&gt;,
+   ) -> Result&lt;Json&lt;GovernanceResponse&gt;, ApiError&gt; {
        let feature = state.storage.get_feature_by_slug(&slug).await?;
        let contract = state.storage.get_governance_contract(feature.id).await?;
        Ok(Json(contract.into()))
    }
 
    pub async fn trigger_validate(
-       State(state): State<AppState<...>>,
-       Path(slug): Path<String>,
-   ) -> Result<Json<ValidationReportResponse>, ApiError> {
+       State(state): State&lt;AppState&lt;...&gt;&gt;,
+       Path(slug): Path&lt;String&gt;,
+   ) -> Result&lt;Json&lt;ValidationReportResponse&gt;, ApiError&gt; {
        // Reuse GovernanceEvaluator from WP13/T074
        let evaluator = GovernanceEvaluator::new(&*state.storage, &contract, feature.id);
        let result = evaluator.evaluate_all().await?;
@@ -237,9 +237,9 @@ services through port traits.
 4. Implement audit handlers:
    ```rust
    pub async fn get_audit_trail(
-       State(state): State<AppState<...>>,
-       Path(slug): Path<String>,
-   ) -> Result<Json<Vec<AuditEntryResponse>>, ApiError> {
+       State(state): State&lt;AppState&lt;...&gt;&gt;,
+       Path(slug): Path&lt;String&gt;,
+   ) -> Result&lt;Json&lt;Vec&lt;AuditEntryResponse&gt;&gt;, ApiError&gt; {
        let feature = state.storage.get_feature_by_slug(&slug).await?;
        let trail = state.storage.get_audit_trail(feature.id).await?;
        Ok(Json(trail.into_iter().map(AuditEntryResponse::from).collect()))
@@ -298,11 +298,11 @@ endpoints.
 1. Define the middleware function:
    ```rust
    pub async fn validate_api_key(
-       State(state): State<AppState<...>>,
+       State(state): State&lt;AppState&lt;...&gt;&gt;,
        headers: HeaderMap,
        request: Request,
        next: Next,
-   ) -> Result<Response, ApiError> {
+   ) -> Result&lt;Response, ApiError&gt; {
        // Skip auth for health/info endpoints
        if request.uri().path().starts_with("/health") || request.uri().path().starts_with("/info") {
            return Ok(next.run(request).await);
@@ -358,11 +358,11 @@ Plane.so API key, AgilePlus API keys) using the OS keychain with encrypted-file 
    ```rust
    #[async_trait]
    pub trait CredentialStore: Send + Sync {
-       async fn get(&self, service: &str, key: &str) -> Result<String, CredentialError>;
-       async fn set(&self, service: &str, key: &str, value: &str) -> Result<(), CredentialError>;
-       async fn delete(&self, service: &str, key: &str) -> Result<(), CredentialError>;
-       async fn list_keys(&self, service: &str) -> Result<Vec<String>, CredentialError>;
-       async fn validate_api_key(&self, key: &str) -> Result<bool, CredentialError>;
+       async fn get(&self, service: &str, key: &str) -> Result&lt;String, CredentialError&gt;;
+       async fn set(&self, service: &str, key: &str, value: &str) -> Result&lt;(), CredentialError&gt;;
+       async fn delete(&self, service: &str, key: &str) -> Result&lt;(), CredentialError&gt;;
+       async fn list_keys(&self, service: &str) -> Result&lt;Vec&lt;String&gt;, CredentialError&gt;;
+       async fn validate_api_key(&self, key: &str) -> Result&lt;bool, CredentialError&gt;;
    }
    ```
 
@@ -380,7 +380,7 @@ Plane.so API key, AgilePlus API keys) using the OS keychain with encrypted-file 
 
    #[async_trait]
    impl CredentialStore for KeychainCredentialStore {
-       async fn get(&self, service: &str, key: &str) -> Result<String, CredentialError> {
+       async fn get(&self, service: &str, key: &str) -> Result&lt;String, CredentialError&gt; {
            let entry = keyring::Entry::new(&format!("{}-{}", self.service_prefix, service), key)?;
            entry.get_password().map_err(|e| match e {
                keyring::Error::NoEntry => CredentialError::NotFound(key.to_string()),
@@ -388,7 +388,7 @@ Plane.so API key, AgilePlus API keys) using the OS keychain with encrypted-file 
            })
        }
 
-       async fn set(&self, service: &str, key: &str, value: &str) -> Result<(), CredentialError> {
+       async fn set(&self, service: &str, key: &str, value: &str) -> Result&lt;(), CredentialError&gt; {
            let entry = keyring::Entry::new(&format!("{}-{}", self.service_prefix, service), key)?;
            entry.set_password(value).map_err(|e| CredentialError::BackendError(e.to_string()))
        }
@@ -409,7 +409,7 @@ Plane.so API key, AgilePlus API keys) using the OS keychain with encrypted-file 
 
 4. Implement automatic backend selection:
    ```rust
-   pub fn create_credential_store(config: &AppConfig) -> Box<dyn CredentialStore> {
+   pub fn create_credential_store(config: &AppConfig) -> Box&lt;dyn CredentialStore&gt; {
        match config.credential_backend {
            CredentialBackend::Keychain => Box::new(KeychainCredentialStore::new()),
            CredentialBackend::File => Box::new(FileCredentialStore::new(&config.credential_file)),
@@ -426,7 +426,7 @@ Plane.so API key, AgilePlus API keys) using the OS keychain with encrypted-file 
 
 5. Add CLI commands for credential management:
    ```
-   agileplus config set-credential github-token <value>
+   agileplus config set-credential github-token &lt;value&gt;
    agileplus config get-credential github-token
    agileplus config list-credentials
    agileplus config delete-credential github-token
@@ -497,11 +497,11 @@ defaults for all configurable values.
        #[serde(default)]
        pub enabled: bool,
        #[serde(default)]
-       pub otlp_endpoint: Option<String>,
+       pub otlp_endpoint: Option&lt;String&gt;,
        #[serde(default = "default_log_level")]
        pub log_level: String,
        #[serde(default)]
-       pub log_file: Option<PathBuf>,
+       pub log_file: Option&lt;PathBuf&gt;,
    }
 
    #[derive(Debug, Deserialize, Serialize)]
@@ -511,7 +511,7 @@ defaults for all configurable values.
        #[serde(default = "default_grpc_port")]
        pub grpc_port: u16, // default: 50051
        #[serde(default)]
-       pub cors_origins: Vec<String>,
+       pub cors_origins: Vec&lt;String&gt;,
    }
 
    #[derive(Debug, Deserialize, Serialize)]
@@ -530,7 +530,7 @@ defaults for all configurable values.
 2. Implement config loading with layered resolution:
    ```rust
    impl AppConfig {
-       pub fn load() -> Result<Self, ConfigError> {
+       pub fn load() -> Result&lt;Self, ConfigError&gt; {
            let config_path = Self::config_path();
            if config_path.exists() {
                let content = fs::read_to_string(&config_path)?;
@@ -549,7 +549,7 @@ defaults for all configurable values.
        }
 
        /// Create default config file if it doesn't exist
-       pub fn init_default() -> Result<PathBuf, ConfigError> {
+       pub fn init_default() -> Result&lt;PathBuf, ConfigError&gt; {
            let path = Self::config_path();
            if !path.exists() {
                fs::create_dir_all(path.parent().unwrap())?;
@@ -562,9 +562,9 @@ defaults for all configurable values.
    }
    ```
 
-3. Support environment variable overrides with the pattern `AGILEPLUS_<SECTION>_<KEY>`:
+3. Support environment variable overrides with the pattern `AGILEPLUS_&lt;SECTION&gt;_&lt;KEY&gt;`:
    ```rust
-   pub fn load_with_env_overrides() -> Result<AppConfig, ConfigError> {
+   pub fn load_with_env_overrides() -> Result&lt;AppConfig, ConfigError&gt; {
        let mut config = Self::load()?;
        if let Ok(port) = env::var("AGILEPLUS_API_PORT") {
            config.api.port = port.parse()?;
@@ -651,7 +651,7 @@ loading with invalid values (errors), and environment variable overrides.
            .add_header("X-API-Key", "test-key")
            .await;
        response.assert_status_ok();
-       let features: Vec<FeatureResponse> = response.json();
+       let features: Vec&lt;FeatureResponse&gt; = response.json();
        assert!(!features.is_empty());
    }
 

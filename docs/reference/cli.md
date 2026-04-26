@@ -15,8 +15,8 @@ agileplus [GLOBAL_OPTIONS] COMMAND [COMMAND_OPTIONS]
 | Flag | Default | Description |
 |------|---------|-------------|
 | `-v, --verbose` | (none) | Increase verbosity: `-v` (debug), `-vv` (trace) |
-| `--db <PATH>` | `.agileplus/agileplus.db` | Path to SQLite database |
-| `--repo <PATH>` | (current dir) | Path to git repository root |
+| `--db &lt;PATH&gt;` | `.agileplus/agileplus.db` | Path to SQLite database |
+| `--repo &lt;PATH&gt;` | (current dir) | Path to git repository root |
 
 ## Core Workflow Commands
 
@@ -25,7 +25,7 @@ agileplus [GLOBAL_OPTIONS] COMMAND [COMMAND_OPTIONS]
 Create or revise a feature specification.
 
 ```bash
-agileplus specify [OPTIONS] <FEATURE_SLUG> [DESCRIPTION]
+agileplus specify [OPTIONS] &lt;FEATURE_SLUG&gt; [DESCRIPTION]
 ```
 
 | Argument | Description |
@@ -36,8 +36,8 @@ agileplus specify [OPTIONS] <FEATURE_SLUG> [DESCRIPTION]
 | Option | Description |
 |--------|-------------|
 | `--interactive` | Interactive prompt mode (default if no description) |
-| `--agent <AGENT>` | Use specific agent to draft spec (claude, cursor) |
-| `--template <PATH>` | Use custom spec template |
+| `--agent &lt;AGENT&gt;` | Use specific agent to draft spec (claude, cursor) |
+| `--template &lt;PATH&gt;` | Use custom spec template |
 | `--no-git` | Don't create git branch |
 | `-v, --verbose` | Increase logging verbosity |
 
@@ -62,15 +62,15 @@ agileplus specify 001-login --no-git
 Research feasibility or gather context for a feature.
 
 ```bash
-agileplus research [OPTIONS] <FEATURE_SLUG>
+agileplus research [OPTIONS] &lt;FEATURE_SLUG&gt;
 ```
 
 | Option | Description |
 |--------|-------------|
 | `--pre-specify` | Scan codebase before spec created (discovery mode) |
 | `--post-specify` | Analyze feasibility after spec (validation mode) |
-| `--scope <PATHS>` | Comma-separated files/dirs to scan |
-| `--output <FORMAT>` | `markdown` (default), `json`, or `yaml` |
+| `--scope &lt;PATHS&gt;` | Comma-separated files/dirs to scan |
+| `--output &lt;FORMAT&gt;` | `markdown` (default), `json`, or `yaml` |
 
 Examples:
 
@@ -90,15 +90,15 @@ agileplus research 001-login --output json > report.json
 Generate a work breakdown structure (work packages) for a feature.
 
 ```bash
-agileplus plan [OPTIONS] <FEATURE_SLUG>
+agileplus plan [OPTIONS] &lt;FEATURE_SLUG&gt;
 ```
 
 | Option | Description |
 |--------|-------------|
 | `--parallelizable` | Allow independent work packages (default: sequential) |
-| `--max-packages <N>` | Maximum work packages to generate (default: 8) |
+| `--max-packages &lt;N&gt;` | Maximum work packages to generate (default: 8) |
 | `--file-scope` | Include file-level scope in each WP |
-| `--agent <AGENT>` | Use specific agent for planning |
+| `--agent &lt;AGENT&gt;` | Use specific agent for planning |
 
 Examples:
 
@@ -118,17 +118,17 @@ agileplus plan 001-login --max-packages 5
 Dispatch agents to implement work packages.
 
 ```bash
-agileplus implement [OPTIONS] <FEATURE_SLUG> [WP_FILTERS]
+agileplus implement [OPTIONS] &lt;FEATURE_SLUG&gt; [WP_FILTERS]
 ```
 
 | Option | Description |
 |--------|-------------|
-| `--wp <ID>` | Implement specific work package (e.g., `WP01`, `WP02`) |
-| `--agent <AGENT>` | Agent to dispatch (claude-code, codex) |
-| `--timeout <SECS>` | Agent session timeout (default: 1800s = 30m) |
+| `--wp &lt;ID&gt;` | Implement specific work package (e.g., `WP01`, `WP02`) |
+| `--agent &lt;AGENT&gt;` | Agent to dispatch (claude-code, codex) |
+| `--timeout &lt;SECS&gt;` | Agent session timeout (default: 1800s = 30m) |
 | `--skip-review` | Skip PR review cycle (dangerous) |
-| `--max-review-cycles <N>` | Max review/fix iterations (default: 5) |
-| `--parallel <N>` | Dispatch N agents in parallel (1–3, default: 1) |
+| `--max-review-cycles &lt;N&gt;` | Max review/fix iterations (default: 5) |
+| `--parallel &lt;N&gt;` | Dispatch N agents in parallel (1–3, default: 1) |
 
 Examples:
 
@@ -151,12 +151,12 @@ agileplus implement 001-login --parallel 2
 Check governance compliance before merging.
 
 ```bash
-agileplus validate [OPTIONS] <FEATURE_SLUG>
+agileplus validate [OPTIONS] &lt;FEATURE_SLUG&gt;
 ```
 
 | Option | Description |
 |--------|-------------|
-| `--gate <NAME>` | Validate specific gate (specify, plan, implement, review, merge) |
+| `--gate &lt;NAME&gt;` | Validate specific gate (specify, plan, implement, review, merge) |
 | `--strict` | Fail on warnings (not just errors) |
 | `--verbose` | Show detailed violation list |
 
@@ -178,7 +178,7 @@ agileplus validate 001-login --strict
 Merge all completed work packages to main.
 
 ```bash
-agileplus ship [OPTIONS] <FEATURE_SLUG>
+agileplus ship [OPTIONS] &lt;FEATURE_SLUG&gt;
 ```
 
 | Option | Description |
@@ -186,7 +186,7 @@ agileplus ship [OPTIONS] <FEATURE_SLUG>
 | `--auto-resolve` | Automatically resolve simple merge conflicts |
 | `--no-verify` | Skip pre-merge hooks |
 | `--dry-run` | Show what would be merged without doing it |
-| `--target <BRANCH>` | Target branch (default: main) |
+| `--target &lt;BRANCH&gt;` | Target branch (default: main) |
 
 Examples:
 
@@ -206,13 +206,13 @@ agileplus ship 001-login --target develop
 Generate a post-ship report.
 
 ```bash
-agileplus retrospective [OPTIONS] <FEATURE_SLUG>
+agileplus retrospective [OPTIONS] &lt;FEATURE_SLUG&gt;
 ```
 
 | Option | Description |
 |--------|-------------|
-| `--output <PATH>` | Save report to file (default: stdout) |
-| `--format <FORMAT>` | `markdown` (default), `html`, `json` |
+| `--output &lt;PATH&gt;` | Save report to file (default: stdout) |
+| `--format &lt;FORMAT&gt;` | `markdown` (default), `html`, `json` |
 | `--include-metrics` | Include performance/coverage metrics |
 
 Examples:
@@ -235,7 +235,7 @@ agileplus retrospective 001-login --include-metrics
 Classify incoming issues/requests.
 
 ```bash
-agileplus triage [OPTIONS] <TEXT>
+agileplus triage [OPTIONS] &lt;TEXT&gt;
 ```
 
 | Argument | Description |
@@ -244,10 +244,10 @@ agileplus triage [OPTIONS] <TEXT>
 
 | Option | Description |
 |--------|-------------|
-| `--type <TYPE>` | Override auto-classification (bug, feature, idea, task) |
+| `--type &lt;TYPE&gt;` | Override auto-classification (bug, feature, idea, task) |
 | `--dry-run` | Classify without adding to backlog |
-| `--output <FORMAT>` | `table` (default), `json`, `yaml` |
-| `--priority <P>` | Set priority: `critical`, `high`, `medium`, `low` |
+| `--output &lt;FORMAT&gt;` | `table` (default), `json`, `yaml` |
+| `--priority &lt;P&gt;` | Set priority: `critical`, `high`, `medium`, `low` |
 
 Examples:
 
@@ -270,14 +270,14 @@ agileplus triage "Performance is slow" --output json
 Add item to backlog queue.
 
 ```bash
-agileplus queue add [OPTIONS] <TEXT>
+agileplus queue add [OPTIONS] &lt;TEXT&gt;
 ```
 
 | Option | Description |
 |--------|-------------|
-| `--type <TYPE>` | Item type (bug, feature, idea, task) |
-| `--priority <P>` | Priority: critical, high, medium, low |
-| `--tags <TAGS>` | Comma-separated labels |
+| `--type &lt;TYPE&gt;` | Item type (bug, feature, idea, task) |
+| `--priority &lt;P&gt;` | Priority: critical, high, medium, low |
+| `--tags &lt;TAGS&gt;` | Comma-separated labels |
 
 Examples:
 
@@ -297,10 +297,10 @@ agileplus queue list [OPTIONS]
 
 | Option | Description |
 |--------|-------------|
-| `--filter <TYPE>` | Filter by type (bug, feature, idea, task) |
-| `--priority <P>` | Filter by priority |
-| `--output <FORMAT>` | `table` (default), `json`, `yaml` |
-| `--limit <N>` | Show top N items (default: 20) |
+| `--filter &lt;TYPE&gt;` | Filter by type (bug, feature, idea, task) |
+| `--priority &lt;P&gt;` | Filter by priority |
+| `--output &lt;FORMAT&gt;` | `table` (default), `json`, `yaml` |
+| `--limit &lt;N&gt;` | Show top N items (default: 20) |
 
 Examples:
 
@@ -320,7 +320,7 @@ agileplus queue list --output json
 Show details of a backlog item.
 
 ```bash
-agileplus queue show <ITEM_ID>
+agileplus queue show &lt;ITEM_ID&gt;
 ```
 
 ### agileplus queue pop
@@ -333,7 +333,7 @@ agileplus queue pop [OPTIONS]
 
 | Option | Description |
 |--------|-------------|
-| `--count <N>` | Pop N items (default: 1) |
+| `--count &lt;N&gt;` | Pop N items (default: 1) |
 
 Examples:
 

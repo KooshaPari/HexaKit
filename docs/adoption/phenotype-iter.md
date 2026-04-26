@@ -19,7 +19,7 @@ phenotype-iter = { path = "../crates/phenotype-iter" }
 use phenotype_iter::batch::process_in_batches;
 
 let items = vec![1, 2, 3, 4, 5, 6, 7];
-let batches: Vec<Vec<i32>> = process_in_batches(&items, 3).collect();
+let batches: Vec&lt;Vec&lt;i32&gt;&gt; = process_in_batches(&items, 3).collect();
 // Result: [[1, 2, 3], [4, 5, 6], [7]]
 ```
 
@@ -39,8 +39,8 @@ for chunk in process_chunks(&data, 32) {
 ```rust
 use phenotype_iter::collect::collect_into_result;
 
-let results: Vec<Result<i32, &str>> = vec![Ok(1), Ok(2), Err("fail")];
-let (ok, err): (Vec<i32>, Vec<&str>) = collect_into_result(results)?;
+let results: Vec<Result&lt;i32, &str&gt;> = vec![Ok(1), Ok(2), Err("fail")];
+let (ok, err): (Vec&lt;i32&gt;, Vec&lt;&str&gt;) = collect_into_result(results)?;
 // ok = [1, 2]
 // err = ["fail"]
 ```

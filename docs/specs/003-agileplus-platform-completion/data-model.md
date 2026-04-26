@@ -29,11 +29,11 @@ erDiagram
 | state | FeatureState | Enum: created→specified→researched→planned→implementing→validated→shipped→retrospected |
 | spec_hash | [u8; 32] | SHA-256 of spec content |
 | target_branch | String | Default: "main" |
-| plane_issue_id | `Option<String>` | **NEW** — Plane.so issue ID mapping |
-| plane_state_id | `Option<String>` | **NEW** — Plane.so state UUID |
-| labels | `Vec<String>` | **NEW** — Synced with Plane.so |
-| created_at | `DateTime<Utc>` | Immutable |
-| updated_at | `DateTime<Utc>` | Updated on mutation |
+| plane_issue_id | `Option&lt;String&gt;` | **NEW** — Plane.so issue ID mapping |
+| plane_state_id | `Option&lt;String&gt;` | **NEW** — Plane.so state UUID |
+| labels | `Vec&lt;String&gt;` | **NEW** — Synced with Plane.so |
+| created_at | `DateTime&lt;Utc&gt;` | Immutable |
+| updated_at | `DateTime&lt;Utc&gt;` | Updated on mutation |
 
 **Identity**: Unique by `slug` within a project. `id` is the internal PK.
 
@@ -47,10 +47,10 @@ erDiagram
 | ordinal | u32 | Ordering within feature |
 | acceptance_criteria | String | Testable criteria |
 | state | WpState | Enum: planned→doing→for_review→done |
-| assignee | `Option<String>` | Agent or human |
-| plane_sub_issue_id | `Option<String>` | **NEW** — Plane.so sub-issue ID |
-| created_at | `DateTime<Utc>` | |
-| updated_at | `DateTime<Utc>` | |
+| assignee | `Option&lt;String&gt;` | Agent or human |
+| plane_sub_issue_id | `Option&lt;String&gt;` | **NEW** — Plane.so sub-issue ID |
+| created_at | `DateTime&lt;Utc&gt;` | |
+| updated_at | `DateTime&lt;Utc&gt;` | |
 
 ### Event (new)
 
@@ -62,7 +62,7 @@ erDiagram
 | event_type | `String` | "state_transitioned", "created", "synced", "conflict_resolved", etc. |
 | payload | `JSON` | Event-specific data (serde_json::Value) |
 | actor | `String` | User, agent name, or "system" |
-| timestamp | `DateTime<Utc>` | Event time |
+| timestamp | `DateTime&lt;Utc&gt;` | Event time |
 | prev_hash | `[u8; 32]` | Hash of previous event in entity stream |
 | hash | `[u8; 32]` | SHA-256(entity_id + event_type + payload + timestamp + actor + prev_hash) |
 | sequence | `i64` | Per-entity monotonic sequence number |
@@ -79,7 +79,7 @@ erDiagram
 | entity_id | `i64` | FK to entity |
 | state | `JSON` | Serialized current state |
 | event_sequence | `i64` | Sequence number of last applied event |
-| created_at | `DateTime<Utc>` | Snapshot time |
+| created_at | `DateTime&lt;Utc&gt;` | Snapshot time |
 
 **Rule**: Snapshot created every 100 events or every 5 minutes per entity.
 
@@ -92,7 +92,7 @@ erDiagram
 | entity_id | `i64` | Local AgilePlus entity ID |
 | plane_issue_id | `String` | Plane.so issue/sub-issue ID |
 | content_hash | `String` | SHA-256 of synced content |
-| last_synced_at | `DateTime<Utc>` | Last successful sync |
+| last_synced_at | `DateTime&lt;Utc&gt;` | Last successful sync |
 | sync_direction | `String` | "push", "pull", "bidirectional" |
 | conflict_count | `i32` | Number of conflicts encountered |
 
@@ -104,15 +104,15 @@ erDiagram
 |-----------|------|-------|
 | id | `i64` | PK |
 | feature_id | `i64` | FK → Feature |
-| wp_id | `Option<i64>` | FK → WorkPackage (optional) |
-| timestamp | `DateTime<Utc>` | |
+| wp_id | `Option&lt;i64&gt;` | FK → WorkPackage (optional) |
+| timestamp | `DateTime&lt;Utc&gt;` | |
 | actor | `String` | |
 | transition | `String` | Description of action |
-| evidence_refs | `Vec<EvidenceRef>` | Links to evidence artifacts |
+| evidence_refs | `Vec&lt;EvidenceRef&gt;` | Links to evidence artifacts |
 | prev_hash | `[u8; 32]` | Hash chain link |
 | hash | `[u8; 32]` | Self-hash |
-| event_id | `Option<i64>` | **NEW** — FK → Event (correlates audit to event) |
-| archived_to | `Option<String>` | **NEW** — MinIO object key if archived |
+| event_id | `Option&lt;i64&gt;` | **NEW** — FK → Event (correlates audit to event) |
+| archived_to | `Option&lt;String&gt;` | **NEW** — MinIO object key if archived |
 
 ### ServiceHealth (new)
 
@@ -120,7 +120,7 @@ erDiagram
 |-----------|------|-------|
 | service_name | `String` | "nats", "dragonfly", "neo4j", "minio", "api", "mcp" |
 | status | `HealthStatus` | Enum: healthy, degraded, unavailable |
-| last_check | `DateTime<Utc>` | |
+| last_check | `DateTime&lt;Utc&gt;` | |
 | uptime_seconds | `u64` | |
 | connection_info | `String` | Host:port or socket path |
 | metadata | `JSON` | Service-specific details |
@@ -130,9 +130,9 @@ erDiagram
 | Attribute | Type | Notes |
 |-----------|------|-------|
 | device_id | `String` | Unique device identifier (UUID, generated on first run) |
-| tailscale_ip | `Option<String>` | Tailscale IPv4/IPv6 |
+| tailscale_ip | `Option&lt;String&gt;` | Tailscale IPv4/IPv6 |
 | hostname | `String` | Machine hostname |
-| last_seen | `DateTime<Utc>` | |
+| last_seen | `DateTime&lt;Utc&gt;` | |
 | sync_vector | `JSON` | Map of entity→sequence for vector clock sync |
 | platform_version | `String` | AgilePlus version running on device |
 
@@ -143,8 +143,8 @@ erDiagram
 | id | i64 | PK |
 | key_hash | `[u8; 32]` | SHA-256 of the API key (plaintext never stored) |
 | name | `String` | "default", "cli", custom label |
-| created_at | `DateTime<Utc>` | |
-| last_used_at | `Option<DateTime<Utc>>` | |
+| created_at | `DateTime&lt;Utc&gt;` | |
+| last_used_at | `Option&lt;DateTime&lt;Utc&gt;&gt;` | |
 | revoked | `bool` | Soft-delete |
 
 ## Graph Relationships (Neo4j)

@@ -115,8 +115,8 @@ struct Email {
   status: EmailStatus,     // pending, sent, failed, bounced
   attempts: u32,           // retry count
   created_at: DateTime,
-  sent_at: Option<DateTime>,
-  failed_reason: Option<String>,
+  sent_at: Option&lt;DateTime&gt;,
+  failed_reason: Option&lt;String&gt;,
 }
 
 enum EmailStatus {

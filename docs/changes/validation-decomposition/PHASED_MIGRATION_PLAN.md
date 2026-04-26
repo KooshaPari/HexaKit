@@ -83,8 +83,8 @@ Delete `crates/phenotype-validation/src/traits/` and revert Cargo.toml dependenc
   - [ ] Define `ValidatorFactory` type (fn pointer)
   - [ ] Implement global `VALIDATOR_REGISTRY` using `once_cell::Lazy`
   - [ ] Implement `ValidatorRegistry::register(name, factory)`
-  - [ ] Implement `ValidatorRegistry::get(name) -> Option<FieldValidator>`
-  - [ ] Implement `ValidatorRegistry::list() -> Vec<String>`
+  - [ ] Implement `ValidatorRegistry::get(name) -> Option&lt;FieldValidator&gt;`
+  - [ ] Implement `ValidatorRegistry::list() -> Vec&lt;String&gt;`
   - [ ] Implement `ValidatorRegistry::exists(name) -> bool`
   - [ ] Add 8+ tests
 - **Test**: `cargo test registry::` must pass, registry is thread-safe

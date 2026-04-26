@@ -10,10 +10,10 @@
 
 ```mermaid
 graph LR
-    A["main<br/>(Canonical<br/>Production)"] -->|fast-forward only<br/>no force-push| B["Agents<br/>Review &<br/>Test"]
-    C["specs/main<br/>(FR/ADR<br/>Registry)"] -->|append-only<br/>service-managed| D["Specs<br/>Reconciliation"]
-    E[".worktrees/*<br/>(Feature<br/>Branches)"] -->|agent-owned<br/>ephemeral| F["CI<br/>Validation"]
-    G["integration/*<br/>(Merge<br/>Staging)"] -->|service<br/>orchestrated<br/>auto-cleanup| H["Merge to<br/>main"]
+    A["main&lt;br/&gt;(Canonical&lt;br/&gt;Production)"] -->|fast-forward only&lt;br/&gt;no force-push| B["Agents&lt;br/&gt;Review &&lt;br/&gt;Test"]
+    C["specs/main&lt;br/&gt;(FR/ADR&lt;br/&gt;Registry)"] -->|append-only&lt;br/&gt;service-managed| D["Specs&lt;br/&gt;Reconciliation"]
+    E[".worktrees/*&lt;br/&gt;(Feature&lt;br/&gt;Branches)"] -->|agent-owned&lt;br/&gt;ephemeral| F["CI&lt;br/&gt;Validation"]
+    G["integration/*&lt;br/&gt;(Merge&lt;br/&gt;Staging)"] -->|service&lt;br/&gt;orchestrated&lt;br/&gt;auto-cleanup| H["Merge to&lt;br/&gt;main"]
 
     B -->|merge when ready| G
     D -->|append specs| C
@@ -123,28 +123,28 @@ integration/feat-3           integration/feat-4        integration/feat-5
 
 ```mermaid
 graph TD
-    A["CREATED<br/>(git branch created)"] --> B["ACTIVE<br/>(agent commits)"]
+    A["CREATED&lt;br/&gt;(git branch created)"] --> B["ACTIVE&lt;br/&gt;(agent commits)"]
     B --> C{"Agent decides"}
 
     C -->|Continue working| B
-    C -->|Pause work| D["SUSPENDED<br/>(30-day warn<br/>60-day delete)"]
+    C -->|Pause work| D["SUSPENDED&lt;br/&gt;(30-day warn&lt;br/&gt;60-day delete)"]
     C -->|Ready to merge| E["Open PR"]
 
     E --> F["CI Validates"]
     F --> G{"All pass?"}
 
-    G -->|No| H["Fix issues<br/>Push updates"]
+    G -->|No| H["Fix issues&lt;br/&gt;Push updates"]
     H --> F
 
     G -->|Yes| I["integration/* created"]
     I --> J["Orchestration Service"]
     J --> K["Merge to main"]
 
-    K --> L["MERGED<br/>(1-7 day grace)"]
-    L --> M["ARCHIVED<br/>→ .archive/2026-Q2/"]
+    K --> L["MERGED&lt;br/&gt;(1-7 day grace)"]
+    L --> M["ARCHIVED&lt;br/&gt;→ .archive/2026-Q2/"]
 
-    D --> N["Warn: Delete in<br/>30 days?"]
-    N --> O["DELETED<br/>(manual cleanup)"]
+    D --> N["Warn: Delete in&lt;br/&gt;30 days?"]
+    N --> O["DELETED&lt;br/&gt;(manual cleanup)"]
 
     style A fill:#ffe66d
     style B fill:#ffe66d
@@ -250,31 +250,31 @@ Merge allowed ✓
 
 ```mermaid
 sequenceDiagram
-    participant Agent1 as Agent 1<br/>Feature Branch
-    participant Agent2 as Agent 2<br/>Feature Branch
-    participant GitHub as GitHub<br/>PR Checks
-    participant Service as Reconciliation<br/>Service
+    participant Agent1 as Agent 1&lt;br/&gt;Feature Branch
+    participant Agent2 as Agent 2&lt;br/&gt;Feature Branch
+    participant GitHub as GitHub&lt;br/&gt;PR Checks
+    participant Service as Reconciliation&lt;br/&gt;Service
     participant Registry as SPECS_REGISTRY.md
     participant Audit as AUDIT_LOG.md
 
-    Agent1 ->> GitHub: Push FUNCTIONAL_REQUIREMENTS.md<br/>(+ FR-001-022, FR-001-023)
-    Agent2 ->> GitHub: Push FUNCTIONAL_REQUIREMENTS.md<br/>(+ FR-001-023, FR-001-024)
+    Agent1 ->> GitHub: Push FUNCTIONAL_REQUIREMENTS.md&lt;br/&gt;(+ FR-001-022, FR-001-023)
+    Agent2 ->> GitHub: Push FUNCTIONAL_REQUIREMENTS.md&lt;br/&gt;(+ FR-001-023, FR-001-024)
 
-    GitHub ->> Service: Webhook: Both branches<br/>modified FUNCTIONAL_REQUIREMENTS.md
+    GitHub ->> Service: Webhook: Both branches&lt;br/&gt;modified FUNCTIONAL_REQUIREMENTS.md
 
     Service ->> Service: Parse both branches
     Service ->> Service: Detect collision: FR-001-023
 
-    Service ->> Service: Reassign Agent2's IDs<br/>FR-001-023 → FR-001-025<br/>FR-001-024 → FR-001-026
+    Service ->> Service: Reassign Agent2's IDs&lt;br/&gt;FR-001-023 → FR-001-025&lt;br/&gt;FR-001-024 → FR-001-026
 
-    Service ->> Agent2: Update branch<br/>(auto-commit with new IDs)
+    Service ->> Agent2: Update branch&lt;br/&gt;(auto-commit with new IDs)
 
-    Service ->> Registry: Append Agent1 specs<br/>(FR-001-022, FR-001-023)
-    Service ->> Registry: Append Agent2 specs<br/>(FR-001-025, FR-001-026)
+    Service ->> Registry: Append Agent1 specs&lt;br/&gt;(FR-001-022, FR-001-023)
+    Service ->> Registry: Append Agent2 specs&lt;br/&gt;(FR-001-025, FR-001-026)
 
-    Service ->> Audit: Log collision resolution<br/>Timestamp, agents, reassignments
+    Service ->> Audit: Log collision resolution&lt;br/&gt;Timestamp, agents, reassignments
 
-    Service ->> GitHub: All specs merged ✓<br/>Both PRs ready
+    Service ->> GitHub: All specs merged ✓&lt;br/&gt;Both PRs ready
 
     Agent1 ->> GitHub: Merge to main ✓
     Agent2 ->> GitHub: Merge to main ✓
@@ -362,7 +362,7 @@ OVERALL HEALTH:             OVERALL HEALTH:          OVERALL HEALTH:         OVE
    cat >> FUNCTIONAL_REQUIREMENTS.md
    ## FR-001-NNN: My Feature
    - Status: PROPOSED
-   - Traces To: <spec-id>
+   - Traces To: &lt;spec-id&gt;
    - Tests: path/to/test
 
 3. IMPLEMENT + TEST

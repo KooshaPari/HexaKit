@@ -33,7 +33,7 @@ Push all local features/WPs that have changed since last sync to Plane.so.
 - Use `SyncMapping` to determine what changed
 - Display `SyncReport` on completion
 - Options:
-  - `--feature <slug>` (single feature)
+  - `--feature &lt;slug&gt;` (single feature)
   - `--dry-run` (show what would sync without actually syncing)
 
 **Output:**
@@ -53,7 +53,7 @@ Pull all Plane.so changes since last sync.
 - Process pending webhook events if any queued
 - Display `SyncReport`
 - Options:
-  - `--feature <slug>`
+  - `--feature &lt;slug&gt;`
   - `--dry-run`
 
 **Output:**
@@ -99,7 +99,7 @@ WP: database-schema       | specified    | backlog      | 1d ago      | ✓     
 
 Color-code: green=synced, yellow=pending, red=conflict.
 
-### T063: `agileplus sync resolve <entity-type> <entity-id>`
+### T063: `agileplus sync resolve &lt;entity-type&gt; &lt;entity-id&gt;`
 
 Interactive conflict resolution.
 

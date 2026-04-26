@@ -79,7 +79,7 @@ At this point:
 **Entry condition**: Spec artifact exists with all required fields
 **Duration**: 2-8 hours
 **Owner**: PM or senior developer
-**Artifact**: `features/<slug>/spec.md`
+**Artifact**: `features/&lt;slug&gt;/spec.md`
 **Evidence Type**: `ArtifactPresent`
 
 The spec document is **narrative** (meant for humans) but **parseable** (meant for agents):
@@ -156,7 +156,7 @@ Audit chain: ... -> {spec_hash: 0x3f7e1a9c, actor: alice, transition: created->s
 **Entry condition**: Research artifact linked; codebase scanned
 **Duration**: 4-16 hours
 **Owner**: Architect or senior dev
-**Artifact**: `features/<slug>/research.md`
+**Artifact**: `features/&lt;slug&gt;/research.md`
 **Evidence Type**: `ManualAttestation` or `CiOutput`
 
 The research phase answers: **Can we build this? What patterns exist?**
@@ -211,7 +211,7 @@ Feature now in state: Researched
 **Entry condition**: WPs generated; dependency graph computed; no cycles
 **Duration**: 2-4 hours
 **Owner**: Architect
-**Artifact**: `features/<slug>/plan.md`
+**Artifact**: `features/&lt;slug&gt;/plan.md`
 **Evidence Type**: `CiOutput` (plan validation)
 
 The plan **decomposes** the feature into independent work packages with clear boundaries:
@@ -439,7 +439,7 @@ At this point, the feature is **live** and users can use it.
 **Entry condition**: Feature shipped; time for reflection
 **Duration**: 2-4 hours (scheduled days/weeks after ship)
 **Owner**: Team lead or PM
-**Artifact**: `features/<slug>/retrospective.md`
+**Artifact**: `features/&lt;slug&gt;/retrospective.md`
 
 After the feature has been live for a period, the team gathers to reflect:
 
