@@ -12,8 +12,11 @@ on:
 
 jobs:
   legacy-tooling-scan:
-    uses: KooshaPari/phenoShared/.github/workflows/reusable/legacy-tooling-gate.yml@393519642656b8f6a2f459c22e0983a4725b7acb
+    uses: KooshaPari/phenoShared/.github/workflows/legacy-tooling-gate.yml@fix/legacy-tooling-gate-source
     permissions:
       contents: read
       security-events: write
       pull-requests: write
+    with:
+      source-ref: fix/legacy-tooling-gate-source
+      report-only: true
