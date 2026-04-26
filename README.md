@@ -1,7 +1,8 @@
-# repos — CodeProjects/Phenotype organizational shelf
+# phenotype-infrakit — Phenotype Infrastructure Kit
 
-This is the **repos shelf**: a polyrepo containing ~30 independent projects
-organized under `CodeProjects/Phenotype/organizational-shelf/repos`.
+**HexaKit** is the GitHub repository name for **phenotype-infrakit**, the Phenotype Infrastructure Kit.
+
+This is a **Rust workspace** containing 16+ specialized infrastructure libraries for building scalable, maintainable systems. It includes cross-cutting concerns like error handling, caching patterns, contract-based design, health checks, policy evaluation, and hexagonal architecture port/adapter patterns — not multi-language template scaffolding.
 
 ## What is a shelf?
 
