@@ -457,8 +457,8 @@ docker run -d -p 9000:9000 -p 9001:9001 minio/minio:latest
 ### Service fails health check
 
 - Increase `initial_delay_seconds` if service needs more startup time
-- Check logs: `process-compose logs <service>`
-- Verify service is listening on correct port: `lsof -i :<port>`
+- Check logs: `process-compose logs &lt;service&gt;`
+- Verify service is listening on correct port: `lsof -i :&lt;port&gt;`
 
 ### API server can't connect to services
 

@@ -47,7 +47,7 @@ pub struct Event {
     pub event_type: String,
     pub payload: serde_json::Value,
     pub actor: String,
-    pub timestamp: DateTime<Utc>,
+    pub timestamp: DateTime&lt;Utc&gt;,
     pub prev_hash: [u8; 32],
     pub hash: [u8; 32],
     pub sequence: i64,
@@ -84,7 +84,7 @@ pub struct Snapshot {
     pub entity_id: i64,
     pub state: serde_json::Value,
     pub event_sequence: i64,
-    pub created_at: DateTime<Utc>,
+    pub created_at: DateTime&lt;Utc&gt;,
 }
 ```
 
@@ -113,7 +113,7 @@ pub struct SyncMapping {
     pub entity_id: i64,
     pub plane_issue_id: String,
     pub content_hash: String,
-    pub last_synced_at: DateTime<Utc>,
+    pub last_synced_at: DateTime&lt;Utc&gt;,
     pub sync_direction: String,  // "inbound" | "outbound" | "bidirectional"
     pub conflict_count: i32,
 }
@@ -149,7 +149,7 @@ pub enum HealthStatus {
 pub struct ServiceHealth {
     pub service_name: String,
     pub status: HealthStatus,
-    pub last_check: DateTime<Utc>,
+    pub last_check: DateTime&lt;Utc&gt;,
     pub uptime_seconds: u64,
     pub connection_info: String,
     pub metadata: serde_json::Value,
@@ -181,9 +181,9 @@ Create `crates/agileplus-domain/src/domain/device_node.rs`
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct DeviceNode {
     pub device_id: String,
-    pub tailscale_ip: Option<String>,
+    pub tailscale_ip: Option&lt;String&gt;,
     pub hostname: String,
-    pub last_seen: DateTime<Utc>,
+    pub last_seen: DateTime&lt;Utc&gt;,
     pub sync_vector: serde_json::Value,
     pub platform_version: String,
 }
@@ -216,8 +216,8 @@ pub struct ApiKey {
     pub id: i64,
     pub key_hash: [u8; 32],
     pub name: String,
-    pub created_at: DateTime<Utc>,
-    pub last_used_at: Option<DateTime<Utc>>,
+    pub created_at: DateTime&lt;Utc&gt;,
+    pub last_used_at: Option&lt;DateTime&lt;Utc&gt;&gt;,
     pub revoked: bool,
 }
 ```
@@ -237,7 +237,7 @@ ApiKey(name={}, created={}, revoked={})
 **Methods:**
 - `is_active() -> bool` (not revoked)
 - `days_since_creation(&self) -> u64`
-- `days_since_last_used(&self) -> Option<u64>`
+- `days_since_last_used(&self) -> Option&lt;u64&gt;`
 
 Re-export in `domain/mod.rs`.
 
@@ -247,9 +247,9 @@ Re-export in `domain/mod.rs`.
 ```rust
 pub struct Feature {
     // ... existing fields ...
-    pub plane_issue_id: Option<String>,
-    pub plane_state_id: Option<String>,
-    pub labels: Vec<String>,
+    pub plane_issue_id: Option&lt;String&gt;,
+    pub plane_state_id: Option&lt;String&gt;,
+    pub labels: Vec&lt;String&gt;,
 }
 ```
 
@@ -262,7 +262,7 @@ pub struct Feature {
 ```rust
 pub struct WorkPackage {
     // ... existing fields ...
-    pub plane_sub_issue_id: Option<String>,
+    pub plane_sub_issue_id: Option&lt;String&gt;,
 }
 ```
 
@@ -273,7 +273,7 @@ pub struct WorkPackage {
 ```rust
 impl Feature {
     pub fn with_plane_issue_id(mut self, id: String) -> Self { ... }
-    pub fn with_labels(mut self, labels: Vec<String>) -> Self { ... }
+    pub fn with_labels(mut self, labels: Vec&lt;String&gt;) -> Self { ... }
 }
 
 impl WorkPackage {

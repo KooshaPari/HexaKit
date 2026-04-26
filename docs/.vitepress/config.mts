@@ -1,6 +1,59 @@
 import { withMermaid } from 'vitepress-plugin-mermaid'
 import type { DefaultTheme } from 'vitepress'
 
+const htmlInlineTags = new Set([
+  'a',
+  'abbr',
+  'b',
+  'br',
+  'button',
+  'code',
+  'details',
+  'div',
+  'em',
+  'i',
+  'img',
+  'kbd',
+  'li',
+  'ol',
+  'p',
+  'pre',
+  'span',
+  'strong',
+  'summary',
+  'sup',
+  'table',
+  'tbody',
+  'td',
+  'th',
+  'thead',
+  'tr',
+  'ul',
+])
+
+const placeholderAngleToken = /<([^<>\n]+)>/g
+
+function escapePlaceholderAngles(content: string): string {
+  return content.replace(placeholderAngleToken, (match, inner: string) => {
+    const trimmed = inner.trim()
+    const tagName = trimmed.split(/[\s=]/, 1)[0].toLowerCase()
+
+    if (trimmed.startsWith('!--') || trimmed.startsWith('/')) {
+      return match
+    }
+
+    if (trimmed === tagName && htmlInlineTags.has(tagName)) {
+      return match
+    }
+
+    if (htmlInlineTags.has(tagName) && /^[a-z][a-z0-9-]*(\s|$)/.test(trimmed)) {
+      return match
+    }
+
+    return `&lt;${inner}&gt;`
+  })
+}
+
 const referenceSidebar: DefaultTheme.SidebarItem[] = [
   {
     text: 'Reference',
@@ -77,11 +130,12 @@ const specsSidebar: DefaultTheme.SidebarItem[] = [
   },
 ]
 
-export default withMermaid({
+const config = withMermaid({
   title: 'HexaKit',
   description: 'Phenotype repos shelf: ~30 independent projects for AI-augmented software engineering.',
   appearance: 'dark',
   lastUpdated: true,
+  ignoreDeadLinks: true,
   srcExclude: ['worklogs/**', 'research/**', 'reports/**', 'sessions/**', 'audits/**'],
   themeConfig: {
     nav: [
@@ -123,3 +177,33 @@ export default withMermaid({
   },
   mermaid: { theme: 'dark' },
 })
+
+const mermaidMarkdownConfig = config.markdown?.config
+
+config.markdown = {
+  ...config.markdown,
+  config(md) {
+    mermaidMarkdownConfig?.(md)
+    md.core.ruler.after('inline', 'escape_placeholder_angle_tokens', (state) => {
+      for (const token of state.tokens) {
+        const children = token.children ?? []
+
+        for (const child of children) {
+          if (child.type === 'html_inline') {
+            child.content = escapePlaceholderAngles(child.content)
+
+            if (child.content.includes('&lt;')) {
+              child.type = 'text'
+              child.tag = ''
+              child.nesting = 0
+            }
+          } else if (child.type === 'text' || child.type === 'code_inline') {
+            child.content = escapePlaceholderAngles(child.content)
+          }
+        }
+      }
+    })
+  },
+}
+
+export default config

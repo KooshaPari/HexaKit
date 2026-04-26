@@ -46,7 +46,7 @@
 
 #### Registry Module (120 LOC)
 **File**: `crates/phenotype-validation/src/registry.rs`
-- Global singleton registry using `once_cell::Lazy<Mutex<HashMap>>`
+- Global singleton registry using `once_cell::Lazy&lt;Mutex&lt;HashMap&gt;&gt;`
 - Plugin registration pattern: `ValidatorFactory` type
 - Discovery API: `register()`, `get()`, `list()`, `exists()`
 - Thread-safe, zero unsafe code
@@ -97,8 +97,8 @@
 │  │  Layer 3: Registry (Discovery)                      │ │
 │  │  ├─ ValidatorRegistry (global singleton)            │ │
 │  │  ├─ register(name, factory)                         │ │
-│  │  ├─ get(name) -> Option<FieldValidator>             │ │
-│  │  └─ list() -> Vec<String>                           │ │
+│  │  ├─ get(name) -> Option&lt;FieldValidator&gt;             │ │
+│  │  └─ list() -> Vec&lt;String&gt;                           │ │
 │  └──────────────────────────────────────────────────────┘ │
 │                          ▼                                  │
 │  ┌──────────────────────────────────────────────────────┐ │
@@ -154,7 +154,7 @@
 ### Before (Monolithic)
 ```rust
 // validate.rs (674 LOC) - all validation in one file
-fn validate_create_plan(cmd: &CreatePlanCommand) -> Result<(), Vec<String>> {
+fn validate_create_plan(cmd: &CreatePlanCommand) -> Result&lt;(), Vec&lt;String&gt;&gt; {
     let mut errors = vec![];
     if cmd.name.is_empty() { errors.push("name required".into()); }
     if cmd.name.len() > 50 { errors.push("name too long".into()); }
@@ -258,7 +258,7 @@ validator.validate("user@company.com")?;
 |------|-------------|--------|-----------|
 | Backward compatibility break | Low | Medium | Keep old validators.rs as bridge module |
 | Performance regression | Low | Medium | Benchmark validators, cache hot paths |
-| Registry contention | Low | Low | Use Lazy<Mutex> for thread-safety |
+| Registry contention | Low | Low | Use Lazy&lt;Mutex&gt; for thread-safety |
 | Complexity of implementation | Medium | Low | Clear trait boundaries, 3 phases reduce scope creep |
 
 ---
@@ -269,11 +269,11 @@ validator.validate("user@company.com")?;
 // User-defined business rule
 #[derive(Clone)]
 pub struct WorkflowStatusRule {
-    allowed: Vec<String>,
+    allowed: Vec&lt;String&gt;,
 }
 
 impl ValidationRule for WorkflowStatusRule {
-    fn validate(&self, value: &str) -> Result<(), ValidationError> {
+    fn validate(&self, value: &str) -> Result&lt;(), ValidationError&gt; {
         if self.allowed.contains(&value.to_string()) {
             Ok(())
         } else {

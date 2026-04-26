@@ -7,7 +7,7 @@
 pip install pre-commit
 
 # 2. Install hooks in this repo
-cd <repo>
+cd &lt;repo&gt;
 pre-commit install
 pre-commit install --hook-type pre-push
 
@@ -91,7 +91,7 @@ Currently a scaffold (README only). When crates are added:
 cd /Users/kooshapari/CodeProjects/Phenotype/repos/phenotype-infrakit
 
 # Copy .pre-commit-config.yaml template from guide
-cp <path-to-template> .pre-commit-config.yaml
+cp &lt;path-to-template&gt; .pre-commit-config.yaml
 
 # Install hooks
 pre-commit install

@@ -136,14 +136,14 @@ pub enum EventError {
 #[async_trait]
 pub trait EventStore: Send + Sync {
     /// Append a new event to the store
-    async fn append(&self, event: &Event) -> Result<i64, EventError>;
+    async fn append(&self, event: &Event) -> Result&lt;i64, EventError&gt;;
 
     /// Get all events for an entity in sequence order
     async fn get_events(
         &self,
         entity_type: &str,
         entity_id: i64,
-    ) -> Result<Vec<Event>, EventError>;
+    ) -> Result&lt;Vec&lt;Event&gt;, EventError&gt;;
 
     /// Get events from a specific sequence onward
     async fn get_events_since(
@@ -151,23 +151,23 @@ pub trait EventStore: Send + Sync {
         entity_type: &str,
         entity_id: i64,
         sequence: i64,
-    ) -> Result<Vec<Event>, EventError>;
+    ) -> Result&lt;Vec&lt;Event&gt;, EventError&gt;;
 
     /// Get events within a time range
     async fn get_events_by_range(
         &self,
         entity_type: &str,
         entity_id: i64,
-        from: DateTime<Utc>,
-        to: DateTime<Utc>,
-    ) -> Result<Vec<Event>, EventError>;
+        from: DateTime&lt;Utc&gt;,
+        to: DateTime&lt;Utc&gt;,
+    ) -> Result&lt;Vec&lt;Event&gt;, EventError&gt;;
 
     /// Get the latest event sequence number for an entity
     async fn get_latest_sequence(
         &self,
         entity_type: &str,
         entity_id: i64,
-    ) -> Result<i64, EventError>;
+    ) -> Result&lt;i64, EventError&gt;;
 }
 ```
 
@@ -212,10 +212,10 @@ pub fn compute_hash(
     entity_type: &str,
     event_type: &str,
     payload: &serde_json::Value,
-    timestamp: DateTime<Utc>,
+    timestamp: DateTime&lt;Utc&gt;,
     actor: &str,
     prev_hash: &[u8; 32],
-) -> Result<[u8; 32], HashError> {
+) -> Result&lt;[u8; 32], HashError&gt; {
     let mut hasher = Sha256::new();
 
     // Add entity_id as 8 big-endian bytes
@@ -259,7 +259,7 @@ pub fn compute_hash(
 /// 1. Each event's hash is correctly computed from its inputs
 /// 2. Each event's prev_hash matches the previous event's hash
 /// 3. Sequences are monotonically increasing
-pub fn verify_chain(events: &[Event]) -> Result<(), HashError> {
+pub fn verify_chain(events: &[Event]) -> Result&lt;(), HashError&gt; {
     if events.is_empty() {
         return Ok(());
     }
@@ -390,7 +390,7 @@ pub trait Aggregate: Send + Sync {
     ///
     /// This method is idempotent when called with the same events
     /// in the same order. Implementors must handle all possible event types.
-    async fn apply(&mut self, event: &Event) -> Result<(), ReplayError>;
+    async fn apply(&mut self, event: &Event) -> Result&lt;(), ReplayError&gt;;
 
     /// Get the aggregate's current version (latest event sequence)
     fn version(&self) -> i64;
@@ -403,10 +403,10 @@ pub trait Aggregate: Send + Sync {
 ///
 /// Applies events in order to reconstruct the aggregate's state.
 /// All events must be for the same entity_id.
-pub async fn replay_events<A: Aggregate>(
+pub async fn replay_events&lt;A: Aggregate&gt;(
     aggregate: &mut A,
     events: &[Event],
-) -> Result<(), ReplayError> {
+) -> Result&lt;(), ReplayError&gt; {
     // Verify all events are for the same entity
     if !events.is_empty() {
         let first_entity_id = events[0].entity_id;
@@ -433,12 +433,12 @@ pub async fn replay_events<A: Aggregate>(
 }
 
 /// Fast replay: apply only events since a snapshot sequence
-pub async fn replay_events_since<A: Aggregate>(
+pub async fn replay_events_since&lt;A: Aggregate&gt;(
     aggregate: &mut A,
     snapshot_sequence: i64,
     events: &[Event],
-) -> Result<(), ReplayError> {
-    let filtered_events: Vec<_> = events
+) -> Result&lt;(), ReplayError&gt; {
+    let filtered_events: Vec&lt;_&gt; = events
         .iter()
         .filter(|e| e.sequence > snapshot_sequence)
         .cloned()
@@ -459,7 +459,7 @@ mod tests {
 
     #[async_trait]
     impl Aggregate for TestAggregate {
-        async fn apply(&mut self, event: &Event) -> Result<(), ReplayError> {
+        async fn apply(&mut self, event: &Event) -> Result&lt;(), ReplayError&gt; {
             self.state = event.payload.clone();
             self.version = event.sequence;
             Ok(())
@@ -541,14 +541,14 @@ impl Default for SnapshotConfig {
 #[async_trait]
 pub trait SnapshotStore: Send + Sync {
     /// Save a snapshot
-    async fn save(&self, snapshot: &Snapshot) -> Result<(), SnapshotError>;
+    async fn save(&self, snapshot: &Snapshot) -> Result&lt;(), SnapshotError&gt;;
 
     /// Load the most recent snapshot for an entity
     async fn load(
         &self,
         entity_type: &str,
         entity_id: i64,
-    ) -> Result<Option<Snapshot>, SnapshotError>;
+    ) -> Result&lt;Option&lt;Snapshot&gt;, SnapshotError&gt;;
 
     /// Delete snapshots older than a given sequence
     async fn delete_before(
@@ -556,7 +556,7 @@ pub trait SnapshotStore: Send + Sync {
         entity_type: &str,
         entity_id: i64,
         sequence: i64,
-    ) -> Result<(), SnapshotError>;
+    ) -> Result&lt;(), SnapshotError&gt;;
 }
 
 /// Determine if a new snapshot should be created
@@ -564,7 +564,7 @@ pub fn should_snapshot(
     config: &SnapshotConfig,
     current_sequence: i64,
     last_snapshot_sequence: i64,
-    last_snapshot_time: Option<chrono::DateTime<Utc>>,
+    last_snapshot_time: Option&lt;chrono::DateTime&lt;Utc&gt;&gt;,
 ) -> bool {
     // Check event threshold
     if current_sequence - last_snapshot_sequence >= config.event_threshold {
@@ -620,18 +620,18 @@ Add to `crates/agileplus-events/src/snapshot.rs`:
 ```rust
 /// State loaded from a snapshot with events to replay
 pub struct LoadedState {
-    pub snapshot: Option<Snapshot>,
-    pub events_to_replay: Vec<crate::Event>,
+    pub snapshot: Option&lt;Snapshot&gt;,
+    pub events_to_replay: Vec&lt;crate::Event&gt;,
 }
 
 impl LoadedState {
     /// Create LoadedState given a snapshot store and event store
-    pub async fn load<SS: SnapshotStore, ES: crate::EventStore>(
+    pub async fn load&lt;SS: SnapshotStore, ES: crate::EventStore&gt;(
         snapshot_store: &SS,
         event_store: &ES,
         entity_type: &str,
         entity_id: i64,
-    ) -> Result<Self, SnapshotError> {
+    ) -> Result&lt;Self, SnapshotError&gt; {
         // Try to load the latest snapshot
         let snapshot = snapshot_store.load(entity_type, entity_id).await?;
 
@@ -672,15 +672,15 @@ pub enum QueryError {
 }
 
 pub struct EventQuery {
-    entity_type: Option<String>,
-    entity_id: Option<i64>,
-    event_type: Option<String>,
-    actor: Option<String>,
-    from_time: Option<DateTime<Utc>>,
-    to_time: Option<DateTime<Utc>>,
-    from_sequence: Option<i64>,
-    to_sequence: Option<i64>,
-    limit: Option<i64>,
+    entity_type: Option&lt;String&gt;,
+    entity_id: Option&lt;i64&gt;,
+    event_type: Option&lt;String&gt;,
+    actor: Option&lt;String&gt;,
+    from_time: Option&lt;DateTime&lt;Utc&gt;&gt;,
+    to_time: Option&lt;DateTime&lt;Utc&gt;&gt;,
+    from_sequence: Option&lt;i64&gt;,
+    to_sequence: Option&lt;i64&gt;,
+    limit: Option&lt;i64&gt;,
 }
 
 impl EventQuery {
@@ -718,12 +718,12 @@ impl EventQuery {
         self
     }
 
-    pub fn from_time(mut self, t: DateTime<Utc>) -> Self {
+    pub fn from_time(mut self, t: DateTime&lt;Utc&gt;) -> Self {
         self.from_time = Some(t);
         self
     }
 
-    pub fn to_time(mut self, t: DateTime<Utc>) -> Self {
+    pub fn to_time(mut self, t: DateTime&lt;Utc&gt;) -> Self {
         self.to_time = Some(t);
         self
     }
@@ -744,7 +744,7 @@ impl EventQuery {
     }
 
     /// Filter an in-memory event list
-    pub fn filter(&self, events: &[Event]) -> Vec<Event> {
+    pub fn filter(&self, events: &[Event]) -> Vec&lt;Event&gt; {
         events
             .iter()
             .filter(|e| {

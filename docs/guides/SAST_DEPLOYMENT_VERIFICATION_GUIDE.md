@@ -8,7 +8,7 @@ After SAST deployment, verify your repo's security configuration using this guid
 
 ```bash
 # Navigate to your repo
-cd /repos/<your-repo-name>
+cd /repos/&lt;your-repo-name&gt;
 
 # Verify all files exist
 ls -la .github/workflows/security-guard.yml

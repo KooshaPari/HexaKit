@@ -159,71 +159,71 @@ This work package implements the `pheno bootstrap` command to automate DX scaffo
 - **Steps**:
   1. Create `internal/templates/files/mise.toml.tpl` with common tasks:
 <pre v-pre><code class="language-gotemplate">
-{{- if eq .Language "go" }}
+&#123;&#123;- if eq .Language "go" }}
 run = "gofmt -w ."
-{{- else if eq .Language "rust" }}
+&#123;&#123;- else if eq .Language "rust" }}
 run = "cargo fmt"
-{{- else if eq .Language "python" }}
+&#123;&#123;- else if eq .Language "python" }}
 run = "ruff format ."
-{{- else if eq .Language "typescript" }}
+&#123;&#123;- else if eq .Language "typescript" }}
 run = "prettier --write ."
-{{- end }}
+&#123;&#123;- end }}
 
 [tasks.lint]
 description = "Lint code"
-{{- if eq .Language "go" }}
+&#123;&#123;- if eq .Language "go" }}
 run = "golangci-lint run"
-{{- else if eq .Language "rust" }}
+&#123;&#123;- else if eq .Language "rust" }}
 run = "cargo clippy -- -D warnings"
-{{- else if eq .Language "python" }}
+&#123;&#123;- else if eq .Language "python" }}
 run = "ruff check ."
-{{- else if eq .Language "typescript" }}
+&#123;&#123;- else if eq .Language "typescript" }}
 run = "eslint ."
-{{- end }}
+&#123;&#123;- end }}
 
 [tasks.test]
 description = "Run unit tests"
-{{- if eq .Language "go" }}
+&#123;&#123;- if eq .Language "go" }}
 run = "go test ./..."
-{{- else if eq .Language "rust" }}
+&#123;&#123;- else if eq .Language "rust" }}
 run = "cargo test"
-{{- else if eq .Language "python" }}
+&#123;&#123;- else if eq .Language "python" }}
 run = "pytest"
-{{- else if eq .Language "typescript" }}
+&#123;&#123;- else if eq .Language "typescript" }}
 run = "vitest run"
-{{- end }}
+&#123;&#123;- end }}
 
 [tasks.build]
 description = "Build package"
-{{- if eq .Language "go" }}
+&#123;&#123;- if eq .Language "go" }}
 run = "go build ./..."
-{{- else if eq .Language "rust" }}
+&#123;&#123;- else if eq .Language "rust" }}
 run = "cargo build --release"
-{{- else if eq .Language "python" }}
+&#123;&#123;- else if eq .Language "python" }}
 run = "python -m build"
-{{- else if eq .Language "typescript" }}
+&#123;&#123;- else if eq .Language "typescript" }}
 run = "tsc"
-{{- end }}
+&#123;&#123;- end }}
 
-{{- if or (eq .Language "python") (eq .Language "typescript") }}
+&#123;&#123;- if or (eq .Language "python") (eq .Language "typescript") }}
 [tasks."test:integration"]
 description = "Run integration tests"
-{{- if eq .Language "python" }}
+&#123;&#123;- if eq .Language "python" }}
 run = "pytest tests/integration"
-{{- else if eq .Language "typescript" }}
+&#123;&#123;- else if eq .Language "typescript" }}
 run = "vitest run tests/integration"
-{{- end }}
+&#123;&#123;- end }}
 
 [tasks.audit]
 description = "Security audit"
-{{- if eq .Language "python" }}
+&#123;&#123;- if eq .Language "python" }}
 run = "bandit -r . || true"
-{{- else if eq .Language "typescript" }}
+&#123;&#123;- else if eq .Language "typescript" }}
 run = "npm audit --audit-level=moderate || true"
-{{- end }}
-{{- end }}
+&#123;&#123;- end }}
+&#123;&#123;- end }}
 
-{{- if eq .Language "rust" }}
+&#123;&#123;- if eq .Language "rust" }}
 [tasks."test:integration"]
 description = "Run integration tests"
 </code></pre>
@@ -233,9 +233,9 @@ description = "Run integration tests"
      [tasks.audit]
      description = "Security audit"
      run = "cargo audit || true"
-     {{- end }}
+     &#123;&#123;- end }}
 
-     {{- if eq .Language "go" }}
+     &#123;&#123;- if eq .Language "go" }}
      [tasks."test:integration"]
      description = "Run integration tests"
      run = "go test -tags=integration ./..."
@@ -243,19 +243,19 @@ description = "Run integration tests"
      [tasks.audit]
      description = "Security audit"
      run = "gosec -no-fail ./... || true"
-     {{- end }}
+     &#123;&#123;- end }}
 
      [tasks."docs:build"]
      description = "Build documentation"
-     {{- if eq .Language "go" }}
+     &#123;&#123;- if eq .Language "go" }}
      run = "go doc -html ./... > docs/index.html"
-     {{- else if eq .Language "rust" }}
+     &#123;&#123;- else if eq .Language "rust" }}
      run = "cargo doc --no-deps"
-     {{- else if eq .Language "python" }}
+     &#123;&#123;- else if eq .Language "python" }}
      run = "sphinx-build docs docs/_build"
-     {{- else if eq .Language "typescript" }}
+     &#123;&#123;- else if eq .Language "typescript" }}
      run = "typedoc --out docs ."
-     {{- end }}
+     &#123;&#123;- end }}
 
      [tasks."release:promote"]
      description = "Promote package to next channel"
@@ -292,7 +292,7 @@ description = "Run integration tests"
 
      if ! echo "$COMMIT_MSG" | grep -qE "$COMMIT_REGEX"; then
          echo "❌ Commit message does not follow conventional format"
-         echo "Format: <type>(<scope>): <subject>"
+         echo "Format: &lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;"
          echo "Example: feat(auth): add JWT support"
          exit 1
      fi
@@ -428,7 +428,7 @@ description = "Run integration tests"
                from_channel: alpha
                to_channel: beta
                risk_profile: \{\{ .RiskProfile \}\}
-               version: \${{ github.ref_name }}
+               version: \$&#123;&#123; github.ref_name }}
              secrets: inherit
 
        changelog:
@@ -439,7 +439,7 @@ description = "Run integration tests"
            - uses: actions/checkout@v4
            - uses: KooshaPari/phenotypeActions/.github/workflows/changelog.yml@v1
              with:
-               version: \${{ github.ref_name }}
+               version: \$&#123;&#123; github.ref_name }}
      ```
   3. Ensure workflows reference correct phenotypeActions workflows (from WP10)
   4. Support language variable substitution
@@ -470,17 +470,17 @@ description = "Run integration tests"
 
      {% for release in releases -%}
          {% if release.version -%}
-             ## [{{ release.version }}] - {{ release.timestamp | date(format="%Y-%m-%d") }}
+             ## [&#123;&#123; release.version }}] - &#123;&#123; release.timestamp | date(format="%Y-%m-%d") }}
          {% else -%}
              ## [Unreleased]
          {% endif -%}
 
          {% if release.commit_group -%}
              {% for group, commits in release.commit_group | sort(attribute="title") -%}
-                 ### {{ group | upper_first }}
+                 ### &#123;&#123; group | upper_first }}
 
                  {% for commit in commits -%}
-                     - {% if commit.scope -%}**{{ commit.scope }}**: {% endif %}{{ commit.message }}{% if commit.breaking %} (breaking){% endif %}
+                     - {% if commit.scope -%}**&#123;&#123; commit.scope }}**: {% endif %}&#123;&#123; commit.message }}{% if commit.breaking %} (breaking){% endif %}
                  {% endfor %}
              {% endfor %}
          {% endif -%}
@@ -557,7 +557,7 @@ description = "Run integration tests"
      ```
   2. Use temp directories that are cleaned up after test
   3. Verify generated files are valid (parse TOML, YAML, shell syntax)
-  4. Verify template substitution works (check for {{ .Language }} is replaced)
+  4. Verify template substitution works (check for &#123;&#123; .Language }} is replaced)
   5. Test both dry-run and actual file generation
   6. Ensure test runs in <5 seconds
 
@@ -580,7 +580,7 @@ When reviewing WP09 completion:
 
 1. **Bootstrap Command**: Verify `pheno bootstrap` detects language, generates files, respects --dry-run, and handles overwrites correctly.
 2. **Language Detection**: Test with each supported language (Go, Rust, Python, TypeScript); verify correct detection with multiple manifests.
-3. **Template Generation**: Verify all templates render correctly with proper variable substitution; check that no {{ }} remain in output.
+3. **Template Generation**: Verify all templates render correctly with proper variable substitution; check that no &#123;&#123; }} remain in output.
 4. **Mise Tasks**: Generated `mise.toml` is valid TOML; all referenced tasks work (at least for installed tools); tasks are idempotent.
 5. **Hooks**: Pre-commit and pre-push hooks are executable; conventional commit regex works correctly; hook logic matches specification.
 6. **CI Workflows**: Generated workflows reference phenotypeActions correctly; inputs match WP10 signatures; secrets are documented.

@@ -82,7 +82,7 @@ Quality gate infrastructure has been deployed to all Tier 1 repositories with:
 **Install**:
 ```bash
 pip install pre-commit
-cd <repo>
+cd &lt;repo&gt;
 pre-commit install
 ```
 
@@ -272,7 +272,7 @@ For each Tier 1 repo:
 
 - [ ] **Step 2: Clone/navigate to repo**
   ```bash
-  cd <repo>
+  cd &lt;repo&gt;
   ```
 
 - [ ] **Step 3: Install repo hooks**

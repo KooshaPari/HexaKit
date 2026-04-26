@@ -161,7 +161,7 @@ async fn health() -> (StatusCode, &'static str) {
     (StatusCode::OK, "OK")
 }
 
-async fn ready(State(state): State<Arc<AppState>>) -> Result<(StatusCode, &'static str), StatusCode> {
+async fn ready(State(state): State&lt;Arc&lt;AppState&gt;&gt;) -> Result&lt;(StatusCode, &'static str), StatusCode&gt; {
     if !state.nats_connected.load(std::sync::atomic::Ordering::Relaxed) {
         return Err(StatusCode::SERVICE_UNAVAILABLE);
     }
@@ -171,7 +171,7 @@ async fn ready(State(state): State<Arc<AppState>>) -> Result<(StatusCode, &'stat
     Ok((StatusCode::OK, "Ready"))
 }
 
-pub fn routes() -> Router<Arc<AppState>> {
+pub fn routes() -> Router&lt;Arc&lt;AppState&gt;&gt; {
     Router::new()
         .route("/health", get(health))
         .route("/ready", get(ready))
@@ -360,7 +360,7 @@ match s3.head_bucket().bucket("artifacts").send().await {
 lsof -i :4222
 
 # Kill process if needed
-kill -9 <PID>
+kill -9 &lt;PID&gt;
 ```
 
 ---

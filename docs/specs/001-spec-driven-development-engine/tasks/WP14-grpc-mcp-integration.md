@@ -130,7 +130,7 @@ domain layer to external clients (primarily the Python MCP service). The server 
 
 1. Define the server struct that holds references to all port implementations:
    ```rust
-   pub struct AgilePlusCoreServer<S, V, A, R, O>
+   pub struct AgilePlusCoreServer&lt;S, V, A, R, O&gt;
    where
        S: StoragePort,
        V: VcsPort,
@@ -138,11 +138,11 @@ domain layer to external clients (primarily the Python MCP service). The server 
        R: ReviewPort,
        O: ObservabilityPort,
    {
-       storage: Arc<S>,
-       vcs: Arc<V>,
-       agents: Arc<A>,
-       review: Arc<R>,
-       telemetry: Arc<O>,
+       storage: Arc&lt;S&gt;,
+       vcs: Arc&lt;V&gt;,
+       agents: Arc&lt;A&gt;,
+       review: Arc&lt;R&gt;,
+       telemetry: Arc&lt;O&gt;,
    }
    ```
 
@@ -154,8 +154,8 @@ domain layer to external clients (primarily the Python MCP service). The server 
    ```rust
    async fn get_feature(
        &self,
-       request: Request<GetFeatureRequest>,
-   ) -> Result<Response<GetFeatureResponse>, Status> {
+       request: Request&lt;GetFeatureRequest&gt;,
+   ) -> Result&lt;Response&lt;GetFeatureResponse&gt;, Status&gt; {
        let slug = request.into_inner().slug;
        match self.storage.get_feature_by_slug(&slug).await {
            Ok(feature) => Ok(Response::new(feature.into())),
@@ -169,8 +169,8 @@ domain layer to external clients (primarily the Python MCP service). The server 
    ```rust
    async fn run_command(
        &self,
-       request: Request<RunCommandRequest>,
-   ) -> Result<Response<RunCommandResponse>, Status> {
+       request: Request&lt;RunCommandRequest&gt;,
+   ) -> Result&lt;Response&lt;RunCommandResponse&gt;, Status&gt; {
        let req = request.into_inner();
        let result = match req.command.as_str() {
            "specify" => commands::specify::execute_from_args(req.args, &self.storage, &self.vcs, &self.telemetry).await,
@@ -186,10 +186,10 @@ domain layer to external clients (primarily the Python MCP service). The server 
    ```rust
    pub async fn start_server(
        addr: SocketAddr,
-       storage: Arc<impl StoragePort>,
-       vcs: Arc<impl VcsPort>,
+       storage: Arc&lt;impl StoragePort&gt;,
+       vcs: Arc&lt;impl VcsPort&gt;,
        // ... other ports
-   ) -> Result<()> {
+   ) -> Result&lt;()&gt; {
        let service = AgilePlusCoreServer::new(storage, vcs, agents, review, telemetry);
        Server::builder()
            .add_service(AgilePlusCoreServiceServer::new(service))
@@ -217,8 +217,8 @@ gRPC entry point for MCP clients without requiring all downstream services to be
 1. Create a `ProxyRouter` struct holding optional channels to downstream services:
    ```rust
    pub struct ProxyRouter {
-       agents_client: Option<AgentsServiceClient<Channel>>,
-       integrations_client: Option<IntegrationsServiceClient<Channel>>,
+       agents_client: Option&lt;AgentsServiceClient&lt;Channel&gt;&gt;,
+       integrations_client: Option&lt;IntegrationsServiceClient&lt;Channel&gt;&gt;,
    }
    ```
 
@@ -257,7 +257,7 @@ ensure every gRPC handler correctly delegates to the domain layer.
 
 1. Create a `conversions.rs` module with `From`/`Into` implementations:
    ```rust
-   impl From<domain::Feature> for proto::Feature {
+   impl From&lt;domain::Feature&gt; for proto::Feature {
        fn from(f: domain::Feature) -> Self {
            proto::Feature {
                id: f.id as i64,
@@ -521,7 +521,7 @@ from the Rust core.
 2. Create an event bus in the Rust core using `tokio::sync::broadcast`:
    ```rust
    pub struct EventBus {
-       sender: broadcast::Sender<AgentEvent>,
+       sender: broadcast::Sender&lt;AgentEvent&gt;,
    }
 
    impl EventBus {
@@ -530,7 +530,7 @@ from the Rust core.
            Self { sender }
        }
        pub fn publish(&self, event: AgentEvent) { let _ = self.sender.send(event); }
-       pub fn subscribe(&self) -> broadcast::Receiver<AgentEvent> { self.sender.subscribe() }
+       pub fn subscribe(&self) -> broadcast::Receiver&lt;AgentEvent&gt; { self.sender.subscribe() }
    }
    ```
 
@@ -538,8 +538,8 @@ from the Rust core.
    ```rust
    async fn stream_agent_events(
        &self,
-       request: Request<StreamAgentEventsRequest>,
-   ) -> Result<Response<Self::StreamAgentEventsStream>, Status> {
+       request: Request&lt;StreamAgentEventsRequest&gt;,
+   ) -> Result&lt;Response&lt;Self::StreamAgentEventsStream&gt;, Status&gt; {
        let feature_slug = request.into_inner().feature_slug;
        let mut rx = self.event_bus.subscribe();
        let stream = async_stream::stream! {

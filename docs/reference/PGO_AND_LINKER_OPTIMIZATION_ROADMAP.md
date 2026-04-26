@@ -210,7 +210,7 @@ linker-benchmark:
 1. **Instrumentation build:** Compile with `-C llvm-profile-generate`
 2. **Workload execution:** Run integration tests to gather profiling data
 3. **Profile merging:** Combine `.profraw` files into aggregated profile
-4. **Optimized build:** Recompile with `-C llvm-profile-use=<merged_profile>`
+4. **Optimized build:** Recompile with `-C llvm-profile-use=&lt;merged_profile&gt;`
 
 **Workload selection:**
 - Primary: Integration tests (`cargo test --release --workspace`)
@@ -334,7 +334,7 @@ BOLT (Binary Optimization and Layout Tool) is a post-link optimizer from the LLV
    └─> cargo build --release
 
 2. Profile with CPU sampling
-   └─> perf record -c 100000 -F max -e cycles:u ./binary <workload>
+   └─> perf record -c 100000 -F max -e cycles:u ./binary &lt;workload&gt;
 
 3. Convert perf data to BOLT format
    └─> perf2bolt -p perf.data -o perf.fdata binary
@@ -343,7 +343,7 @@ BOLT (Binary Optimization and Layout Tool) is a post-link optimizer from the LLV
    └─> llvm-bolt binary -o binary.bolted -data=perf.fdata
 
 5. Verify and deploy
-   └─> ldd binary.bolted && ./binary.bolted <test>
+   └─> ldd binary.bolted && ./binary.bolted &lt;test&gt;
 ```
 
 ### 3.2 BOLT Implementation Strategy
@@ -385,25 +385,25 @@ Document steps for developers to apply BOLT locally to release binaries:
 2. Profile with perf
    ```bash
    perf record -c 100000 -F max -e cycles:u \
-     ./target/release/<binary> <your-workload>
+     ./target/release/&lt;binary&gt; &lt;your-workload&gt;
    ```
 
 3. Convert to BOLT format
    ```bash
    perf2bolt -p perf.data -o perf.fdata \
-     ./target/release/<binary>
+     ./target/release/&lt;binary&gt;
    ```
 
 4. Apply BOLT
    ```bash
-   llvm-bolt ./target/release/<binary> \
-     -o ./target/release/<binary>.bolted \
+   llvm-bolt ./target/release/&lt;binary&gt; \
+     -o ./target/release/&lt;binary&gt;.bolted \
      -data=perf.fdata
    ```
 
 5. Test
    ```bash
-   ./target/release/<binary>.bolted <test-inputs>
+   ./target/release/&lt;binary&gt;.bolted &lt;test-inputs&gt;
    ```
 ```
 
@@ -522,7 +522,7 @@ release-pgo:
 
 If issues arise:
 1. **mold fails:** Disable and use system ld (zero config change needed)
-2. **PGO degrades perf:** Use `-C llvm-profile-use-dir=<cached>` with stale data
+2. **PGO degrades perf:** Use `-C llvm-profile-use-dir=&lt;cached&gt;` with stale data
 3. **CI slowdown unacceptable:** Move PGO to scheduled jobs (nightly, not on PR)
 
 ---

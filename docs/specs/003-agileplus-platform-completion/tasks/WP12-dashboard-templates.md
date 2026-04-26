@@ -80,27 +80,27 @@ Full-page layout template with navigation and structure:
 
 **Structure:**
 ```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgilePlus — {% block title %}Dashboard{% endblock %}</title>
-  <link rel="stylesheet" href="/static/style.css">
-  <script src="/static/htmx.min.js"></script>
-  <script src="/static/alpine.min.js" defer></script>
-</head>
-<body class="bg-zinc-900 text-zinc-100">
-  <nav class="border-b border-zinc-700">...</nav>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;AgilePlus — {% block title %}Dashboard{% endblock %}&lt;/title&gt;
+  &lt;link rel="stylesheet" href="/static/style.css"&gt;
+  &lt;script src="/static/htmx.min.js"&gt;&lt;/script&gt;
+  &lt;script src="/static/alpine.min.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body class="bg-zinc-900 text-zinc-100"&gt;
+  &lt;nav class="border-b border-zinc-700"&gt;...&lt;/nav&gt;
   <div class="flex">
-    <aside class="w-64 border-r border-zinc-700">...</aside>
-    <main class="flex-1">
+    &lt;aside class="w-64 border-r border-zinc-700"&gt;...&lt;/aside&gt;
+    &lt;main class="flex-1"&gt;
       {% block content %}{% endblock %}
-    </main>
+    &lt;/main&gt;
   </div>
-  <footer class="border-t border-zinc-700 text-sm">...</footer>
-</body>
-</html>
+  &lt;footer class="border-t border-zinc-700 text-sm"&gt;...&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;
 ```
 
 ### T073: kanban.html
@@ -122,9 +122,9 @@ Kanban board partial for feature workflow visualization:
   {% for state in states %}
     <div class="kanban-column min-w-80 bg-zinc-800 rounded border border-zinc-700">
       <h3 class="px-4 py-2 font-mono font-bold border-b border-zinc-700">
-        {{ state }} ({{ cards[state]|length }})
+        &#123;&#123; state }} (&#123;&#123; cards[state]|length }})
       </h3>
-      <div class="p-2 space-y-2" data-state="{{ state }}">
+      <div class="p-2 space-y-2" data-state="&#123;&#123; state }}">
         {% for feature in cards[state] %}
           {% include "partials/feature-card.html" %}
         {% endfor %}
@@ -149,11 +149,11 @@ Feature detail page with full context:
 ```html
 <div class="p-6">
   <div class="border-b border-zinc-700 pb-6">
-    <h1 class="text-3xl font-bold">{{ feature.title }}</h1>
+    <h1 class="text-3xl font-bold">&#123;&#123; feature.title }}</h1>
     <div class="flex gap-2 mt-2">
-      <span class="badge badge-{{ feature.state }}">{{ feature.state }}</span>
+      <span class="badge badge-&#123;&#123; feature.state }}">&#123;&#123; feature.state }}</span>
       {% for label in feature.labels %}
-        <span class="badge badge-gray">{{ label }}</span>
+        <span class="badge badge-gray">&#123;&#123; label }}</span>
       {% endfor %}
     </div>
   </div>
@@ -169,12 +169,12 @@ Feature detail page with full context:
   </div>
 
   <div class="mt-6 flex gap-2">
-    <button hx-post="/api/features/{{ feature.id }}/transition"
+    <button hx-post="/api/features/&#123;&#123; feature.id }}/transition"
             hx-vals='{"target_state":"implementing"}'
             class="btn btn-primary">
       → Implementing
     </button>
-    <button hx-post="/api/features/{{ feature.id }}/sync"
+    <button hx-post="/api/features/&#123;&#123; feature.id }}/sync"
             class="btn btn-secondary">
       Sync with Plane
     </button>
@@ -205,11 +205,11 @@ Work package list partial with progress visualization:
   <tbody>
     {% for wp in workpackages %}
       <tr class="border-b border-zinc-700 hover:bg-zinc-700">
-        <td class="p-2"><a href="/api/dashboard/wp/{{ wp.id }}">{{ wp.title }}</a></td>
-        <td class="p-2"><span class="badge badge-{{ wp.state }}">{{ wp.state }}</span></td>
+        <td class="p-2"><a href="/api/dashboard/wp/&#123;&#123; wp.id }}">&#123;&#123; wp.title }}</a></td>
+        <td class="p-2"><span class="badge badge-&#123;&#123; wp.state }}">&#123;&#123; wp.state }}</span></td>
         <td class="p-2">
           <div class="w-32 h-2 bg-zinc-700 rounded">
-            <div class="h-2 bg-green-600 rounded" style="width: {{ wp.progress }}%"></div>
+            <div class="h-2 bg-green-600 rounded" style="width: &#123;&#123; wp.progress }}%"></div>
           </div>
         </td>
       </tr>
@@ -260,7 +260,7 @@ Check HxRequest header: if htmx request → return partial only, else → return
 **Example handler:**
 ```rust
 pub async fn kanban_board(
-    State(state): State<AppState>,
+    State(state): State&lt;AppState&gt;,
     HxRequest(is_htmx): HxRequest,
 ) -> impl IntoResponse {
     let features = state.repo.list_features().await;

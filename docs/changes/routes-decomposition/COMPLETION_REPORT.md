@@ -242,7 +242,7 @@ The new `tests.rs` module provides comprehensive coverage:
 **Merge Commit**: 290b9759d  
 **Title**: "refactor(agileplus-dashboard): decompose routes into 9-module structure (-950 LOC)"  
 **PR**: #279  
-**Co-Authors**: Claude Code <claude@anthropic.com>
+**Co-Authors**: Claude Code &lt;claude@anthropic.com&gt;
 
 ---
 

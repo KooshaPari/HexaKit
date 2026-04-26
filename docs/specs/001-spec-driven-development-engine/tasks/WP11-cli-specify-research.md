@@ -50,7 +50,7 @@ history:
 ---
 
 ## Markdown Formatting
-Wrap HTML/XML tags in backticks: `` `<div>` ``, `` `<script>` ``
+Wrap HTML/XML tags in backticks: `` `<div>` ``, `` `&lt;script&gt;` ``
 Use language identifiers in code blocks: ````python`, ````bash`
 
 ---
@@ -66,7 +66,7 @@ spec-kitty implement WP11 --base WP10
 ## Objectives & Success Criteria
 
 1. **CLI binary** (`agileplus`) starts in under 50ms, parses subcommands and global flags via clap, and routes to the correct command handler.
-2. **`agileplus specify`** runs a guided discovery interview on the terminal, generates a `spec.md` file, persists the Feature record in SQLite, commits the spec to git under `kitty-specs/<slug>/spec.md`, and logs an audit entry for the `created -> specified` state transition.
+2. **`agileplus specify`** runs a guided discovery interview on the terminal, generates a `spec.md` file, persists the Feature record in SQLite, commits the spec to git under `kitty-specs/&lt;slug&gt;/spec.md`, and logs an audit entry for the `created -> specified` state transition.
 3. **`agileplus research`** operates in two modes:
    - **Pre-specify** (no spec exists): scans the codebase and produces research artifacts to inform specification.
    - **Post-specify** (spec exists): performs feasibility analysis against the spec and produces `research.md`.
@@ -91,7 +91,7 @@ spec-kitty implement WP11 --base WP10
 
 ### Architectural Constraints
 - The CLI crate depends on `agileplus-core` (domain + ports) and all adapter crates. It is the composition root.
-- Use clap derive macros for argument parsing. Global flags: `--verbose`, `--config <path>`, `--feature <slug>`.
+- Use clap derive macros for argument parsing. Global flags: `--verbose`, `--config &lt;path&gt;`, `--feature &lt;slug&gt;`.
 - All commands must create a telemetry span and record duration as a metric.
 - The CLI must not use `unwrap()` or `expect()` in production paths. All errors surface as user-friendly messages via `miette` or `anyhow` with context.
 - Discovery interview uses `dialoguer` for structured prompts. The interview must be interruptible (Ctrl+C saves partial progress).
@@ -158,11 +158,11 @@ tempfile = "3"
      struct SpecifyArgs {
          /// Feature slug (kebab-case, e.g., 001-my-feature)
          #[arg(long)]
-         feature: Option<String>,
+         feature: Option&lt;String&gt;,
 
          /// Skip interactive interview, use provided spec file
          #[arg(long)]
-         from_file: Option<PathBuf>,
+         from_file: Option&lt;PathBuf&gt;,
 
          /// Target branch for eventual merge
          #[arg(long, default_value = "main")]
@@ -177,7 +177,7 @@ tempfile = "3"
 
          /// Research mode override
          #[arg(long, value_enum)]
-         mode: Option<ResearchMode>,
+         mode: Option&lt;ResearchMode&gt;,
      }
      ```
   4. In `main()`:
@@ -214,7 +214,7 @@ tempfile = "3"
      - Non-functional requirements (performance, security, reliability)
      - Constraints and dependencies
      - Acceptance criteria
-  3. Implement `run_specify(args: SpecifyArgs, storage: &dyn StoragePort, vcs: &dyn VcsPort, telemetry: &dyn ObservabilityPort) -> Result<()>`:
+  3. Implement `run_specify(args: SpecifyArgs, storage: &dyn StoragePort, vcs: &dyn VcsPort, telemetry: &dyn ObservabilityPort) -> Result&lt;()&gt;`:
      - Check if feature already exists (by slug). If yes, enter refinement mode (T063).
      - If `--from-file` provided, read spec from file instead of interview.
      - Otherwise, run the discovery interview using `dialoguer`:
@@ -265,13 +265,13 @@ tempfile = "3"
 - **Purpose**: Implement the research command with two modes: codebase scanning (pre-specify) and feasibility analysis (post-specify), producing research artifacts stored in git.
 - **Steps**:
   1. Create `crates/agileplus-cli/src/commands/research.rs`.
-  2. Implement `run_research(args: ResearchArgs, storage: &dyn StoragePort, vcs: &dyn VcsPort, telemetry: &dyn ObservabilityPort) -> Result<()>`:
+  2. Implement `run_research(args: ResearchArgs, storage: &dyn StoragePort, vcs: &dyn VcsPort, telemetry: &dyn ObservabilityPort) -> Result&lt;()&gt;`:
      - Look up feature by slug. Determine mode:
        - If feature does not exist or state is `created`: pre-specify mode.
        - If feature exists and state is `specified`: post-specify mode.
        - If `--mode` is provided, override auto-detection.
      - Route to `research_pre_specify()` or `research_post_specify()`.
-  3. Implement `research_pre_specify(slug, vcs, storage) -> Result<()>`:
+  3. Implement `research_pre_specify(slug, vcs, storage) -> Result&lt;()&gt;`:
      - Scan the repository for relevant context:
        - Read directory structure via VCS (top-level layout).
        - Look for existing specs, READMEs, package manifests.
@@ -295,7 +295,7 @@ tempfile = "3"
        ```
      - Write to `kitty-specs/{slug}/research.md` via VCS.
      - No state transition (feature may not exist yet).
-  4. Implement `research_post_specify(feature, vcs, storage) -> Result<()>`:
+  4. Implement `research_post_specify(feature, vcs, storage) -> Result&lt;()&gt;`:
      - Read the existing `spec.md` via VCS.
      - Analyze feasibility:
        - Check for referenced files/modules that already exist.
@@ -366,17 +366,17 @@ tempfile = "3"
 - **Purpose**: Load the project constitution (if present), validate spec consistency against governance rules, and surface violations before proceeding with state transitions.
 - **Steps**:
   1. Create `crates/agileplus-cli/src/commands/governance.rs` as a shared utility module.
-  2. Implement `load_constitution(vcs: &dyn VcsPort) -> Result<Option<Constitution>>`:
+  2. Implement `load_constitution(vcs: &dyn VcsPort) -> Result&lt;Option&lt;Constitution&gt;&gt;`:
      - Look for `.kittify/memory/constitution.md` or `~/.agileplus/constitution.md`.
      - Parse constitution into a `Constitution` struct with rules.
      - Return `None` if no constitution file exists (governance is optional).
-  3. Implement `validate_spec_consistency(spec_content: &str, constitution: &Constitution) -> Vec<Violation>`:
+  3. Implement `validate_spec_consistency(spec_content: &str, constitution: &Constitution) -> Vec&lt;Violation&gt;`:
      - Check naming conventions (slug format matches pattern).
      - Check required sections are present in spec.md (Problem Statement, FRs, Acceptance Criteria).
      - Check FR numbering is sequential.
      - Check for duplicate FR descriptions.
      - Return a list of violations (severity: error, warning, info).
-  4. Implement `enforce_governance(violations: &[Violation]) -> Result<()>`:
+  4. Implement `enforce_governance(violations: &[Violation]) -> Result&lt;()&gt;`:
      - If any `error` severity violations exist, print them and return `Err`.
      - If only `warning` violations, print them and prompt "Continue with warnings? [y/n]".
      - If only `info`, print them and proceed.
@@ -387,7 +387,7 @@ tempfile = "3"
          pub rule: String,
          pub severity: ViolationSeverity,
          pub message: String,
-         pub location: Option<String>,  // line number or section name
+         pub location: Option&lt;String&gt;,  // line number or section name
      }
 
      pub enum ViolationSeverity {
@@ -410,19 +410,19 @@ tempfile = "3"
   1. In `main.rs`, create an `AppContext` struct that holds all port implementations:
      ```rust
      struct AppContext {
-         storage: Box<dyn StoragePort>,
-         vcs: Box<dyn VcsPort>,
-         telemetry: Box<dyn ObservabilityPort>,
+         storage: Box&lt;dyn StoragePort&gt;,
+         vcs: Box&lt;dyn VcsPort&gt;,
+         telemetry: Box&lt;dyn ObservabilityPort&gt;,
      }
      ```
-  2. Implement `AppContext::init(config: &AppConfig) -> Result<Self>`:
+  2. Implement `AppContext::init(config: &AppConfig) -> Result&lt;Self&gt;`:
      - Open SQLite DB: `SqliteStorageAdapter::open(&config.db_path)?`
      - Open git repo: `GitVcsAdapter::open_from_cwd()?`
      - Init telemetry: `TelemetryAdapter::new(telemetry_config)?`
      - Return context with all adapters boxed as trait objects.
   3. Update command handlers to accept `&AppContext` instead of individual adapters:
      ```rust
-     pub async fn run_specify(args: SpecifyArgs, ctx: &AppContext) -> Result<()> {
+     pub async fn run_specify(args: SpecifyArgs, ctx: &AppContext) -> Result&lt;()&gt; {
          // Use ctx.storage, ctx.vcs, ctx.telemetry
      }
      ```
@@ -453,9 +453,9 @@ tempfile = "3"
   - `crates/agileplus-cli/src/context.rs` (new, if extracted)
 - **Parallel?**: No -- depends on T060-T064.
 - **Notes**:
-  - The `Box<dyn Port>` approach is the simplest DI pattern in Rust. For performance-critical paths, consider generics with monomorphization, but trait objects are fine for CLI startup.
+  - The `Box&lt;dyn Port&gt;` approach is the simplest DI pattern in Rust. For performance-critical paths, consider generics with monomorphization, but trait objects are fine for CLI startup.
   - The `TestContext` enables unit testing of command handlers without real file I/O or database.
-  - Consider using `Arc<dyn Port>` instead of `Box` if handlers need to clone the context for async tasks.
+  - Consider using `Arc&lt;dyn Port&gt;` instead of `Box` if handlers need to clone the context for async tasks.
 
 ---
 
@@ -517,14 +517,14 @@ tempfile = "3"
 **When adding an entry**:
 1. Scroll to the bottom of this file (Activity Log section below "Valid lanes")
 2. **APPEND the new entry at the END** (do NOT prepend or insert in middle)
-3. Use exact format: `- YYYY-MM-DDTHH:MM:SSZ -- agent_id -- lane=<lane> -- <action>`
+3. Use exact format: `- YYYY-MM-DDTHH:MM:SSZ -- agent_id -- lane=&lt;lane&gt; -- &lt;action&gt;`
 4. Timestamp MUST be current time in UTC (check with `date -u "+%Y-%m-%dT%H:%M:%SZ"`)
 5. Lane MUST match the frontmatter `lane:` field exactly
 6. Agent ID should identify who made the change (claude-sonnet-4-5, codex, etc.)
 
 **Format**:
 ```
-- YYYY-MM-DDTHH:MM:SSZ -- <agent_id> -- lane=<lane> -- <brief action description>
+- YYYY-MM-DDTHH:MM:SSZ -- &lt;agent_id&gt; -- lane=&lt;lane&gt; -- &lt;brief action description&gt;
 ```
 
 **Valid lanes**: `planned`, `doing`, `for_review`, `done`
@@ -534,7 +534,7 @@ tempfile = "3"
 To change a work package's lane, either:
 
 1. **Edit directly**: Change the `lane:` field in frontmatter AND append activity log entry (at the end)
-2. **Use CLI**: `spec-kitty agent tasks move-task WP11 --to <lane> --note "message"` (recommended)
+2. **Use CLI**: `spec-kitty agent tasks move-task WP11 --to &lt;lane&gt; --note "message"` (recommended)
 
 **Initial entry**:
 - 2026-02-27T00:00:00Z -- system -- lane=planned -- Prompt created.

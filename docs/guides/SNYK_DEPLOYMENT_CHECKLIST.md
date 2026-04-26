@@ -90,7 +90,7 @@ Follow: **SNYK_TOKEN_ACQUISITION_GUIDE.md**
 
 **Sign-Off:**
 - [ ] Token is valid and accessible
-- [ ] `snyk auth <token>` succeeds
+- [ ] `snyk auth &lt;token&gt;` succeeds
 - [ ] No token visible in shell history
 
 ---

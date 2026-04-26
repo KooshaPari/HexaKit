@@ -148,12 +148,12 @@ For the local deployment script, you'll need the token temporarily accessible.
 Store the token in a temporary environment variable:
 
 ```bash
-export SNYK_TOKEN="<your-token-here>"
+export SNYK_TOKEN="&lt;your-token-here&gt;"
 ```
 
 **Steps:**
 1. Open your terminal
-2. Paste the command above, replacing `<your-token-here>` with your actual token
+2. Paste the command above, replacing `&lt;your-token-here&gt;` with your actual token
 3. Press Enter
 4. Verify with: `echo $SNYK_TOKEN`
    - Expected output: Your token (or a portion of it)
@@ -307,7 +307,7 @@ snyk test --help
 Test open source packages for known vulnerabilities
 
 Usage
-  $ snyk test [<PATH>] [OPTIONS]
+  $ snyk test [&lt;PATH&gt;] [OPTIONS]
 
 ...
 ```
@@ -357,7 +357,7 @@ which snyk
 2. Go to Settings → Auth Token
 3. Generate a new token
 4. Copy it exactly (no extra spaces)
-5. Run: `snyk auth <new-token>`
+5. Run: `snyk auth &lt;new-token&gt;`
 
 ### Issue: Token in Shell History
 
@@ -419,7 +419,7 @@ Before proceeding to local deployment:
 - [ ] Token copied to clipboard
 - [ ] Token stored securely (env var or temp file, NOT committed to git)
 - [ ] Snyk CLI installed (`snyk --version` works)
-- [ ] Authentication verified (`snyk auth <token>` succeeds)
+- [ ] Authentication verified (`snyk auth &lt;token&gt;` succeeds)
 - [ ] `snyk --version` outputs version number
 - [ ] No token in shell history
 - [ ] .env file (if used) is in .gitignore

@@ -90,7 +90,7 @@ history:
 4. **Commands section:**
    - Each command has subsection with:
      - Description (one sentence)
-     - Usage: `pheno <command> [flags]`
+     - Usage: `pheno &lt;command&gt; [flags]`
      - Flags: description, type, default, examples
      - Examples: 2-3 realistic examples
    - Commands to document:
@@ -271,8 +271,8 @@ history:
 
    **Step 1: Clone & Setup (2 mins):**
    ```
-   git clone https://github.com/phenotype-org/<repo>
-   cd <repo>
+   git clone https://github.com/phenotype-org/&lt;repo&gt;
+   cd &lt;repo&gt;
    pheno bootstrap  # (if not already done)
    mise install     # install dependencies
    ```

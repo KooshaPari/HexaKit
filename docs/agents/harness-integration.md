@@ -45,27 +45,27 @@ pub trait AgentPort: Send + Sync {
         &self,
         task: AgentTask,
         config: AgentConfig,
-    ) -> Result<AgentResult, DomainError>;
+    ) -> Result&lt;AgentResult, DomainError&gt;;
 
     /// Dispatch an agent in background; returns a job ID for polling.
     async fn dispatch_async(
         &self,
         task: AgentTask,
         config: AgentConfig,
-    ) -> Result<String, DomainError>;
+    ) -> Result&lt;String, DomainError&gt;;
 
     /// Poll the status of a previously dispatched job.
-    async fn query_status(&self, job_id: &str) -> Result<JobState, DomainError>;
+    async fn query_status(&self, job_id: &str) -> Result&lt;JobState, DomainError&gt;;
 
     /// Cancel a running or pending job.
-    async fn cancel(&self, job_id: &str, reason: &str) -> Result<(), DomainError>;
+    async fn cancel(&self, job_id: &str, reason: &str) -> Result&lt;(), DomainError&gt;;
 
     /// Send an instruction to a running agent (write to its worktree).
     async fn send_instruction(
         &self,
         job_id: &str,
         instruction: &str,
-    ) -> Result<(), DomainError>;
+    ) -> Result&lt;(), DomainError&gt;;
 }
 ```
 
@@ -80,7 +80,7 @@ pub struct AgentTask {
     pub wp_sequence: u32,            // 1, 2, 3...
     pub wp_id: String,               // "WP01"
     pub prompt_path: PathBuf,        // Path to WP01.md
-    pub context_paths: Vec<PathBuf>, // [spec.md, plan.md, ...]
+    pub context_paths: Vec&lt;PathBuf&gt;, // [spec.md, plan.md, ...]
     pub worktree_path: PathBuf,      // .worktrees/001-login-WP01
 }
 
@@ -104,8 +104,8 @@ pub struct AgentResult {
     pub stdout: String,
     pub stderr: String,
     pub exit_code: i32,
-    pub pr_url: Option<String>,      // GitHub PR URL if created
-    pub commits: Vec<String>,        // Commit SHAs
+    pub pr_url: Option&lt;String&gt;,      // GitHub PR URL if created
+    pub commits: Vec&lt;String&gt;,        // Commit SHAs
 }
 ```
 
@@ -130,7 +130,7 @@ impl AgentPort for ClaudeCodeHarness {
         &self,
         task: AgentTask,
         config: AgentConfig,
-    ) -> Result<AgentResult, DomainError> {
+    ) -> Result&lt;AgentResult, DomainError&gt; {
         // 1. Set up environment
         let mut cmd = Command::new(&self.config.binary);
         cmd.current_dir(&task.worktree_path);
@@ -142,7 +142,7 @@ impl AgentPort for ClaudeCodeHarness {
         let context_str = task.context_paths
             .iter()
             .map(|p| p.display().to_string())
-            .collect::<Vec<_>>()
+            .collect::&lt;Vec&lt;_&gt;&gt;()
             .join(":");
         cmd.env("AGILEPLUS_CONTEXT", context_str);
 
@@ -186,7 +186,7 @@ impl AgentPort for ClaudeCodeHarness {
         &self,
         task: AgentTask,
         config: AgentConfig,
-    ) -> Result<String, DomainError> {
+    ) -> Result&lt;String, DomainError&gt; {
         let job_id = task.job_id.clone();
 
         // Spawn background task
@@ -197,13 +197,13 @@ impl AgentPort for ClaudeCodeHarness {
         Ok(job_id)
     }
 
-    async fn query_status(&self, job_id: &str) -> Result<JobState, DomainError> {
+    async fn query_status(&self, job_id: &str) -> Result&lt;JobState, DomainError&gt; {
         // Poll job map for status
         // Return Pending, Running, Completed, Failed, Cancelled
         todo!()
     }
 
-    async fn cancel(&self, job_id: &str, reason: &str) -> Result<(), DomainError> {
+    async fn cancel(&self, job_id: &str, reason: &str) -> Result&lt;(), DomainError&gt; {
         // Send SIGTERM to process, wait 30s, then SIGKILL
         todo!()
     }
@@ -212,7 +212,7 @@ impl AgentPort for ClaudeCodeHarness {
         &self,
         job_id: &str,
         instruction: &str,
-    ) -> Result<(), DomainError> {
+    ) -> Result&lt;(), DomainError&gt; {
         // Write instruction to file in worktree
         // Agent polls this file periodically
         todo!()
@@ -256,7 +256,7 @@ impl AgentPort for CursorHarness {
         &self,
         task: AgentTask,
         config: AgentConfig,
-    ) -> Result<AgentResult, DomainError> {
+    ) -> Result&lt;AgentResult, DomainError&gt; {
         // Cursor-specific implementation
         let mut cmd = Command::new(&self.binary_binary_path);
         cmd.current_dir(&task.worktree_path);
@@ -304,18 +304,18 @@ impl AgentPort for CursorHarness {
         &self,
         task: AgentTask,
         config: AgentConfig,
-    ) -> Result<String, DomainError> {
+    ) -> Result&lt;String, DomainError&gt; {
         let job_id = task.job_id.clone();
         // Implement background dispatch
         Ok(job_id)
     }
 
-    async fn query_status(&self, job_id: &str) -> Result<JobState, DomainError> {
+    async fn query_status(&self, job_id: &str) -> Result&lt;JobState, DomainError&gt; {
         // Poll job map
         todo!()
     }
 
-    async fn cancel(&self, job_id: &str, reason: &str) -> Result<(), DomainError> {
+    async fn cancel(&self, job_id: &str, reason: &str) -> Result&lt;(), DomainError&gt; {
         // SIGTERM then SIGKILL
         todo!()
     }
@@ -324,7 +324,7 @@ impl AgentPort for CursorHarness {
         &self,
         job_id: &str,
         instruction: &str,
-    ) -> Result<(), DomainError> {
+    ) -> Result&lt;(), DomainError&gt; {
         // Write instruction file
         todo!()
     }
@@ -533,13 +533,13 @@ pub struct MyCommandInput {
 
 pub struct MyCommandOutput {
     pub result: String,
-    pub artifact_path: Option<String>,
+    pub artifact_path: Option&lt;String&gt;,
 }
 
 pub async fn execute(
     input: MyCommandInput,
     audit: &SubcmdAudit,
-) -> Result<MyCommandOutput, crate::Error> {
+) -> Result&lt;MyCommandOutput, crate::Error&gt; {
     // Log the command start
     audit.log_command("my_command", &input.wp_id, &[
         ("custom_param", &input.custom_param)
@@ -601,7 +601,7 @@ enum AgentCommands {
     },
 }
 
-async fn handle_agent_command(cmd: AgentCommands, ctx: &Context) -> Result<()> {
+async fn handle_agent_command(cmd: AgentCommands, ctx: &Context) -> Result&lt;()&gt; {
     match cmd {
         AgentCommands::MyCommand { feature, wp, custom_param } => {
             let output = subcmds::commands::my_command::execute(
@@ -621,9 +621,9 @@ async fn handle_agent_command(cmd: AgentCommands, ctx: &Context) -> Result<()> {
 The full configuration schema for a harness in `.kittify/config.toml`:
 
 ```toml
-[agents.<harness-name>]
+[agents.&lt;harness-name&gt;]
 # Required
-harness = "<harness-name>"       # Must match registered name
+harness = "&lt;harness-name&gt;"       # Must match registered name
 binary_path = "/path/to/binary"  # or "binary-name" for PATH lookup
 
 # Timeouts
@@ -638,7 +638,7 @@ retry_on_transient = true        # Retry on network/process errors
 max_retries = 3
 
 # Environment injection
-[agents.<harness-name>.env]
+[agents.&lt;harness-name&gt;.env]
 CUSTOM_VAR = "value"
 SECRET_VAR = "${ENV_VAR}"        # Template from environment
 ```

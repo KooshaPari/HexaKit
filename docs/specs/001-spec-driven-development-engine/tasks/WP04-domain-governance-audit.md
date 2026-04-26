@@ -54,7 +54,7 @@ history:
 ---
 
 ## Markdown Formatting
-Wrap HTML/XML tags in backticks: `` `<div>` ``, `` `<script>` ``
+Wrap HTML/XML tags in backticks: `` `<div>` ``, `` `&lt;script&gt;` ``
 Use language identifiers in code blocks: ````python`, ````bash`
 
 ---
@@ -121,8 +121,8 @@ spec-kitty implement WP04 --base WP03
          pub id: i64,
          pub feature_id: i64,
          pub version: i32,
-         pub rules: Vec<GovernanceRule>,
-         pub bound_at: DateTime<Utc>,
+         pub rules: Vec&lt;GovernanceRule&gt;,
+         pub bound_at: DateTime&lt;Utc&gt;,
      }
      ```
   3. Define `GovernanceRule`:
@@ -132,9 +132,9 @@ spec-kitty implement WP04 --base WP03
          /// The state transition this rule applies to (e.g., "implementing -> validated").
          pub transition: String,
          /// Evidence requirements that must be satisfied.
-         pub required_evidence: Vec<EvidenceRequirement>,
+         pub required_evidence: Vec&lt;EvidenceRequirement&gt;,
          /// References to policy rules that must pass.
-         pub policy_refs: Vec<String>,
+         pub policy_refs: Vec&lt;String&gt;,
      }
 
      #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -144,15 +144,15 @@ spec-kitty implement WP04 --base WP03
          /// Required evidence type.
          pub evidence_type: EvidenceType,
          /// Type-specific threshold (e.g., min_coverage for test_result).
-         pub threshold: Option<Value>,
+         pub threshold: Option&lt;Value&gt;,
      }
      ```
   4. Implement `GovernanceContract::new()` constructor.
-  5. Implement `GovernanceContract::validate_rules(&self) -> Result<(), DomainError>`:
+  5. Implement `GovernanceContract::validate_rules(&self) -> Result&lt;(), DomainError&gt;`:
      - Check that all transitions reference valid `FeatureState` pairs
      - Check that evidence types are valid enum variants
      - Check that policy_refs are non-empty strings
-  6. Implement `GovernanceContract::rules_for_transition(&self, transition: &StateTransition) -> Vec<&GovernanceRule>`:
+  6. Implement `GovernanceContract::rules_for_transition(&self, transition: &StateTransition) -> Vec&lt;&GovernanceRule&gt;`:
      - Returns all rules applicable to a given transition
      - Used by the validate command to check evidence completeness
 - **Files**: `crates/agileplus-core/src/domain/governance.rs`
@@ -179,15 +179,15 @@ spec-kitty implement WP04 --base WP03
          /// Related feature.
          pub feature_id: i64,
          /// Related work package (None for feature-level transitions).
-         pub wp_id: Option<i64>,
+         pub wp_id: Option&lt;i64&gt;,
          /// UTC timestamp of the event.
-         pub timestamp: DateTime<Utc>,
+         pub timestamp: DateTime&lt;Utc&gt;,
          /// Actor identifier: "user", "agent:claude-code", "agent:codex", "system".
          pub actor: String,
          /// State transition description (e.g., "specified -> researched").
          pub transition: String,
          /// References to evidence records backing this transition.
-         pub evidence_refs: Vec<EvidenceRef>,
+         pub evidence_refs: Vec&lt;EvidenceRef&gt;,
          /// SHA-256 hash of the previous entry (all zeros for genesis).
          pub prev_hash: [u8; 32],
          /// SHA-256 hash of this entry's contents.
@@ -226,7 +226,7 @@ spec-kitty implement WP04 --base WP03
      /// Fields are separated by 0x00 bytes to prevent ambiguity.
      pub fn hash_entry(
          id: i64,
-         timestamp: &DateTime<Utc>,
+         timestamp: &DateTime&lt;Utc&gt;,
          actor: &str,
          transition: &str,
          evidence_refs: &[EvidenceRef],
@@ -282,7 +282,7 @@ spec-kitty implement WP04 --base WP03
      /// Verify the integrity of an audit chain.
      ///
      /// Returns Ok(count) if the chain is valid, or Err with the first invalid entry.
-     pub fn verify_chain(entries: &[AuditEntry]) -> Result<usize, AuditChainError> {
+     pub fn verify_chain(entries: &[AuditEntry]) -> Result&lt;usize, AuditChainError&gt; {
          if entries.is_empty() {
              return Ok(0);
          }
@@ -358,13 +358,13 @@ spec-kitty implement WP04 --base WP03
   3. Implement `AuditChain` convenience wrapper:
      ```rust
      pub struct AuditChain {
-         entries: Vec<AuditEntry>,
+         entries: Vec&lt;AuditEntry&gt;,
      }
 
      impl AuditChain {
          pub fn new() -> Self { Self { entries: vec![] } }
-         pub fn append(&mut self, ...) -> Result<AuditEntry, DomainError> { ... }
-         pub fn verify(&self) -> Result<usize, AuditChainError> { verify_chain(&self.entries) }
+         pub fn append(&mut self, ...) -> Result&lt;AuditEntry, DomainError&gt; { ... }
+         pub fn verify(&self) -> Result&lt;usize, AuditChainError&gt; { verify_chain(&self.entries) }
          pub fn len(&self) -> usize { self.entries.len() }
          pub fn last_hash(&self) -> [u8; 32] { ... }
      }
@@ -387,8 +387,8 @@ spec-kitty implement WP04 --base WP03
          pub fr_id: String,
          pub evidence_type: EvidenceType,
          pub artifact_path: String,
-         pub metadata: Option<serde_json::Value>,
-         pub created_at: DateTime<Utc>,
+         pub metadata: Option&lt;serde_json::Value&gt;,
+         pub created_at: DateTime&lt;Utc&gt;,
      }
 
      #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -408,13 +408,13 @@ spec-kitty implement WP04 --base WP03
      - Check `fr_id` matches `req.fr_id`
      - If threshold present, check metadata against threshold (e.g., coverage >= min_coverage)
   4. Implement `EvidenceType::from_str()` and `Display` for parsing and display.
-  5. Implement helper: `check_evidence_completeness(evidence: &[Evidence], rules: &[GovernanceRule]) -> Vec<MissingEvidence>`:
+  5. Implement helper: `check_evidence_completeness(evidence: &[Evidence], rules: &[GovernanceRule]) -> Vec&lt;MissingEvidence&gt;`:
      - For each rule's required_evidence, check if a matching Evidence exists
      - Returns list of unsatisfied requirements
 - **Files**: `crates/agileplus-core/src/domain/governance.rs`
 - **Parallel?**: Yes -- can run alongside T019-T021 (audit chain).
 - **Validation**: Evidence matches requirements correctly; missing evidence detected; threshold comparison works.
-- **Notes**: The `metadata` field is `Option<serde_json::Value>` because different evidence types carry different metadata. `TestResult` might have `{"coverage_pct": 87.5}`, while `SecurityScan` might have `{"critical": 0, "high": 2}`. The threshold comparison in `satisfies_requirement` should handle numeric comparisons (>=, <=, ==) based on evidence type.
+- **Notes**: The `metadata` field is `Option&lt;serde_json::Value&gt;` because different evidence types carry different metadata. `TestResult` might have `{"coverage_pct": 87.5}`, while `SecurityScan` might have `{"critical": 0, "high": 2}`. The threshold comparison in `satisfies_requirement` should handle numeric comparisons (>=, <=, ==) based on evidence type.
 
 ### Subtask T023 -- Implement `PolicyRule` struct with domain-based evaluation (quality/security/reliability) (FR-020)
 
@@ -428,8 +428,8 @@ spec-kitty implement WP04 --base WP03
          pub domain: PolicyDomain,
          pub rule: PolicyDefinition,
          pub active: bool,
-         pub created_at: DateTime<Utc>,
-         pub updated_at: DateTime<Utc>,
+         pub created_at: DateTime&lt;Utc&gt;,
+         pub updated_at: DateTime&lt;Utc&gt;,
      }
 
      #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -458,7 +458,7 @@ spec-kitty implement WP04 --base WP03
          /// Maximum number of critical security findings.
          MaxCriticalFindings { threshold: u32 },
          /// Required evidence types that must be present.
-         RequiredEvidenceTypes { types: Vec<EvidenceType> },
+         RequiredEvidenceTypes { types: Vec&lt;EvidenceType&gt; },
          /// All lints must pass (zero warnings in strict mode).
          LintClean { strict: bool },
          /// Review must be approved (no outstanding change requests).
@@ -480,7 +480,7 @@ spec-kitty implement WP04 --base WP03
      - `RequiredEvidenceTypes`: check that all required types exist in evidence set
      - `LintClean`: find LintResult evidence, check for zero warnings/errors
      - `ReviewApproved`: find ReviewApproval evidence, check it exists
-  4. Implement `evaluate_all_policies(policies: &[PolicyRule], evidence: &[Evidence]) -> Vec<(PolicyRule, PolicyResult)>`:
+  4. Implement `evaluate_all_policies(policies: &[PolicyRule], evidence: &[Evidence]) -> Vec&lt;(PolicyRule, PolicyResult)&gt;`:
      - Convenience function to evaluate all active policies against evidence
 - **Files**: `crates/agileplus-core/src/domain/governance.rs`
 - **Parallel?**: Yes -- can run alongside T019-T021 and T022.
@@ -656,10 +656,10 @@ spec-kitty implement WP04 --base WP03
 | Risk | Impact | Mitigation |
 |------|--------|------------|
 | Hash non-determinism across platforms | Chain verification fails when rebuilt on different OS | Use big-endian bytes, RFC 3339 timestamps, sorted evidence refs; test on macOS + Linux |
-| Timestamp precision differences | Same logical event produces different hashes | Use `DateTime<Utc>` with fixed RFC 3339 format (no nanoseconds unless needed) |
+| Timestamp precision differences | Same logical event produces different hashes | Use `DateTime&lt;Utc&gt;` with fixed RFC 3339 format (no nanoseconds unless needed) |
 | serde_json key ordering in metadata | Hash changes between serde versions | Hash function uses explicit byte concatenation, NOT serde_json serialization |
 | Policy evaluation edge cases | False pass on security-critical checks | Test every PolicyCheck variant with boundary values (exactly at threshold) |
-| Evidence metadata schema drift | satisfies_requirement fails on valid evidence | Use `Option<Value>` and handle missing fields gracefully (return Fail, not panic) |
+| Evidence metadata schema drift | satisfies_requirement fails on valid evidence | Use `Option&lt;Value&gt;` and handle missing fields gracefully (return Fail, not panic) |
 | Chain performance at scale | verify_chain slow for 10k+ entries | O(n) scan is acceptable; add early-exit on first error |
 
 ---
@@ -689,7 +689,7 @@ Reviewers should verify:
 **When adding an entry**:
 1. Scroll to the bottom of this Activity Log section
 2. **APPEND the new entry at the END** (do NOT prepend or insert in middle)
-3. Use exact format: `- YYYY-MM-DDTHH:MM:SSZ – agent_id – lane=<lane> – <action>`
+3. Use exact format: `- YYYY-MM-DDTHH:MM:SSZ – agent_id – lane=&lt;lane&gt; – &lt;action&gt;`
 4. Timestamp MUST be current time in UTC
 5. Lane MUST match the frontmatter `lane:` field exactly
 

@@ -72,7 +72,7 @@ use agileplus::v1::agileplus_core_service_client::AgilePlusCoreServiceClient;
 use agileplus::v1::GetFeatureRequest;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
     let channel = Channel::from_static("http://127.0.0.1:50051")
         .connect()
         .await?;

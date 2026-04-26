@@ -396,7 +396,7 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) != 4:
-        print("Usage: spec-reconciliation-service.py <branch-a> <branch-b> <agent-b>")
+        print("Usage: spec-reconciliation-service.py &lt;branch-a&gt; &lt;branch-b&gt; &lt;agent-b&gt;")
         sys.exit(1)
 
     branch_a, branch_b, agent_b = sys.argv[1:]
@@ -451,8 +451,8 @@ jobs:
         run: |
           python scripts/spec-reconciliation-service.py \
             origin/main \
-            ${{ github.event.pull_request.head.ref }} \
-            ${{ github.event.pull_request.user.login }}
+            $&#123;&#123; github.event.pull_request.head.ref }} \
+            $&#123;&#123; github.event.pull_request.user.login }}
 
       - name: Upload AUDIT_LOG changes
         if: always()
@@ -600,7 +600,7 @@ fi
    ## FR-001-NNN: My Feature Title
 
    - **Status**: PROPOSED
-   - **Traces To**: <AgilePlus Spec ID or WP>
+   - **Traces To**: &lt;AgilePlus Spec ID or WP&gt;
    - **Tests**: path/to/test/file
 
    Description of behavior...

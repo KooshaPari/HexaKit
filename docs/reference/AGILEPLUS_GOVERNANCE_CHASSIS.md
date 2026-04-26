@@ -355,7 +355,7 @@ Forward mapping (code → requirements):
 
 ## src/auth/login.rs
 
-### pub async fn login(credentials: Credentials) -> Result<Token>
+### pub async fn login(credentials: Credentials) -> Result&lt;Token&gt;
 - Implements: FR-AUTH-001, FR-AUTH-002
 - Tests: tests/auth_test.rs::test_login_success (5), test_login_failure (3)
 - ADR: ADR-005 (error handling)

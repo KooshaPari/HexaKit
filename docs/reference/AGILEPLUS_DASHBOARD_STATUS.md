@@ -75,7 +75,7 @@ AgilePlus/crates/agileplus-dashboard/
 | **Axum Web Server** | ✅ Complete | Listening on `:3000`, CORS enabled, static file serving |
 | **Route Handlers** | ✅ Complete | 90KB monolith handles 40+ endpoints (GET/POST/HX-Request) |
 | **Templates** | ✅ Complete | 8+ Askama templates: HomePage, DashboardPage, FeatureDetailPage, SettingsPage, EventsPage, etc. |
-| **App State** | ✅ Complete | DashboardStore + ServiceHealth with RwLock<Arc<...>> |
+| **App State** | ✅ Complete | DashboardStore + ServiceHealth with RwLock&lt;Arc&lt;...&gt;&gt; |
 | **Health Checks** | ✅ Complete | Real-time service health monitoring, CI/CD link detection |
 | **Agent Detection** | ✅ Complete | Process detector finds running agents, reports uptime/task |
 | **Evidence Gallery** | ✅ Complete | EvidenceBundleView + EvidenceArtifactJson + artifact preview |

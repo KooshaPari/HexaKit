@@ -181,10 +181,10 @@ Validation System Layers
 ```rust
 // 1. Define custom rule
 #[derive(Clone)]
-pub struct WorkflowStatusRule { allowed: Vec<String> }
+pub struct WorkflowStatusRule { allowed: Vec&lt;String&gt; }
 
 impl ValidationRule for WorkflowStatusRule {
-    fn validate(&self, value: &str) -> Result<(), ValidationError> {
+    fn validate(&self, value: &str) -> Result&lt;(), ValidationError&gt; {
         if self.allowed.contains(&value.to_string()) {
             Ok(())
         } else {
@@ -226,7 +226,7 @@ validator.validate("active")?;
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|-----------|
 | API instability | Low | Medium | Freeze API after Phase 1 |
-| Registry contention | Low | Low | Lazy<Mutex> thread-safety |
+| Registry contention | Low | Low | Lazy&lt;Mutex&gt; thread-safety |
 | CLI integration overrun | Medium | Medium | Phase 3 is docs only |
 | Backward compat | Low | Low | Legacy bridge maintained |
 

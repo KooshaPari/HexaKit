@@ -107,7 +107,7 @@ history:
 2. Add detailed comments for each section:
    - `[env]`: explain RUSTFLAGS for strict linting, RUST_BACKTRACE for debugging
    - `[tools]`: nightly default; document pinning specific version if needed
-   - Task naming: explain `<action>:<qualifier>` convention
+   - Task naming: explain `&lt;action&gt;:&lt;qualifier&gt;` convention
 3. Include conditional logic for optional features:
    - If workspace detected: add `[tasks.workspace:sync]` to validate all crate versions
 4. Test on an actual Rust repo (tokenledger planned for T078)
@@ -255,7 +255,7 @@ history:
 
 **Steps:**
 1. Define release:promote task:
-   - Signature: `pheno promote <channel>` (where channel: alpha|beta|rc|stable)
+   - Signature: `pheno promote &lt;channel&gt;` (where channel: alpha|beta|rc|stable)
    - Implemented by WP07 pheno CLI; task runner simply invokes it
    - Add to all 4 reference configs (T065–T068)
 2. Define release:status task:

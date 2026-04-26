@@ -41,8 +41,8 @@ pub struct Feature {
     pub state: FeatureState,          // Current state in FSM
     pub spec_hash: [u8; 32],          // SHA-256 of spec artifact (immutable)
     pub target_branch: String,        // Branch to merge into: "main" or "dev"
-    pub created_at: DateTime<Utc>,    // When feature was created
-    pub updated_at: DateTime<Utc>,    // When state last changed
+    pub created_at: DateTime&lt;Utc&gt;,    // When feature was created
+    pub updated_at: DateTime&lt;Utc&gt;,    // When state last changed
 }
 
 pub enum FeatureState {
@@ -61,8 +61,8 @@ pub enum FeatureState {
 ```rust
 impl Feature {
     pub fn new(slug: &str, friendly_name: &str, spec_hash: [u8; 32],
-               target_branch: Option<&str>) -> Self
-    pub fn transition(&mut self, target: FeatureState) -> Result<TransitionResult, DomainError>
+               target_branch: Option&lt;&str&gt;) -> Self
+    pub fn transition(&mut self, target: FeatureState) -> Result&lt;TransitionResult, DomainError&gt;
     pub fn slug_from_name(name: &str) -> String  // "My Feature" → "my-feature"
 }
 ```
@@ -86,14 +86,14 @@ pub struct WorkPackage {
     pub title: String,                     // "Core Auth Models"
     pub state: WpState,                    // Current state
     pub sequence: i32,                     // Execution order (1, 2, 3)
-    pub file_scope: Vec<String>,           // Files affected: ["src/auth/mod.rs"]
+    pub file_scope: Vec&lt;String&gt;,           // Files affected: ["src/auth/mod.rs"]
     pub acceptance_criteria: String,       // Markdown with acceptance tests
-    pub agent_id: Option<String>,          // Assigned agent: "claude-code"
-    pub pr_url: Option<String>,            // GitHub PR when submitted
-    pub pr_state: Option<PrState>,         // PR status: Open, Review, Approved, etc.
-    pub worktree_path: Option<String>,     // Path to git worktree
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub agent_id: Option&lt;String&gt;,          // Assigned agent: "claude-code"
+    pub pr_url: Option&lt;String&gt;,            // GitHub PR when submitted
+    pub pr_state: Option&lt;PrState&gt;,         // PR status: Open, Review, Approved, etc.
+    pub worktree_path: Option&lt;String&gt;,     // Path to git worktree
+    pub created_at: DateTime&lt;Utc&gt;,
+    pub updated_at: DateTime&lt;Utc&gt;,
 }
 
 pub enum WpState {
@@ -128,8 +128,8 @@ WPs can move backward (e.g., from `Blocked` to `Planned`) but features cannot.
 impl WorkPackage {
     pub fn new(feature_id: i64, title: &str, sequence: i32,
                acceptance_criteria: &str) -> Self
-    pub fn transition(&mut self, target: WpState) -> Result<(), DomainError>
-    pub fn has_file_overlap(&self, other: &WorkPackage) -> Vec<String>
+    pub fn transition(&mut self, target: WpState) -> Result&lt;(), DomainError&gt;
+    pub fn has_file_overlap(&self, other: &WorkPackage) -> Vec&lt;String&gt;
 }
 ```
 
@@ -153,7 +153,7 @@ pub enum DependencyType {
 }
 
 pub struct DependencyGraph {
-    edges: HashMap<i64, Vec<WpDependency>>,
+    edges: HashMap&lt;i64, Vec&lt;WpDependency&gt;&gt;,
 }
 ```
 
@@ -163,8 +163,8 @@ impl DependencyGraph {
     pub fn new() -> Self
     pub fn add_edge(&mut self, dep: WpDependency)
     pub fn add_file_overlap_edges(&mut self, work_packages: &[WorkPackage])
-    pub fn execution_order(&self) -> Result<Vec<Vec<i64>>, DomainError>  // Kahn's algorithm
-    pub fn ready_wps(&self, done: &HashSet<i64>) -> Vec<i64>
+    pub fn execution_order(&self) -> Result&lt;Vec&lt;Vec&lt;i64&gt;&gt;, DomainError&gt;  // Kahn's algorithm
+    pub fn ready_wps(&self, done: &HashSet&lt;i64&gt;) -> Vec&lt;i64&gt;
     pub fn has_cycle(&self) -> bool
 }
 ```
@@ -192,11 +192,11 @@ An **immutable record** of every state transition. Forms a cryptographically lin
 pub struct AuditEntry {
     pub id: i64,                          // Primary key
     pub feature_id: i64,                  // Which feature changed
-    pub wp_id: Option<i64>,               // Which WP (if applicable)
-    pub timestamp: DateTime<Utc>,         // When
+    pub wp_id: Option&lt;i64&gt;,               // Which WP (if applicable)
+    pub timestamp: DateTime&lt;Utc&gt;,         // When
     pub actor: String,                    // Who: "human:alice" or "agent:claude-code"
     pub transition: String,               // What: "created->specified"
-    pub evidence_refs: Vec<EvidenceRef>,  // Supporting evidence
+    pub evidence_refs: Vec&lt;EvidenceRef&gt;,  // Supporting evidence
     pub prev_hash: [u8; 32],              // Hash of previous entry (chain link)
     pub hash: [u8; 32],                   // Hash of this entry
 }
@@ -208,7 +208,7 @@ pub struct EvidenceRef {
 
 #[derive(Debug, Clone)]
 pub struct AuditChain {
-    pub entries: Vec<AuditEntry>,
+    pub entries: Vec&lt;AuditEntry&gt;,
 }
 ```
 
@@ -233,7 +233,7 @@ If any field is modified, the hash changes. If the `prev_hash` doesn't match the
 pub fn hash_entry(entry: &AuditEntry) -> [u8; 32]
 
 impl AuditChain {
-    pub fn verify_chain(&self) -> Result<(), AuditChainError>
+    pub fn verify_chain(&self) -> Result&lt;(), AuditChainError&gt;
 }
 ```
 
@@ -271,20 +271,20 @@ pub struct GovernanceContract {
     pub id: i64,
     pub feature_id: i64,
     pub version: i32,                      // Version number (contracts are versioned)
-    pub rules: Vec<GovernanceRule>,        // The rules
-    pub bound_at: DateTime<Utc>,
+    pub rules: Vec&lt;GovernanceRule&gt;,        // The rules
+    pub bound_at: DateTime&lt;Utc&gt;,
 }
 
 pub struct GovernanceRule {
     pub transition: String,                // "implementing->validated"
-    pub required_evidence: Vec<EvidenceRequirement>,
-    pub policy_refs: Vec<String>,          // References to active policies
+    pub required_evidence: Vec&lt;EvidenceRequirement&gt;,
+    pub policy_refs: Vec&lt;String&gt;,          // References to active policies
 }
 
 pub struct EvidenceRequirement {
     pub fr_id: String,                     // Functional requirement: "FR-004"
     pub evidence_type: EvidenceType,       // What evidence is needed
-    pub threshold: Option<serde_json::Value>,  // Optional threshold
+    pub threshold: Option&lt;serde_json::Value&gt;,  // Optional threshold
 }
 
 pub enum EvidenceType {
@@ -328,8 +328,8 @@ pub struct Evidence {
     pub fr_id: String,                     // Functional requirement it satisfies
     pub evidence_type: EvidenceType,       // Type of evidence
     pub artifact_path: String,             // Path to artifact (test report, scan result)
-    pub metadata: Option<serde_json::Value>,
-    pub created_at: DateTime<Utc>,
+    pub metadata: Option&lt;serde_json::Value&gt;,
+    pub created_at: DateTime&lt;Utc&gt;,
 }
 ```
 
@@ -369,8 +369,8 @@ pub struct PolicyRule {
     pub domain: PolicyDomain,
     pub rule: PolicyDefinition,
     pub active: bool,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub created_at: DateTime&lt;Utc&gt;,
+    pub updated_at: DateTime&lt;Utc&gt;,
 }
 
 pub struct PolicyDefinition {
@@ -413,8 +413,8 @@ pub struct Metric {
     pub feature_id: i64,
     pub metric_type: MetricType,
     pub value: f64,
-    pub label: Option<String>,
-    pub recorded_at: DateTime<Utc>,
+    pub label: Option&lt;String&gt;,
+    pub recorded_at: DateTime&lt;Utc&gt;,
 }
 
 pub enum MetricType {
@@ -566,12 +566,12 @@ The `SyncMapping` entity tracks the relationship between an AgilePlus feature/WP
 pub struct SyncMapping {
     pub id: i64,
     pub feature_id: i64,
-    pub wp_id: Option<i64>,           // None = feature-level mapping
+    pub wp_id: Option&lt;i64&gt;,           // None = feature-level mapping
     pub platform: String,             // "plane", "github", "jira"
     pub external_id: String,          // "AGILE-123" or "42"
     pub external_url: String,         // "https://app.plane.so/..."
     pub external_state: String,       // Current state in external system
-    pub last_synced_at: DateTime<Utc>,
+    pub last_synced_at: DateTime&lt;Utc&gt;,
     pub sync_direction: SyncDirection,
 }
 
@@ -598,14 +598,14 @@ pub struct DeviceNode {
     pub hostname: String,           // "macbook-pro" or "build-server"
     pub tailscale_ip: String,       // "100.x.x.x" Tailscale IP
     pub nats_endpoint: String,      // "nats://100.x.x.x:4222"
-    pub capabilities: Vec<String>,  // ["agent:claude-code", "builder"]
+    pub capabilities: Vec&lt;String&gt;,  // ["agent:claude-code", "builder"]
     pub vector_clock: VectorClock,  // Causal ordering
-    pub last_seen_at: DateTime<Utc>,
+    pub last_seen_at: DateTime&lt;Utc&gt;,
     pub is_active: bool,
 }
 
 pub struct VectorClock {
-    pub clocks: HashMap<String, u64>, // device_id → logical_time
+    pub clocks: HashMap&lt;String, u64&gt;, // device_id → logical_time
 }
 ```
 
@@ -613,7 +613,7 @@ When a feature transitions on Device A, the vector clock is incremented and incl
 
 ## Domain Error Taxonomy
 
-All domain operations return `Result<T, DomainError>`. The full error enum:
+All domain operations return `Result&lt;T, DomainError&gt;`. The full error enum:
 
 ```rust
 pub enum DomainError {
@@ -634,7 +634,7 @@ pub enum DomainError {
     GovernanceViolation {
         requirement: String,   // "TestResult for FR-004"
         evidence_missing: bool,
-        policy_id: Option<i64>,
+        policy_id: Option&lt;i64&gt;,
     },
 
     // Audit chain integrity failure
@@ -646,14 +646,14 @@ pub enum DomainError {
 
     // Dependency graph issues
     CyclicDependency {
-        wp_ids: Vec<i64>,   // The cycle: [WP02, WP03, WP02]
+        wp_ids: Vec&lt;i64&gt;,   // The cycle: [WP02, WP03, WP02]
     },
 
     // File scope violations (agents)
     ScopeViolation {
         wp_id: String,
         unauthorized_file: String,
-        authorized_files: Vec<String>,
+        authorized_files: Vec&lt;String&gt;,
     },
 
     // Storage failures (wrapped)

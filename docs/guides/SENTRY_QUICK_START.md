@@ -37,10 +37,10 @@ Sentry is an error tracking and performance monitoring platform that automatical
 gh secret set SENTRY_DSN_AGILEPLUS --body 'https://key@domain.ingest.sentry.io/12345'
 
 # For heliosCLI:
-gh secret set SENTRY_DSN_HELIOSCLI --body '<dsn>'
+gh secret set SENTRY_DSN_HELIOSCLI --body '&lt;dsn&gt;'
 
 # For phenotype-infrakit:
-gh secret set SENTRY_DSN_PHENOTYPE_INFRAKIT --body '<dsn>'
+gh secret set SENTRY_DSN_PHENOTYPE_INFRAKIT --body '&lt;dsn&gt;'
 
 # Verify:
 gh secret list | grep SENTRY
@@ -223,8 +223,8 @@ gh workflow run sentry-error-tracking.yml -R KooshaPari/AgilePlus
 ## Next Steps
 
 - **Set up Slack notifications**: https://sentry.io/settings/phenotype/integrations/slack/
-- **Enable Session Replays**: https://sentry.io/settings/phenotype/projects/<project>/replay/
-- **Configure Performance Monitoring**: https://sentry.io/settings/phenotype/projects/<project>/performance/
+- **Enable Session Replays**: https://sentry.io/settings/phenotype/projects/&lt;project&gt;/replay/
+- **Configure Performance Monitoring**: https://sentry.io/settings/phenotype/projects/&lt;project&gt;/performance/
 - **Add custom tags**: See full docs at https://docs.sentry.io/
 
 ## Reference

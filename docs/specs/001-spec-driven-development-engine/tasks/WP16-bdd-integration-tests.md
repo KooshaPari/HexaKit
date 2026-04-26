@@ -271,8 +271,8 @@ the actual domain layer and CLI commands using mock adapters.
        agents: MockAgentPort,
        review: MockReviewPort,
        telemetry: MockObservabilityPort,
-       last_result: Option<Result<String, String>>,
-       temp_dir: Option<tempfile::TempDir>,
+       last_result: Option<Result&lt;String, String&gt;>,
+       temp_dir: Option&lt;tempfile::TempDir&gt;,
    }
 
    fn main() {
@@ -886,7 +886,7 @@ use as input.
        serde_json::from_str(&json).unwrap()
    }
 
-   pub fn sample_audit_chain() -> Vec<AuditEntry> {
+   pub fn sample_audit_chain() -> Vec&lt;AuditEntry&gt; {
        let jsonl = load_fixture("sample-audit-chain.jsonl");
        jsonl.lines()
            .map(|line| serde_json::from_str(line).unwrap())

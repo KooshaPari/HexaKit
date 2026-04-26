@@ -45,27 +45,27 @@ We will adopt a **Plugin Architecture** pattern using Rust's trait objects and d
 pub trait AdapterPlugin: Send + Sync {
     fn name(&self) -> &str;
     fn version(&self) -> &str;
-    fn initialize(&self, config: Config) -> Result<(), PluginError>;
+    fn initialize(&self, config: Config) -> Result&lt;(), PluginError&gt;;
 }
 
 /// VCS adapter plugin
 pub trait VcsAdapter: AdapterPlugin {
-    fn clone_repo(&self, url: &str, dest: &Path) -> Result<()>;
-    fn push(&self, branch: &str) -> Result<()>;
+    fn clone_repo(&self, url: &str, dest: &Path) -> Result&lt;()&gt;;
+    fn push(&self, branch: &str) -> Result&lt;()&gt;;
     // ...
 }
 
 /// Storage adapter plugin
 pub trait StorageAdapter: AdapterPlugin {
-    fn save(&self, entity: &dyn Entity) -> Result<EntityId>;
-    fn load(&self, id: EntityId) -> Result<Box<dyn Entity>>;
+    fn save(&self, entity: &dyn Entity) -> Result&lt;EntityId&gt;;
+    fn load(&self, id: EntityId) -> Result<Box&lt;dyn Entity&gt;>;
     // ...
 }
 
 /// Agent adapter plugin
 pub trait AgentAdapter: AdapterPlugin {
-    fn dispatch(&self, task: Task) -> Result<TaskResult>;
-    fn status(&self, task_id: &str) -> Result<TaskStatus>;
+    fn dispatch(&self, task: Task) -> Result&lt;TaskResult&gt;;
+    fn status(&self, task_id: &str) -> Result&lt;TaskStatus&gt;;
     // ...
 }
 ```
@@ -76,17 +76,17 @@ pub trait AgentAdapter: AdapterPlugin {
 // crates/agileplus-core/src/plugin_registry.rs
 
 pub struct PluginRegistry {
-    vcs: HashMap<String, Box<dyn VcsAdapter>>,
-    storage: HashMap<String, Box<dyn StorageAdapter>>,
-    agents: HashMap<String, Box<dyn AgentAdapter>>,
+    vcs: HashMap<String, Box&lt;dyn VcsAdapter&gt;>,
+    storage: HashMap<String, Box&lt;dyn StorageAdapter&gt;>,
+    agents: HashMap<String, Box&lt;dyn AgentAdapter&gt;>,
 }
 
 impl PluginRegistry {
-    pub fn register_vcs(&mut self, adapter: Box<dyn VcsAdapter>) {
+    pub fn register_vcs(&mut self, adapter: Box&lt;dyn VcsAdapter&gt;) {
         self.vcs.insert(adapter.name().to_string(), adapter);
     }
 
-    pub fn vcs(&self, name: &str) -> Option<&dyn VcsAdapter> {
+    pub fn vcs(&self, name: &str) -> Option&lt;&dyn VcsAdapter&gt; {
         self.vcs.get(name).map(|b| b.as_ref())
     }
 }

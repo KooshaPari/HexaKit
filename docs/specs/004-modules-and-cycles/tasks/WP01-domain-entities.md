@@ -36,7 +36,7 @@ field. Add error variants to `DomainError` that support Module and Cycle operati
 - `cargo check -p agileplus-domain` passes with zero errors and zero warnings.
 - `cargo test -p agileplus-domain` passes with all new unit tests green.
 - `module.rs` and `cycle.rs` modules are exported from `crates/agileplus-domain/src/domain/mod.rs`.
-- `Feature` struct compiles with the new `module_id: Option<i64>` field without breaking
+- `Feature` struct compiles with the new `module_id: Option&lt;i64&gt;` field without breaking
   existing call sites (field has a serde default so JSON without `module_id` still deserialises).
 - `CycleState::transition` returns `Err` for every disallowed edge in the state graph.
 - Circular-reference detection logic in `Module` is unit-tested (the DB-level check comes in WP02;
@@ -47,13 +47,13 @@ field. Add error variants to `DomainError` that support Module and Cycle operati
 - **Crate**: `crates/agileplus-domain` -- zero external dependencies except `serde`, `chrono`,
   and `sha2` (already in `Cargo.toml`). Do NOT add new dependencies to this crate.
 - **Pattern**: Mirror `feature.rs` exactly. Use `i64` for IDs (raw, not newtype -- follow existing
-  code, not the constitution newtype ideal). Use `DateTime<Utc>` for timestamps, `NaiveDate` for
+  code, not the constitution newtype ideal). Use `DateTime&lt;Utc&gt;` for timestamps, `NaiveDate` for
   calendar dates (from `chrono`).
 - **Slug utility**: Reuse `Feature::slug_from_name` pattern (copy the same char-mapping function
   into `Module::slug_from_name` -- do not import across modules).
-- **No `unwrap()`**: Every fallible path returns `Result<_, DomainError>`.
+- **No `unwrap()`**: Every fallible path returns `Result&lt;_, DomainError&gt;`.
 - **`thiserror`**: All error variants use `thiserror` derive already present in the crate.
-- **Serde defaults**: Fields that are nullable (`Option<_>`) must carry
+- **Serde defaults**: Fields that are nullable (`Option&lt;_&gt;`) must carry
   `#[serde(default, skip_serializing_if = "Option::is_none")]` to maintain backward compat.
 - **File locations** (all relative to `crates/agileplus-domain/src/`):
   - NEW: `domain/module.rs`
@@ -85,15 +85,15 @@ field. Add error variants to `DomainError` that support Module and Cycle operati
        pub slug: String,
        pub friendly_name: String,
        #[serde(default, skip_serializing_if = "Option::is_none")]
-       pub description: Option<String>,
+       pub description: Option&lt;String&gt;,
        #[serde(default, skip_serializing_if = "Option::is_none")]
-       pub parent_module_id: Option<i64>,
-       pub created_at: DateTime<Utc>,
-       pub updated_at: DateTime<Utc>,
+       pub parent_module_id: Option&lt;i64&gt;,
+       pub created_at: DateTime&lt;Utc&gt;,
+       pub updated_at: DateTime&lt;Utc&gt;,
    }
    ```
 
-3. Implement a `Module::new(friendly_name: &str, parent_module_id: Option<i64>) -> Self` constructor
+3. Implement a `Module::new(friendly_name: &str, parent_module_id: Option&lt;i64&gt;) -> Self` constructor
    that sets `id = 0`, derives `slug` from the name, and stamps `created_at`/`updated_at` to
    `Utc::now()`.
 
@@ -128,7 +128,7 @@ field. Add error variants to `DomainError` that support Module and Cycle operati
    pub struct ModuleFeatureTag {
        pub module_id: i64,
        pub feature_id: i64,
-       pub created_at: DateTime<Utc>,
+       pub created_at: DateTime&lt;Utc&gt;,
    }
    ```
 
@@ -142,11 +142,11 @@ field. Add error variants to `DomainError` that support Module and Cycle operati
    pub struct ModuleWithFeatures {
        pub module: Module,
        /// Features where Feature.module_id == this module's id
-       pub owned_features: Vec<crate::domain::feature::Feature>,
+       pub owned_features: Vec&lt;crate::domain::feature::Feature&gt;,
        /// Features linked via module_feature_tags
-       pub tagged_features: Vec<crate::domain::feature::Feature>,
+       pub tagged_features: Vec&lt;crate::domain::feature::Feature&gt;,
        /// Direct child modules (non-recursive)
-       pub child_modules: Vec<Module>,
+       pub child_modules: Vec&lt;Module&gt;,
    }
    ```
 
@@ -186,7 +186,7 @@ but with the specific allowed/disallowed edges from the data model.
 4. Implement `FromStr` with `"Draft"`, `"Active"`, `"Review"`, `"Shipped"`, `"Archived"` as
    valid inputs (case-sensitive). Return `DomainError::Other(...)` for unknown strings.
 
-5. Implement `CycleState::transition(self, target: CycleState) -> Result<(), DomainError>`.
+5. Implement `CycleState::transition(self, target: CycleState) -> Result&lt;(), DomainError&gt;`.
    Encode the **explicit edge list** from the data model (NOT a simple ordinal >= check, because
    bidirectional edges exist):
 
@@ -233,22 +233,22 @@ but with the specific allowed/disallowed edges from the data model.
        pub id: i64,
        pub name: String,
        #[serde(default, skip_serializing_if = "Option::is_none")]
-       pub description: Option<String>,
+       pub description: Option&lt;String&gt;,
        pub state: CycleState,
        pub start_date: NaiveDate,
        pub end_date: NaiveDate,
        #[serde(default, skip_serializing_if = "Option::is_none")]
-       pub module_scope_id: Option<i64>,
-       pub created_at: DateTime<Utc>,
-       pub updated_at: DateTime<Utc>,
+       pub module_scope_id: Option&lt;i64&gt;,
+       pub created_at: DateTime&lt;Utc&gt;,
+       pub updated_at: DateTime&lt;Utc&gt;,
    }
    ```
 
-3. Implement `Cycle::new(name: &str, start_date: NaiveDate, end_date: NaiveDate, module_scope_id: Option<i64>) -> Result<Self, DomainError>`.
+3. Implement `Cycle::new(name: &str, start_date: NaiveDate, end_date: NaiveDate, module_scope_id: Option&lt;i64&gt;) -> Result&lt;Self, DomainError&gt;`.
    Validate that `end_date > start_date`; return `DomainError::Other("end_date must be after start_date".into())` on failure.
    Default state is `CycleState::Draft`, `id = 0`, `description = None`.
 
-4. Implement `Cycle::transition(&mut self, target: CycleState) -> Result<(), DomainError>`.
+4. Implement `Cycle::transition(&mut self, target: CycleState) -> Result&lt;(), DomainError&gt;`.
    Delegates to `CycleState::transition(self.state, target)`. On success, sets `self.state = target`
    and touches `self.updated_at`. Note: the Shipped gate (all features validated) is enforced by the
    storage/service layer in WP02 and CLI in WP04 -- this method does NOT check it (see constraint note).
@@ -279,7 +279,7 @@ validation helper.
    pub struct CycleFeature {
        pub cycle_id: i64,
        pub feature_id: i64,
-       pub added_at: DateTime<Utc>,
+       pub added_at: DateTime&lt;Utc&gt;,
    }
    ```
 
@@ -291,7 +291,7 @@ validation helper.
    #[derive(Debug, Clone, Serialize, Deserialize)]
    pub struct CycleWithFeatures {
        pub cycle: Cycle,
-       pub features: Vec<crate::domain::feature::Feature>,
+       pub features: Vec&lt;crate::domain::feature::Feature&gt;,
        /// Aggregate count of WPs per WpState across all assigned features.
        pub wp_progress: WpProgressSummary,
    }
@@ -353,7 +353,7 @@ Module/Cycle operations.
    /// Null for features that predate module support or are unassigned.
    /// Traces to: FR-M03
    #[serde(default, skip_serializing_if = "Option::is_none")]
-   pub module_id: Option<i64>,
+   pub module_id: Option&lt;i64&gt;,
    ```
 
 2. In `Feature::new(...)`, initialise `module_id: None`.

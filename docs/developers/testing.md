@@ -65,11 +65,11 @@ Write unit tests inline with the code they test:
 pub struct Spec {
     pub title: String,
     pub description: String,
-    pub requirements: Vec<Requirement>,
+    pub requirements: Vec&lt;Requirement&gt;,
 }
 
 impl Spec {
-    pub fn validate(&self) -> Result<()> {
+    pub fn validate(&self) -> Result&lt;()&gt; {
         if self.title.is_empty() {
             return Err(Error::EmptyTitle);
         }
@@ -288,8 +288,8 @@ use agileplus_ports::StoragePort;
 use std::collections::HashMap;
 
 pub struct MockStorage {
-    specs: HashMap<FeatureId, Spec>,
-    plans: HashMap<FeatureId, Plan>,
+    specs: HashMap&lt;FeatureId, Spec&gt;,
+    plans: HashMap&lt;FeatureId, Plan&gt;,
 }
 
 impl MockStorage {
@@ -308,19 +308,19 @@ impl MockStorage {
 
 #[async_trait::async_trait]
 impl StoragePort for MockStorage {
-    async fn read_spec(&self, id: &FeatureId) -> Result<Spec> {
+    async fn read_spec(&self, id: &FeatureId) -> Result&lt;Spec&gt; {
         self.specs
             .get(id)
             .cloned()
             .ok_or(Error::NotFound)
     }
 
-    async fn write_spec(&self, id: &FeatureId, spec: &Spec) -> Result<()> {
+    async fn write_spec(&self, id: &FeatureId, spec: &Spec) -> Result&lt;()&gt; {
         // In-memory mock: just succeed
         Ok(())
     }
 
-    async fn list_features(&self) -> Result<Vec<FeatureId>> {
+    async fn list_features(&self) -> Result&lt;Vec&lt;FeatureId&gt;&gt; {
         Ok(self.specs.keys().cloned().collect())
     }
 }
@@ -425,13 +425,13 @@ use proptest::prelude::*;
 
 proptest! {
     #[test]
-    fn plan_dependencies_are_acyclic(spec in any::<Spec>()) {
+    fn plan_dependencies_are_acyclic(spec in any::&lt;Spec&gt;()) {
         let plan = generate_plan(&spec).expect("should generate plan");
         prop_assert!(plan.validate_dependencies().is_ok());
     }
 
     #[test]
-    fn all_requirements_covered(spec in any::<Spec>()) {
+    fn all_requirements_covered(spec in any::&lt;Spec&gt;()) {
         let plan = generate_plan(&spec).expect("should generate plan");
         for req in &spec.requirements {
             prop_assert!(
@@ -444,7 +444,7 @@ proptest! {
 
     #[test]
     fn work_packages_dont_exceed_spec_scope(
-        spec in any::<Spec>(),
+        spec in any::&lt;Spec&gt;(),
         config in plan_config_strategy()
     ) {
         let plan = generate_plan_with_config(&spec, &config).expect("should generate plan");
@@ -539,15 +539,15 @@ The `TestHarness` struct provides a complete, real-infrastructure test environme
 // crates/agileplus-engine/tests/common/harness.rs
 
 pub struct TestHarness {
-    pub storage: Arc<dyn StoragePort>,
-    pub vcs: Arc<dyn VcsPort>,
+    pub storage: Arc&lt;dyn StoragePort&gt;,
+    pub vcs: Arc&lt;dyn VcsPort&gt;,
     pub engine: Engine,
     pub tmp_dir: TempDir,
     pub nats: TestNatsServer,
 }
 
 impl TestHarness {
-    pub async fn new() -> anyhow::Result<Self> {
+    pub async fn new() -> anyhow::Result&lt;Self&gt; {
         let tmp_dir = TempDir::new("agileplus-test")?;
 
         // In-memory SQLite
@@ -579,7 +579,7 @@ impl TestHarness {
     }
 
     /// Create a feature in Planned state with N work packages
-    pub async fn planned_feature(&self, slug: &str, wp_count: usize) -> (Feature, Vec<WorkPackage>) {
+    pub async fn planned_feature(&self, slug: &str, wp_count: usize) -> (Feature, Vec&lt;WorkPackage&gt;) {
         let feature = self.create_feature(slug).await;
         // ... transition through states, create WPs ...
         (feature, wps)

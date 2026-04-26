@@ -92,7 +92,7 @@ All three commands (retrospective, plan, review) use the same outbound port type
 ```rust
 // crates/agileplus-cli/src/plan.rs (553 LOC)
 
-pub async fn cmd_plan(args: PlanArgs) -> Result<()> {
+pub async fn cmd_plan(args: PlanArgs) -> Result&lt;()&gt; {
     let db = get_db_connection()?;
     let cache = get_redis_client()?;
 
@@ -171,30 +171,30 @@ pub trait PlanService: Send + Sync {
     async fn create(
         &self,
         name: String,
-        items: Vec<PlanItem>,
+        items: Vec&lt;PlanItem&gt;,
         config: PlanConfig,
-    ) -> Result<Plan, PlanError>;
+    ) -> Result&lt;Plan, PlanError&gt;;
 
     async fn compute_progress(
         &self,
         plan_id: Uuid,
-    ) -> Result<PlanProgress, PlanError>;
+    ) -> Result&lt;PlanProgress, PlanError&gt;;
 
     async fn export(
         &self,
         plan_id: Uuid,
         format: ExportFormat,
-    ) -> Result<Bytes, PlanError>;
+    ) -> Result&lt;Bytes, PlanError&gt;;
 
-    async fn get_metadata(&self, plan_id: Uuid) -> Result<PlanMetadata, PlanError>;
+    async fn get_metadata(&self, plan_id: Uuid) -> Result&lt;PlanMetadata, PlanError&gt;;
 
     async fn list_plans(
         &self,
-        from: DateTime<Utc>,
-        to: DateTime<Utc>,
+        from: DateTime&lt;Utc&gt;,
+        to: DateTime&lt;Utc&gt;,
         limit: usize,
         offset: usize,
-    ) -> Result<Vec<PlanMetadata>, PlanError>;
+    ) -> Result&lt;Vec&lt;PlanMetadata&gt;, PlanError&gt;;
 }
 
 pub struct PlanConfig {
@@ -211,9 +211,9 @@ pub struct PlanConfig {
 // crates/phenotype-core/src/services/plan_service.rs (280 LOC)
 
 pub struct PlanServiceImpl {
-    repository: Arc<dyn PlanRepository>,
-    cache: Arc<dyn PlanCache>,
-    event_bus: Arc<dyn PlanEventBus>,
+    repository: Arc&lt;dyn PlanRepository&gt;,
+    cache: Arc&lt;dyn PlanCache&gt;,
+    event_bus: Arc&lt;dyn PlanEventBus&gt;,
 }
 
 #[async_trait]
@@ -221,9 +221,9 @@ impl PlanService for PlanServiceImpl {
     async fn create(
         &self,
         name: String,
-        items: Vec<PlanItem>,
+        items: Vec&lt;PlanItem&gt;,
         config: PlanConfig,
-    ) -> Result<Plan, PlanError> {
+    ) -> Result&lt;Plan, PlanError&gt; {
         // Validate
         validate_plan_name(&name)?;
         validate_items(&items)?;
@@ -255,7 +255,7 @@ impl PlanService for PlanServiceImpl {
     async fn compute_progress(
         &self,
         plan_id: Uuid,
-    ) -> Result<PlanProgress, PlanError> {
+    ) -> Result&lt;PlanProgress, PlanError&gt; {
         // Check cache
         let cache_key = format!("plan:progress:{}", plan_id);
         if let Ok(Some(cached)) = self.cache.get_progress(&cache_key).await {
@@ -298,9 +298,9 @@ impl PlanServiceImpl {
     // Pure logic (testable without I/O)
     fn build_plan(
         name: String,
-        items: Vec<PlanItem>,
+        items: Vec&lt;PlanItem&gt;,
         config: &PlanConfig,
-    ) -> Result<Plan, PlanError> {
+    ) -> Result&lt;Plan, PlanError&gt; {
         let mut plan = Plan::new(name, items);
 
         if config.include_dependencies {
@@ -372,7 +372,7 @@ pub enum PlanAction {
 }
 
 impl PlanCmd {
-    pub async fn execute(self, ctx: &CliContext) -> Result<()> {
+    pub async fn execute(self, ctx: &CliContext) -> Result&lt;()&gt; {
         let service = ctx.plan_service();
 
         match self.action {
@@ -445,10 +445,10 @@ Similar structure to plan.rs but focused on retrospective reviews:
 // Trait definition (200 LOC)
 #[async_trait]
 pub trait ReviewService: Send + Sync {
-    async fn create(&self, config: ReviewConfig) -> Result<Review, ReviewError>;
-    async fn compute_insights(&self, review_id: Uuid) -> Result<ReviewInsights, ReviewError>;
-    async fn generate_feedback(&self, review_id: Uuid) -> Result<Feedback, ReviewError>;
-    async fn export(&self, review_id: Uuid, format: ExportFormat) -> Result<Bytes, ReviewError>;
+    async fn create(&self, config: ReviewConfig) -> Result&lt;Review, ReviewError&gt;;
+    async fn compute_insights(&self, review_id: Uuid) -> Result&lt;ReviewInsights, ReviewError&gt;;
+    async fn generate_feedback(&self, review_id: Uuid) -> Result&lt;Feedback, ReviewError&gt;;
+    async fn export(&self, review_id: Uuid, format: ExportFormat) -> Result&lt;Bytes, ReviewError&gt;;
     // ...
 }
 
@@ -460,7 +460,7 @@ pub struct ReviewServiceImpl { ... }
 pub struct ReviewCmd { ... }
 
 impl ReviewCmd {
-    pub async fn execute(self, ctx: &CliContext) -> Result<()> { ... }
+    pub async fn execute(self, ctx: &CliContext) -> Result&lt;()&gt; { ... }
 }
 ```
 
@@ -487,19 +487,19 @@ pub trait CommonService: Send + Sync {
     type Aggregate;
     type Error;
 
-    async fn create(&self, config: Self::Config) -> Result<Self::Aggregate, Self::Error>;
+    async fn create(&self, config: Self::Config) -> Result&lt;Self::Aggregate, Self::Error&gt;;
 
-    async fn get(&self, id: Uuid) -> Result<Option<Self::Aggregate>, Self::Error>;
+    async fn get(&self, id: Uuid) -> Result&lt;Option&lt;Self::Aggregate&gt;, Self::Error&gt;;
 
     async fn list_paginated(
         &self,
-        from: DateTime<Utc>,
-        to: DateTime<Utc>,
+        from: DateTime&lt;Utc&gt;,
+        to: DateTime&lt;Utc&gt;,
         limit: usize,
         offset: usize,
-    ) -> Result<Vec<Self::Metadata>, Self::Error>;
+    ) -> Result&lt;Vec&lt;Self::Metadata&gt;, Self::Error&gt;;
 
-    async fn delete(&self, id: Uuid) -> Result<(), Self::Error>;
+    async fn delete(&self, id: Uuid) -> Result&lt;(), Self::Error&gt;;
 }
 
 /// Common interface for expensive computations with caching
@@ -512,7 +512,7 @@ pub trait Computable: Send + Sync {
     async fn compute(
         &self,
         input: Self::Input,
-    ) -> Result<Self::Output, Self::Error>;
+    ) -> Result&lt;Self::Output, Self::Error&gt;;
 }
 
 /// Common interface for multi-format export
@@ -522,7 +522,7 @@ pub trait Exportable: Send + Sync {
         &self,
         id: Uuid,
         format: ExportFormat,
-    ) -> Result<Bytes, ExportError>;
+    ) -> Result&lt;Bytes, ExportError&gt;;
 }
 ```
 
@@ -556,34 +556,34 @@ Once patterns are established, adapters can be reused:
 ```rust
 // crates/phenotype-sqlite-adapter/src/generic_repository.rs
 
-pub struct GenericSqliteRepository<T: Serialize + for<'de> Deserialize<'de>> {
-    db: Arc<Mutex<rusqlite::Connection>>,
+pub struct GenericSqliteRepository&lt;T: Serialize + for&lt;'de&gt; Deserialize&lt;'de&gt;&gt; {
+    db: Arc&lt;Mutex&lt;rusqlite::Connection&gt;&gt;,
     table_name: String,
-    phantom: PhantomData<T>,
+    phantom: PhantomData&lt;T&gt;,
 }
 
-impl<T> GenericSqliteRepository<T> {
-    pub async fn create(&self, aggregate: T) -> Result<Uuid, RepositoryError> {
+impl&lt;T&gt; GenericSqliteRepository&lt;T&gt; {
+    pub async fn create(&self, aggregate: T) -> Result&lt;Uuid, RepositoryError&gt; {
         // Generic SQL: INSERT INTO {table_name} (id, data) VALUES (?, ?)
     }
 
-    pub async fn get(&self, id: Uuid) -> Result<Option<T>, RepositoryError> {
+    pub async fn get(&self, id: Uuid) -> Result&lt;Option&lt;T&gt;, RepositoryError&gt; {
         // Generic SQL: SELECT data FROM {table_name} WHERE id = ?
     }
 
     pub async fn list_by_range(
         &self,
-        from: DateTime<Utc>,
-        to: DateTime<Utc>,
-    ) -> Result<Vec<T>, RepositoryError> {
+        from: DateTime&lt;Utc&gt;,
+        to: DateTime&lt;Utc&gt;,
+    ) -> Result&lt;Vec&lt;T&gt;, RepositoryError&gt; {
         // Generic SQL: SELECT data FROM {table_name} WHERE created_at BETWEEN ? AND ?
     }
 }
 
 // Implementations for each type:
-pub type RetrospectiveRepository = GenericSqliteRepository<Retrospective>;
-pub type PlanRepository = GenericSqliteRepository<Plan>;
-pub type ReviewRepository = GenericSqliteRepository<Review>;
+pub type RetrospectiveRepository = GenericSqliteRepository&lt;Retrospective&gt;;
+pub type PlanRepository = GenericSqliteRepository&lt;Plan&gt;;
+pub type ReviewRepository = GenericSqliteRepository&lt;Review&gt;;
 ```
 
 ### Generic Cache
@@ -592,23 +592,23 @@ pub type ReviewRepository = GenericSqliteRepository<Review>;
 // crates/phenotype-redis-adapter/src/generic_cache.rs
 
 pub struct GenericRedisCache {
-    client: Arc<redis::Client>,
+    client: Arc&lt;redis::Client&gt;,
 }
 
 impl GenericRedisCache {
-    pub async fn cache<T: Serialize>(
+    pub async fn cache&lt;T: Serialize&gt;(
         &self,
         key: &str,
         value: &T,
         ttl: Duration,
-    ) -> Result<(), CacheError> {
+    ) -> Result&lt;(), CacheError&gt; {
         // Generic Redis: SET {key} {json_value} EX {ttl}
     }
 
-    pub async fn get<T: for<'de> Deserialize<'de>>(
+    pub async fn get&lt;T: for&lt;'de&gt; Deserialize&lt;'de&gt;&gt;(
         &self,
         key: &str,
-    ) -> Result<Option<T>, CacheError> {
+    ) -> Result&lt;Option&lt;T&gt;, CacheError&gt; {
         // Generic Redis: GET {key} + deserialize
     }
 }
@@ -622,27 +622,27 @@ Once test infrastructure is established, it scales:
 
 ```rust
 // Shared test helpers
-pub struct ServiceTestContext<T: Service> {
-    pub mock_repository: Arc<MockRepository<T::Aggregate>>,
-    pub mock_cache: Arc<MockCache>,
-    pub mock_event_bus: Arc<MockEventBus>,
+pub struct ServiceTestContext&lt;T: Service&gt; {
+    pub mock_repository: Arc&lt;MockRepository&lt;T::Aggregate&gt;&gt;,
+    pub mock_cache: Arc&lt;MockCache&gt;,
+    pub mock_event_bus: Arc&lt;MockEventBus&gt;,
 }
 
-impl<T: Service> ServiceTestContext<T> {
-    pub fn build_service(&self) -> Arc<T> { ... }
+impl&lt;T: Service&gt; ServiceTestContext&lt;T&gt; {
+    pub fn build_service(&self) -> Arc&lt;T&gt; { ... }
 }
 
 // Concrete implementations:
-pub type RetrospectiveTestContext = ServiceTestContext<RetrospectiveService>;
-pub type PlanTestContext = ServiceTestContext<PlanService>;
-pub type ReviewTestContext = ServiceTestContext<ReviewService>;
+pub type RetrospectiveTestContext = ServiceTestContext&lt;RetrospectiveService&gt;;
+pub type PlanTestContext = ServiceTestContext&lt;PlanService&gt;;
+pub type ReviewTestContext = ServiceTestContext&lt;ReviewService&gt;;
 
 // Reusable test suites:
 pub mod test_suites {
-    pub async fn test_create_and_persist<T: Service>(...) { ... }
-    pub async fn test_compute_with_cache<T: Service>(...) { ... }
-    pub async fn test_export_formats<T: Service>(...) { ... }
-    pub async fn test_event_publishing<T: Service>(...) { ... }
+    pub async fn test_create_and_persist&lt;T: Service&gt;(...) { ... }
+    pub async fn test_compute_with_cache&lt;T: Service&gt;(...) { ... }
+    pub async fn test_export_formats&lt;T: Service&gt;(...) { ... }
+    pub async fn test_event_publishing&lt;T: Service&gt;(...) { ... }
 }
 ```
 
@@ -792,7 +792,7 @@ COMMAND REFACTORING CHECKLIST
 
 ☐ 9. Wire into CLI context
      Update: crates/agileplus-cli/src/context.rs
-     Add: pub fn {name}_service(&self) -> Arc<dyn {Service}>
+     Add: pub fn {name}_service(&self) -> Arc&lt;dyn {Service}&gt;
 
 ☐ 10. Document interface
       File: docs/reference/{NAME}_SERVICE_TRAITS.md

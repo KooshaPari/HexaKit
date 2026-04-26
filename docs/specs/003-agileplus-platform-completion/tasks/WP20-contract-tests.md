@@ -40,7 +40,7 @@ Create a Pact that verifies:
 
 ```rust
 #[tokio::test]
-async fn events_sqlite_pact() -> Result<()> {
+async fn events_sqlite_pact() -> Result&lt;()&gt; {
     let mut pact = PactBuilder::new("agileplus-events", "agileplus-sqlite")
         .interaction(
             "append event",
@@ -187,7 +187,7 @@ Create a Pact that verifies:
 
 ```rust
 #[tokio::test]
-async fn sync_plane_pact() -> Result<()> {
+async fn sync_plane_pact() -> Result&lt;()&gt; {
     let mut pact = PactBuilder::new("agileplus-sync", "plane-client")
         .interaction(
             "push feature",
@@ -342,7 +342,7 @@ Create a Pact that verifies:
 
 ```rust
 #[tokio::test]
-async fn api_dashboard_pact() -> Result<()> {
+async fn api_dashboard_pact() -> Result&lt;()&gt; {
     let mut pact = PactBuilder::new("agileplus-api", "agileplus-dashboard")
         .interaction(
             "get kanban dashboard",
@@ -416,7 +416,7 @@ async fn api_dashboard_pact() -> Result<()> {
 
             // Verify feature detail JSON response
             let feature = app.get("/api/features/feature-1")?
-                .json::<Feature>()?;
+                .json::&lt;Feature&gt;()?;
             assert_eq!(feature.title, "Test Feature");
 
             // Verify state transition
@@ -453,7 +453,7 @@ Create a Pact that verifies:
 
 ```rust
 #[tokio::test]
-async fn api_events_pact() -> Result<()> {
+async fn api_events_pact() -> Result&lt;()&gt; {
     let mut pact = PactBuilder::new("agileplus-api", "agileplus-events")
         .interaction(
             "query events with filters",
@@ -507,13 +507,13 @@ async fn api_events_pact() -> Result<()> {
 
             // Verify pagination
             let response = api.get("/api/events?entity_type=Feature&entity_id=1&limit=20&offset=0")?
-                .json::<PaginatedResponse<DomainEvent>>()?;
+                .json::&lt;PaginatedResponse&lt;DomainEvent&gt;&gt;()?;
             assert_eq!(response.data.len(), 2);
             assert_eq!(response.pagination.total, 2);
 
             // Verify single event fetch
             let event = api.get("/api/events/event-id-1")?
-                .json::<DomainEvent>()?;
+                .json::&lt;DomainEvent&gt;()?;
             assert_eq!(event.sequence, 1);
 
             Ok(())

@@ -79,7 +79,7 @@ Available Templates:
 │ template-domain-api     │ Multi-language API service         │ Mixed   │
 └─────────────────────────┴────────────────────────────────────┴─────────┘
 
-Use: hexakit new --template <name>
+Use: hexakit new --template &lt;name&gt;
 ```
 
 #### 2. Initialize New Project
@@ -346,10 +346,10 @@ validation:
 Create the directory structure and template files:
 
 ```bash
-$ mkdir -p src/main/kotlin/{{package_path}}/domain/entities
-$ mkdir -p src/main/kotlin/{{package_path}}/domain/ports
-$ mkdir -p src/main/kotlin/{{package_path}}/adapters
-$ mkdir -p src/test/kotlin/{{package_path}}
+$ mkdir -p src/main/kotlin/&#123;&#123;package_path}}/domain/entities
+$ mkdir -p src/main/kotlin/&#123;&#123;package_path}}/domain/ports
+$ mkdir -p src/main/kotlin/&#123;&#123;package_path}}/adapters
+$ mkdir -p src/test/kotlin/&#123;&#123;package_path}}
 $ mkdir -p gradle/wrapper
 $ mkdir -p .github/workflows
 ```
@@ -364,7 +364,7 @@ plugins {
     id("org.jetbrains.kotlinx.kotest") version "5.8.0"
 }
 
-group = "{{package_name}}"
+group = "&#123;&#123;package_name}}"
 version = "0.1.0"
 
 kotlin {
@@ -392,14 +392,14 @@ kotlin {
     }
 }
 
-tasks.withType<Test> {
+tasks.withType&lt;Test&gt; {
     useJUnitPlatform()
 }
 ```
 
-`src/main/kotlin/{{package_path}}/domain/entities/Entity.kt`:
+`src/main/kotlin/&#123;&#123;package_path}}/domain/entities/Entity.kt`:
 ```kotlin
-package {{package_name}}.domain.entities
+package &#123;&#123;package_name}}.domain.entities
 
 public data class Entity(
     val id: String,

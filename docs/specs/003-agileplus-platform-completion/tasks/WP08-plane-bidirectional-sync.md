@@ -76,7 +76,7 @@ Bidirectional label CRUD:
 
 - `GET /api/v1/workspaces/{slug}/projects/{id}/labels/` → sync to local
 - `POST /api/v1/workspaces/{slug}/projects/{id}/labels/` → create remote from local
-- Map Plane labels to AgilePlus `Feature.labels Vec<String>`
+- Map Plane labels to AgilePlus `Feature.labels Vec&lt;String&gt;`
 
 ### T051: Content Hash Tracking
 

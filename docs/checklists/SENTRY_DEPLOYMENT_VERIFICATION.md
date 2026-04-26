@@ -54,15 +54,15 @@ Complete these checks after DSNs are configured.
 # Then set secret:
 
 cd AgilePlus
-gh secret set SENTRY_DSN_AGILEPLUS --body '<dsn-from-sentry>'
+gh secret set SENTRY_DSN_AGILEPLUS --body '&lt;dsn-from-sentry&gt;'
 gh secret list | grep SENTRY_DSN_AGILEPLUS  # Verify created
 
 cd ../heliosCLI
-gh secret set SENTRY_DSN_HELIOSCLI --body '<dsn-from-sentry>'
+gh secret set SENTRY_DSN_HELIOSCLI --body '&lt;dsn-from-sentry&gt;'
 gh secret list | grep SENTRY_DSN_HELIOSCLI
 
 cd ../phenotype-infrakit
-gh secret set SENTRY_DSN_PHENOTYPE_INFRAKIT --body '<dsn-from-sentry>'
+gh secret set SENTRY_DSN_PHENOTYPE_INFRAKIT --body '&lt;dsn-from-sentry&gt;'
 gh secret list | grep SENTRY_DSN_PHENOTYPE_INFRAKIT
 ```
 
@@ -195,7 +195,7 @@ export SENTRY_DSN="$(gh secret get SENTRY_DSN_AGILEPLUS)"
 # In main.rs or test file:
 #
 # let _guard = sentry_config::initialize();
-# let result: Result<i32> = Err(std::io::Error::new(
+# let result: Result&lt;i32&gt; = Err(std::io::Error::new(
 #     std::io::ErrorKind::Other,
 #     "Test error for Sentry integration"
 # ));

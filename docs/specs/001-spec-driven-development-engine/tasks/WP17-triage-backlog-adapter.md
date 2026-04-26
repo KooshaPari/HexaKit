@@ -205,8 +205,8 @@ pub struct BacklogItem {
     pub id: String,
     pub kind: IntentKind,
     pub title: String,
-    pub description: Option<String>,
-    pub feature_slug: Option<String>,
+    pub description: Option&lt;String&gt;,
+    pub feature_slug: Option&lt;String&gt;,
     pub state: BacklogState,
     pub created_at: String,
     pub updated_at: String,
@@ -220,14 +220,14 @@ pub enum BacklogState { Open, Promoted, Closed }
 
 ```rust
 impl BacklogAdapter {
-    pub fn new(storage: Arc<dyn StoragePort>) -> Self;
-    pub fn ensure_schema(&self) -> Result<(), TriageError>;
-    pub fn create(&self, kind: IntentKind, title: &str, description: Option<&str>) -> Result<BacklogItem, TriageError>;
-    pub fn get(&self, id: &str) -> Result<Option<BacklogItem>, TriageError>;
-    pub fn list_by_type(&self, kind: IntentKind) -> Result<Vec<BacklogItem>, TriageError>;
-    pub fn list_by_feature(&self, feature_slug: &str) -> Result<Vec<BacklogItem>, TriageError>;
-    pub fn promote_to_feature(&self, id: &str, feature_slug: &str) -> Result<BacklogItem, TriageError>;
-    pub fn close(&self, id: &str) -> Result<(), TriageError>;
+    pub fn new(storage: Arc&lt;dyn StoragePort&gt;) -> Self;
+    pub fn ensure_schema(&self) -> Result&lt;(), TriageError&gt;;
+    pub fn create(&self, kind: IntentKind, title: &str, description: Option&lt;&str&gt;) -> Result&lt;BacklogItem, TriageError&gt;;
+    pub fn get(&self, id: &str) -> Result&lt;Option&lt;BacklogItem&gt;, TriageError&gt;;
+    pub fn list_by_type(&self, kind: IntentKind) -> Result&lt;Vec&lt;BacklogItem&gt;, TriageError&gt;;
+    pub fn list_by_feature(&self, feature_slug: &str) -> Result&lt;Vec&lt;BacklogItem&gt;, TriageError&gt;;
+    pub fn promote_to_feature(&self, id: &str, feature_slug: &str) -> Result&lt;BacklogItem, TriageError&gt;;
+    pub fn close(&self, id: &str) -> Result&lt;(), TriageError&gt;;
 }
 ```
 
@@ -302,10 +302,10 @@ Count keyword hits per category. Whichever category has the highest hit count wi
 
 ```rust
 pub struct ClassifierConfig {
-    pub bug_keywords: Vec<String>,
-    pub feature_keywords: Vec<String>,
-    pub idea_keywords: Vec<String>,
-    pub task_keywords: Vec<String>,
+    pub bug_keywords: Vec&lt;String&gt;,
+    pub feature_keywords: Vec&lt;String&gt;,
+    pub idea_keywords: Vec&lt;String&gt;,
+    pub task_keywords: Vec&lt;String&gt;,
 }
 
 impl Default for ClassifierConfig {
@@ -362,14 +362,14 @@ pub struct RouterGenerator {
 
 impl RouterGenerator {
     pub fn new(config: ProjectConfig, output_dir: PathBuf) -> Self;
-    pub fn write_claude_md(&self) -> Result<PathBuf, TriageError>;
-    pub fn write_agents_md(&self) -> Result<PathBuf, TriageError>;
+    pub fn write_claude_md(&self) -> Result&lt;PathBuf, TriageError&gt;;
+    pub fn write_agents_md(&self) -> Result&lt;PathBuf, TriageError&gt;;
 }
 ```
 
 **`write_claude_md` template** (use a `format!` or a simple template string; do not pull in a template engine dependency unless one is already in the workspace):
 
-```
+````
 # {project_name} — Agent Routing Guide
 
 ## Project Context
@@ -388,17 +388,17 @@ When you receive a new input from the user, classify it and route as follows:
 
 | Intent | Action |
 |--------|--------|
-| Bug    | Run `agileplus triage --kind bug "<description>"` to create a backlog bug item, then optionally run `agileplus github sync` to push to GitHub Issues. |
-| Feature | Run `agileplus specify --from-triage <id>` to promote the backlog item into a feature spec. |
-| Idea   | Run `agileplus triage --kind idea "<description>"` to store the idea in the backlog for later review. |
-| Task   | Run `agileplus triage --kind task "<description>"` or handle inline if the task is a quick fix (< 30 min estimated). |
+| Bug    | Run `agileplus triage --kind bug "&lt;description&gt;"` to create a backlog bug item, then optionally run `agileplus github sync` to push to GitHub Issues. |
+| Feature | Run `agileplus specify --from-triage &lt;id&gt;` to promote the backlog item into a feature spec. |
+| Idea   | Run `agileplus triage --kind idea "&lt;description&gt;"` to store the idea in the backlog for later review. |
+| Task   | Run `agileplus triage --kind task "&lt;description&gt;"` or handle inline if the task is a quick fix (< 30 min estimated). |
 
 ## Quick-Fix Escape Hatch
 
 If the input is clearly a small self-contained change (rename, single-line fix, config tweak), you may use:
 
 ```
-agileplus escape quick-fix "<description>"
+agileplus escape quick-fix "&lt;description&gt;"
 ```
 
 This bypasses the triage flow and creates a minimal WP directly in the active feature.
@@ -408,7 +408,7 @@ This bypasses the triage flow and creates a minimal WP directly in the active fe
 - All commits must use Conventional Commits format.
 - PRs must reference a WP ID in the title (e.g., `feat(WP17): implement triage adapter`).
 - Do not modify files outside the active feature's work package scope without explicit user approval.
-```
+````
 
 Replace `{project_name}`, `{project_slug}`, `{current_phase}`, `{timestamp}`, and `{command_list}` from `ProjectConfig` fields. `{command_list}` is a bullet list built from `ProjectConfig::available_commands`.
 
@@ -424,7 +424,7 @@ Write to `{output_dir}/CLAUDE.md`. Return the written path. If the file already 
 
 **`write_agents_md` template**:
 
-```
+````
 # {project_name} — Agent Behavioral Rules
 
 ## Sub-Command Vocabulary
@@ -445,7 +445,7 @@ Write to `{output_dir}/CLAUDE.md`. Return the written path. If the file already 
 
 2. **Follow CI/CD defaults**: After each WP implementation, run the workspace test suite (`cargo test --workspace`) and linter (`cargo clippy -- -D warnings`). Do not mark a WP as `done` if either fails.
 
-3. **Conventional commits**: All commits must follow the pattern `<type>(<scope>): <description>`. Valid types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`, `ci`. Scope is the WP ID (e.g., `WP17`).
+3. **Conventional commits**: All commits must follow the pattern `&lt;type&gt;(&lt;scope&gt;): &lt;description&gt;`. Valid types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`, `ci`. Scope is the WP ID (e.g., `WP17`).
 
 4. **Scope discipline**: Only modify files within the active WP's designated file list. If a change outside that scope is required, create a new backlog task item and pause for user approval before proceeding.
 
@@ -466,13 +466,13 @@ Write to `{output_dir}/CLAUDE.md`. Return the written path. If the file already 
 Each significant agent action should be logged to the WP prompt file's `history` block using the format:
 
 ```yaml
-- timestamp: '<ISO8601>'
-  lane: <current_lane>
-  agent: <agent_id>
-  shell_pid: '<pid>'
-  action: <description>
+- timestamp: '&lt;ISO8601&gt;'
+  lane: &lt;current_lane&gt;
+  agent: &lt;agent_id&gt;
+  shell_pid: '&lt;pid&gt;'
+  action: &lt;description&gt;
 ```
-```
+````
 
 Write to `{output_dir}/AGENTS.md`. Return the written path. Overwrite if exists.
 
@@ -490,7 +490,7 @@ Write to `{output_dir}/AGENTS.md`. Return the written path. Overwrite if exists.
 
 2. Add a `build.rs` that invokes `tonic_build::compile_protos("../../proto/integrations.proto")` so protobuf stubs are generated at compile time.
 
-3. In `triage_grpc.rs`, define a `TriageServiceImpl` struct that holds an `Arc<TriageAdapter>` and implements the `IntegrationsService` tonic trait. At minimum implement:
+3. In `triage_grpc.rs`, define a `TriageServiceImpl` struct that holds an `Arc&lt;TriageAdapter&gt;` and implements the `IntegrationsService` tonic trait. At minimum implement:
    - `ClassifyInput` RPC: calls `TriageAdapter::classify()` and returns the `IntentKind` as a protobuf enum.
    - `CreateBacklogItem` RPC: calls `BacklogAdapter::create()` and returns the created item as a protobuf message.
    - `ListBacklogItems` RPC: calls `BacklogAdapter::list_by_type()` or `list_by_feature()` based on the request filter field.
@@ -621,7 +621,7 @@ Add `tempfile` as a dev-dependency.
 | `StoragePort` trait changes in WP05 patch break CRUD | Low | High | Pin to WP05's committed trait version; use integration tests against actual trait, not mocks |
 | Router-generated `CLAUDE.md` conflicts with manually maintained project `CLAUDE.md` | Medium | Medium | Generator always overwrites; communicate this clearly in `AGENTS.md` behavioral rules; consider backup-before-write strategy |
 | `uuid` crate v4 feature flag missing from `Cargo.toml` | Low | High | Validate `Cargo.toml` in T098 before writing any other code |
-| Regex compilation overhead in hot path | Low | Low | Use `once_cell::sync::Lazy<Regex>` for all compiled patterns |
+| Regex compilation overhead in hot path | Low | Low | Use `once_cell::sync::Lazy&lt;Regex&gt;` for all compiled patterns |
 
 ---
 

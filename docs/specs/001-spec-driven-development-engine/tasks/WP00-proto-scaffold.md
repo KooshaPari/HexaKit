@@ -51,7 +51,7 @@ history:
 ---
 
 ## Markdown Formatting
-Wrap HTML/XML tags in backticks: `` `<div>` ``, `` `<script>` ``
+Wrap HTML/XML tags in backticks: `` `<div>` ``, `` `&lt;script&gt;` ``
 Use language identifiers in code blocks: ````python`, ````bash`
 
 ---
@@ -294,7 +294,7 @@ spec-kitty implement WP00
        ```
      - `rust/build.rs`:
        ```rust
-       fn main() -> Result<(), Box<dyn std::error::Error>> {
+       fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
            tonic_build::configure()
                .build_server(true)
                .build_client(true)
@@ -423,7 +423,7 @@ Reviewers should verify:
 **When adding an entry**:
 1. Scroll to the bottom of this Activity Log section
 2. **APPEND the new entry at the END** (do NOT prepend or insert in middle)
-3. Use exact format: `- YYYY-MM-DDTHH:MM:SSZ – agent_id – lane=<lane> – <action>`
+3. Use exact format: `- YYYY-MM-DDTHH:MM:SSZ – agent_id – lane=&lt;lane&gt; – &lt;action&gt;`
 4. Timestamp MUST be current time in UTC
 5. Lane MUST match the frontmatter `lane:` field exactly
 

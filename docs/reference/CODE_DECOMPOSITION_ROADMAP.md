@@ -165,7 +165,7 @@ agileplus-sqlite/src/
 │   │   ├── select(&mut self) -> QueryBuilder
 │   │   ├── insert(&mut self) -> QueryBuilder
 │   │   ├── build() -> String
-│   │   └── params() -> Vec<Value>
+│   │   └── params() -> Vec&lt;Value&gt;
 │   ├── workitems.rs             (150 LOC) — Workitem-specific queries
 │   │   ├── select_all_workitems()
 │   │   ├── select_workitem_by_id(id)
@@ -336,12 +336,12 @@ agileplus-cli/src/commands/plan/
 
 ```mermaid
 graph TD
-    A["Phase 1: Quick Wins<br/>(15-20K LOC)<br/>✅ COMPLETE"]
-    B["Phase 2: High-Impact<br/>(25-35K LOC)<br/>✅ COMPLETE"]
-    C["Phase 3a: Megafiles<br/>(8-10K LOC)<br/>routes.rs + sqlite"]
-    D["Phase 3b: CLI Handlers<br/>(~1K LOC)<br/>validate + retro + plan"]
-    E["Phase 3c: Dead Code<br/>(~2K LOC)<br/>Suppressions cleanup"]
-    F["Phase 4: Long-Term<br/>(thegent audit)<br/>Future"]
+    A["Phase 1: Quick Wins&lt;br/&gt;(15-20K LOC)&lt;br/&gt;✅ COMPLETE"]
+    B["Phase 2: High-Impact&lt;br/&gt;(25-35K LOC)&lt;br/&gt;✅ COMPLETE"]
+    C["Phase 3a: Megafiles&lt;br/&gt;(8-10K LOC)&lt;br/&gt;routes.rs + sqlite"]
+    D["Phase 3b: CLI Handlers&lt;br/&gt;(~1K LOC)&lt;br/&gt;validate + retro + plan"]
+    E["Phase 3c: Dead Code&lt;br/&gt;(~2K LOC)&lt;br/&gt;Suppressions cleanup"]
+    F["Phase 4: Long-Term&lt;br/&gt;(thegent audit)&lt;br/&gt;Future"]
 
     A --> B
     B --> C

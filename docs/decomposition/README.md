@@ -134,7 +134,7 @@ Contains:
 - `ConnectionPool` — thread-safe connection pool with metrics
 - `ConnectionConfig` — pool configuration
 - `SyncMetrics` — operation tracking
-- `SyncStore<T>` trait — transaction interface
+- `SyncStore&lt;T&gt;` trait — transaction interface
 
 **Tests:** 8+ integration tests (using `:memory:` SQLite)
 
@@ -199,7 +199,7 @@ runner.migrate().await?;
 ```
 ┌─────────────────────────────────────────────────┐
 │ phenotype-contracts (Reusable Traits)            │
-│ ├── SyncStore<T>                                │
+│ ├── SyncStore&lt;T&gt;                                │
 │ ├── QueryBuilder                                │
 │ └── MigrationRunner                             │
 ├─────────────────────────────────────────────────┤
@@ -248,7 +248,7 @@ crates/agileplus-sqlite/
         ├── mod.rs (re-exports)
         ├── sync.rs (400 LOC)
         │   ├── ConnectionPool
-        │   ├── SyncStore<T> trait
+        │   ├── SyncStore&lt;T&gt; trait
         │   └── Tests (8+)
         ├── query_builder.rs (300 LOC)
         │   ├── SqliteQueryBuilder
