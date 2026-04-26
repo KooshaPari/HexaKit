@@ -12,11 +12,11 @@ on:
 
 jobs:
   legacy-tooling-scan:
-    uses: KooshaPari/phenoShared/.github/workflows/legacy-tooling-gate.yml@fix/legacy-tooling-gate-source
+    uses: KooshaPari/phenoShared/.github/workflows/legacy-tooling-gate.yml@main
     permissions:
       contents: read
       security-events: write
       pull-requests: write
     with:
-      source-ref: fix/legacy-tooling-gate-source
+      source-ref: main
       report-only: true
