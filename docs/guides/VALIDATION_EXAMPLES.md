@@ -12,7 +12,7 @@ Register and use pre-built validators from the registry.
 use phenotype_validation::presets::register_presets;
 use phenotype_validation::registry::ValidatorRegistry;
 
-fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize all built-in validators
     register_presets();
 
@@ -49,7 +49,7 @@ Compose rules to create field-specific validators.
 use phenotype_validation::traits::field_validator::FieldValidator;
 use phenotype_validation::traits::rule::*;
 
-fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Build a username validator: 3-20 chars, alphanumeric + underscore
     let username_validator = FieldValidator::new()
         .with_rule(RequiredRule::new())
@@ -80,7 +80,7 @@ use phenotype_validation::traits::{CommandValidator, FieldValidator};
 use phenotype_validation::traits::rule::*;
 use std::collections::HashMap;
 
-fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a command validator for "CreateUserCommand"
     let user_validator = CommandValidator::new()
         .add_field(
@@ -140,11 +140,11 @@ use phenotype_validation::traits::{ValidationError, Severity};
 /// Validates that a workflow status is in an allowed set.
 #[derive(Clone, Debug)]
 pub struct WorkflowStatusRule {
-    allowed_states: Vec&lt;String&gt;,
+    allowed_states: Vec<String>,
 }
 
 impl WorkflowStatusRule {
-    pub fn new(allowed: Vec&lt;&str&gt;) -> Self {
+    pub fn new(allowed: Vec<&str>) -> Self {
         Self {
             allowed_states: allowed.iter().map(|s| s.to_string()).collect(),
         }
@@ -152,7 +152,7 @@ impl WorkflowStatusRule {
 }
 
 impl ValidationRule for WorkflowStatusRule {
-    fn validate(&self, value: &str) -> Result&lt;(), ValidationError&gt; {
+    fn validate(&self, value: &str) -> Result<(), ValidationError> {
         if self.allowed_states.contains(&value.to_string()) {
             Ok(())
         } else {
@@ -171,7 +171,7 @@ impl ValidationRule for WorkflowStatusRule {
 }
 
 // Usage:
-fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let rule = WorkflowStatusRule::new(vec!["pending", "active", "completed"]);
 
     assert!(rule.validate("active").is_ok());
@@ -212,7 +212,7 @@ pub fn register_company_validators() {
     });
 }
 
-fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Register custom validators
     register_company_validators();
 
@@ -241,7 +241,7 @@ Rich error reporting with context.
 use phenotype_validation::traits::field_validator::FieldValidator;
 use phenotype_validation::traits::rule::*;
 
-fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let validator = FieldValidator::new()
         .with_rule(RequiredRule::new())
         .with_rule(LengthRule::range(8, 128));
@@ -356,11 +356,11 @@ use std::sync::Arc;
 /// Async rule: check username uniqueness against database
 #[derive(Clone)]
 pub struct UniqueUsernameRule {
-    db: Arc&lt;dyn UserRepository&gt;, // Async DB client
+    db: Arc<dyn UserRepository>, // Async DB client
 }
 
 impl UniqueUsernameRule {
-    pub async fn validate_async(&self, value: &str) -> Result&lt;(), ValidationError&gt; {
+    pub async fn validate_async(&self, value: &str) -> Result<(), ValidationError> {
         let exists = self.db.username_exists(value).await?;
         
         if exists {
@@ -394,7 +394,7 @@ use phenotype_validation::presets::*;
 use phenotype_validation::traits::field_validator::FieldValidator;
 use phenotype_validation::traits::rule::*;
 
-fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Start with a preset and add custom rules
     let enhanced_email = {
         let mut v = email_validator(); // Built-in preset

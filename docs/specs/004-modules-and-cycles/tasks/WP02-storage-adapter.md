@@ -41,7 +41,7 @@ and aggregate WP progress queries for Cycles.
 
 ## Context & Constraints
 
-- **Pattern**: `agileplus-sqlite` uses `Arc&lt;Mutex&lt;Connection&gt;&gt;` for a single write-serialized
+- **Pattern**: `agileplus-sqlite` uses `Arc<Mutex<Connection>>` for a single write-serialized
   rusqlite connection. All new methods follow the same pattern as existing repository functions
   (see `crates/agileplus-sqlite/src/repository/features.rs` for the canonical example).
 - **Async trait**: `StoragePort` uses `impl Future<Output = ...) + Send` return syntax (not
@@ -87,52 +87,52 @@ and aggregate WP progress queries for Cycles.
    fn create_module(
        &self,
        module: &Module,
-   ) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
    /// Retrieve a module by its primary key.
    fn get_module_by_id(
        &self,
        id: i64,
-   ) -> impl Future<Output = Result&lt;Option&lt;Module&gt;, DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<Option<Module>, DomainError>> + Send;
 
    /// Retrieve a module by its slug within an optional parent scope.
    /// Pass parent_module_id = None to look up root-level modules.
    fn get_module_by_slug(
        &self,
        slug: &str,
-       parent_module_id: Option&lt;i64&gt;,
-   ) -> impl Future<Output = Result&lt;Option&lt;Module&gt;, DomainError&gt;> + Send;
+       parent_module_id: Option<i64>,
+   ) -> impl Future<Output = Result<Option<Module>, DomainError>> + Send;
 
    /// Update a module's name, slug, and description. Returns Err if not found.
    fn update_module(
        &self,
        module: &Module,
-   ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
    /// Delete a module by ID. MUST fail if it owns Features or has child Modules.
    /// Traces to: FR-M06
    fn delete_module(
        &self,
        id: i64,
-   ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
    /// List all root modules (parent_module_id IS NULL).
    fn list_root_modules(
        &self,
-   ) -> impl Future<Output = Result&lt;Vec&lt;Module&gt;, DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<Vec<Module>, DomainError>> + Send;
 
    /// List direct children of a module.
    fn list_child_modules(
        &self,
        parent_id: i64,
-   ) -> impl Future<Output = Result&lt;Vec&lt;Module&gt;, DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<Vec<Module>, DomainError>> + Send;
 
    /// Retrieve a module with its owned features, tagged features, and direct children.
    /// Traces to: FR-M05
    fn get_module_with_features(
        &self,
        id: i64,
-   ) -> impl Future<Output = Result&lt;Option&lt;ModuleWithFeatures&gt;, DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<Option<ModuleWithFeatures>, DomainError>> + Send;
 
    /// Set the module_id on a Feature (ownership assignment).
    /// Traces to: FR-M03
@@ -140,13 +140,13 @@ and aggregate WP progress queries for Cycles.
        &self,
        feature_id: i64,
        module_id: i64,
-   ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
    /// Clear the module_id on a Feature (remove ownership).
    fn unassign_feature_from_module(
        &self,
        feature_id: i64,
-   ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<(), DomainError>> + Send;
    ```
 
 **Validation**: `cargo check -p agileplus-domain` zero errors.
@@ -173,51 +173,51 @@ and aggregate WP progress queries for Cycles.
    fn create_cycle(
        &self,
        cycle: &Cycle,
-   ) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
    /// Retrieve a cycle by primary key.
    fn get_cycle_by_id(
        &self,
        id: i64,
-   ) -> impl Future<Output = Result&lt;Option&lt;Cycle&gt;, DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<Option<Cycle>, DomainError>> + Send;
 
    /// Retrieve a cycle by its unique name.
    fn get_cycle_by_name(
        &self,
        name: &str,
-   ) -> impl Future<Output = Result&lt;Option&lt;Cycle&gt;, DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<Option<Cycle>, DomainError>> + Send;
 
    /// Update the state field of a cycle.
    fn update_cycle_state(
        &self,
        id: i64,
        state: CycleState,
-   ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
    /// Update mutable fields (name, description, start_date, end_date, module_scope_id).
    fn update_cycle(
        &self,
        cycle: &Cycle,
-   ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
    /// Delete a cycle. Does NOT change Feature states (per spec edge case).
    fn delete_cycle(
        &self,
        id: i64,
-   ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
    /// List all cycles, optionally filtered by state.
    fn list_cycles(
        &self,
-       state_filter: Option&lt;CycleState&gt;,
-   ) -> impl Future<Output = Result&lt;Vec&lt;Cycle&gt;, DomainError&gt;> + Send;
+       state_filter: Option<CycleState>,
+   ) -> impl Future<Output = Result<Vec<Cycle>, DomainError>> + Send;
 
    /// Retrieve a cycle with its assigned features and aggregate WP progress.
    /// Traces to: FR-C06
    fn get_cycle_with_features(
        &self,
        id: i64,
-   ) -> impl Future<Output = Result&lt;Option&lt;CycleWithFeatures&gt;, DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<Option<CycleWithFeatures>, DomainError>> + Send;
    ```
 
 **Validation**: `cargo check -p agileplus-domain` zero errors.
@@ -243,14 +243,14 @@ and aggregate WP progress queries for Cycles.
        &self,
        module_id: i64,
        feature_id: i64,
-   ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
    /// Remove a tag between a Feature and a Module.
    fn untag_feature_from_module(
        &self,
        module_id: i64,
        feature_id: i64,
-   ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
    // -- Cycle-Feature ops (many-to-many assignment) --
 
@@ -260,14 +260,14 @@ and aggregate WP progress queries for Cycles.
        &self,
        cycle_id: i64,
        feature_id: i64,
-   ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
    /// Remove a Feature from a Cycle (does not change Feature state).
    fn remove_feature_from_cycle(
        &self,
        cycle_id: i64,
        feature_id: i64,
-   ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+   ) -> impl Future<Output = Result<(), DomainError>> + Send;
    ```
 
 **Validation**: `cargo check -p agileplus-domain` zero errors.
@@ -366,7 +366,7 @@ confirms the `modules` and `cycles` tables exist, and that an existing `features
    - Return the `last_insert_rowid()`.
 
 2. Implement circular-reference detection helper
-   `check_no_circular_ref(conn: &Connection, new_parent_id: i64, module_id: i64) -> Result&lt;(), DomainError&gt;`:
+   `check_no_circular_ref(conn: &Connection, new_parent_id: i64, module_id: i64) -> Result<(), DomainError>`:
 
    ```sql
    -- Find all ancestors of new_parent_id using recursive CTE

@@ -90,13 +90,13 @@ Each work package gets its own isolated git worktree:
 
 ```mermaid
 graph LR
-    A["1. Start WP&lt;br/&gt;(agileplus implement)"]
-    B["2. Create worktree&lt;br/&gt;(isolated branch)"]
-    C["3. Write code&lt;br/&gt;(based on prompt)"]
-    D["4. Run tests&lt;br/&gt;(verify correctness)"]
+    A["1. Start WP<br/>(agileplus implement)"]
+    B["2. Create worktree<br/>(isolated branch)"]
+    C["3. Write code<br/>(based on prompt)"]
+    D["4. Run tests<br/>(verify correctness)"]
     E{"5. Tests pass?"}
-    F["6. Commit changes&lt;br/&gt;(feat: message)"]
-    G["7. Move to review&lt;br/&gt;(agileplus move)"]
+    F["6. Commit changes<br/>(feat: message)"]
+    G["7. Move to review<br/>(agileplus move)"]
 
     A --> B
     B --> C
@@ -409,7 +409,7 @@ cargo test -- --nocapture --test-threads=1
 git diff main
 
 # Revert specific file if needed
-git checkout &lt;file&gt;
+git checkout <file>
 ```
 
 ### Merge Conflicts (During Implementation)
@@ -452,7 +452,7 @@ If things went wrong:
 git reset --hard main
 
 # Or discard just one file
-git checkout main -- &lt;file&gt;
+git checkout main -- <file>
 
 # Start over if needed
 cd ../..

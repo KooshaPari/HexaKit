@@ -25,7 +25,7 @@ phenotype-infrakit/
 Provides an append-only event store backed by a SHA-256 hash chain for integrity verification.
 
 Key types:
-- `EventEnvelope&lt;T&gt;` -- wraps any serializable event with metadata (seq, timestamp, hash)
+- `EventEnvelope<T>` -- wraps any serializable event with metadata (seq, timestamp, hash)
 - `EventStore` -- trait for pluggable storage backends
 - `InMemoryEventStore` -- reference implementation (in-memory, hash-verified)
 - `SnapshotStore` -- optional snapshot support for aggregate rebuilding
@@ -41,9 +41,9 @@ A generic two-tier cache combining an LRU L1 layer (bounded, fast eviction) and 
 layer (unbounded, concurrent). Entries carry per-key TTL tracked via `Instant`.
 
 Key types:
-- `TieredCache&lt;K, V&gt;` -- main cache handle, clone-cheap (Arc-backed)
+- `TieredCache<K, V>` -- main cache handle, clone-cheap (Arc-backed)
 - `MetricsHook` -- trait for plugging in hit/miss/eviction counters
-- `CacheEntry&lt;V&gt;` -- internal value wrapper with expiry timestamp
+- `CacheEntry<V>` -- internal value wrapper with expiry timestamp
 
 Design decisions:
 - L1 uses `lru::LruCache` under a `parking_lot::Mutex` for bounded eviction.
@@ -76,14 +76,14 @@ states, and full history tracking.
 
 Key types:
 - `State` -- trait requiring `ordinal() -> u32`, `Debug`, `Clone`, `PartialEq`, `Eq`, `Hash`
-- `StateMachine&lt;S&gt;` -- FSM handle; holds current state and history
+- `StateMachine<S>` -- FSM handle; holds current state and history
 - `TransitionGuard` -- closure-based guard attached to specific transitions
 - `TransitionError` -- typed error for invalid transitions, guard failures, etc.
 
 Design decisions:
 - `ordinal()` enforces forward-only progression; transitions to lower ordinals are rejected
   unless the transition is explicitly configured as a skip or the guard overrides it.
-- History is stored as `Vec&lt;S&gt;` in insertion order (oldest first).
+- History is stored as `Vec<S>` in insertion order (oldest first).
 - Guards are keyed by `(from, to)` state pairs and receive a `&PolicyContext`-style bag.
 
 ## Dependency Graph

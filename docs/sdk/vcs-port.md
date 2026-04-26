@@ -17,17 +17,17 @@ pub trait VcsPort: Send + Sync {
         &self,
         feature_slug: &str,
         wp_id: &str,
-    ) -> impl Future<Output = Result&lt;PathBuf, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<PathBuf, DomainError>> + Send;
 
     /// List all active worktrees.
     fn list_worktrees(&self)
-    -> impl Future<Output = Result&lt;Vec&lt;WorktreeInfo&gt;, DomainError&gt;> + Send;
+    -> impl Future<Output = Result<Vec<WorktreeInfo>, DomainError>> + Send;
 
     /// Remove a worktree at the given path.
     fn cleanup_worktree(
         &self,
         worktree_path: &Path,
-    ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     // -- Branch operations --
 
@@ -36,27 +36,27 @@ pub trait VcsPort: Send + Sync {
         &self,
         branch_name: &str,
         base: &str,
-    ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// Check out an existing branch.
     fn checkout_branch(
         &self,
         branch_name: &str,
-    ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// Merge source branch into target, returning the merge result.
     fn merge_to_target(
         &self,
         source: &str,
         target: &str,
-    ) -> impl Future<Output = Result&lt;MergeResult, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<MergeResult, DomainError>> + Send;
 
     /// Detect merge conflicts between two branches without performing the merge.
     fn detect_conflicts(
         &self,
         source: &str,
         target: &str,
-    ) -> impl Future<Output = Result&lt;Vec&lt;ConflictInfo&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<ConflictInfo>, DomainError>> + Send;
 
     // -- Artifact operations (FR-014) --
 
@@ -65,7 +65,7 @@ pub trait VcsPort: Send + Sync {
         &self,
         feature_slug: &str,
         relative_path: &str,
-    ) -> impl Future<Output = Result&lt;String, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<String, DomainError>> + Send;
 
     /// Write a text artifact relative to the feature directory.
     fn write_artifact(
@@ -73,14 +73,14 @@ pub trait VcsPort: Send + Sync {
         feature_slug: &str,
         relative_path: &str,
         content: &str,
-    ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// Check whether an artifact exists.
     fn artifact_exists(
         &self,
         feature_slug: &str,
         relative_path: &str,
-    ) -> impl Future<Output = Result&lt;bool, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<bool, DomainError>> + Send;
 
     // -- History scanning (FR-017) --
 
@@ -88,7 +88,7 @@ pub trait VcsPort: Send + Sync {
     fn scan_feature_artifacts(
         &self,
         feature_slug: &str,
-    ) -> impl Future<Output = Result&lt;FeatureArtifacts, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<FeatureArtifacts, DomainError>> + Send;
 }
 ```
 
@@ -124,14 +124,14 @@ Outcome of a merge operation, including conflict detection.
 ```rust
 pub struct MergeResult {
     pub success: bool,
-    pub conflicts: Vec&lt;ConflictInfo&gt;,
-    pub merged_commit: Option&lt;String&gt;,
+    pub conflicts: Vec<ConflictInfo>,
+    pub merged_commit: Option<String>,
 }
 
 pub struct ConflictInfo {
     pub path: String,
-    pub ours: Option&lt;String&gt;,      // Content from target branch
-    pub theirs: Option&lt;String&gt;,    // Content from source branch
+    pub ours: Option<String>,      // Content from target branch
+    pub theirs: Option<String>,    // Content from source branch
 }
 ```
 
@@ -165,9 +165,9 @@ Collection of all artifacts discovered for a feature during history scanning.
 
 ```rust
 pub struct FeatureArtifacts {
-    pub meta_json: Option&lt;String&gt;,           // kitty-specs/001-*/meta.json
-    pub audit_chain: Option&lt;String&gt;,         // Audit log path
-    pub evidence_paths: Vec&lt;String&gt;,         // All PR/test artifact refs
+    pub meta_json: Option<String>,           // kitty-specs/001-*/meta.json
+    pub audit_chain: Option<String>,         // Audit log path
+    pub evidence_paths: Vec<String>,         // All PR/test artifact refs
 }
 ```
 
@@ -180,7 +180,7 @@ use agileplus_git::GitVcsAdapter;
 use std::path::PathBuf;
 
 #[tokio::main]
-async fn main() -> anyhow::Result&lt;()&gt; {
+async fn main() -> anyhow::Result<()> {
     let vcs = GitVcsAdapter::new(PathBuf::from("/path/to/repo"))?;
 
     // Create a branch
@@ -322,7 +322,7 @@ println!("Evidence files: {:?}", artifacts.evidence_paths);
 
 ## Error Handling
 
-All methods return `Result&lt;T, DomainError&gt;`. Common cases:
+All methods return `Result<T, DomainError>`. Common cases:
 
 ```rust
 pub enum DomainError {
@@ -364,7 +364,7 @@ impl VcsPort for MyVcsAdapter {
         &self,
         feature_slug: &str,
         wp_id: &str,
-    ) -> Result&lt;PathBuf, DomainError&gt; {
+    ) -> Result<PathBuf, DomainError> {
         // Implement for your VCS
         Ok(PathBuf::from("/path/to/worktree"))
     }
@@ -390,20 +390,20 @@ fn export_state(
     features: &[Feature],
     wps: &[WorkPackage],
     audit_entries: &[AuditEntry],
-) -> impl Future<Output = Result&lt;String, DomainError&gt;> + Send;
+) -> impl Future<Output = Result<String, DomainError>> + Send;
 // Returns the commit hash of the export commit.
 
 /// Import AgilePlus domain state from a git-tracked export.
 fn import_state(
     &self,
     import_path: &Path,
-) -> impl Future<Output = Result&lt;ImportResult, DomainError&gt;> + Send;
+) -> impl Future<Output = Result<ImportResult, DomainError>> + Send;
 
 pub struct ImportResult {
     pub features_imported: usize,
     pub wps_imported: usize,
     pub audit_entries_imported: usize,
-    pub conflicts: Vec&lt;ImportConflict&gt;,
+    pub conflicts: Vec<ImportConflict>,
 }
 ```
 
@@ -495,14 +495,14 @@ The worktree directory lives inside the main repo (git 2.7+ supports this) and s
 
 ```rust
 pub struct FeatureArtifacts {
-    pub spec_path: Option&lt;String&gt;,           // spec.md
-    pub research_path: Option&lt;String&gt;,       // research.md
-    pub plan_path: Option&lt;String&gt;,           // plan.md
-    pub meta_json: Option&lt;String&gt;,           // meta.json content
-    pub audit_chain_path: Option&lt;String&gt;,    // audit/chain.jsonl
-    pub wp_prompts: Vec&lt;(String, String)&gt;,   // [(wp_id, prompt_path)]
-    pub evidence_paths: Vec&lt;String&gt;,         // evidence artifacts
-    pub retrospective_path: Option&lt;String&gt;,  // retrospective.md
+    pub spec_path: Option<String>,           // spec.md
+    pub research_path: Option<String>,       // research.md
+    pub plan_path: Option<String>,           // plan.md
+    pub meta_json: Option<String>,           // meta.json content
+    pub audit_chain_path: Option<String>,    // audit/chain.jsonl
+    pub wp_prompts: Vec<(String, String)>,   // [(wp_id, prompt_path)]
+    pub evidence_paths: Vec<String>,         // evidence artifacts
+    pub retrospective_path: Option<String>,  // retrospective.md
 }
 ```
 

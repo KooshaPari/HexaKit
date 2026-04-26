@@ -18,7 +18,7 @@ lib.rs (1,582 LOC)   lib.rs (200 LOC)
 
 | Module | LOC | Responsibility | Key Traits | Tests |
 |--------|-----|-----------------|-----------|-------|
-| `sync.rs` | 400 | Connection pooling, transactions, row sync | `SyncStore&lt;T&gt;` | 8 integration |
+| `sync.rs` | 400 | Connection pooling, transactions, row sync | `SyncStore<T>` | 8 integration |
 | `query_builder.rs` | 300 | Dynamic SQL construction | `QueryBuilder` | 15 unit (no DB) |
 | `migrations.rs` | 250 | Schema versioning, migrations | `MigrationRunner` | 10 state machine |
 
@@ -28,10 +28,10 @@ lib.rs (1,582 LOC)   lib.rs (200 LOC)
 
 ```rust
 // store/sync.rs
-pub trait SyncStore&lt;T&gt;: Send + Sync {
-    async fn read_tx&lt;F, R&gt;(&self, f: F) -> Result&lt;R&gt;;
-    async fn write_tx&lt;F, R&gt;(&self, f: F) -> Result&lt;R&gt;;
-    async fn bulk_insert(&self, records: Vec&lt;T&gt;) -> Result&lt;usize&gt;;
+pub trait SyncStore<T>: Send + Sync {
+    async fn read_tx<F, R>(&self, f: F) -> Result<R>;
+    async fn write_tx<F, R>(&self, f: F) -> Result<R>;
+    async fn bulk_insert(&self, records: Vec<T>) -> Result<usize>;
 }
 
 // store/query_builder.rs
@@ -39,13 +39,13 @@ pub trait QueryBuilder: Send + Sync + Sized {
     fn select(columns: &[&str]) -> Self;
     fn from(table: &str) -> Self;
     fn where_clause(self, filter: Filter) -> Self;
-    fn build(self) -> (String, Vec&lt;SqlValue&gt;);
+    fn build(self) -> (String, Vec<SqlValue>);
 }
 
 // store/migrations.rs
 pub trait MigrationRunner: Send + Sync {
-    async fn migrate(&self, target: Option&lt;i32&gt;) -> Result&lt;MigrationStatus&gt;;
-    async fn rollback(&self, steps: usize) -> Result&lt;MigrationStatus&gt;;
+    async fn migrate(&self, target: Option<i32>) -> Result<MigrationStatus>;
+    async fn rollback(&self, steps: usize) -> Result<MigrationStatus>;
 }
 ```
 
@@ -60,8 +60,8 @@ pub use store::sync::SyncStore;
 pub use store::query_builder::QueryBuilder;
 pub use store::migrations::MigrationRunner;
 
-pub struct SqliteRepository&lt;T&gt; { /* ... */ }
-impl&lt;T&gt; Repository&lt;T&gt; for SqliteRepository&lt;T&gt; { /* ... */ }
+pub struct SqliteRepository<T> { /* ... */ }
+impl<T> Repository<T> for SqliteRepository<T> { /* ... */ }
 ```
 
 **Zero Breaking Changes**

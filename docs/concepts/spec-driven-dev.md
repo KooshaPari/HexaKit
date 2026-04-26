@@ -37,13 +37,13 @@ The pipeline flow as a visual:
 
 ```mermaid
 graph LR
-    A["Created&lt;br/&gt;(idea)"] --> B["Specified&lt;br/&gt;(requirements)"]
-    B --> C["Researched&lt;br/&gt;(codebase scan)"]
-    C --> D["Planned&lt;br/&gt;(WP decomposition)"]
-    D --> E["Implementing&lt;br/&gt;(agent/dev work)"]
-    E --> F["Validated&lt;br/&gt;(tests + review)"]
-    F --> G["Shipped&lt;br/&gt;(merged to main)"]
-    G --> H["Retrospected&lt;br/&gt;(lessons learned)"]
+    A["Created<br/>(idea)"] --> B["Specified<br/>(requirements)"]
+    B --> C["Researched<br/>(codebase scan)"]
+    C --> D["Planned<br/>(WP decomposition)"]
+    D --> E["Implementing<br/>(agent/dev work)"]
+    E --> F["Validated<br/>(tests + review)"]
+    F --> G["Shipped<br/>(merged to main)"]
+    G --> H["Retrospected<br/>(lessons learned)"]
 
     style A fill:#e1f5ff
     style B fill:#fff3e0

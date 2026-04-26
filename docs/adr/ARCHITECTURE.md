@@ -102,13 +102,13 @@ crates/agileplus-domain/
 Use cases orchestrate domain logic through ports:
 
 ```rust
-pub struct BacklogService&lt;P: StoragePort, E: EventPort&gt; {
-    storage: Arc&lt;P&gt;,
-    events: Arc&lt;E&gt;,
+pub struct BacklogService<P: StoragePort, E: EventPort> {
+    storage: Arc<P>,
+    events: Arc<E>,
 }
 
-impl&lt;P: StoragePort, E: EventPort&gt; BacklogService&lt;P, E&gt; {
-    pub async fn add_feature(&self, feature: Feature) -> Result&lt;FeatureId&gt; {
+impl<P: StoragePort, E: EventPort> BacklogService<P, E> {
+    pub async fn add_feature(&self, feature: Feature) -> Result<FeatureId> {
         // Domain logic
         let id = self.storage.save_feature(feature).await?;
         self.events.publish(FeatureAdded { id: id.clone() }).await?;
@@ -301,7 +301,7 @@ PortError ──wrap──→ ApplicationError ──wrap──→ DomainError
 
 ### Result Type Convention
 
-All port and service methods return `Result&lt;T, Error&gt;`:
+All port and service methods return `Result<T, Error>`:
 - `Ok(T)` - Success with value
 - `Err(DomainError)` - Business rule violation
 - `Err(ApplicationError)` - Operational failure
@@ -369,9 +369,9 @@ All port and service methods return `Result&lt;T, Error&gt;`:
 ```rust
 #[trait_variant::make(VcsPlugin: Send + Sync)]
 pub trait VcsPort {
-    async fn clone_repo(&self, url: &Url) -> Result&lt;PathBuf&gt;;
-    async fn create_branch(&self, name: &str) -> Result&lt;Branch&gt;;
-    async fn open_pr(&self, title: &str) -> Result&lt;PullRequest&gt;;
+    async fn clone_repo(&self, url: &Url) -> Result<PathBuf>;
+    async fn create_branch(&self, name: &str) -> Result<Branch>;
+    async fn open_pr(&self, title: &str) -> Result<PullRequest>;
 }
 ```
 
@@ -379,7 +379,7 @@ pub trait VcsPort {
 
 ```rust
 // In core
-pub fn register_vcs_plugin&lt;P: VcsPort + 'static&gt;(plugin: P) {
+pub fn register_vcs_plugin<P: VcsPort + 'static>(plugin: P) {
     // Compile-time plugin registry
 }
 ```

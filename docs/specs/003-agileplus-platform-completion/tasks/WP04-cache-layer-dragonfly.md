@@ -182,11 +182,11 @@ pub enum PoolError {
 }
 
 pub struct CachePool {
-    pool: Pool&lt;RedisConnectionManager&gt;,
+    pool: Pool<RedisConnectionManager>,
 }
 
 impl CachePool {
-    pub async fn new(config: CacheConfig) -> Result&lt;Self, PoolError&gt; {
+    pub async fn new(config: CacheConfig) -> Result<Self, PoolError> {
         let manager = RedisConnectionManager::new(config.redis_url())
             .await
             .map_err(|e| PoolError::ConnectionError(e.to_string()))?;
@@ -204,7 +204,7 @@ impl CachePool {
     /// Get a connection from the pool
     pub async fn get_connection(
         &self,
-    ) -> Result&lt;bb8::PooledConnection&lt;RedisConnectionManager&gt;, PoolError&gt; {
+    ) -> Result<bb8::PooledConnection<RedisConnectionManager>, PoolError> {
         self.pool
             .get()
             .await
@@ -212,7 +212,7 @@ impl CachePool {
     }
 
     /// Get raw pool for advanced operations
-    pub fn raw_pool(&self) -> &Pool&lt;RedisConnectionManager&gt; {
+    pub fn raw_pool(&self) -> &Pool<RedisConnectionManager> {
         &self.pool
     }
 }
@@ -263,33 +263,33 @@ pub enum CacheError {
 #[async_trait]
 pub trait CacheStore: Send + Sync {
     /// Get a value from the cache
-    async fn get&lt;T: for&lt;'de&gt; Deserialize&lt;'de&gt;&gt;(
+    async fn get<T: for<'de> Deserialize<'de>>(
         &self,
         key: &str,
-    ) -> Result&lt;Option&lt;T&gt;, CacheError&gt;;
+    ) -> Result<Option<T>, CacheError>;
 
     /// Set a value in the cache with optional TTL
-    async fn set&lt;T: Serialize&gt;(
+    async fn set<T: Serialize>(
         &self,
         key: &str,
         value: &T,
-        ttl: Option&lt;Duration&gt;,
-    ) -> Result&lt;(), CacheError&gt;;
+        ttl: Option<Duration>,
+    ) -> Result<(), CacheError>;
 
     /// Delete a key from the cache
-    async fn delete(&self, key: &str) -> Result&lt;(), CacheError&gt;;
+    async fn delete(&self, key: &str) -> Result<(), CacheError>;
 
     /// Check if a key exists
-    async fn exists(&self, key: &str) -> Result&lt;bool, CacheError&gt;;
+    async fn exists(&self, key: &str) -> Result<bool, CacheError>;
 
     /// Get multiple keys at once
-    async fn get_many&lt;T: for&lt;'de&gt; Deserialize&lt;'de&gt;&gt;(
+    async fn get_many<T: for<'de> Deserialize<'de>>(
         &self,
         keys: &[&str],
-    ) -> Result&lt;Vec&lt;Option&lt;T&gt;&gt;, CacheError&gt;;
+    ) -> Result<Vec<Option<T>>, CacheError>;
 
     /// Delete multiple keys at once
-    async fn delete_many(&self, keys: &[&str]) -> Result&lt;(), CacheError&gt;;
+    async fn delete_many(&self, keys: &[&str]) -> Result<(), CacheError>;
 }
 
 pub struct RedisCacheStore {
@@ -308,17 +308,17 @@ impl RedisCacheStore {
 
 #[async_trait]
 impl CacheStore for RedisCacheStore {
-    async fn get&lt;T: for&lt;'de&gt; Deserialize&lt;'de&gt;&gt;(
+    async fn get<T: for<'de> Deserialize<'de>>(
         &self,
         key: &str,
-    ) -> Result&lt;Option&lt;T&gt;, CacheError&gt; {
+    ) -> Result<Option<T>, CacheError> {
         let mut conn = self
             .pool
             .get_connection()
             .await
             .map_err(|e| CacheError::ConnectionError(e.to_string()))?;
 
-        let value: Option&lt;String&gt; = redis::cmd("GET")
+        let value: Option<String> = redis::cmd("GET")
             .arg(key)
             .query_async(&mut *conn)
             .await
@@ -332,12 +332,12 @@ impl CacheStore for RedisCacheStore {
         }
     }
 
-    async fn set&lt;T: Serialize&gt;(
+    async fn set<T: Serialize>(
         &self,
         key: &str,
         value: &T,
-        ttl: Option&lt;Duration&gt;,
-    ) -> Result&lt;(), CacheError&gt; {
+        ttl: Option<Duration>,
+    ) -> Result<(), CacheError> {
         let mut conn = self
             .pool
             .get_connection()
@@ -360,7 +360,7 @@ impl CacheStore for RedisCacheStore {
         Ok(())
     }
 
-    async fn delete(&self, key: &str) -> Result&lt;(), CacheError&gt; {
+    async fn delete(&self, key: &str) -> Result<(), CacheError> {
         let mut conn = self
             .pool
             .get_connection()
@@ -376,7 +376,7 @@ impl CacheStore for RedisCacheStore {
         Ok(())
     }
 
-    async fn exists(&self, key: &str) -> Result&lt;bool, CacheError&gt; {
+    async fn exists(&self, key: &str) -> Result<bool, CacheError> {
         let mut conn = self
             .pool
             .get_connection()
@@ -392,17 +392,17 @@ impl CacheStore for RedisCacheStore {
         Ok(exists)
     }
 
-    async fn get_many&lt;T: for&lt;'de&gt; Deserialize&lt;'de&gt;&gt;(
+    async fn get_many<T: for<'de> Deserialize<'de>>(
         &self,
         keys: &[&str],
-    ) -> Result&lt;Vec&lt;Option&lt;T&gt;&gt;, CacheError&gt; {
+    ) -> Result<Vec<Option<T>>, CacheError> {
         let mut conn = self
             .pool
             .get_connection()
             .await
             .map_err(|e| CacheError::ConnectionError(e.to_string()))?;
 
-        let values: Vec&lt;Option&lt;String&gt;&gt; = redis::cmd("MGET")
+        let values: Vec<Option<String>> = redis::cmd("MGET")
             .arg(keys)
             .query_async(&mut *conn)
             .await
@@ -418,7 +418,7 @@ impl CacheStore for RedisCacheStore {
             .collect()
     }
 
-    async fn delete_many(&self, keys: &[&str]) -> Result&lt;(), CacheError&gt; {
+    async fn delete_many(&self, keys: &[&str]) -> Result<(), CacheError> {
         if keys.is_empty() {
             return Ok(());
         }
@@ -472,21 +472,21 @@ pub enum ProjectionError {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FeatureProjection {
     pub feature: Feature,
-    pub cached_at: chrono::DateTime&lt;chrono::Utc&gt;,
+    pub cached_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct WorkPackageProjection {
     pub workpackage: WorkPackage,
-    pub cached_at: chrono::DateTime&lt;chrono::Utc&gt;,
+    pub cached_at: chrono::DateTime<chrono::Utc>,
 }
 
 pub struct ProjectionCache {
-    store: std::sync::Arc&lt;dyn CacheStore&gt;,
+    store: std::sync::Arc<dyn CacheStore>,
 }
 
 impl ProjectionCache {
-    pub fn new(store: std::sync::Arc&lt;dyn CacheStore&gt;) -> Self {
+    pub fn new(store: std::sync::Arc<dyn CacheStore>) -> Self {
         ProjectionCache { store }
     }
 
@@ -494,7 +494,7 @@ impl ProjectionCache {
     pub async fn get_feature(
         &self,
         feature_id: i64,
-    ) -> Result&lt;Option&lt;FeatureProjection&gt;, ProjectionError&gt; {
+    ) -> Result<Option<FeatureProjection>, ProjectionError> {
         self.store
             .get(&format!("feature:{}", feature_id))
             .await
@@ -505,7 +505,7 @@ impl ProjectionCache {
     pub async fn set_feature(
         &self,
         feature: Feature,
-    ) -> Result&lt;(), ProjectionError&gt; {
+    ) -> Result<(), ProjectionError> {
         let projection = FeatureProjection {
             feature,
             cached_at: chrono::Utc::now(),
@@ -521,7 +521,7 @@ impl ProjectionCache {
     pub async fn get_workpackage(
         &self,
         wp_id: i64,
-    ) -> Result&lt;Option&lt;WorkPackageProjection&gt;, ProjectionError&gt; {
+    ) -> Result<Option<WorkPackageProjection>, ProjectionError> {
         self.store
             .get(&format!("wp:{}", wp_id))
             .await
@@ -532,7 +532,7 @@ impl ProjectionCache {
     pub async fn set_workpackage(
         &self,
         workpackage: WorkPackage,
-    ) -> Result&lt;(), ProjectionError&gt; {
+    ) -> Result<(), ProjectionError> {
         let projection = WorkPackageProjection {
             workpackage,
             cached_at: chrono::Utc::now(),
@@ -545,7 +545,7 @@ impl ProjectionCache {
     }
 
     /// Invalidate feature cache
-    pub async fn invalidate_feature(&self, feature_id: i64) -> Result&lt;(), ProjectionError&gt; {
+    pub async fn invalidate_feature(&self, feature_id: i64) -> Result<(), ProjectionError> {
         self.store
             .delete(&format!("feature:{}", feature_id))
             .await
@@ -553,7 +553,7 @@ impl ProjectionCache {
     }
 
     /// Invalidate WorkPackage cache
-    pub async fn invalidate_workpackage(&self, wp_id: i64) -> Result&lt;(), ProjectionError&gt; {
+    pub async fn invalidate_workpackage(&self, wp_id: i64) -> Result<(), ProjectionError> {
         self.store
             .delete(&format!("wp:{}", wp_id))
             .await
@@ -561,7 +561,7 @@ impl ProjectionCache {
     }
 
     /// Invalidate all feature/WP caches
-    pub async fn invalidate_all(&self) -> Result&lt;(), ProjectionError&gt; {
+    pub async fn invalidate_all(&self) -> Result<(), ProjectionError> {
         self.store
             .delete(&"feature_list")
             .await
@@ -603,7 +603,7 @@ impl RateLimiter {
         key: &str,
         max_requests: u32,
         window_secs: u32,
-    ) -> Result&lt;bool, LimiterError&gt; {
+    ) -> Result<bool, LimiterError> {
         let mut conn = self
             .pool
             .get_connection()
@@ -638,7 +638,7 @@ impl RateLimiter {
         &self,
         key: &str,
         max_requests: u32,
-    ) -> Result&lt;u32, LimiterError&gt; {
+    ) -> Result<u32, LimiterError> {
         let mut conn = self
             .pool
             .get_connection()
@@ -647,7 +647,7 @@ impl RateLimiter {
 
         let rate_key = format!("ratelimit:{}", key);
 
-        let count: Option&lt;u32&gt; = redis::cmd("GET")
+        let count: Option<u32> = redis::cmd("GET")
             .arg(&rate_key)
             .query_async(&mut *conn)
             .await
@@ -658,7 +658,7 @@ impl RateLimiter {
     }
 
     /// Reset the counter for a key
-    pub async fn reset(&self, key: &str) -> Result&lt;(), LimiterError&gt; {
+    pub async fn reset(&self, key: &str) -> Result<(), LimiterError> {
         let mut conn = self
             .pool
             .get_connection()
@@ -717,7 +717,7 @@ impl CacheHealthChecker {
             Ok(mut conn) => {
                 // Try to PING
                 match redis::cmd("PING")
-                    .query_async::&lt;_, String&gt;(&mut *conn)
+                    .query_async::<_, String>(&mut *conn)
                     .await
                 {
                     Ok(pong) if pong == "PONG" => CacheHealth::Healthy,

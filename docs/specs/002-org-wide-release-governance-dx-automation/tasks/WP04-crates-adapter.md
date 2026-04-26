@@ -385,7 +385,7 @@ WP04 implements the crates.io RegistryAdapter for Rust packages. This adapter ha
        }, nil
      }
 
-     // Run: cargo package -p &lt;name&gt;
+     // Run: cargo package -p <name>
      cmd = exec.Command("cargo", "package", "-p", pkg.Name)
      cmd.Dir = pkgDir
 
@@ -411,7 +411,7 @@ WP04 implements the crates.io RegistryAdapter for Rust packages. This adapter ha
    func (a *CratesAdapter) Publish(pkg Package, version string, creds map[string]string) (*PublishResult, error) {
      pkgDir := filepath.Dir(pkg.ManifestPath)
 
-     // Run: cargo publish -p &lt;name&gt;
+     // Run: cargo publish -p <name>
      cmd := exec.Command("cargo", "publish", "-p", pkg.Name)
      cmd.Dir = pkgDir
 
@@ -495,8 +495,8 @@ WP04 implements the crates.io RegistryAdapter for Rust packages. This adapter ha
 
 **Acceptance Criteria:**
 - Build fails if work tree is not clean
-- Build runs `cargo package -p &lt;name&gt;`
-- Publish runs `cargo publish -p &lt;name&gt;`
+- Build runs `cargo package -p <name>`
+- Publish runs `cargo publish -p <name>`
 - Rate limits are detected and retried (max 5 retries)
 - Auth errors fail fast
 - No `--allow-dirty` flag used
@@ -685,7 +685,7 @@ WP04 implements the crates.io RegistryAdapter for Rust packages. This adapter ha
      }{
        {
          name:      "single-package",
-         packages:  []Package&#123;&#123;Name: "crate-a"}},
+         packages:  []Package{{Name: "crate-a"}},
          wantOrder: []string{"crate-a"},
        },
        {

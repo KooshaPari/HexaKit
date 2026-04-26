@@ -191,7 +191,7 @@ python3 scripts/validate-registry-schema.py
 - Crate: `libs/phenotype-batch-merger/`
 - Cargo.toml: Dependencies (git2, tokio, serde, tracing)
 - src/lib.rs: Public API
-  - `list_agent_branches()` → Vec&lt;Branch&gt;
+  - `list_agent_branches()` → Vec<Branch>
   - `validate_branch()` → ValidationResult
   - `attempt_merge()` → MergeResult
   - `process_batch()` → BatchResult
@@ -255,7 +255,7 @@ git checkout specs/main
 git checkout -b specs/agent-test-wp13-clean
 echo "## FR-TEST-001: Test FR" >> FUNCTIONAL_REQUIREMENTS.md
 git add FUNCTIONAL_REQUIREMENTS.md
-git commit -m "specs: add FR-TEST-001\n\nSpec-Traces: FR-TEST-001\nCo-Authored-By: test &lt;test@phenotype.local&gt;"
+git commit -m "specs: add FR-TEST-001\n\nSpec-Traces: FR-TEST-001\nCo-Authored-By: test <test@phenotype.local>"
 git push origin specs/agent-test-wp13-clean
 
 # Trigger auto-merge (manual for testing)
@@ -414,7 +414,7 @@ pre-commit run validate-spec-traces --all-files
 **D1.5.1: Agent Workflow Guide**
 - File: `/docs/reference/SSOT_PHASE1_AGENT_WORKFLOW.md` (already created)
 - Sections:
-  - Branching pattern (specs/agent-&lt;name&gt;-&lt;task-id&gt;)
+  - Branching pattern (specs/agent-<name>-<task-id>)
   - Commit message format with examples
   - Step-by-step workflow (create, edit, validate, push)
   - Conflict handling (3+ scenarios)
@@ -431,7 +431,7 @@ pre-commit run validate-spec-traces --all-files
 - One-time setup for each agent
 - Configures: git user, commit template, pre-commit hooks
 - Installs: pre-commit framework, validation hooks
-- Output: "✅ Agent &lt;name&gt; setup complete"
+- Output: "✅ Agent <name> setup complete"
 
 **D1.5.3: Onboarding Guide (Quickstart)**
 - File: `/docs/guides/SSOT_PHASE1_QUICKSTART.md`
@@ -486,7 +486,7 @@ git add FUNCTIONAL_REQUIREMENTS.md
 git commit -m "specs: add FR-TEST-101
 
 Spec-Traces: FR-TEST-101
-Co-Authored-By: test-agent-1 &lt;agent@phenotype.local&gt;"
+Co-Authored-By: test-agent-1 <agent@phenotype.local>"
 
 pre-commit run --all-files  # Should pass
 git push origin specs/agent-test-agent-1-wp15-pilot  # Should succeed

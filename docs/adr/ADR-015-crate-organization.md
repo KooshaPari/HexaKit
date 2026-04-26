@@ -67,22 +67,22 @@ phenotype-infrakit/
 
 ```bash
 # Feature PR
-feat(&lt;scope&gt;): &lt;description&gt;
+feat(<scope>): <description>
 
 # Bug Fix
-fix(&lt;scope&gt;): &lt;description&gt;
+fix(<scope>): <description>
 
 # Refactor (no behavior change)
-refactor(&lt;scope&gt;): &lt;description&gt;
+refactor(<scope>): <description>
 
 # Documentation
-docs(&lt;scope&gt;): &lt;description&gt;
+docs(<scope>): <description>
 
 # Chore (tooling, deps)
-chore(&lt;scope&gt;): &lt;description&gt;
+chore(<scope>): <description>
 
 # Test
-test(&lt;scope&gt;): &lt;description&gt;
+test(<scope>): <description>
 ```
 
 ### 5. Stacked PR Process

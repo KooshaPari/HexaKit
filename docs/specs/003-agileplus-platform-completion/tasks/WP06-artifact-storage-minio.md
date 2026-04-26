@@ -176,7 +176,7 @@ pub struct BucketManager {
 }
 
 impl BucketManager {
-    pub async fn new(config: ArtifactConfig) -> Result&lt;Self, BucketError&gt; {
+    pub async fn new(config: ArtifactConfig) -> Result<Self, BucketError> {
         let s3_config = aws_config::from_env()
             .endpoint_url(config.endpoint)
             .region(aws_sdk_s3::config::Region::new(config.region))
@@ -199,7 +199,7 @@ impl BucketManager {
         Ok(BucketManager { client })
     }
 
-    pub async fn ensure_buckets_exist(&self) -> Result&lt;(), BucketError&gt; {
+    pub async fn ensure_buckets_exist(&self) -> Result<(), BucketError> {
         let buckets = [
             "agileplus-artifacts",
             "agileplus-events-archive",
@@ -234,7 +234,7 @@ impl BucketManager {
         Ok(())
     }
 
-    pub async fn list_buckets(&self) -> Result&lt;Vec&lt;String&gt;, BucketError&gt; {
+    pub async fn list_buckets(&self) -> Result<Vec<String>, BucketError> {
         let response = self
             .client
             .list_buckets()
@@ -242,7 +242,7 @@ impl BucketManager {
             .await
             .map_err(|e| BucketError::ListError(e.to_string()))?;
 
-        let bucket_names: Vec&lt;String&gt; = response
+        let bucket_names: Vec<String> = response
             .buckets()
             .unwrap_or_default()
             .iter()
@@ -289,7 +289,7 @@ pub trait ArtifactStore: Send + Sync {
         bucket: &str,
         key: &str,
         data: &[u8],
-    ) -> Result&lt;String, ArtifactError&gt;;
+    ) -> Result<String, ArtifactError>;
 
     /// Upload a file with multipart support
     async fn upload_file(
@@ -297,35 +297,35 @@ pub trait ArtifactStore: Send + Sync {
         bucket: &str,
         key: &str,
         path: &PathBuf,
-    ) -> Result&lt;String, ArtifactError&gt;;
+    ) -> Result<String, ArtifactError>;
 
     /// Download data from a bucket
     async fn download(
         &self,
         bucket: &str,
         key: &str,
-    ) -> Result&lt;Vec&lt;u8&gt;, ArtifactError&gt;;
+    ) -> Result<Vec<u8>, ArtifactError>;
 
     /// List objects in a bucket with optional prefix
     async fn list(
         &self,
         bucket: &str,
-        prefix: Option&lt;&str&gt;,
-    ) -> Result&lt;Vec&lt;String&gt;, ArtifactError&gt;;
+        prefix: Option<&str>,
+    ) -> Result<Vec<String>, ArtifactError>;
 
     /// Delete an object from a bucket
     async fn delete(
         &self,
         bucket: &str,
         key: &str,
-    ) -> Result&lt;(), ArtifactError&gt;;
+    ) -> Result<(), ArtifactError>;
 
     /// Check if an object exists
     async fn exists(
         &self,
         bucket: &str,
         key: &str,
-    ) -> Result&lt;bool, ArtifactError&gt;;
+    ) -> Result<bool, ArtifactError>;
 }
 
 pub struct S3ArtifactStore {
@@ -342,7 +342,7 @@ impl S3ArtifactStore {
         bucket: &str,
         key: &str,
         data: &[u8],
-    ) -> Result&lt;String, ArtifactError&gt; {
+    ) -> Result<String, ArtifactError> {
         // For simplicity, use standard upload for all data
         // In production, use multipart for data > 5MB
         let response = self
@@ -369,7 +369,7 @@ impl ArtifactStore for S3ArtifactStore {
         bucket: &str,
         key: &str,
         data: &[u8],
-    ) -> Result&lt;String, ArtifactError&gt; {
+    ) -> Result<String, ArtifactError> {
         self.upload_multipart(bucket, key, data).await
     }
 
@@ -378,7 +378,7 @@ impl ArtifactStore for S3ArtifactStore {
         bucket: &str,
         key: &str,
         path: &PathBuf,
-    ) -> Result&lt;String, ArtifactError&gt; {
+    ) -> Result<String, ArtifactError> {
         let data = tokio::fs::read(path)
             .await
             .map_err(|e| ArtifactError::UploadError(format!("Failed to read file: {}", e)))?;
@@ -390,7 +390,7 @@ impl ArtifactStore for S3ArtifactStore {
         &self,
         bucket: &str,
         key: &str,
-    ) -> Result&lt;Vec&lt;u8&gt;, ArtifactError&gt; {
+    ) -> Result<Vec<u8>, ArtifactError> {
         let response = self
             .client
             .get_object()
@@ -420,8 +420,8 @@ impl ArtifactStore for S3ArtifactStore {
     async fn list(
         &self,
         bucket: &str,
-        prefix: Option&lt;&str&gt;,
-    ) -> Result&lt;Vec&lt;String&gt;, ArtifactError&gt; {
+        prefix: Option<&str>,
+    ) -> Result<Vec<String>, ArtifactError> {
         let mut request = self.client.list_objects_v2().bucket(bucket);
 
         if let Some(p) = prefix {
@@ -433,7 +433,7 @@ impl ArtifactStore for S3ArtifactStore {
             .await
             .map_err(|e| ArtifactError::StorageError(e.to_string()))?;
 
-        let keys: Vec&lt;String&gt; = response
+        let keys: Vec<String> = response
             .contents()
             .unwrap_or_default()
             .iter()
@@ -447,7 +447,7 @@ impl ArtifactStore for S3ArtifactStore {
         &self,
         bucket: &str,
         key: &str,
-    ) -> Result&lt;(), ArtifactError&gt; {
+    ) -> Result<(), ArtifactError> {
         self.client
             .delete_object()
             .bucket(bucket)
@@ -463,7 +463,7 @@ impl ArtifactStore for S3ArtifactStore {
         &self,
         bucket: &str,
         key: &str,
-    ) -> Result&lt;bool, ArtifactError&gt; {
+    ) -> Result<bool, ArtifactError> {
         match self
             .client
             .head_object()
@@ -514,7 +514,7 @@ pub struct EventRecord {
     pub sequence: i64,
 }
 
-impl From&lt;&Event&gt; for EventRecord {
+impl From<&Event> for EventRecord {
     fn from(event: &Event) -> Self {
         EventRecord {
             id: event.id,
@@ -530,11 +530,11 @@ impl From&lt;&Event&gt; for EventRecord {
 }
 
 pub struct EventArchive {
-    store: std::sync::Arc&lt;dyn ArtifactStore&gt;,
+    store: std::sync::Arc<dyn ArtifactStore>,
 }
 
 impl EventArchive {
-    pub fn new(store: std::sync::Arc&lt;dyn ArtifactStore&gt;) -> Self {
+    pub fn new(store: std::sync::Arc<dyn ArtifactStore>) -> Self {
         EventArchive { store }
     }
 
@@ -544,13 +544,13 @@ impl EventArchive {
     pub async fn archive_events(
         &self,
         events: &[Event],
-    ) -> Result&lt;Vec&lt;String&gt;, ArchiveError&gt; {
+    ) -> Result<Vec<String>, ArchiveError> {
         if events.is_empty() {
             return Ok(Vec::new());
         }
 
         // Group events by entity_type, entity_id, and month
-        let mut groups: std::collections::HashMap&lt;(String, i64, u32, u32), Vec&lt;EventRecord&gt;&gt; =
+        let mut groups: std::collections::HashMap<(String, i64, u32, u32), Vec<EventRecord>> =
             std::collections::HashMap::new();
 
         for event in events {
@@ -576,7 +576,7 @@ impl EventArchive {
             let jsonl = records
                 .iter()
                 .map(|r| serde_json::to_string(r).unwrap_or_default())
-                .collect::&lt;Vec&lt;_&gt;&gt;()
+                .collect::<Vec<_>>()
                 .join("\n");
 
             let key = format!(
@@ -602,7 +602,7 @@ impl EventArchive {
         entity_id: i64,
         year: u32,
         month: u32,
-    ) -> Result&lt;Vec&lt;EventRecord&gt;, ArchiveError&gt; {
+    ) -> Result<Vec<EventRecord>, ArchiveError> {
         let key = format!(
             "events/{}/{}/{:04}/{:02}.jsonl",
             entity_type, entity_id, year, month
@@ -617,7 +617,7 @@ impl EventArchive {
         let content = String::from_utf8(data)
             .map_err(|e| ArchiveError::Error(e.to_string()))?;
 
-        let records: Vec&lt;EventRecord&gt; = content
+        let records: Vec<EventRecord> = content
             .lines()
             .filter_map(|line| serde_json::from_str(line).ok())
             .collect();
@@ -633,15 +633,15 @@ pub struct AuditRecord {
     pub actor: String,
     pub timestamp: String,
     pub details: serde_json::Value,
-    pub archived_to: Option&lt;String&gt;,
+    pub archived_to: Option<String>,
 }
 
 pub struct AuditArchive {
-    store: std::sync::Arc&lt;dyn ArtifactStore&gt;,
+    store: std::sync::Arc<dyn ArtifactStore>,
 }
 
 impl AuditArchive {
-    pub fn new(store: std::sync::Arc&lt;dyn ArtifactStore&gt;) -> Self {
+    pub fn new(store: std::sync::Arc<dyn ArtifactStore>) -> Self {
         AuditArchive { store }
     }
 
@@ -652,7 +652,7 @@ impl AuditArchive {
         &self,
         feature_id: i64,
         records: &[AuditRecord],
-    ) -> Result&lt;String, ArchiveError&gt; {
+    ) -> Result<String, ArchiveError> {
         if records.is_empty() {
             return Ok(String::new());
         }
@@ -664,7 +664,7 @@ impl AuditArchive {
         let jsonl = records
             .iter()
             .map(|r| serde_json::to_string(r).unwrap_or_default())
-            .collect::&lt;Vec&lt;_&gt;&gt;()
+            .collect::<Vec<_>>()
             .join("\n");
 
         let key = format!("audit/{}/{:04}/{:02}.jsonl", feature_id, year, month);
@@ -683,7 +683,7 @@ impl AuditArchive {
         feature_id: i64,
         year: u32,
         month: u32,
-    ) -> Result&lt;Vec&lt;AuditRecord&gt;, ArchiveError&gt; {
+    ) -> Result<Vec<AuditRecord>, ArchiveError> {
         let key = format!("audit/{}/{:04}/{:02}.jsonl", feature_id, year, month);
 
         let data = self
@@ -695,7 +695,7 @@ impl AuditArchive {
         let content = String::from_utf8(data)
             .map_err(|e| ArchiveError::Error(e.to_string()))?;
 
-        let records: Vec&lt;AuditRecord&gt; = content
+        let records: Vec<AuditRecord> = content
             .lines()
             .filter_map(|line| serde_json::from_str(line).ok())
             .collect();
@@ -721,9 +721,9 @@ pub struct AuditEntry {
     pub feature_id: i64,
     pub action: String,
     pub actor: String,
-    pub timestamp: DateTime&lt;Utc&gt;,
+    pub timestamp: DateTime<Utc>,
     pub details: serde_json::Value,
-    pub archived_to: Option&lt;String&gt;, // Key in MinIO if archived
+    pub archived_to: Option<String>, // Key in MinIO if archived
 }
 ```
 

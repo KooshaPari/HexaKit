@@ -56,7 +56,7 @@ pub struct TestHarness {
 }
 
 impl TestHarness {
-    pub async fn start() -> Result&lt;Self&gt; {
+    pub async fn start() -> Result<Self> {
         // Check if process-compose is installed
         if !is_process_compose_installed() {
             eprintln!("WARNING: process-compose not installed. Some tests will be skipped.");
@@ -95,7 +95,7 @@ impl TestHarness {
         })
     }
 
-    async fn wait_for_health_checks(&self, timeout: Duration) -> Result&lt;()&gt; {
+    async fn wait_for_health_checks(&self, timeout: Duration) -> Result<()> {
         let start = Instant::now();
         loop {
             if let Ok(health) = self.client.get("/health").await {
@@ -143,7 +143,7 @@ fn is_process_compose_installed() -> bool {
 **Fixture setup (fixtures.rs):**
 
 ```rust
-pub async fn seed_test_data(db: &SqlitePool) -> Result&lt;TestFixtures&gt; {
+pub async fn seed_test_data(db: &SqlitePool) -> Result<TestFixtures> {
     let feature1 = Feature {
         id: "feature-1".to_string(),
         title: "Implement caching layer".to_string(),
@@ -190,7 +190,7 @@ Test the complete feature lifecycle from creation to state transitions.
 ```rust
 #[tokio::test]
 #[ignore] // Only run if process-compose available
-async fn feature_lifecycle_integration() -> Result&lt;()&gt; {
+async fn feature_lifecycle_integration() -> Result<()> {
     let harness = TestHarness::start().await?;
     let fixtures = seed_test_data(harness.db()).await?;
 
@@ -210,7 +210,7 @@ async fn feature_lifecycle_integration() -> Result&lt;()&gt; {
     let feature_id = feature.id.clone();
 
     // Step 2: Verify feature in SQLite
-    let db_feature = sqlx::query_as::&lt;_, Feature&gt;(
+    let db_feature = sqlx::query_as::<_, Feature>(
         "SELECT * FROM features WHERE id = ?"
     )
     .bind(&feature_id)
@@ -248,7 +248,7 @@ async fn feature_lifecycle_integration() -> Result&lt;()&gt; {
         assert_eq!(transition_response.status(), 200);
 
         // Verify event was emitted
-        let events = sqlx::query_as::&lt;_, DomainEvent&gt;(
+        let events = sqlx::query_as::<_, DomainEvent>(
             "SELECT * FROM events WHERE entity_id = ? ORDER BY sequence DESC LIMIT 1"
         )
         .bind(&feature_id)
@@ -260,7 +260,7 @@ async fn feature_lifecycle_integration() -> Result&lt;()&gt; {
     }
 
     // Step 6: Verify hash chain integrity
-    let all_events = sqlx::query_as::&lt;_, DomainEvent&gt;(
+    let all_events = sqlx::query_as::<_, DomainEvent>(
         "SELECT * FROM events WHERE entity_id = ? ORDER BY sequence"
     )
     .bind(&feature_id)
@@ -300,7 +300,7 @@ Test Server-Sent Events (SSE) for real-time dashboard updates.
 ```rust
 #[tokio::test]
 #[ignore]
-async fn dashboard_sse_integration() -> Result&lt;()&gt; {
+async fn dashboard_sse_integration() -> Result<()> {
     let harness = TestHarness::start().await?;
 
     // Step 1: Open SSE connection
@@ -384,7 +384,7 @@ Test conflict detection and resolution when syncing with Plane.so.
 ```rust
 #[tokio::test]
 #[ignore]
-async fn sync_conflict_integration() -> Result&lt;()&gt; {
+async fn sync_conflict_integration() -> Result<()> {
     let harness = TestHarness::start().await?;
 
     // Step 1: Create feature locally
@@ -458,7 +458,7 @@ async fn sync_conflict_integration() -> Result&lt;()&gt; {
         .get(&format!("/api/features/{}", feature_id))
         .send()
         .await?
-        .json::&lt;Feature&gt;()
+        .json::<Feature>()
         .await?;
 
     assert_eq!(resolved.title, "Conflict test (modified locally)");
@@ -468,7 +468,7 @@ async fn sync_conflict_integration() -> Result&lt;()&gt; {
         .get(&format!("/api/features/{}/sync-status", feature_id))
         .send()
         .await?
-        .json::&lt;SyncStatus&gt;()
+        .json::<SyncStatus>()
         .await?;
 
     assert_eq!(sync_status.conflict_detected, false);
@@ -494,7 +494,7 @@ Test system behavior when services fail and recovery when they restart.
 ```rust
 #[tokio::test]
 #[ignore]
-async fn service_failure_recovery_integration() -> Result&lt;()&gt; {
+async fn service_failure_recovery_integration() -> Result<()> {
     let harness = TestHarness::start().await?;
 
     // Step 1: Verify all services healthy
@@ -503,7 +503,7 @@ async fn service_failure_recovery_integration() -> Result&lt;()&gt; {
         .get("/health")
         .send()
         .await?
-        .json::&lt;HealthStatus&gt;()
+        .json::<HealthStatus>()
         .await?;
 
     assert_eq!(health.status, "healthy");
@@ -525,7 +525,7 @@ async fn service_failure_recovery_integration() -> Result&lt;()&gt; {
         .get("/health")
         .send()
         .await?
-        .json::&lt;HealthStatus&gt;()
+        .json::<HealthStatus>()
         .await?;
 
     assert_eq!(health.status, "degraded");
@@ -546,7 +546,7 @@ async fn service_failure_recovery_integration() -> Result&lt;()&gt; {
     let feature: Feature = feature_create.json().await?;
 
     // Verify feature in database
-    let db_check = sqlx::query_as::&lt;_, Feature&gt;(
+    let db_check = sqlx::query_as::<_, Feature>(
         "SELECT * FROM features WHERE id = ?"
     )
     .bind(&feature.id)
@@ -571,7 +571,7 @@ async fn service_failure_recovery_integration() -> Result&lt;()&gt; {
             .get("/health")
             .send()
             .await?
-            .json::&lt;HealthStatus&gt;()
+            .json::<HealthStatus>()
             .await?;
 
         if health.status == "healthy" {
@@ -600,7 +600,7 @@ async fn service_failure_recovery_integration() -> Result&lt;()&gt; {
         .get("/health")
         .send()
         .await?
-        .json::&lt;HealthStatus&gt;()
+        .json::<HealthStatus>()
         .await?;
 
     assert_eq!(health.status, "healthy");

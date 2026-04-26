@@ -20,7 +20,7 @@
 
 Currently, **20+ error handling patterns are repeated** across 14 files:
 - Context-preserving `#[error("{context}: {source}")]` pattern (200 LOC)
-- Manual `From&lt;T&gt;` conversions for io, json, toml errors (100 LOC)
+- Manual `From<T>` conversions for io, json, toml errors (100 LOC)
 - Error message templates and variant structs (100 LOC)
 
 **Root Cause**: No macro support; each crate manually implements thiserror boilerplate.
@@ -58,8 +58,8 @@ pub enum MyError {
 //     Validation(String),
 // }
 //
-// impl From&lt;std::io::Error&gt; for MyError { ... }
-// impl From&lt;serde_json::Error&gt; for MyError { ... }
+// impl From<std::io::Error> for MyError { ... }
+// impl From<serde_json::Error> for MyError { ... }
 ```
 
 ### Deliverables
@@ -67,7 +67,7 @@ pub enum MyError {
 1. **Macro Crate**: `crates/phenotype-error-macros/`
    - `lib.rs`: Core macro definitions (150 LOC)
    - `macros/context_error.rs`: ContextError derive macro (100 LOC)
-   - `macros/converters.rs`: Auto From&lt;T&gt; generation (80 LOC)
+   - `macros/converters.rs`: Auto From<T> generation (80 LOC)
    - Tests: Compile and runtime tests (120 LOC)
    - Documentation: Examples and patterns (80 LOC)
 
@@ -123,7 +123,7 @@ trybuild = "1.0"
 ### Success Criteria
 
 - ✓ ContextError macro compiles and generates correct code
-- ✓ From&lt;T&gt; conversions auto-generate correctly
+- ✓ From<T> conversions auto-generate correctly
 - ✓ Error messages preserve original context patterns
 - ✓ All 14 affected error.rs files migrate successfully
 - ✓ Zero regressions in existing error handling
@@ -168,14 +168,14 @@ let config = FigmentBuilder::new("MY_APP_")
     .with_toml_file("/etc/app.toml")?
     .with_env_vars()?
     .with_defaults(default_config)?
-    .validate::&lt;MyConfig&gt;()?
+    .validate::<MyConfig>()?
     .build();
 
 // Advanced: Custom merge strategy
 let config = FigmentBuilder::new("MY_APP_")
     .with_toml_file("/etc/app.toml")?
     .with_override_file("/etc/app.local.toml", OverrideStrategy::DeepMerge)?
-    .extract::&lt;MyConfig&gt;()?;
+    .extract::<MyConfig>()?;
 ```
 
 ### Deliverables
@@ -461,7 +461,7 @@ heliosCLI (stays domain-specific):
 1. **phenotype-http-client-core** (refactored, 250 LOC)
    - HttpTransport trait definition
    - HttpResponse + HttpRequest types
-   - TransportError + Result&lt;T&gt;
+   - TransportError + Result<T>
    - Retry middleware (composable)
    - Status code helpers
 

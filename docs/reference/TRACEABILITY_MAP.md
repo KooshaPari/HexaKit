@@ -82,13 +82,13 @@ pub enum PhenotypeError {
     Serialization(#[from] serde_json::Error),
 
     #[error("Event store operation failed")]
-    EventStore { source: Box&lt;dyn std::error::Error&gt; },
+    EventStore { source: Box<dyn std::error::Error> },
 
     #[error("Cache miss")]
     CacheMiss,
 
     #[error("Policy violation: {violations:?}")]
-    PolicyViolation { violations: Vec&lt;String&gt; },
+    PolicyViolation { violations: Vec<String> },
 
     #[error("I/O error: {0}")]
     Io(#[from] std::io::Error),
@@ -127,26 +127,26 @@ impl PhenotypeError {
 
 ```rust
 // Location: crates/phenotype-cache-adapter/src/lib.rs
-pub struct TwoTierCache&lt;K, V&gt; {
-    l1: lru::LruCache&lt;K, CachedValue&lt;V&gt;&gt;,  // Fast, bounded
-    l2: dashmap::DashMap&lt;K, CachedValue&lt;V&gt;&gt;, // Sync, unbounded (configurable)
-    metrics: Option<Arc&lt;dyn MetricsHook&gt;>,
+pub struct TwoTierCache<K, V> {
+    l1: lru::LruCache<K, CachedValue<V>>,  // Fast, bounded
+    l2: dashmap::DashMap<K, CachedValue<V>>, // Sync, unbounded (configurable)
+    metrics: Option<Arc<dyn MetricsHook>>,
 }
 
 #[derive(Clone)]
-pub struct CachedValue&lt;V&gt; {
+pub struct CachedValue<V> {
     pub value: V,
-    pub ttl: Option&lt;std::time::Duration&gt;,
+    pub ttl: Option<std::time::Duration>,
     pub inserted_at: std::time::Instant,
 }
 
-impl&lt;K, V&gt; TwoTierCache&lt;K, V&gt;
+impl<K, V> TwoTierCache<K, V>
 where
     K: Eq + std::hash::Hash + Clone,
     V: Clone,
 {
     /// FR-CACHE-001: L1 (LRU) hit → return; miss → check L2
-    pub fn get(&self, key: &K) -> Option&lt;V&gt; {
+    pub fn get(&self, key: &K) -> Option<V> {
         if let Some(cached) = self.l1.get(key) {
             if !self.is_expired(cached) {
                 self.metrics.as_ref().map(|m| m.on_hit());
@@ -171,7 +171,7 @@ where
     }
 
     /// FR-CACHE-003: TTL enforcement
-    fn is_expired(&self, cached: &CachedValue&lt;V&gt;) -> bool {
+    fn is_expired(&self, cached: &CachedValue<V>) -> bool {
         if let Some(ttl) = cached.ttl {
             cached.inserted_at.elapsed() > ttl
         } else {
@@ -188,7 +188,7 @@ pub trait MetricsHook: Send + Sync {
 }
 
 // FR-CACHE-005: Send + Sync bounds
-// Enforced via: impl&lt;K, V&gt; Send for TwoTierCache&lt;K, V&gt; where ...
+// Enforced via: impl<K, V> Send for TwoTierCache<K, V> where ...
 ```
 
 ---
@@ -209,9 +209,9 @@ use chrono::{DateTime, Utc};
 use sha2::{Sha256, Digest};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct EventEnvelope&lt;T&gt; {
+pub struct EventEnvelope<T> {
     pub id: Uuid,
-    pub timestamp: DateTime&lt;Utc&gt;,
+    pub timestamp: DateTime<Utc>,
     pub sequence: i64,
     pub hash: String,        // 64-char hex SHA-256
     pub prev_hash: String,   // Link to previous event
@@ -219,12 +219,12 @@ pub struct EventEnvelope&lt;T&gt; {
     pub actor: String,
 }
 
-impl&lt;T&gt; EventEnvelope&lt;T&gt;
+impl<T> EventEnvelope<T>
 where
     T: Serialize + DeserializeOwned,
 {
     // FR-EVT-001: Initialize with UUIDv4, Utc::now(), seq=0, hash=""
-    pub fn new(payload: T, actor: String) -> Result&lt;Self, Error&gt; {
+    pub fn new(payload: T, actor: String) -> Result<Self, Error> {
         Ok(EventEnvelope {
             id: Uuid::new_v4(),
             timestamp: Utc::now(),
@@ -237,7 +237,7 @@ where
     }
 
     // FR-EVT-004: compute_hash → deterministic SHA-256
-    pub fn compute_hash(&mut self, prev_hash: String) -> Result&lt;String, Error&gt; {
+    pub fn compute_hash(&mut self, prev_hash: String) -> Result<String, Error> {
         self.prev_hash = prev_hash;
 
         let input = self.serialize_for_hash()?;
@@ -248,7 +248,7 @@ where
 }
 
 // FR-EVT-006: Chain verification
-pub fn verify_chain(pairs: &[(String, String)]) -> Result&lt;(), Error&gt; {
+pub fn verify_chain(pairs: &[(String, String)]) -> Result<(), Error> {
     for (i, (hash, prev_hash)) in pairs.iter().enumerate() {
         if i > 0 {
             let expected_prev = &pairs[i - 1].0;
@@ -263,7 +263,7 @@ pub fn verify_chain(pairs: &[(String, String)]) -> Result&lt;(), Error&gt; {
 }
 
 // FR-EVT-007: Gap detection
-pub fn detect_gaps(sequences: &[i64]) -> Option&lt;i64&gt; {
+pub fn detect_gaps(sequences: &[i64]) -> Option<i64> {
     if sequences.is_empty() {
         return None;
     }
@@ -303,12 +303,12 @@ pub struct SandboxConfig {
 }
 
 pub struct NetworkPolicy {
-    pub allow_rules: Vec&lt;DomainPattern&gt;,
-    pub deny_rules: Vec&lt;DomainPattern&gt;,
+    pub allow_rules: Vec<DomainPattern>,
+    pub deny_rules: Vec<DomainPattern>,
 }
 
 impl SandboxConfig {
-    pub fn from_helios_config(config: &HeliosConfig) -> Result&lt;Self, Error&gt; {
+    pub fn from_helios_config(config: &HeliosConfig) -> Result<Self, Error> {
         // Reads from $HELIOS_HOME/.config/network-policy.yaml
         Ok(SandboxConfig {
             workspace: config.workspace_dir.clone(),
@@ -321,7 +321,7 @@ impl SandboxConfig {
 pub fn enforce_workspace_isolation(
     requested_path: &Path,
     workspace: &Path,
-) -> Result&lt;(), AccessError&gt; {
+) -> Result<(), AccessError> {
     if !requested_path.starts_with(workspace) {
         return Err(AccessError::WriteOutsideWorkspace {
             path: requested_path.to_string_lossy().to_string(),
@@ -382,7 +382,7 @@ pub struct PhenotypeConfig {
 pub struct UnifiedConfigLoader;
 
 impl UnifiedConfigLoader {
-    pub fn load() -> Result&lt;PhenotypeConfig, Error&gt; {
+    pub fn load() -> Result<PhenotypeConfig, Error> {
         let figment = Figment::from(Env::default())
             .merge(figment::providers::Toml::file("/etc/phenotype/config.toml"))
             .merge(figment::providers::Json::file("$HOME/.config/phenotype/config.json"));

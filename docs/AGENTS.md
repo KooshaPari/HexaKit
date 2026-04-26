@@ -169,7 +169,7 @@ Automatic escalation to `@code-review-team` when:
 ## Agent Configuration Updates
 
 When updating agent rules in this document:
-1. Create PR on `infrastructure/agent-rules-update-&lt;date&gt;`
+1. Create PR on `infrastructure/agent-rules-update-<date>`
 2. Get approval from platform team lead
 3. Merge and tag as version update (e.g., `v0.2.0-agents`)
 4. Announce changes in #code-reviews channel
@@ -192,7 +192,7 @@ Checks:
 ### Dry Run Reviews
 Test agents on simulated PR:
 ```bash
-./scripts/test_agents_dry_run.sh --pr &lt;number&gt;
+./scripts/test_agents_dry_run.sh --pr <number>
 ```
 
 ## Appendix: Agent-Specific Configuration

@@ -31,10 +31,10 @@ src/
 
 ### Schema Naming Convention
 
-- **Request schemas**: `Create&lt;Entity&gt;RequestSchema`, `Update&lt;Entity&gt;RequestSchema`
-- **Response schemas**: `&lt;Entity&gt;ResponseSchema`
-- **Form schemas**: `&lt;FormName&gt;FormSchema`
-- **Type exports**: Use `z.infer&lt;typeof schema&gt;` for TypeScript types
+- **Request schemas**: `Create<Entity>RequestSchema`, `Update<Entity>RequestSchema`
+- **Response schemas**: `<Entity>ResponseSchema`
+- **Form schemas**: `<FormName>FormSchema`
+- **Type exports**: Use `z.infer<typeof schema>` for TypeScript types
 
 ## Core Patterns
 
@@ -54,7 +54,7 @@ export const UserSchema = z.object({
 });
 
 // Type inference
-export type User = z.infer&lt;typeof UserSchema&gt;;
+export type User = z.infer<typeof UserSchema>;
 ```
 
 ### 2. Composition and Reuse
@@ -123,10 +123,10 @@ export const UserResponseSchema = z.object({
 });
 
 // API Handler Type
-type CreateUserRequest = z.infer&lt;typeof CreateUserRequestSchema&gt;;
-type UserResponse = z.infer&lt;typeof UserResponseSchema&gt;;
+type CreateUserRequest = z.infer<typeof CreateUserRequestSchema>;
+type UserResponse = z.infer<typeof UserResponseSchema>;
 
-export async function createUser(req: CreateUserRequest): Promise&lt;UserResponse&gt; {
+export async function createUser(req: CreateUserRequest): Promise<UserResponse> {
   // Handler implementation
 }
 ```
@@ -143,14 +143,14 @@ export const LoginFormSchema = z.object({
   rememberMe: z.boolean().default(false),
 });
 
-export type LoginFormData = z.infer&lt;typeof LoginFormSchema&gt;;
+export type LoginFormData = z.infer<typeof LoginFormSchema>;
 
 // In React component
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 function LoginForm() {
-  const form = useForm&lt;LoginFormData&gt;({
+  const form = useForm<LoginFormData>({
     resolver: zodResolver(LoginFormSchema),
     defaultValues: {
       email: '',
@@ -160,7 +160,7 @@ function LoginForm() {
   });
 
   return (
-    &lt;form onSubmit={form.handleSubmit(async (data) =&gt; {
+    <form onSubmit={form.handleSubmit(async (data) => {
       // Type-safe data here
       const result = LoginFormSchema.safeParse(data);
       if (!result.success) {
@@ -169,7 +169,7 @@ function LoginForm() {
       // Submit to API
     })}>
       {/* Form fields */}
-    &lt;/form&gt;
+    </form>
   );
 }
 ```
@@ -258,7 +258,7 @@ export const ApiResponseSchema = z.discriminatedUnion('status', [
 ]);
 
 // Type-safe pattern matching
-type ApiResponse = z.infer&lt;typeof ApiResponseSchema&gt;;
+type ApiResponse = z.infer<typeof ApiResponseSchema>;
 
 function handleResponse(response: ApiResponse) {
   if (response.status === 'success') {
@@ -294,8 +294,8 @@ const user = schemas.user.parse(data);
 ### 2. Use Branded Types for Strong Typing
 
 ```typescript
-const UserId = z.string().uuid().brand&lt;'UserId'&gt;();
-export type UserId = z.infer&lt;typeof UserId&gt;;
+const UserId = z.string().uuid().brand<'UserId'>();
+export type UserId = z.infer<typeof UserId>;
 
 // Now UserId is distinct from string
 function getUserById(id: UserId) {
@@ -339,7 +339,7 @@ type User = {
   friends: User[];
 };
 
-const UserSchema: z.ZodType&lt;User&gt; = z.lazy(() =>
+const UserSchema: z.ZodType<User> = z.lazy(() =>
   z.object({
     id: z.string(),
     friends: z.array(UserSchema),

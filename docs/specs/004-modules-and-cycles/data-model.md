@@ -9,10 +9,10 @@
 | id | i64 | PK, auto-increment | |
 | slug | String | unique within sibling scope | kebab-case |
 | friendly_name | String | required | display name |
-| description | Option\&lt;String\&gt; | | markdown content |
-| parent_module_id | Option\&lt;i64\&gt; | FK → modules.id | null = root module |
-| created_at | DateTime\&lt;Utc\&gt; | required | |
-| updated_at | DateTime\&lt;Utc\&gt; | required | |
+| description | Option\<String\> | | markdown content |
+| parent_module_id | Option\<i64\> | FK → modules.id | null = root module |
+| created_at | DateTime\<Utc\> | required | |
+| updated_at | DateTime\<Utc\> | required | |
 
 **Invariants:**
 - `parent_module_id` cannot reference self or any descendant (no cycles in tree)
@@ -25,7 +25,7 @@
 |-------|------|-------------|-------|
 | module_id | i64 | FK → modules.id | |
 | feature_id | i64 | FK → features.id | |
-| created_at | DateTime\&lt;Utc\&gt; | | |
+| created_at | DateTime\<Utc\> | | |
 
 **PK**: (module_id, feature_id)
 
@@ -37,13 +37,13 @@
 |-------|------|-------------|-------|
 | id | i64 | PK, auto-increment | |
 | name | String | unique, required | display name |
-| description | Option\&lt;String\&gt; | | |
+| description | Option\<String\> | | |
 | state | CycleState | required, default Draft | lifecycle state |
 | start_date | NaiveDate | required | |
 | end_date | NaiveDate | required, > start_date | |
-| module_scope_id | Option\&lt;i64\&gt; | FK → modules.id | null = cross-module |
-| created_at | DateTime\&lt;Utc\&gt; | required | |
-| updated_at | DateTime\&lt;Utc\&gt; | required | |
+| module_scope_id | Option\<i64\> | FK → modules.id | null = cross-module |
+| created_at | DateTime\<Utc\> | required | |
+| updated_at | DateTime\<Utc\> | required | |
 
 ### CycleState (Enum)
 
@@ -67,7 +67,7 @@ Allowed transitions:
 |-------|------|-------------|-------|
 | cycle_id | i64 | FK → cycles.id | |
 | feature_id | i64 | FK → features.id | |
-| added_at | DateTime\&lt;Utc\&gt; | | |
+| added_at | DateTime\<Utc\> | | |
 
 **PK**: (cycle_id, feature_id)
 
@@ -78,7 +78,7 @@ Allowed transitions:
 Add field:
 | Field | Type | Constraints | Notes |
 |-------|------|-------------|-------|
-| module_id | Option\&lt;i64\&gt; | FK → modules.id | null for unassigned (backward compat) |
+| module_id | Option\<i64\> | FK → modules.id | null for unassigned (backward compat) |
 
 ## Relationships
 

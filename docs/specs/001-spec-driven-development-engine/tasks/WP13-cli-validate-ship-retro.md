@@ -44,11 +44,11 @@ actionable learnings from the development process.
 
 ### Success Criteria
 
-1. `agileplus validate &lt;feature&gt;` checks all governance contract rules, traces every FR to
+1. `agileplus validate <feature>` checks all governance contract rules, traces every FR to
    evidence, evaluates policy rules, and produces a structured validation report.
-2. `agileplus ship &lt;feature&gt;` merges all WP branches to the target branch, cleans up
+2. `agileplus ship <feature>` merges all WP branches to the target branch, cleans up
    worktrees, archives the feature directory, and finalizes the audit chain.
-3. `agileplus retrospective &lt;feature&gt;` queries metrics, analyzes review cycle counts and
+3. `agileplus retrospective <feature>` queries metrics, analyzes review cycle counts and
    durations, and generates a markdown retrospective report with constitution amendment
    suggestions.
 4. All three commands enforce the feature state machine: validate requires `implementing`
@@ -120,7 +120,7 @@ governance contract has corresponding evidence artifacts, and that all policy ru
        skip_policies: bool,
        /// Write report to file instead of stdout
        #[arg(long)]
-       output: Option&lt;PathBuf&gt;,
+       output: Option<PathBuf>,
    }
    ```
 
@@ -141,10 +141,10 @@ governance contract has corresponding evidence artifacts, and that all policy ru
 
 5. Build a `ValidationReport` struct containing:
    - `feature_slug`, `timestamp`, `overall_pass: bool`
-   - `evidence_results: Vec&lt;EvidenceCheck&gt;` with fr_id, type, found, threshold_met
-   - `policy_results: Vec&lt;PolicyCheck&gt;` with policy_id, domain, passed, message
-   - `missing_evidence: Vec&lt;(String, String)&gt;` listing (fr_id, type) pairs not found
-   - `governance_exceptions: Vec&lt;String&gt;` for any skip-with-warning items
+   - `evidence_results: Vec<EvidenceCheck>` with fr_id, type, found, threshold_met
+   - `policy_results: Vec<PolicyCheck>` with policy_id, domain, passed, message
+   - `missing_evidence: Vec<(String, String)>` listing (fr_id, type) pairs not found
+   - `governance_exceptions: Vec<String>` for any skip-with-warning items
 
 6. Format the report as markdown (default) or JSON. Write to stdout or file.
 
@@ -177,20 +177,20 @@ into a structured result. This is the core logic that T073 calls.
 1. Define a `GovernanceEvaluator` struct that takes references to StoragePort and the loaded
    governance contract:
    ```rust
-   pub struct GovernanceEvaluator&lt;'a, S: StoragePort&gt; {
+   pub struct GovernanceEvaluator<'a, S: StoragePort> {
        storage: &'a S,
        contract: &'a GovernanceContract,
        feature_id: i64,
    }
    ```
 
-2. Implement `evaluate_evidence(&self) -> Result&lt;Vec&lt;EvidenceCheck&gt;&gt;`:
+2. Implement `evaluate_evidence(&self) -> Result<Vec<EvidenceCheck>>`:
    - Iterate contract rules for the target transition.
    - For each required evidence item, query storage for matching evidence records.
    - Apply threshold checks by parsing evidence metadata JSON.
    - Return a vector of check results.
 
-3. Implement `evaluate_policies(&self) -> Result&lt;Vec&lt;PolicyCheck&gt;&gt;`:
+3. Implement `evaluate_policies(&self) -> Result<Vec<PolicyCheck>>`:
    - Load all active policy rules from StoragePort filtered by referenced `policy_refs`.
    - For each policy rule, evaluate against available evidence and feature state.
    - Policy rule evaluation is domain-based:
@@ -199,7 +199,7 @@ into a structured result. This is the core logic that T073 calls.
      - `reliability`: check CI pass rate, no flaky test indicators.
    - Return a vector of policy check results.
 
-4. Implement `evaluate_all(&self) -> Result&lt;ValidationResult&gt;`:
+4. Implement `evaluate_all(&self) -> Result<ValidationResult>`:
    - Call both `evaluate_evidence()` and `evaluate_policies()`.
    - Combine into a single `ValidationResult` with an `overall_pass` computed as
      `all evidence checks pass AND all policy checks pass`.
@@ -238,7 +238,7 @@ worktrees, archives the feature spec directory, and writes the final audit entry
        feature: String,
        /// Target branch override (default: feature.target_branch)
        #[arg(long)]
-       target: Option&lt;String&gt;,
+       target: Option<String>,
        /// Skip validation check (dangerous)
        #[arg(long)]
        skip_validate: bool,
@@ -314,9 +314,9 @@ improving the development process and governance constitution.
    pub struct RetrospectiveArgs {
        /// Feature slug to retrospect
        feature: String,
-       /// Output file path (default: kitty-specs/&lt;feature&gt;/retrospective.md)
+       /// Output file path (default: kitty-specs/<feature>/retrospective.md)
        #[arg(long)]
-       output: Option&lt;PathBuf&gt;,
+       output: Option<PathBuf>,
        /// Include raw metric data in report
        #[arg(long)]
        verbose: bool,
@@ -356,7 +356,7 @@ improving the development process and governance constitution.
 
 7. Build the retrospective report as markdown:
    ```markdown
-   # Retrospective: &lt;feature friendly_name&gt;
+   # Retrospective: <feature friendly_name>
    ## Summary
    - Total duration: X days
    - Work packages: N (N parallel, N serial)
@@ -372,7 +372,7 @@ improving the development process and governance constitution.
    - ...
    ```
 
-8. Write the report to the output path (default: `kitty-specs/&lt;feature&gt;/retrospective.md`).
+8. Write the report to the output path (default: `kitty-specs/<feature>/retrospective.md`).
    Also commit it to git via VcsPort.
 
 9. Transition feature state to `retrospected` in StoragePort. Append audit entry.
@@ -400,7 +400,7 @@ research, plan, implement commands for consistency).
        feature: &Feature,
        required: FeatureState,
        command_name: &str,
-   ) -> Result&lt;(), DomainError&gt; {
+   ) -> Result<(), DomainError> {
        if feature.state == required {
            Ok(())
        } else {
@@ -418,7 +418,7 @@ research, plan, implement commands for consistency).
        required: FeatureState,
        command_name: &str,
        force: bool,
-   ) -> Result&lt;Option&lt;GovernanceException&gt;, DomainError&gt; {
+   ) -> Result<Option<GovernanceException>, DomainError> {
        if feature.state == required {
            Ok(None)
        } else if force {
@@ -507,7 +507,7 @@ in WP11/WP12, ensuring they have access to all required port implementations.
        storage: &impl StoragePort,
        vcs: &impl VcsPort,
        telemetry: &impl ObservabilityPort,
-   ) -> Result&lt;()&gt; { /* ... */ }
+   ) -> Result<()> { /* ... */ }
    ```
 
 4. Verify that the `AppContext` initialization (from WP11) creates all needed adapters:

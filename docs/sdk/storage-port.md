@@ -16,35 +16,35 @@ pub trait StoragePort: Send + Sync {
     fn create_feature(
         &self,
         feature: &Feature,
-    ) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
     /// Look up a feature by its unique slug.
     fn get_feature_by_slug(
         &self,
         slug: &str,
-    ) -> impl Future<Output = Result&lt;Option&lt;Feature&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Option<Feature>, DomainError>> + Send;
 
     /// Look up a feature by its primary key.
     fn get_feature_by_id(
         &self,
         id: i64,
-    ) -> impl Future<Output = Result&lt;Option&lt;Feature&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Option<Feature>, DomainError>> + Send;
 
     /// Update only the state field of an existing feature.
     fn update_feature_state(
         &self,
         id: i64,
         state: FeatureState,
-    ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// List all features currently in the given state.
     fn list_features_by_state(
         &self,
         state: FeatureState,
-    ) -> impl Future<Output = Result&lt;Vec&lt;Feature&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<Feature>, DomainError>> + Send;
 
     /// List every feature in the system.
-    fn list_all_features(&self) -> impl Future<Output = Result&lt;Vec&lt;Feature&gt;, DomainError&gt;> + Send;
+    fn list_all_features(&self) -> impl Future<Output = Result<Vec<Feature>, DomainError>> + Send;
 
     // -- Work Package CRUD --
 
@@ -52,44 +52,44 @@ pub trait StoragePort: Send + Sync {
     fn create_work_package(
         &self,
         wp: &WorkPackage,
-    ) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
     /// Look up a work package by primary key.
     fn get_work_package(
         &self,
         id: i64,
-    ) -> impl Future<Output = Result&lt;Option&lt;WorkPackage&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Option<WorkPackage>, DomainError>> + Send;
 
     /// Update only the state field of a work package.
     fn update_wp_state(
         &self,
         id: i64,
         state: WpState,
-    ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// List all work packages belonging to a feature.
     fn list_wps_by_feature(
         &self,
         feature_id: i64,
-    ) -> impl Future<Output = Result&lt;Vec&lt;WorkPackage&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<WorkPackage>, DomainError>> + Send;
 
     /// Record a dependency between two work packages.
     fn add_wp_dependency(
         &self,
         dep: &WpDependency,
-    ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// Get all dependencies for a given work package.
     fn get_wp_dependencies(
         &self,
         wp_id: i64,
-    ) -> impl Future<Output = Result&lt;Vec&lt;WpDependency&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<WpDependency>, DomainError>> + Send;
 
     /// Get work packages whose dependencies are all in `Done` state.
     fn get_ready_wps(
         &self,
         feature_id: i64,
-    ) -> impl Future<Output = Result&lt;Vec&lt;WorkPackage&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<WorkPackage>, DomainError>> + Send;
 
     // -- Audit CRUD --
 
@@ -97,19 +97,19 @@ pub trait StoragePort: Send + Sync {
     fn append_audit_entry(
         &self,
         entry: &AuditEntry,
-    ) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
     /// Retrieve the full audit trail for a feature, ordered by timestamp.
     fn get_audit_trail(
         &self,
         feature_id: i64,
-    ) -> impl Future<Output = Result&lt;Vec&lt;AuditEntry&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<AuditEntry>, DomainError>> + Send;
 
     /// Get the most recent audit entry for a feature.
     fn get_latest_audit_entry(
         &self,
         feature_id: i64,
-    ) -> impl Future<Output = Result&lt;Option&lt;AuditEntry&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Option<AuditEntry>, DomainError>> + Send;
 
     // -- Evidence + Policy + Metric CRUD --
 
@@ -117,42 +117,42 @@ pub trait StoragePort: Send + Sync {
     fn create_evidence(
         &self,
         evidence: &Evidence,
-    ) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
     /// Get all evidence associated with a work package.
     fn get_evidence_by_wp(
         &self,
         wp_id: i64,
-    ) -> impl Future<Output = Result&lt;Vec&lt;Evidence&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<Evidence>, DomainError>> + Send;
 
     /// Get all evidence satisfying a given functional requirement.
     fn get_evidence_by_fr(
         &self,
         fr_id: &str,
-    ) -> impl Future<Output = Result&lt;Vec&lt;Evidence&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<Evidence>, DomainError>> + Send;
 
     /// Create a new policy rule, returning its ID.
     fn create_policy_rule(
         &self,
         rule: &PolicyRule,
-    ) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
     /// List all currently active policy rules.
     fn list_active_policies(
         &self,
-    ) -> impl Future<Output = Result&lt;Vec&lt;PolicyRule&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<PolicyRule>, DomainError>> + Send;
 
     /// Record a command-execution metric, returning its ID.
     fn record_metric(
         &self,
         metric: &Metric,
-    ) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
     /// Get all metrics associated with a feature.
     fn get_metrics_by_feature(
         &self,
         feature_id: i64,
-    ) -> impl Future<Output = Result&lt;Vec&lt;Metric&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<Metric>, DomainError>> + Send;
 
     // -- Governance --
 
@@ -160,20 +160,20 @@ pub trait StoragePort: Send + Sync {
     fn create_governance_contract(
         &self,
         contract: &GovernanceContract,
-    ) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
     /// Look up a specific version of a governance contract for a feature.
     fn get_governance_contract(
         &self,
         feature_id: i64,
         version: i32,
-    ) -> impl Future<Output = Result&lt;Option&lt;GovernanceContract&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Option<GovernanceContract>, DomainError>> + Send;
 
     /// Get the latest governance contract for a feature.
     fn get_latest_governance_contract(
         &self,
         feature_id: i64,
-    ) -> impl Future<Output = Result&lt;Option&lt;GovernanceContract&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Option<GovernanceContract>, DomainError>> + Send;
 }
 ```
 
@@ -190,8 +190,8 @@ pub struct Feature {
     pub friendly_name: String,
     pub state: FeatureState,
     pub target_branch: String,
-    pub created_at: DateTime&lt;Utc&gt;,
-    pub updated_at: DateTime&lt;Utc&gt;,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
 pub enum FeatureState {
@@ -212,9 +212,9 @@ pub struct WorkPackage {
     pub sequence: u32,           // 1, 2, 3...
     pub title: String,
     pub state: WpState,
-    pub agent_id: Option&lt;String&gt;,
-    pub pr_url: Option&lt;String&gt;,
-    pub file_scope: Vec&lt;String&gt;, // Authorized files
+    pub agent_id: Option<String>,
+    pub pr_url: Option<String>,
+    pub file_scope: Vec<String>, // Authorized files
 }
 
 pub enum WpState {
@@ -236,13 +236,13 @@ pub struct WpDependency {
 pub struct AuditEntry {
     pub id: i64,
     pub feature_id: i64,
-    pub wp_sequence: Option&lt;u32&gt;,
-    pub timestamp: DateTime&lt;Utc&gt;,
+    pub wp_sequence: Option<u32>,
+    pub timestamp: DateTime<Utc>,
     pub actor: String,           // "claude-code", "user@example.com", etc.
     pub transition: String,      // "SPECIFY -> PLAN", "WP01: PLANNED -> DOING"
-    pub evidence_refs: Vec&lt;String&gt;, // ["pr/42", "commit/abc123"]
-    pub prev_hash: Vec&lt;u8&gt;,      // SHA256 of previous entry
-    pub hash: Vec&lt;u8&gt;,           // SHA256(entry) — cryptographic chain
+    pub evidence_refs: Vec<String>, // ["pr/42", "commit/abc123"]
+    pub prev_hash: Vec<u8>,      // SHA256 of previous entry
+    pub hash: Vec<u8>,           // SHA256(entry) — cryptographic chain
 }
 ```
 
@@ -253,8 +253,8 @@ pub struct GovernanceContract {
     pub id: i64,
     pub feature_id: i64,
     pub version: i32,
-    pub rules: Vec&lt;PolicyRule&gt;,
-    pub created_at: DateTime&lt;Utc&gt;,
+    pub rules: Vec<PolicyRule>,
+    pub created_at: DateTime<Utc>,
 }
 
 pub struct PolicyRule {
@@ -283,7 +283,7 @@ pub struct Metric {
     pub metric_type: String,     // "lines_changed", "test_coverage", "review_time"
     pub value: f64,
     pub unit: String,            // "lines", "%", "minutes"
-    pub recorded_at: DateTime&lt;Utc&gt;,
+    pub recorded_at: DateTime<Utc>,
 }
 ```
 
@@ -295,7 +295,7 @@ The default implementation uses SQLite with async queries via `tokio-rusqlite`.
 use agileplus_sqlite::SqliteStorageAdapter;
 
 #[tokio::main]
-async fn main() -> anyhow::Result&lt;()&gt; {
+async fn main() -> anyhow::Result<()> {
     // Create or open database
     let storage = SqliteStorageAdapter::new("agileplus.db")?;
 
@@ -343,7 +343,7 @@ impl StoragePort for MyCustomStorage {
     async fn create_feature(
         &self,
         feature: &Feature,
-    ) -> Result&lt;i64, DomainError&gt; {
+    ) -> Result<i64, DomainError> {
         // Implement persistence logic
         // Return the assigned feature ID
         Ok(42)
@@ -358,7 +358,7 @@ impl StoragePort for MyCustomStorage {
 In `main.rs`:
 
 ```rust
-let storage: Box&lt;dyn StoragePort&gt; = match backend_type {
+let storage: Box<dyn StoragePort> = match backend_type {
     "sqlite" => Box::new(SqliteStorageAdapter::new(db_path)?),
     "my-custom" => Box::new(MyCustomStorage::new(config)?),
     _ => panic!("unknown backend"),
@@ -390,7 +390,7 @@ All trait methods return `impl Future` with `Send` bound, making them compatible
 ```rust
 // Tokio runtime
 #[tokio::main]
-async fn main() -> Result&lt;()&gt; {
+async fn main() -> Result<()> {
     let features = storage.list_all_features().await?;
     Ok(())
 }
@@ -410,28 +410,28 @@ The StoragePort also manages sync mappings for external tracker integration:
 fn create_sync_mapping(
     &self,
     mapping: &SyncMapping,
-) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
 /// Look up a sync mapping by feature and platform.
 fn get_sync_mapping(
     &self,
     feature_id: i64,
     platform: &str,
-) -> impl Future<Output = Result&lt;Option&lt;SyncMapping&gt;, DomainError&gt;> + Send;
+) -> impl Future<Output = Result<Option<SyncMapping>, DomainError>> + Send;
 
 /// Update the external state in a sync mapping.
 fn update_sync_mapping_state(
     &self,
     mapping_id: i64,
     external_state: &str,
-    last_synced_at: DateTime&lt;Utc&gt;,
-) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    last_synced_at: DateTime<Utc>,
+) -> impl Future<Output = Result<(), DomainError>> + Send;
 
 /// List all sync mappings that are overdue for sync.
 fn list_stale_sync_mappings(
     &self,
     older_than: Duration,
-) -> impl Future<Output = Result&lt;Vec&lt;SyncMapping&gt;, DomainError&gt;> + Send;
+) -> impl Future<Output = Result<Vec<SyncMapping>, DomainError>> + Send;
 ```
 
 Example usage:
@@ -469,20 +469,20 @@ For P2P multi-device setups:
 fn upsert_device_node(
     &self,
     node: &DeviceNode,
-) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
 /// List all active device nodes (seen within last N minutes).
 fn list_active_devices(
     &self,
     active_within: Duration,
-) -> impl Future<Output = Result&lt;Vec&lt;DeviceNode&gt;, DomainError&gt;> + Send;
+) -> impl Future<Output = Result<Vec<DeviceNode>, DomainError>> + Send;
 
 /// Update a device node's vector clock.
 fn update_device_clock(
     &self,
     device_id: &str,
     clock: &VectorClock,
-) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+) -> impl Future<Output = Result<(), DomainError>> + Send;
 ```
 
 ## SQLite Schema Reference

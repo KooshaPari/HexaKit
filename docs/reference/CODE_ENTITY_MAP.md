@@ -12,7 +12,7 @@ Maps key code entities (structs, traits, modules, functions) to their correspond
 |--------|------|------|-----------|---------|
 | `Feature` | `crates/agileplus-domain/src/domain/feature.rs` | Struct | FR-DOMAIN-001 | Core feature entity with all metadata fields |
 | `FeatureState` | `crates/agileplus-domain/src/domain/state_machine.rs` | Enum | FR-DOMAIN-002 | Feature state: Created, Specified, Researched, Planned, Implementing, Validated, Shipped, Retrospected |
-| `StateMachine&lt;Feature&gt;` | `crates/agileplus-domain/src/domain/state_machine.rs` | Trait | FR-DOMAIN-003 | Enforces forward-only state transitions |
+| `StateMachine<Feature>` | `crates/agileplus-domain/src/domain/state_machine.rs` | Trait | FR-DOMAIN-003 | Enforces forward-only state transitions |
 | `StateTransition` | `crates/agileplus-domain/src/domain/state_machine.rs` | Struct | FR-DOMAIN-004 | Captures from, to, and skipped states |
 
 ### Work Packages and Dependencies

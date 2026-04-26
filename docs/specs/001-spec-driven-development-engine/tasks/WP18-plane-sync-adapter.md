@@ -55,7 +55,7 @@ All outbound HTTP calls must go through the client struct; no `reqwest` calls ma
 ### Plane.so API Reference
 
 - Base URL (configurable): `https://api.plane.so/api/v1/`
-- Authentication: `X-API-Key: &lt;token&gt;` header on every request.
+- Authentication: `X-API-Key: <token>` header on every request.
 - Workspace and project are identified by slug, not UUID, in the URL path.
 - Relevant endpoints:
   - `POST /workspaces/{workspace_slug}/projects/{project_slug}/issues/` — create issue
@@ -98,7 +98,7 @@ crates/agileplus-plane/
 
 ### Rate Limiting
 
-Implement a simple token-bucket rate limiter in `client.rs` capped at 50 requests/minute. Use `std::time::Instant` and a `Mutex&lt;TokenBucket&gt;`. No external rate-limiter crate.
+Implement a simple token-bucket rate limiter in `client.rs` capped at 50 requests/minute. Use `std::time::Instant` and a `Mutex<TokenBucket>`. No external rate-limiter crate.
 
 ---
 
@@ -116,7 +116,7 @@ pub struct PlaneConfig {
     pub base_url: String,          // e.g. "https://api.plane.so/api/v1"
     pub workspace_slug: String,
     pub project_slug: String,
-    pub state_map: HashMap&lt;String, String&gt;,  // agileplus_state -> plane_state_uuid
+    pub state_map: HashMap<String, String>,  // agileplus_state -> plane_state_uuid
 }
 ```
 
@@ -127,16 +127,16 @@ pub struct PlaneClient {
     http: reqwest::Client,
     config: PlaneConfig,
     api_key: String,
-    rate_limiter: Arc&lt;Mutex&lt;TokenBucket&gt;&gt;,
+    rate_limiter: Arc<Mutex<TokenBucket>>,
 }
 
 impl PlaneClient {
     pub fn new(config: PlaneConfig, api_key: String) -> Self;
 
-    pub async fn create_issue(&self, body: &CreateIssueRequest) -> Result&lt;PlaneIssue, PlaneError&gt;;
-    pub async fn update_issue(&self, issue_id: &str, body: &UpdateIssueRequest) -> Result&lt;PlaneIssue, PlaneError&gt;;
-    pub async fn get_issue(&self, issue_id: &str) -> Result&lt;PlaneIssue, PlaneError&gt;;
-    pub async fn list_issues_updated_since(&self, since: &str) -> Result&lt;Vec&lt;PlaneIssue&gt;, PlaneError&gt;;
+    pub async fn create_issue(&self, body: &CreateIssueRequest) -> Result<PlaneIssue, PlaneError>;
+    pub async fn update_issue(&self, issue_id: &str, body: &UpdateIssueRequest) -> Result<PlaneIssue, PlaneError>;
+    pub async fn get_issue(&self, issue_id: &str) -> Result<PlaneIssue, PlaneError>;
+    pub async fn list_issues_updated_since(&self, since: &str) -> Result<Vec<PlaneIssue>, PlaneError>;
 }
 ```
 
@@ -145,10 +145,10 @@ impl PlaneClient {
 ```rust
 #[async_trait::async_trait]
 pub trait PlaneClientPort: Send + Sync {
-    async fn create_issue(&self, body: &CreateIssueRequest) -> Result&lt;PlaneIssue, PlaneError&gt;;
-    async fn update_issue(&self, issue_id: &str, body: &UpdateIssueRequest) -> Result&lt;PlaneIssue, PlaneError&gt;;
-    async fn get_issue(&self, issue_id: &str) -> Result&lt;PlaneIssue, PlaneError&gt;;
-    async fn list_issues_updated_since(&self, since: &str) -> Result&lt;Vec&lt;PlaneIssue&gt;, PlaneError&gt;;
+    async fn create_issue(&self, body: &CreateIssueRequest) -> Result<PlaneIssue, PlaneError>;
+    async fn update_issue(&self, issue_id: &str, body: &UpdateIssueRequest) -> Result<PlaneIssue, PlaneError>;
+    async fn get_issue(&self, issue_id: &str) -> Result<PlaneIssue, PlaneError>;
+    async fn list_issues_updated_since(&self, since: &str) -> Result<Vec<PlaneIssue>, PlaneError>;
 }
 ```
 
@@ -161,15 +161,15 @@ pub trait PlaneClientPort: Send + Sync {
 pub struct CreateIssueRequest {
     pub name: String,
     pub state: String,          // plane_state_uuid
-    pub identifier: Option&lt;String&gt;,
-    pub parent: Option&lt;String&gt;, // parent issue ID for sub-issues
+    pub identifier: Option<String>,
+    pub parent: Option<String>, // parent issue ID for sub-issues
 }
 
 #[derive(Serialize)]
 pub struct UpdateIssueRequest {
-    pub name: Option&lt;String&gt;,
-    pub state: Option&lt;String&gt;,
-    pub link: Option&lt;String&gt;,
+    pub name: Option<String>,
+    pub state: Option<String>,
+    pub link: Option<String>,
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -177,8 +177,8 @@ pub struct PlaneIssue {
     pub id: String,
     pub name: String,
     pub state: String,
-    pub identifier: Option&lt;String&gt;,
-    pub parent: Option&lt;String&gt;,
+    pub identifier: Option<String>,
+    pub parent: Option<String>,
     pub updated_at: String,
 }
 ```
@@ -234,18 +234,18 @@ pub enum PlaneError {
 **`PlaneSyncAdapter`** (public facade in `lib.rs`):
 
 ```rust
-pub struct PlaneSyncAdapter&lt;C: PlaneClientPort = PlaneClient&gt; {
-    client: Arc&lt;C&gt;,
-    storage: Arc&lt;dyn StoragePort&gt;,
+pub struct PlaneSyncAdapter<C: PlaneClientPort = PlaneClient> {
+    client: Arc<C>,
+    storage: Arc<dyn StoragePort>,
     config: PlaneConfig,
 }
 
-impl&lt;C: PlaneClientPort&gt; PlaneSyncAdapter&lt;C&gt; {
-    pub fn new(client: Arc&lt;C&gt;, storage: Arc&lt;dyn StoragePort&gt;, config: PlaneConfig) -> Self;
-    pub async fn ensure_schema(&self) -> Result&lt;(), PlaneError&gt;;
-    pub async fn sync_feature(&self, feature: &Feature) -> Result&lt;(), PlaneError&gt;;
-    pub async fn sync_work_package(&self, wp: &WorkPackage) -> Result&lt;(), PlaneError&gt;;
-    pub async fn detect_conflicts(&self) -> Result&lt;Vec&lt;ConflictReport&gt;, PlaneError&gt;;
+impl<C: PlaneClientPort> PlaneSyncAdapter<C> {
+    pub fn new(client: Arc<C>, storage: Arc<dyn StoragePort>, config: PlaneConfig) -> Self;
+    pub async fn ensure_schema(&self) -> Result<(), PlaneError>;
+    pub async fn sync_feature(&self, feature: &Feature) -> Result<(), PlaneError>;
+    pub async fn sync_work_package(&self, wp: &WorkPackage) -> Result<(), PlaneError>;
+    pub async fn detect_conflicts(&self) -> Result<Vec<ConflictReport>, PlaneError>;
 }
 ```
 

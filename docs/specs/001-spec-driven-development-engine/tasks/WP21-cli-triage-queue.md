@@ -196,12 +196,12 @@ Args:
   [INPUT]   Freetext description of the item to triage (can also be piped via stdin)
 
 Options:
-  --type &lt;TYPE&gt;         Force classification type: bug | feature | idea | tech-debt
-  --title &lt;TITLE&gt;       Title override (derived from input if omitted)
-  --severity &lt;SEV&gt;      Bug severity: low | medium | high | critical
-  --feature-id &lt;ID&gt;     Associate with an existing feature
+  --type <TYPE>         Force classification type: bug | feature | idea | tech-debt
+  --title <TITLE>       Title override (derived from input if omitted)
+  --severity <SEV>      Bug severity: low | medium | high | critical
+  --feature-id <ID>     Associate with an existing feature
   --dry-run             Classify and display result without creating any artifact
-  --output &lt;FMT&gt;        Output format: table | json (default: table)
+  --output <FMT>        Output format: table | json (default: table)
 ```
 
 **Behavior**:
@@ -247,7 +247,7 @@ without classification — the user explicitly declares what they are adding.
 **Clap definition**:
 
 ```
-agileplus queue &lt;SUBCOMMAND&gt;
+agileplus queue <SUBCOMMAND>
 
 Subcommands:
   add     Add an item to the backlog queue
@@ -255,26 +255,26 @@ Subcommands:
   show    Show details of a queued item
   pop     Remove and return the next item from the queue
 
-agileplus queue add [OPTIONS] &lt;TITLE&gt;
+agileplus queue add [OPTIONS] <TITLE>
 
 Args:
-  &lt;TITLE&gt;   Item title (required)
+  <TITLE>   Item title (required)
 
 Options:
-  --type &lt;TYPE&gt;         Item type: bug | feature | idea | tech-debt (default: idea)
-  --priority &lt;PRI&gt;      Priority: low | medium | high (default: medium)
-  --tags &lt;TAGS&gt;         Comma-separated tags
-  --description &lt;DESC&gt;  Optional description
-  --feature-id &lt;ID&gt;     Associate with an existing feature
+  --type <TYPE>         Item type: bug | feature | idea | tech-debt (default: idea)
+  --priority <PRI>      Priority: low | medium | high (default: medium)
+  --tags <TAGS>         Comma-separated tags
+  --description <DESC>  Optional description
+  --feature-id <ID>     Associate with an existing feature
 
 agileplus queue list [OPTIONS]
 
 Options:
-  --type &lt;TYPE&gt;         Filter by item type
-  --priority &lt;PRI&gt;      Filter by priority
-  --feature-id &lt;ID&gt;     Filter by feature
-  --limit &lt;N&gt;           Limit output (default: 20)
-  --output &lt;FMT&gt;        Output format: table | json (default: table)
+  --type <TYPE>         Filter by item type
+  --priority <PRI>      Filter by priority
+  --feature-id <ID>     Filter by feature
+  --limit <N>           Limit output (default: 20)
+  --output <FMT>        Output format: table | json (default: table)
 ```
 
 **Behavior for `queue add`**:
@@ -292,7 +292,7 @@ and `plan` commands. If there are open queued items relevant to the current feat
 `specify`/`plan`), display a summary banner:
 
 ```
-3 queued items found for this feature. Run `agileplus queue list --feature-id &lt;ID&gt;` to review.
+3 queued items found for this feature. Run `agileplus queue list --feature-id <ID>` to review.
 ```
 
 This hook is a read-only advisory; it does not block the `specify` or `plan` flow.
@@ -323,7 +323,7 @@ Define an `AutoTriageConfig` struct:
 pub struct AutoTriageConfig {
     pub enabled: bool,
     pub threshold: AutoTriageThreshold,  // conservative | moderate | aggressive
-    pub patterns: Vec&lt;AutoTriagePattern&gt;,
+    pub patterns: Vec<AutoTriagePattern>,
     pub auto_file_bugs: bool,
     pub notify_user: bool,
 }
@@ -341,7 +341,7 @@ Built-in patterns (configurable):
 
 **Invocation**:
 
-`AutoTriageHook` implements a `fn process_output_chunk(&self, chunk: &str, context: &ImplementContext) -> Vec&lt;AutoTriageAction&gt;` interface that is called by the `implement` command's output streaming loop.
+`AutoTriageHook` implements a `fn process_output_chunk(&self, chunk: &str, context: &ImplementContext) -> Vec<AutoTriageAction>` interface that is called by the `implement` command's output streaming loop.
 
 Each `AutoTriageAction` is either:
 - `QueueItem { pattern_id, extracted_text, suggested_type }` — add to backlog.
@@ -383,14 +383,14 @@ and prepares to commit work.
 **Conventional Commit Enforcement**:
 
 Provide a `ConventionalCommitValidator` that:
-- Parses a commit message string against the spec: `&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;`.
+- Parses a commit message string against the spec: `<type>(<scope>): <subject>`.
 - Accepts types: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `ci`, `perf`, `build`.
-- Returns `ValidationResult { valid: bool, parsed: Option&lt;ConventionalCommit&gt;, errors: Vec&lt;String&gt; }`.
+- Returns `ValidationResult { valid: bool, parsed: Option<ConventionalCommit>, errors: Vec<String> }`.
 - Integrates with `devops:conventional-commit` sub-command (T118).
 
 **Branch Naming Convention**:
 
-Default pattern: `&lt;feature-slug&gt;-&lt;wp_id_lowercase&gt;-&lt;short-description&gt;`.
+Default pattern: `<feature-slug>-<wp_id_lowercase>-<short-description>`.
 Example: `spec-engine-wp21-cli-triage`.
 
 Provide `BranchNameGenerator::from_wp(wp: &WorkPackage, description: &str) -> String`.
@@ -402,7 +402,7 @@ Validate branch names via `BranchNameValidator::validate(name: &str) -> Validati
 1. Validate commit message format.
 2. Validate branch name format.
 3. Run `devops:lint-and-format` (via sub-command dispatch).
-4. Return `PrePushReport { all_passed: bool, checks: Vec&lt;CheckResult&gt; }`.
+4. Return `PrePushReport { all_passed: bool, checks: Vec<CheckResult> }`.
 
 **PR Template Population**:
 
@@ -471,11 +471,11 @@ appropriate sub-command chain for the agent to execute first.
 | accept | in_progress | `governance:verify-chain` → `sync:push-plane` |
 | any | blocked | `governance:check-gates` (to surface the blocking gate) |
 
-4. Return `FirstActionPlan { wp_id, phase, lane, sub_command_chain: Vec&lt;String&gt; }`.
+4. Return `FirstActionPlan { wp_id, phase, lane, sub_command_chain: Vec<String> }`.
 
 **Integration with router output**:
 
-The `PromptRouter` (WP17) must embed a `&lt;!-- FIRST_ACTION_HINTS: {...} --&gt;` HTML comment
+The `PromptRouter` (WP17) must embed a `<!-- FIRST_ACTION_HINTS: {...} -->` HTML comment
 block in the generated `CLAUDE.md`. The classifier reads this block rather than parsing
 the full Markdown prose. This decouples the classifier from CLAUDE.md formatting changes.
 
@@ -587,7 +587,7 @@ source_refs:
 ## Usage
 
 ```
-agileplus subcommand triage:classify --input "&lt;text&gt;"
+agileplus subcommand triage:classify --input "<text>"
 ```
 
 ## Arguments
@@ -616,7 +616,7 @@ The seeding tool must:
 1. Read the sub-command registry from `SubCommandRegistry::all()` (or a JSON export
    of it if the registry is not yet compiled).
 2. For each entry, render a prompt file from the template above.
-3. Write each file to `prompts/subcommands/&lt;category&gt;-&lt;action&gt;.md` (replacing `:` with `-`).
+3. Write each file to `prompts/subcommands/<category>-<action>.md` (replacing `:` with `-`).
 4. Do not overwrite files that already exist and have been manually edited (detect via
    a `# DO NOT OVERWRITE` sentinel or a `manually_edited: true` frontmatter flag).
 

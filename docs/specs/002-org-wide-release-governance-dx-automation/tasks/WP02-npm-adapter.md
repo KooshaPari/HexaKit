@@ -231,7 +231,7 @@ WP02 implements the npm RegistryAdapter, enabling detection, versioning, buildin
      }
 
      // Parse output to get tarball filename
-     // npm pack outputs: "npm notice &lt;message&gt;\n&lt;tarball-name&gt;\n&lt;tarball-path&gt;\n"
+     // npm pack outputs: "npm notice <message>\n<tarball-name>\n<tarball-path>\n"
      output := strings.TrimSpace(stdout.String())
      lines := strings.Split(output, "\n")
      tarball := lines[len(lines)-1] // Last line is the full path

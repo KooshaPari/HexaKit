@@ -38,7 +38,7 @@
 - [ ] **Snyk CLI installed**:
   ```bash
   which snyk && snyk --version
-  # Output should show: snyk &lt;version&gt;
+  # Output should show: snyk <version>
   ```
 
   If missing:

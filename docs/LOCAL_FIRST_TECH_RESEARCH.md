@@ -69,7 +69,7 @@ pub struct WorkPackageEvent {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Connect to NATS server
     let client = async_nats::connect("nats://localhost:4222").await?;
 
@@ -111,7 +111,7 @@ async fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
     // Consume messages with exactly-once semantics
     let mut messages = consumer.messages().await?;
     while let Ok(msg) = messages.next().await {
-        match serde_json::from_slice::&lt;WorkPackageEvent&gt;(&msg.payload) {
+        match serde_json::from_slice::<WorkPackageEvent>(&msg.payload) {
             Ok(event) => {
                 println!("Processing event: {:?}", event);
                 msg.ack().await?;
@@ -131,7 +131,7 @@ async fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
 
 ```rust
 // Exactly-once processing pattern
-async fn process_wp_events(jetstream: &jetstream::Context) -> Result&lt;()&gt; {
+async fn process_wp_events(jetstream: &jetstream::Context) -> Result<()> {
     let stream = jetstream.get_stream("wp-events").await?;
 
     let consumer = stream
@@ -255,7 +255,7 @@ use bb8_redis::RedisConnectionManager;
 use std::time::Duration;
 
 #[tokio::main]
-async fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create connection manager for Dragonfly
     let manager = RedisConnectionManager::new("redis://localhost:6379")?;
     let pool = bb8::Pool::builder()
@@ -416,7 +416,7 @@ pub struct WorkPackage {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Connect to Neo4j
     let graph = Graph::new("bolt://localhost:7687", "neo4j", "password")
         .await?;
@@ -454,7 +454,7 @@ async fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
 async fn get_dependencies(
     graph: &Graph,
     wp_id: &str,
-) -> Result<Vec&lt;String&gt;, Box&lt;dyn std::error::Error&gt;> {
+) -> Result<Vec<String>, Box<dyn std::error::Error>> {
     let query = "
         MATCH (wp:WorkPackage {id: $id})-[:DEPENDS_ON]->(dep:WorkPackage)
         RETURN dep.id AS dependent_id
@@ -466,7 +466,7 @@ async fn get_dependencies(
 
     let mut deps = Vec::new();
     while let Ok(Some(row)) = result.next().await {
-        deps.push(row.get::&lt;String&gt;("dependent_id")?);
+        deps.push(row.get::<String>("dependent_id")?);
     }
     Ok(deps)
 }
@@ -476,7 +476,7 @@ async fn find_blocking_path(
     graph: &Graph,
     from_id: &str,
     to_id: &str,
-) -> Result<Option&lt;Vec&lt;String&gt;&gt;, Box&lt;dyn std::error::Error&gt;> {
+) -> Result<Option<Vec<String>>, Box<dyn std::error::Error>> {
     let query = "
         MATCH path = shortestPath(
             (from:WorkPackage {id: $from})-[:BLOCKS*]->(to:WorkPackage {id: $to})
@@ -504,7 +504,7 @@ async fn create_wp_with_dependency(
     graph: &Graph,
     wp: &WorkPackage,
     depends_on_id: &str,
-) -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let mut txn = graph.start_txn().await?;
 
     // Create WP node
@@ -597,7 +597,7 @@ use aws_sdk_s3::Client;
 use std::path::Path;
 
 #[tokio::main]
-async fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Configure S3 client for MinIO endpoint
     let config = aws_config::load_from_env().await;
     let mut s3_config = aws_sdk_s3::config::Builder::from(&config)
@@ -947,8 +947,8 @@ async fn health_handler() -> (http::StatusCode, &'static str) {
 }
 
 async fn readiness_handler(
-    State(app): State&lt;Arc&lt;AppState&gt;&gt;,
-) -> Result&lt;(http::StatusCode, &'static str), http::StatusCode&gt; {
+    State(app): State<Arc<AppState>>,
+) -> Result<(http::StatusCode, &'static str), http::StatusCode> {
     // Check critical dependencies
     if !app.nats_ready().await {
         return Err(http::StatusCode::SERVICE_UNAVAILABLE);
@@ -1080,7 +1080,7 @@ pub struct AppState {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt::init();
 
     // Initialize infrastructure clients

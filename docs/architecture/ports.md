@@ -25,35 +25,35 @@ pub trait StoragePort: Send + Sync {
     fn create_feature(
         &self,
         feature: &Feature,
-    ) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
     /// Look up a feature by its unique slug.
     fn get_feature_by_slug(
         &self,
         slug: &str,
-    ) -> impl Future<Output = Result&lt;Option&lt;Feature&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Option<Feature>, DomainError>> + Send;
 
     /// Look up a feature by its primary key.
     fn get_feature_by_id(
         &self,
         id: i64,
-    ) -> impl Future<Output = Result&lt;Option&lt;Feature&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Option<Feature>, DomainError>> + Send;
 
     /// Update only the state field of an existing feature.
     fn update_feature_state(
         &self,
         id: i64,
         state: FeatureState,
-    ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// List all features currently in the given state.
     fn list_features_by_state(
         &self,
         state: FeatureState,
-    ) -> impl Future<Output = Result&lt;Vec&lt;Feature&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<Feature>, DomainError>> + Send;
 
     /// List every feature in the system.
-    fn list_all_features(&self) -> impl Future<Output = Result&lt;Vec&lt;Feature&gt;, DomainError&gt;> + Send;
+    fn list_all_features(&self) -> impl Future<Output = Result<Vec<Feature>, DomainError>> + Send;
 
     // --- Work Package CRUD ---
 
@@ -61,44 +61,44 @@ pub trait StoragePort: Send + Sync {
     fn create_work_package(
         &self,
         wp: &WorkPackage,
-    ) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
     /// Look up a work package by primary key.
     fn get_work_package(
         &self,
         id: i64,
-    ) -> impl Future<Output = Result&lt;Option&lt;WorkPackage&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Option<WorkPackage>, DomainError>> + Send;
 
     /// Update only the state field of a work package.
     fn update_wp_state(
         &self,
         id: i64,
         state: WpState,
-    ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// List all work packages belonging to a feature.
     fn list_wps_by_feature(
         &self,
         feature_id: i64,
-    ) -> impl Future<Output = Result&lt;Vec&lt;WorkPackage&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<WorkPackage>, DomainError>> + Send;
 
     /// Record a dependency between two work packages.
     fn add_wp_dependency(
         &self,
         dep: &WpDependency,
-    ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// Get all dependencies for a given work package.
     fn get_wp_dependencies(
         &self,
         wp_id: i64,
-    ) -> impl Future<Output = Result&lt;Vec&lt;WpDependency&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<WpDependency>, DomainError>> + Send;
 
     /// Get work packages whose dependencies are all in `Done` state.
     fn get_ready_wps(
         &self,
         feature_id: i64,
-    ) -> impl Future<Output = Result&lt;Vec&lt;WorkPackage&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<WorkPackage>, DomainError>> + Send;
 
     // --- Audit CRUD ---
 
@@ -106,19 +106,19 @@ pub trait StoragePort: Send + Sync {
     fn append_audit_entry(
         &self,
         entry: &AuditEntry,
-    ) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
     /// Retrieve the full audit trail for a feature, ordered by timestamp.
     fn get_audit_trail(
         &self,
         feature_id: i64,
-    ) -> impl Future<Output = Result&lt;Vec&lt;AuditEntry&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<AuditEntry>, DomainError>> + Send;
 
     /// Get the most recent audit entry for a feature.
     fn get_latest_audit_entry(
         &self,
         feature_id: i64,
-    ) -> impl Future<Output = Result&lt;Option&lt;AuditEntry&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Option<AuditEntry>, DomainError>> + Send;
 
     // --- Evidence + Policy + Metric CRUD ---
 
@@ -126,42 +126,42 @@ pub trait StoragePort: Send + Sync {
     fn create_evidence(
         &self,
         evidence: &Evidence,
-    ) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
     /// Get all evidence associated with a work package.
     fn get_evidence_by_wp(
         &self,
         wp_id: i64,
-    ) -> impl Future<Output = Result&lt;Vec&lt;Evidence&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<Evidence>, DomainError>> + Send;
 
     /// Get all evidence satisfying a given functional requirement.
     fn get_evidence_by_fr(
         &self,
         fr_id: &str,
-    ) -> impl Future<Output = Result&lt;Vec&lt;Evidence&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<Evidence>, DomainError>> + Send;
 
     /// Create a new policy rule, returning its ID.
     fn create_policy_rule(
         &self,
         rule: &PolicyRule,
-    ) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
     /// List all currently active policy rules.
     fn list_active_policies(
         &self,
-    ) -> impl Future<Output = Result&lt;Vec&lt;PolicyRule&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<PolicyRule>, DomainError>> + Send;
 
     /// Record a command-execution metric, returning its ID.
     fn record_metric(
         &self,
         metric: &Metric,
-    ) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
     /// Get all metrics associated with a feature.
     fn get_metrics_by_feature(
         &self,
         feature_id: i64,
-    ) -> impl Future<Output = Result&lt;Vec&lt;Metric&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<Metric>, DomainError>> + Send;
 
     // --- Governance ---
 
@@ -169,20 +169,20 @@ pub trait StoragePort: Send + Sync {
     fn create_governance_contract(
         &self,
         contract: &GovernanceContract,
-    ) -> impl Future<Output = Result&lt;i64, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<i64, DomainError>> + Send;
 
     /// Look up a specific version of a governance contract for a feature.
     fn get_governance_contract(
         &self,
         feature_id: i64,
         version: i32,
-    ) -> impl Future<Output = Result&lt;Option&lt;GovernanceContract&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Option<GovernanceContract>, DomainError>> + Send;
 
     /// Get the latest governance contract for a feature.
     fn get_latest_governance_contract(
         &self,
         feature_id: i64,
-    ) -> impl Future<Output = Result&lt;Option&lt;GovernanceContract&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Option<GovernanceContract>, DomainError>> + Send;
 }
 ```
 
@@ -209,18 +209,18 @@ pub trait VcsPort: Send + Sync {
         &self,
         feature_slug: &str,
         wp_id: &str,
-    ) -> impl Future<Output = Result&lt;PathBuf, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<PathBuf, DomainError>> + Send;
 
     /// List all active worktrees.
     fn list_worktrees(
         &self,
-    ) -> impl Future<Output = Result&lt;Vec&lt;WorktreeInfo&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<WorktreeInfo>, DomainError>> + Send;
 
     /// Remove a worktree at the given path.
     fn cleanup_worktree(
         &self,
         worktree_path: &Path,
-    ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     // --- Branch operations ---
 
@@ -229,27 +229,27 @@ pub trait VcsPort: Send + Sync {
         &self,
         branch_name: &str,
         base: &str,
-    ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// Check out an existing branch.
     fn checkout_branch(
         &self,
         branch_name: &str,
-    ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// Merge source branch into target, returning the merge result.
     fn merge_to_target(
         &self,
         source: &str,
         target: &str,
-    ) -> impl Future<Output = Result&lt;MergeResult, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<MergeResult, DomainError>> + Send;
 
     /// Detect merge conflicts between two branches without performing the merge.
     fn detect_conflicts(
         &self,
         source: &str,
         target: &str,
-    ) -> impl Future<Output = Result&lt;Vec&lt;ConflictInfo&gt;, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<Vec<ConflictInfo>, DomainError>> + Send;
 
     // --- Artifact operations ---
 
@@ -258,7 +258,7 @@ pub trait VcsPort: Send + Sync {
         &self,
         feature_slug: &str,
         relative_path: &str,
-    ) -> impl Future<Output = Result&lt;String, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<String, DomainError>> + Send;
 
     /// Write a text artifact relative to the feature directory.
     fn write_artifact(
@@ -266,14 +266,14 @@ pub trait VcsPort: Send + Sync {
         feature_slug: &str,
         relative_path: &str,
         content: &str,
-    ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// Check whether an artifact exists.
     fn artifact_exists(
         &self,
         feature_slug: &str,
         relative_path: &str,
-    ) -> impl Future<Output = Result&lt;bool, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<bool, DomainError>> + Send;
 
     // --- History scanning ---
 
@@ -281,7 +281,7 @@ pub trait VcsPort: Send + Sync {
     fn scan_feature_artifacts(
         &self,
         feature_slug: &str,
-    ) -> impl Future<Output = Result&lt;FeatureArtifacts, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<FeatureArtifacts, DomainError>> + Send;
 }
 ```
 
@@ -297,20 +297,20 @@ pub struct WorktreeInfo {
 
 pub struct MergeResult {
     pub success: bool,
-    pub conflicts: Vec&lt;ConflictInfo&gt;,
-    pub merged_commit: Option&lt;String&gt;,
+    pub conflicts: Vec<ConflictInfo>,
+    pub merged_commit: Option<String>,
 }
 
 pub struct ConflictInfo {
     pub path: String,
-    pub ours: Option&lt;String&gt;,   // Our version
-    pub theirs: Option&lt;String&gt;, // Their version
+    pub ours: Option<String>,   // Our version
+    pub theirs: Option<String>, // Their version
 }
 
 pub struct FeatureArtifacts {
-    pub meta_json: Option&lt;String&gt;,  // Metadata JSON
-    pub audit_chain: Option&lt;String&gt;, // Audit chain JSON
-    pub evidence_paths: Vec&lt;String&gt;, // Evidence file paths
+    pub meta_json: Option<String>,  // Metadata JSON
+    pub audit_chain: Option<String>, // Audit chain JSON
+    pub evidence_paths: Vec<String>, // Evidence file paths
 }
 ```
 
@@ -340,7 +340,7 @@ pub struct AgentConfig {
     pub kind: AgentKind,
     pub max_review_cycles: u32,  // How many fix rounds?
     pub timeout_secs: u64,       // Timeout in seconds
-    pub extra_args: Vec&lt;String&gt;, // Agent-specific flags
+    pub extra_args: Vec<String>, // Agent-specific flags
 }
 
 pub struct AgentTask {
@@ -348,13 +348,13 @@ pub struct AgentTask {
     pub feature_slug: String,               // "user-authentication"
     pub prompt_path: PathBuf,               // Path to generated prompt
     pub worktree_path: PathBuf,             // Path to git worktree
-    pub context_files: Vec&lt;PathBuf&gt;,        // Additional context
+    pub context_files: Vec<PathBuf>,        // Additional context
 }
 
 pub struct AgentResult {
     pub success: bool,
-    pub pr_url: Option&lt;String&gt;,             // GitHub PR if created
-    pub commits: Vec&lt;String&gt;,               // Commit hashes
+    pub pr_url: Option<String>,             // GitHub PR if created
+    pub commits: Vec<String>,               // Commit hashes
     pub stdout: String,                     // Full output
     pub stderr: String,                     // Error output
     pub exit_code: i32,                     // Exit code
@@ -374,30 +374,30 @@ pub trait AgentPort: Send + Sync {
         &self,
         task: AgentTask,
         config: &AgentConfig,
-    ) -> impl Future<Output = Result&lt;AgentResult, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<AgentResult, DomainError>> + Send;
 
     /// Spawn an agent without blocking; returns a job ID for later polling.
     fn dispatch_async(
         &self,
         task: AgentTask,
         config: &AgentConfig,
-    ) -> impl Future<Output = Result&lt;String, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<String, DomainError>> + Send;
 
     /// Query the current status of a previously dispatched job.
     fn query_status(
         &self,
         job_id: &str,
-    ) -> impl Future<Output = Result&lt;AgentStatus, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<AgentStatus, DomainError>> + Send;
 
     /// Cancel a running or pending job.
-    fn cancel(&self, job_id: &str) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    fn cancel(&self, job_id: &str) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// Send a follow-up instruction to a running agent.
     fn send_instruction(
         &self,
         job_id: &str,
         instruction: &str,
-    ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 }
 ```
 
@@ -417,9 +417,9 @@ Abstracts **logging, tracing, and metrics**.
 
 ```rust
 pub trait ObservabilityPort: Send + Sync {
-    fn log(&self, level: LogLevel, message: &str, context: Option&lt;serde_json::Value&gt;);
+    fn log(&self, level: LogLevel, message: &str, context: Option<serde_json::Value>);
     fn start_span(&self, name: &str) -> SpanGuard;
-    fn record_metric(&self, name: &str, value: f64, labels: Option&lt;serde_json::Value&gt;);
+    fn record_metric(&self, name: &str, value: f64, labels: Option<serde_json::Value>);
     fn record_error(&self, error: &dyn std::error::Error);
 }
 
@@ -446,18 +446,18 @@ pub trait ReviewPort: Send + Sync {
         wp_id: i64,
         branch: &str,
         description: &str,
-    ) -> impl Future<Output = Result&lt;ReviewResult, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<ReviewResult, DomainError>> + Send;
 
     fn get_review_status(
         &self,
         review_id: &str,
-    ) -> impl Future<Output = Result&lt;ReviewStatus, DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<ReviewStatus, DomainError>> + Send;
 
     fn request_approval(
         &self,
         review_id: &str,
         reviewers: &[String],
-    ) -> impl Future<Output = Result&lt;(), DomainError&gt;> + Send;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 }
 ```
 
@@ -468,8 +468,8 @@ pub trait ReviewPort: Send + Sync {
 When implementing a port:
 
 1. **Implement the trait**: Create a struct and implement all trait methods
-2. **Handle errors**: Return `Result&lt;T, DomainError&gt;` with semantic errors
-3. **Be async-first**: Use `impl Future&lt;Output = ...&gt; + Send`
+2. **Handle errors**: Return `Result<T, DomainError>` with semantic errors
+3. **Be async-first**: Use `impl Future<Output = ...> + Send`
 4. **Log operations**: Use ObservabilityPort for debugging
 5. **Test with mocks**: Provide a mock implementation for testing
 
@@ -477,19 +477,19 @@ Example mock implementation:
 
 ```rust
 pub struct MockStoragePort {
-    features: Arc<Mutex<HashMap&lt;i64, Feature&gt;>>,
+    features: Arc<Mutex<HashMap<i64, Feature>>>,
 }
 
 #[async_trait::async_trait]
 impl StoragePort for MockStoragePort {
-    async fn create_feature(&self, feature: &Feature) -> Result&lt;i64&gt; {
+    async fn create_feature(&self, feature: &Feature) -> Result<i64> {
         let mut f = self.features.lock().unwrap();
         let id = (f.len() + 1) as i64;
         f.insert(id, feature.clone());
         Ok(id)
     }
 
-    async fn get_feature_by_id(&self, id: i64) -> Result&lt;Option&lt;Feature&gt;&gt; {
+    async fn get_feature_by_id(&self, id: i64) -> Result<Option<Feature>> {
         let f = self.features.lock().unwrap();
         Ok(f.get(&id).cloned())
     }

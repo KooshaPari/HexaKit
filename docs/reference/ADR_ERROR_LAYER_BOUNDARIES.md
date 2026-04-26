@@ -14,9 +14,9 @@ Multiple crates defined overlapping error enums (`NotFound`, `Serialization`, `I
 
 2. **`phenotype-errors`** remains a **thin re-export** of `phenotype-error-core` for crates that already depend on the `phenotype_errors` package name. New code should depend on `phenotype-error-core` directly when possible.
 
-3. **`agileplus-error-core`** holds **AgilePlus-shaped** enums (`DomainError`, `ApiError`, `SyncError`, …) that implement **`Into&lt;ErrorKind&gt;`** (and related markers) so AgilePlus code stays expressive while still mapping to the shared taxonomy.
+3. **`agileplus-error-core`** holds **AgilePlus-shaped** enums (`DomainError`, `ApiError`, `SyncError`, …) that implement **`Into<ErrorKind>`** (and related markers) so AgilePlus code stays expressive while still mapping to the shared taxonomy.
 
-4. **Domain crates** (`phenotype-event-sourcing`, `phenotype-policy-engine`, `phenotype-contracts`, …) **keep** their primary `*Error` enums for API clarity. Each such enum **implements `From&lt;…&gt; for ErrorKind`** (or `Into&lt;ErrorKind&gt;`) with an explicit, reviewed mapping table. Callers that need only a stable kind use `.into()`.
+4. **Domain crates** (`phenotype-event-sourcing`, `phenotype-policy-engine`, `phenotype-contracts`, …) **keep** their primary `*Error` enums for API clarity. Each such enum **implements `From<…> for ErrorKind`** (or `Into<ErrorKind>`) with an explicit, reviewed mapping table. Callers that need only a stable kind use `.into()`.
 
 5. **`ContractError`** is the **contract / port facade**: it may wrap `ErrorKind` as `Infrastructure(_)`. Mapping rules:
    - `Port` → `ErrorKind::connection`
@@ -33,6 +33,6 @@ Multiple crates defined overlapping error enums (`NotFound`, `Serialization`, `I
 ## Implementation references
 
 - `crates/phenotype-error-core/src/lib.rs` — `ErrorKind`
-- `crates/agileplus-error-core/src/domain.rs` — `Into&lt;ErrorKind&gt;`
+- `crates/agileplus-error-core/src/domain.rs` — `Into<ErrorKind>`
 - `crates/phenotype-contracts/src/error.rs` — `ContractError` bidirectional story with `ErrorKind`
-- `crates/phenotype-event-sourcing/src/error.rs`, `crates/phenotype-policy-engine/src/error.rs` — `From&lt;crate::Error&gt; for ErrorKind`
+- `crates/phenotype-event-sourcing/src/error.rs`, `crates/phenotype-policy-engine/src/error.rs` — `From<crate::Error> for ErrorKind`

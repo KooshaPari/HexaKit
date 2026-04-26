@@ -86,7 +86,7 @@ This execution plan organizes **11 work packages** across **4 key areas**:
 2. Replace with proper `thiserror::Error` definitions
 3. Convert `anyhow::Error` return types to concrete error types
 4. Update any `context()` calls to `.map_err()`
-5. Test: `cargo test -p &lt;crate&gt;`
+5. Test: `cargo test -p <crate>`
 
 *Files to Modify:*
 - `crates/phenotype-error-core/src/lib.rs` — Add ErrorType enum
@@ -102,7 +102,7 @@ This execution plan organizes **11 work packages** across **4 key areas**:
 
 *Effort:* 2 hours (12 crates × 10 min average)
 *Depends On:* WP1 (for baseline)
-*Rollback:* `git checkout -- &lt;modified-files&gt;`
+*Rollback:* `git checkout -- <modified-files>`
 
 ---
 
@@ -225,7 +225,7 @@ This execution plan organizes **11 work packages** across **4 key areas**:
 1. Find regex compilation in `src/lib.rs`
 2. Wrap with `once_cell::sync::Lazy`:
    ```rust
-   static PATTERN: Lazy&lt;Regex&gt; = Lazy::new(|| Regex::new(...).unwrap());
+   static PATTERN: Lazy<Regex> = Lazy::new(|| Regex::new(...).unwrap());
    ```
 3. Update references from `PATTERN.is_match()` to `PATTERN.is_match()`
 4. Verify same behavior (unit tests)
@@ -269,7 +269,7 @@ This execution plan organizes **11 work packages** across **4 key areas**:
 2. **Unused internal helpers** (300 LOC)
    - In: `phenotype-string`, `phenotype-macros`, `phenotype-logging`
    - Action: Search for `#[allow(dead_code)]`, verify unused, remove
-   - Process: `cargo check -p &lt;crate&gt;` to verify cleanup
+   - Process: `cargo check -p <crate>` to verify cleanup
 
 3. **Deprecated public APIs** (200 LOC)
    - Mark with `#[deprecated]` instead of removing

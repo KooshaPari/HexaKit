@@ -151,8 +151,8 @@ Performance: ~1-2 seconds startup for full stack
 ```
 
 **Dependency Ordering**:
-- `depends_on: &lt;service&gt;: complete` → Wait for health check
-- `depends_on: &lt;service&gt;: started` → Wait for process launch only
+- `depends_on: <service>: complete` → Wait for health check
+- `depends_on: <service>: started` → Wait for process launch only
 - Automatic restart with backoff policy
 
 **Health Checks**:
@@ -223,11 +223,11 @@ readiness_probe:
 # NATS
 NATS_URL=nats://localhost:4222
 NATS_JETSTREAM_DOMAIN=local
-NATS_AUTH_TOKEN=&lt;optional&gt;
+NATS_AUTH_TOKEN=<optional>
 
 # Redis/Dragonfly
 REDIS_URL=redis://localhost:6379
-REDIS_PASSWORD=&lt;optional&gt;
+REDIS_PASSWORD=<optional>
 REDIS_POOL_SIZE=16
 REDIS_POOL_TIMEOUT=30
 

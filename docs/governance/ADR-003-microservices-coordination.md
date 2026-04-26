@@ -309,9 +309,9 @@ pub enum DeploymentSagaStep {
 pub struct DeploymentSaga {
     pub saga_id: String,
     pub deployment_id: String,
-    pub steps: Vec&lt;DeploymentSagaStep&gt;,
+    pub steps: Vec<DeploymentSagaStep>,
     pub state: SagaState,
-    pub created_at: DateTime&lt;Utc&gt;,
+    pub created_at: DateTime<Utc>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
@@ -327,7 +327,7 @@ pub enum SagaState {
 pub async fn coordinate_deployment(
     js: &jetstream::Context,
     deployment_id: String,
-) -> Result&lt;DeploymentSaga&gt; {
+) -> Result<DeploymentSaga> {
     let saga_id = Uuid::new_v4().to_string();
     let mut saga = DeploymentSaga {
         saga_id: saga_id.clone(),
@@ -403,7 +403,7 @@ pub async fn coordinate_deployment(
 pub async fn rollback_deployment(
     js: &jetstream::Context,
     saga: &DeploymentSaga,
-) -> Result&lt;()&gt; {
+) -> Result<()> {
     for step in saga.steps.iter().rev() {
         match step {
             DeploymentSagaStep::VersionPublished { version } => {

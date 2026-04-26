@@ -61,11 +61,11 @@ history:
 
 **Steps:**
 1. **Command signature:**
-   - `pheno bootstrap --all --repos-dir &lt;path&gt; [--dry-run] [--skip &lt;repo1&gt;,&lt;repo2&gt;...]`
+   - `pheno bootstrap --all --repos-dir <path> [--dry-run] [--skip <repo1>,<repo2>...]`
    - `--all`: enable bulk mode
-   - `--repos-dir &lt;path&gt;`: directory containing subdirectories to bootstrap (default: current directory)
+   - `--repos-dir <path>`: directory containing subdirectories to bootstrap (default: current directory)
    - `--dry-run`: preview what would happen; don't modify repos
-   - `--skip &lt;repos&gt;`: comma-separated list of repo names to skip (e.g., `--skip archived-repo,experimental`)
+   - `--skip <repos>`: comma-separated list of repo names to skip (e.g., `--skip archived-repo,experimental`)
 
 2. **Repo discovery:**
    - Scan `repos-dir` for subdirectories
@@ -119,7 +119,7 @@ history:
 
 **Steps:**
 1. **Command signature:**
-   - `pheno manifest generate --repos-dir &lt;path&gt; --output &lt;file&gt; [--override &lt;repo:field=value&gt;...]`
+   - `pheno manifest generate --repos-dir <path> --output <file> [--override <repo:field=value>...]`
    - Scans `repos-dir` for git repos
    - Auto-detects: language, registry, risk profile, publish settings
    - Outputs `repos.toml`
@@ -289,7 +289,7 @@ history:
 1. **Workflow:**
    - After successful bootstrap of a repo, create PR automatically
    - Use `gh pr create` (GitHub CLI; must be installed and authenticated)
-   - Command: `gh pr create --title "chore: add release governance infrastructure" --body &lt;template&gt;`
+   - Command: `gh pr create --title "chore: add release governance infrastructure" --body <template>`
 
 2. **PR title:**
    - Consistent title: `chore: add release governance infrastructure`

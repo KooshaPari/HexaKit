@@ -50,9 +50,9 @@ Add `tracing-opentelemetry = "0.21"` to Cargo.toml.
 Create a composable tracing subscriber layer:
 
 ```rust
-pub fn telemetry_layer&lt;S&gt;() -> impl Layer&lt;S&gt;
+pub fn telemetry_layer<S>() -> impl Layer<S>
 where
-    S: Subscriber + for&lt;'a&gt; LookupSpan&lt;'a&gt;,
+    S: Subscriber + for<'a> LookupSpan<'a>,
 {
     let tracer = global::tracer("agileplus");
     tracing_opentelemetry::layer().with_tracer(tracer)

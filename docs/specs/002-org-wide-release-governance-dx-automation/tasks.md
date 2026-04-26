@@ -53,7 +53,7 @@
 - [x] T007 Implement `internal/adapters/npm.go` — Detect (parse package.json, check private field)
 - [x] T008 Implement npm Version (SemVer pre-release + dist-tag mapping)
 - [x] T009 Implement npm Build (`npm pack`)
-- [x] T010 Implement npm Publish (`npm publish --tag &lt;channel&gt;`) with retry/backoff
+- [x] T010 Implement npm Publish (`npm publish --tag <channel>`) with retry/backoff
 - [x] T011 Implement npm Verify (check registry API for published version)
 - [x] T012 Unit + integration tests for npm adapter
 
@@ -289,7 +289,7 @@
 - Templates use Go `text/template` with repo-specific variables (name, language, registry, risk profile)
 - Multi-language repos get merged configs (e.g., mise.toml with both Rust and Python tasks)
 - Private repos: skip publishing templates but include lint/test/hook infrastructure
-- Generated CI workflows reference `KooshaPari/phenotypeActions/.github/workflows/&lt;name&gt;.yml@v1`
+- Generated CI workflows reference `KooshaPari/phenotypeActions/.github/workflows/<name>.yml@v1`
 
 ### Parallel Opportunities
 - T051-T055 are all parallel (independent template files)
@@ -356,7 +356,7 @@
 ### Implementation Notes
 - If mise monorepo tasks not stable by implementation time, fall back to moon or per-repo mise.toml
 - Each reference config includes: lint, test, build, format, release:promote, release:status
-- release:promote calls `pheno promote &lt;channel&gt;`; release:status calls `pheno audit --repo .`
+- release:promote calls `pheno promote <channel>`; release:status calls `pheno audit --repo .`
 - Tool version pinning in each mise.toml (rust, python, node, go versions)
 
 ### Parallel Opportunities

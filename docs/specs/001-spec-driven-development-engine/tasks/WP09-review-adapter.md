@@ -48,7 +48,7 @@ history:
 ---
 
 ## Markdown Formatting
-Wrap HTML/XML tags in backticks: `` `<div>` ``, `` `&lt;script&gt;` ``
+Wrap HTML/XML tags in backticks: `` `<div>` ``, `` `<script>` ``
 Use language identifiers in code blocks: ````python`, ````bash`
 
 ---
@@ -77,7 +77,7 @@ spec-kitty implement WP09 --base WP05
 
 ### Prerequisite Work
 - **WP05 (Port Traits)** must be complete. The `ReviewPort` trait in `agileplus-domain/src/ports/review.rs` defines the interface this adapter implements.
-- Review the port trait signatures carefully. All methods return `Result&lt;T, DomainError&gt;`.
+- Review the port trait signatures carefully. All methods return `Result<T, DomainError>`.
 
 ### Key References
 - **Spec**: `kitty-specs/001-spec-driven-development-engine/spec.md` -- FR-012 (review-fix loop), FR-011 (PR description with goal context)
@@ -146,15 +146,15 @@ wiremock = "0.6"
      pub struct CoderabbitComment {
          pub id: u64,
          pub body: String,
-         pub path: Option&lt;String&gt;,       // file path if inline comment
-         pub line: Option&lt;u32&gt;,          // line number if inline
+         pub path: Option<String>,       // file path if inline comment
+         pub line: Option<u32>,          // line number if inline
          pub is_actionable: bool,        // true if requires code change
          pub severity: CommentSeverity,  // info, warning, error
-         pub created_at: DateTime&lt;Utc&gt;,
+         pub created_at: DateTime<Utc>,
      }
      ```
   3. Define `CommentSeverity` enum: `Info`, `Warning`, `Error`.
-  4. Implement `fetch_review_comments(client, owner, repo, pr_number) -> Result&lt;Vec&lt;CoderabbitComment&gt;&gt;`:
+  4. Implement `fetch_review_comments(client, owner, repo, pr_number) -> Result<Vec<CoderabbitComment>>`:
      - Call GitHub API: `GET /repos/{owner}/{repo}/pulls/{pr}/comments` for inline comments.
      - Call GitHub API: `GET /repos/{owner}/{repo}/issues/{pr}/comments` for top-level review comments.
      - Filter by `user.login == coderabbit_bot_username`.
@@ -163,10 +163,10 @@ wiremock = "0.6"
        - Lines with code block suggestions (` ```suggestion `) are actionable.
        - Summary/praise comments are informational.
      - Sort by creation time ascending.
-  5. Implement `parse_review_status(client, owner, repo, pr_number) -> Result&lt;ReviewStatus&gt;`:
+  5. Implement `parse_review_status(client, owner, repo, pr_number) -> Result<ReviewStatus>`:
      - Check PR reviews via `GET /repos/{owner}/{repo}/pulls/{pr}/reviews`.
      - Look for Coderabbit review with state `APPROVED`, `CHANGES_REQUESTED`, or `COMMENTED`.
-     - Return a `ReviewStatus` enum: `Approved`, `ChangesRequested(Vec&lt;CoderabbitComment&gt;)`, `Pending`, `NotFound`.
+     - Return a `ReviewStatus` enum: `Approved`, `ChangesRequested(Vec<CoderabbitComment>)`, `Pending`, `NotFound`.
   6. Handle pagination: GitHub returns max 100 items per page. Follow `Link` header for additional pages.
   7. Implement conditional requests using ETags to reduce API consumption on repeated polls.
 - **Files**: `crates/agileplus-agent-review/src/coderabbit.rs`
@@ -181,13 +181,13 @@ wiremock = "0.6"
 - **Purpose**: Provide a fallback review mechanism when Coderabbit is unavailable, allowing human users to approve or reject via CLI interaction.
 - **Steps**:
   1. Create `crates/agileplus-agent-review/src/fallback.rs`.
-  2. Define a `ManualReviewResult` enum: `Approved { reviewer: String }`, `Rejected { reviewer: String, reason: String }`, `ChangesRequested { reviewer: String, comments: Vec&lt;String&gt; }`.
-  3. Implement `prompt_manual_review(pr_url: &str, wp_title: &str) -> Result&lt;ManualReviewResult&gt;`:
+  2. Define a `ManualReviewResult` enum: `Approved { reviewer: String }`, `Rejected { reviewer: String, reason: String }`, `ChangesRequested { reviewer: String, comments: Vec<String> }`.
+  3. Implement `prompt_manual_review(pr_url: &str, wp_title: &str) -> Result<ManualReviewResult>`:
      - Print the PR URL and WP context to stdout.
      - Use `dialoguer` or raw stdin to prompt: "Review PR at {url}. Enter [a]pprove / [r]eject / [c]hanges requested:".
      - If rejected or changes requested, prompt for reason/comments (multi-line input terminated by empty line).
      - Return the structured result.
-  4. Implement `should_fallback(last_coderabbit_check: Option&lt;DateTime&lt;Utc&gt;&gt;, timeout: Duration) -> bool`:
+  4. Implement `should_fallback(last_coderabbit_check: Option<DateTime<Utc>>, timeout: Duration) -> bool`:
      - Returns true if Coderabbit has not responded within the timeout window.
      - Returns true if `last_coderabbit_check` is None (never checked).
   5. The fallback module should be usable both in interactive CLI mode and in a non-interactive mode where it returns `Err(NonInteractive)` if stdin is not a TTY. Check with `atty::is(atty::Stream::Stdin)` or `std::io::stdin().is_terminal()`.
@@ -207,28 +207,28 @@ wiremock = "0.6"
      ```rust
      pub enum CiStatus {
          Passed,
-         Failed { failed_checks: Vec&lt;CheckResult&gt; },
-         Pending { pending_checks: Vec&lt;String&gt; },
+         Failed { failed_checks: Vec<CheckResult> },
+         Pending { pending_checks: Vec<String> },
          Unknown,
      }
 
      pub struct CheckResult {
          pub name: String,
          pub status: String,       // "completed", "in_progress", "queued"
-         pub conclusion: Option&lt;String&gt;,  // "success", "failure", "neutral", etc.
-         pub details_url: Option&lt;String&gt;,
-         pub started_at: Option&lt;DateTime&lt;Utc&gt;&gt;,
-         pub completed_at: Option&lt;DateTime&lt;Utc&gt;&gt;,
+         pub conclusion: Option<String>,  // "success", "failure", "neutral", etc.
+         pub details_url: Option<String>,
+         pub started_at: Option<DateTime<Utc>>,
+         pub completed_at: Option<DateTime<Utc>>,
      }
      ```
-  3. Implement `check_ci_status(client, owner, repo, pr_number) -> Result&lt;CiStatus&gt;`:
+  3. Implement `check_ci_status(client, owner, repo, pr_number) -> Result<CiStatus>`:
      - Get the PR's head SHA via `GET /repos/{owner}/{repo}/pulls/{pr}` -> `head.sha`.
      - Fetch check runs: `GET /repos/{owner}/{repo}/commits/{sha}/check-runs`.
      - Also fetch commit statuses: `GET /repos/{owner}/{repo}/commits/{sha}/status` (for legacy status API).
      - Combine results: all checks must be `completed` with `conclusion: success` for `Passed`.
      - Any `failure` or `cancelled` -> `Failed`.
      - Any `in_progress` or `queued` -> `Pending`.
-  4. Implement `poll_until_complete(client, owner, repo, pr_number, interval, max_wait) -> Result&lt;CiStatus&gt;`:
+  4. Implement `poll_until_complete(client, owner, repo, pr_number, interval, max_wait) -> Result<CiStatus>`:
      - Poll `check_ci_status` at the given interval.
      - Return as soon as status is `Passed` or `Failed`.
      - Return `Pending` if max_wait exceeded.
@@ -339,14 +339,14 @@ wiremock = "0.6"
 **When adding an entry**:
 1. Scroll to the bottom of this file (Activity Log section below "Valid lanes")
 2. **APPEND the new entry at the END** (do NOT prepend or insert in middle)
-3. Use exact format: `- YYYY-MM-DDTHH:MM:SSZ -- agent_id -- lane=&lt;lane&gt; -- &lt;action&gt;`
+3. Use exact format: `- YYYY-MM-DDTHH:MM:SSZ -- agent_id -- lane=<lane> -- <action>`
 4. Timestamp MUST be current time in UTC (check with `date -u "+%Y-%m-%dT%H:%M:%SZ"`)
 5. Lane MUST match the frontmatter `lane:` field exactly
 6. Agent ID should identify who made the change (claude-sonnet-4-5, codex, etc.)
 
 **Format**:
 ```
-- YYYY-MM-DDTHH:MM:SSZ -- &lt;agent_id&gt; -- lane=&lt;lane&gt; -- &lt;brief action description&gt;
+- YYYY-MM-DDTHH:MM:SSZ -- <agent_id> -- lane=<lane> -- <brief action description>
 ```
 
 **Valid lanes**: `planned`, `doing`, `for_review`, `done`
@@ -356,7 +356,7 @@ wiremock = "0.6"
 To change a work package's lane, either:
 
 1. **Edit directly**: Change the `lane:` field in frontmatter AND append activity log entry (at the end)
-2. **Use CLI**: `spec-kitty agent tasks move-task WP09 --to &lt;lane&gt; --note "message"` (recommended)
+2. **Use CLI**: `spec-kitty agent tasks move-task WP09 --to <lane> --note "message"` (recommended)
 
 **Initial entry**:
 - 2026-02-27T00:00:00Z -- system -- lane=planned -- Prompt created.

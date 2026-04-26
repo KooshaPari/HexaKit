@@ -31,7 +31,7 @@ Execute this once before starting any work. Record results in `docs/reports/phas
 {
   "phase2_baseline": {
     "timestamp": "2026-03-31T00:00:00Z",
-    "git_commit": "<&lt;RUN: git rev-parse HEAD&gt;>",
+    "git_commit": "<<RUN: git rev-parse HEAD>>",
     "metrics": {
       "build": {
         "cold_build_seconds": 81.2,
@@ -132,7 +132,7 @@ Create `/docs/reports/PHASE2_BASELINE.md`:
 # Phase 2 Baseline Metrics (Pre-Optimization)
 
 **Captured:** 2026-03-31 00:00 UTC
-**Git Commit:** &lt;&lt;commit-hash&gt;&gt;
+**Git Commit:** <<commit-hash>>
 **Repository:** KooshaPari/phenotype-infrakit
 
 ## Summary
@@ -989,19 +989,19 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cargo/registry
-          key: $&#123;&#123; runner.os }}-cargo-registry-$&#123;&#123; hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache cargo index
         uses: actions/cache@v3
         with:
           path: ~/.cargo/git
-          key: $&#123;&#123; runner.os }}-cargo-git-$&#123;&#123; hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache cargo build
         uses: actions/cache@v3
         with:
           path: target
-          key: $&#123;&#123; runner.os }}-cargo-build-target-$&#123;&#123; hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Check formatting
         run: cargo fmt --all -- --check

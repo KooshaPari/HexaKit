@@ -409,7 +409,7 @@ Replace old 630 LOC monolith with thin 150 LOC handler.
 
 **New Handler Structure:**
 ```rust
-pub async fn execute(self, ctx: &CliContext) -> Result&lt;()&gt; {
+pub async fn execute(self, ctx: &CliContext) -> Result<()> {
     let service = ctx.retrospective_service();
 
     match self.action {
@@ -451,7 +451,7 @@ agileplus retrospective gen --from 2026-03-01 --to 2026-03-31
 **Code:**
 ```rust
 impl CliContext {
-    pub fn retrospective_service(&self) -> Arc&lt;dyn RetrospectiveService&gt; {
+    pub fn retrospective_service(&self) -> Arc<dyn RetrospectiveService> {
         let repo = Arc::new(SqliteRepository::new(&self.db_pool));
         let cache = Arc::new(RedisCache::new(&self.redis_client));
         let event_bus = Arc::new(EventBusAdapter::new(&self.event_db));
@@ -542,21 +542,21 @@ All three phases require proper DI. Create a `ServiceProvider` trait:
 // File: crates/phenotype-core/src/service_provider.rs
 
 pub trait ServiceProvider {
-    fn retrospective_service(&self) -> Arc&lt;dyn RetrospectiveService&gt;;
-    fn plan_service(&self) -> Arc&lt;dyn PlanService&gt;;
-    fn review_service(&self) -> Arc&lt;dyn ReviewService&gt;;
+    fn retrospective_service(&self) -> Arc<dyn RetrospectiveService>;
+    fn plan_service(&self) -> Arc<dyn PlanService>;
+    fn review_service(&self) -> Arc<dyn ReviewService>;
 }
 
 pub struct DefaultServiceProvider {
-    repository_pool: Arc&lt;dyn RepositoryPool&gt;,
-    cache_client: Arc&lt;dyn CacheClient&gt;,
-    event_bus: Arc&lt;dyn EventBus&gt;,
+    repository_pool: Arc<dyn RepositoryPool>,
+    cache_client: Arc<dyn CacheClient>,
+    event_bus: Arc<dyn EventBus>,
 }
 ```
 
 ### Error Handling Convention
 
-All services return `Result&lt;T, ServiceError&gt;` with consistent structure:
+All services return `Result<T, ServiceError>` with consistent structure:
 
 ```rust
 #[derive(thiserror::Error)]
@@ -585,15 +585,15 @@ All phases use shared test infrastructure:
 ```rust
 // Test fixture factory
 pub struct TestContext {
-    repository: Arc&lt;MockRepository&gt;,
-    cache: Arc&lt;MockCache&gt;,
-    event_bus: Arc&lt;MockEventBus&gt;,
+    repository: Arc<MockRepository>,
+    cache: Arc<MockCache>,
+    event_bus: Arc<MockEventBus>,
 }
 
 impl TestContext {
     pub fn new() -> Self { }
     pub fn with_failure_mode(failure: FailureMode) -> Self { }
-    pub fn build_service(&self) -> Arc&lt;dyn RetrospectiveService&gt; { }
+    pub fn build_service(&self) -> Arc<dyn RetrospectiveService> { }
 }
 ```
 

@@ -141,7 +141,7 @@ The deployment script automates scanning across multiple repositories.
 **Syntax:**
 
 ```bash
-./scripts/snyk-deploy.sh &lt;snyk-token&gt; [repo1] [repo2] ...
+./scripts/snyk-deploy.sh <snyk-token> [repo1] [repo2] ...
 ```
 
 **Examples:**

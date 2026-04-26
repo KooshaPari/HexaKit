@@ -137,8 +137,8 @@ let mut store = self.events.write();
 Every `unwrap()`, `expect()`, `panic!()`, or `unreachable!()` **must** have an inline comment:
 
 ```rust
-// SAFETY: &lt;reason why this is safe&gt;
-// INVARIANT: &lt;architectural assumption being made&gt;
+// SAFETY: <reason why this is safe>
+// INVARIANT: <architectural assumption being made>
 
 // ❌ WRONG
 let seq = events.last().unwrap().sequence;
@@ -203,7 +203,7 @@ if !events.is_empty() {
 
 ```rust
 // Safe: type system guarantees Some(_)
-fn get_cached(&self, key: &str) -> Option&lt;Value&gt; {
+fn get_cached(&self, key: &str) -> Option<Value> {
     self.get(key).map(|entry| entry.value.clone())
 }
 
@@ -280,7 +280,7 @@ match self.state {
 ### ✅ Post-Filtering Guarantees
 
 ```rust
-let numbers: Vec&lt;i32&gt; = vec![1, 2, 3];
+let numbers: Vec<i32> = vec![1, 2, 3];
 let filtered = numbers.into_iter()
     .filter(|n| n > &0)  // Remove non-positive
     .map(|n| n + 10);

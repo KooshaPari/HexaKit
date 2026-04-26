@@ -48,7 +48,7 @@ history:
 ---
 
 ## Markdown Formatting
-Wrap HTML/XML tags in backticks: `` `<div>` ``, `` `&lt;script&gt;` ``
+Wrap HTML/XML tags in backticks: `` `<div>` ``, `` `<script>` ``
 Use language identifiers in code blocks: ````python`, ````bash`
 
 ---
@@ -130,7 +130,7 @@ tempfile = "3"
          initialized: bool,
      }
      ```
-  3. Implement `TelemetryAdapter::new(config: TelemetryConfig) -> Result&lt;Self&gt;`:
+  3. Implement `TelemetryAdapter::new(config: TelemetryConfig) -> Result<Self>`:
      - Initialize the OTLP trace exporter pipeline if `config.otlp_endpoint` is set.
      - Initialize the OTLP metrics exporter if enabled.
      - Set up the `tracing-subscriber` layer stack: JSON formatter + OpenTelemetry layer + env filter.
@@ -166,7 +166,7 @@ tempfile = "3"
      pub const ATTR_AGENT_TYPE: &str = "agileplus.agent.type";
      pub const ATTR_REVIEW_CYCLE: &str = "agileplus.review.cycle";
      ```
-  3. Implement `create_command_span(command_name: &str, feature_slug: Option&lt;&str&gt;) -> tracing::Span`:
+  3. Implement `create_command_span(command_name: &str, feature_slug: Option<&str>) -> tracing::Span`:
      - Creates a top-level span with `tracing::info_span!`.
      - Sets `ATTR_COMMAND` and optionally `ATTR_FEATURE_SLUG`.
      - This span is the parent of all child spans within a single CLI invocation.
@@ -207,9 +207,9 @@ tempfile = "3"
   2. Define the metric instruments at module level:
      ```rust
      pub struct MetricsRecorder {
-         agent_runs: Counter&lt;u64&gt;,
-         review_cycles: Counter&lt;u64&gt;,
-         command_duration: Histogram&lt;f64&gt;,
+         agent_runs: Counter<u64>,
+         review_cycles: Counter<u64>,
+         command_duration: Histogram<f64>,
      }
      ```
   3. Implement `MetricsRecorder::new(meter: &Meter) -> Self`:
@@ -219,7 +219,7 @@ tempfile = "3"
   4. Implement recording methods:
      - `record_agent_run(feature_slug: &str, wp_id: &str, agent_type: &str)`: increments counter with labels.
      - `record_review_cycle(feature_slug: &str, wp_id: &str, cycle: u32)`: increments counter.
-     - `record_command_duration(command: &str, feature_slug: Option&lt;&str&gt;, duration: Duration)`: records histogram value.
+     - `record_command_duration(command: &str, feature_slug: Option<&str>, duration: Duration)`: records histogram value.
   5. Implement `MetricSnapshot` struct for SQLite persistence:
      ```rust
      pub struct MetricSnapshot {
@@ -227,7 +227,7 @@ tempfile = "3"
          pub duration_ms: u64,
          pub agent_runs: u64,
          pub review_cycles: u64,
-         pub timestamp: DateTime&lt;Utc&gt;,
+         pub timestamp: DateTime<Utc>,
      }
      ```
   6. Implement `collect_snapshot(command: &str) -> MetricSnapshot`:
@@ -246,7 +246,7 @@ tempfile = "3"
 - **Purpose**: Configure structured JSON logging via the `tracing` crate with span context, configurable output targets, and level filtering.
 - **Steps**:
   1. Create `crates/agileplus-telemetry/src/logs.rs`.
-  2. Implement `init_logging(config: &LogConfig) -> Result&lt;()&gt;`:
+  2. Implement `init_logging(config: &LogConfig) -> Result<()>`:
      - Build a `tracing_subscriber::fmt` layer with JSON formatter.
      - Configure output target based on `config.output`:
        - `LogOutput::Stdout` -> write to stdout
@@ -306,7 +306,7 @@ tempfile = "3"
      ```rust
      #[derive(Deserialize, Default)]
      pub struct TelemetryConfig {
-         pub otlp: Option&lt;OtlpConfig&gt;,
+         pub otlp: Option<OtlpConfig>,
          pub logging: LogConfig,
          pub sampling: SamplingConfig,
      }
@@ -315,7 +315,7 @@ tempfile = "3"
      pub struct OtlpConfig {
          pub endpoint: String,           // e.g., "http://localhost:4317"
          pub protocol: OtlpProtocol,     // grpc or http
-         pub headers: HashMap&lt;String, String&gt;,  // auth headers
+         pub headers: HashMap<String, String>,  // auth headers
          pub timeout_ms: u64,            // default: 5000
          pub export_interval_ms: u64,    // default: 60000
      }
@@ -331,12 +331,12 @@ tempfile = "3"
          pub trace_ratio: f64,  // 0.0 to 1.0, default 1.0 (sample everything)
      }
      ```
-  3. Implement `TelemetryConfig::load() -> Result&lt;Self&gt;`:
+  3. Implement `TelemetryConfig::load() -> Result<Self>`:
      - Look for config at `~/.agileplus/otel-config.yaml`.
      - If file does not exist, return `TelemetryConfig::default()` (no OTLP, info logging to stdout).
      - If file exists but is malformed, return error with clear message.
      - Expand `~` to actual home directory using `dirs::home_dir()`.
-  4. Implement `TelemetryConfig::load_from(path: &Path) -> Result&lt;Self&gt;` for testing.
+  4. Implement `TelemetryConfig::load_from(path: &Path) -> Result<Self>` for testing.
   5. Create a default config template that `agileplus init` could write:
      ```yaml
      # AgilePlus OpenTelemetry Configuration
@@ -437,14 +437,14 @@ tempfile = "3"
 **When adding an entry**:
 1. Scroll to the bottom of this file (Activity Log section below "Valid lanes")
 2. **APPEND the new entry at the END** (do NOT prepend or insert in middle)
-3. Use exact format: `- YYYY-MM-DDTHH:MM:SSZ -- agent_id -- lane=&lt;lane&gt; -- &lt;action&gt;`
+3. Use exact format: `- YYYY-MM-DDTHH:MM:SSZ -- agent_id -- lane=<lane> -- <action>`
 4. Timestamp MUST be current time in UTC (check with `date -u "+%Y-%m-%dT%H:%M:%SZ"`)
 5. Lane MUST match the frontmatter `lane:` field exactly
 6. Agent ID should identify who made the change (claude-sonnet-4-5, codex, etc.)
 
 **Format**:
 ```
-- YYYY-MM-DDTHH:MM:SSZ -- &lt;agent_id&gt; -- lane=&lt;lane&gt; -- &lt;brief action description&gt;
+- YYYY-MM-DDTHH:MM:SSZ -- <agent_id> -- lane=<lane> -- <brief action description>
 ```
 
 **Valid lanes**: `planned`, `doing`, `for_review`, `done`
@@ -454,7 +454,7 @@ tempfile = "3"
 To change a work package's lane, either:
 
 1. **Edit directly**: Change the `lane:` field in frontmatter AND append activity log entry (at the end)
-2. **Use CLI**: `spec-kitty agent tasks move-task WP10 --to &lt;lane&gt; --note "message"` (recommended)
+2. **Use CLI**: `spec-kitty agent tasks move-task WP10 --to <lane> --note "message"` (recommended)
 
 **Initial entry**:
 - 2026-02-27T00:00:00Z -- system -- lane=planned -- Prompt created.

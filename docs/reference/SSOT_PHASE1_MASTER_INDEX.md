@@ -75,7 +75,7 @@
 **Length:** 21 KB (400 lines)
 **Audience:** All agents, team leads
 **Contains:**
-- Agent branching pattern (`specs/agent-&lt;name&gt;-&lt;task&gt;`)
+- Agent branching pattern (`specs/agent-<name>-<task>`)
 - Commit message format with 4+ examples
 - Step-by-step workflow (create, edit, validate, push)
 - Conflict handling (3 scenarios with solutions)
@@ -182,7 +182,7 @@
 
 ### If You're an Agent (Using SSOT)
 1. Read: **Agent Workflow Guide** (20 min)
-2. Run: `scripts/agent-setup.sh &lt;your-name&gt;`
+2. Run: `scripts/agent-setup.sh <your-name>`
 3. Follow: Workflow A (update single FR)
 4. Reference: Troubleshooting section (as needed)
 
@@ -369,7 +369,7 @@ A: Batch processing scales to 100+ agents. Just increase batch interval (5 min â
 
 ### For Agents
 1. Wait for Phase 1 completion (2 weeks)
-2. Run `scripts/agent-setup.sh &lt;your-name&gt;`
+2. Run `scripts/agent-setup.sh <your-name>`
 3. Follow Agent Workflow Guide
 4. Start authoring specs!
 

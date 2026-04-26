@@ -427,7 +427,7 @@ Before you start, verify:
 You'll know you've succeeded when:
 
 ✅ **Token Acquisition**
-- `snyk auth &lt;token&gt;` succeeds
+- `snyk auth <token>` succeeds
 - `snyk test --dry-run` works
 
 ✅ **Local Deployment**

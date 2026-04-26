@@ -12,21 +12,21 @@ The workspace contains 11 crates organized by responsibility:
 
 ```mermaid
 graph TD
-    CLI["agileplus-cli&lt;br/&gt;(Command-line interface)"]
-    API["agileplus-api&lt;br/&gt;(REST API, gRPC)"]
+    CLI["agileplus-cli<br/>(Command-line interface)"]
+    API["agileplus-api<br/>(REST API, gRPC)"]
 
-    Engine["agileplus-engine&lt;br/&gt;(Orchestration)"]
-    Domain["agileplus-domain&lt;br/&gt;(Core entities, FSM)"]
+    Engine["agileplus-engine<br/>(Orchestration)"]
+    Domain["agileplus-domain<br/>(Core entities, FSM)"]
 
-    SQLite["agileplus-sqlite&lt;br/&gt;(Storage adapter)"]
-    Git["agileplus-git&lt;br/&gt;(VCS adapter)"]
-    Agent["agileplus-agent*&lt;br/&gt;(Agent dispatch)"]
+    SQLite["agileplus-sqlite<br/>(Storage adapter)"]
+    Git["agileplus-git<br/>(VCS adapter)"]
+    Agent["agileplus-agent*<br/>(Agent dispatch)"]
 
-    SubCmds["agileplus-subcmds&lt;br/&gt;(Audit logging)"]
-    Triage["agileplus-triage&lt;br/&gt;(Classification)"]
-    Telemetry["agileplus-telemetry&lt;br/&gt;(Observability)"]
+    SubCmds["agileplus-subcmds<br/>(Audit logging)"]
+    Triage["agileplus-triage<br/>(Classification)"]
+    Telemetry["agileplus-telemetry<br/>(Observability)"]
 
-    Sync["agileplus-plane&lt;br/&gt;(External sync)"]
+    Sync["agileplus-plane<br/>(External sync)"]
 
     CLI -->|depends| Domain
     CLI -->|depends| Engine
@@ -107,19 +107,19 @@ Abstracts persistence:
 **Key methods**:
 ```rust
 // Features
-fn create_feature(&self, feature: &Feature) -> Result&lt;i64&gt;
-fn get_feature_by_slug(&self, slug: &str) -> Result&lt;Option&lt;Feature&gt;&gt;
-fn update_feature_state(&self, id: i64, state: FeatureState) -> Result&lt;()&gt;
-fn list_features_by_state(&self, state: FeatureState) -> Result&lt;Vec&lt;Feature&gt;&gt;
+fn create_feature(&self, feature: &Feature) -> Result<i64>
+fn get_feature_by_slug(&self, slug: &str) -> Result<Option<Feature>>
+fn update_feature_state(&self, id: i64, state: FeatureState) -> Result<()>
+fn list_features_by_state(&self, state: FeatureState) -> Result<Vec<Feature>>
 
 // Work packages
-fn create_work_package(&self, wp: &WorkPackage) -> Result&lt;i64&gt;
-fn list_wps_by_feature(&self, feature_id: i64) -> Result&lt;Vec&lt;WorkPackage&gt;&gt;
-fn get_ready_wps(&self, feature_id: i64) -> Result&lt;Vec&lt;WorkPackage&gt;&gt;
+fn create_work_package(&self, wp: &WorkPackage) -> Result<i64>
+fn list_wps_by_feature(&self, feature_id: i64) -> Result<Vec<WorkPackage>>
+fn get_ready_wps(&self, feature_id: i64) -> Result<Vec<WorkPackage>>
 
 // Audit trail
-fn append_audit_entry(&self, entry: &AuditEntry) -> Result&lt;i64&gt;
-fn get_audit_trail(&self, feature_id: i64) -> Result&lt;Vec&lt;AuditEntry&gt;&gt;
+fn append_audit_entry(&self, entry: &AuditEntry) -> Result<i64>
+fn get_audit_trail(&self, feature_id: i64) -> Result<Vec<AuditEntry>>
 ```
 
 ### VcsPort (`vcs.rs`)
@@ -135,11 +135,11 @@ Abstracts version control:
 
 **Key methods**:
 ```rust
-fn create_worktree(&self, feature_slug: &str, wp_id: &str) -> Result&lt;PathBuf&gt;
-fn create_branch(&self, branch_name: &str, base: &str) -> Result&lt;()&gt;
-fn merge_to_target(&self, source: &str, target: &str) -> Result&lt;MergeResult&gt;
-fn read_artifact(&self, feature_slug: &str, path: &str) -> Result&lt;String&gt;
-fn write_artifact(&self, feature_slug: &str, path: &str, content: &str) -> Result&lt;()&gt;
+fn create_worktree(&self, feature_slug: &str, wp_id: &str) -> Result<PathBuf>
+fn create_branch(&self, branch_name: &str, base: &str) -> Result<()>
+fn merge_to_target(&self, source: &str, target: &str) -> Result<MergeResult>
+fn read_artifact(&self, feature_slug: &str, path: &str) -> Result<String>
+fn write_artifact(&self, feature_slug: &str, path: &str, content: &str) -> Result<()>
 ```
 
 ### AgentPort (`agent.rs`)
@@ -155,10 +155,10 @@ Abstracts agent dispatch:
 
 **Key methods**:
 ```rust
-fn dispatch(&self, task: AgentTask, config: &AgentConfig) -> Result&lt;AgentResult&gt;
-fn dispatch_async(&self, task: AgentTask, config: &AgentConfig) -> Result&lt;String&gt;
-fn query_status(&self, job_id: &str) -> Result&lt;AgentStatus&gt;
-fn send_instruction(&self, job_id: &str, instruction: &str) -> Result&lt;()&gt;
+fn dispatch(&self, task: AgentTask, config: &AgentConfig) -> Result<AgentResult>
+fn dispatch_async(&self, task: AgentTask, config: &AgentConfig) -> Result<String>
+fn query_status(&self, job_id: &str) -> Result<AgentStatus>
+fn send_instruction(&self, job_id: &str, instruction: &str) -> Result<()>
 ```
 
 ### Observability Port (`observability.rs`)
@@ -273,7 +273,7 @@ pub trait StoragePort: Send + Sync {
     fn create_feature(
         &self,
         feature: &Feature,
-    ) -> impl Future&lt;Output = Result&lt;i64&gt;&gt; + Send;
+    ) -> impl Future<Output = Result<i64>> + Send;
 }
 ```
 
@@ -284,7 +284,7 @@ This allows:
 
 ### 5. Error Handling
 
-All domain operations return `Result&lt;T, DomainError&gt;`:
+All domain operations return `Result<T, DomainError>`:
 
 ```rust
 pub enum DomainError {
@@ -386,36 +386,36 @@ When running in full platform mode (`agileplus platform up`), additional infrast
 ```mermaid
 graph TB
     subgraph CLI ["CLI Layer"]
-        CLICrate["agileplus-cli&lt;br/&gt;(clap subcommands)"]
+        CLICrate["agileplus-cli<br/>(clap subcommands)"]
     end
 
     subgraph API ["API Layer"]
-        APICrate["agileplus-api&lt;br/&gt;(htmx dashboard, SSE)"]
-        GRPCCrate["agileplus-grpc&lt;br/&gt;(protobuf, tonic)"]
+        APICrate["agileplus-api<br/>(htmx dashboard, SSE)"]
+        GRPCCrate["agileplus-grpc<br/>(protobuf, tonic)"]
     end
 
     subgraph ENGINE ["Engine Layer"]
-        EngineCrate["agileplus-engine&lt;br/&gt;(orchestration)"]
-        SyncCrate["agileplus-plane&lt;br/&gt;(Plane.so sync)"]
-        TelemetryCrate["agileplus-telemetry&lt;br/&gt;(OTEL traces/metrics)"]
+        EngineCrate["agileplus-engine<br/>(orchestration)"]
+        SyncCrate["agileplus-plane<br/>(Plane.so sync)"]
+        TelemetryCrate["agileplus-telemetry<br/>(OTEL traces/metrics)"]
     end
 
     subgraph DOMAIN ["Domain Layer (no external deps)"]
-        DomainCrate["agileplus-domain&lt;br/&gt;(Feature, WP, Audit, FSM, ports)"]
+        DomainCrate["agileplus-domain<br/>(Feature, WP, Audit, FSM, ports)"]
     end
 
     subgraph ADAPTERS ["Storage + VCS Adapters"]
-        SQLiteCrate["agileplus-sqlite&lt;br/&gt;(sqlx, migrations)"]
-        GitCrate["agileplus-git&lt;br/&gt;(git2-rs, worktrees)"]
-        SubCmdsCrate["agileplus-subcmds&lt;br/&gt;(agent subcommand registry)"]
+        SQLiteCrate["agileplus-sqlite<br/>(sqlx, migrations)"]
+        GitCrate["agileplus-git<br/>(git2-rs, worktrees)"]
+        SubCmdsCrate["agileplus-subcmds<br/>(agent subcommand registry)"]
     end
 
     subgraph INFRA ["External Infrastructure"]
-        NATS["NATS JetStream&lt;br/&gt;(event bus)"]
-        Dragon["Dragonfly&lt;br/&gt;(Redis-compatible cache)"]
-        Neo4j["Neo4j&lt;br/&gt;(dependency graph)"]
-        MinIO["MinIO&lt;br/&gt;(artifact storage, S3)"]
-        Tailscale["Tailscale&lt;br/&gt;(P2P mesh VPN)"]
+        NATS["NATS JetStream<br/>(event bus)"]
+        Dragon["Dragonfly<br/>(Redis-compatible cache)"]
+        Neo4j["Neo4j<br/>(dependency graph)"]
+        MinIO["MinIO<br/>(artifact storage, S3)"]
+        Tailscale["Tailscale<br/>(P2P mesh VPN)"]
     end
 
     CLICrate --> DomainCrate

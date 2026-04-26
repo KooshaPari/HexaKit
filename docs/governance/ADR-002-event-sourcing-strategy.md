@@ -25,7 +25,7 @@ Event 1 (hash: A) → Event 2 (hash: B, prev_hash: A) → Event 3 (hash: C, prev
 
 This design is present in the `phenotype-event-sourcing` crate with:
 
-- **`EventEnvelope&lt;T&gt;`**: Generic envelope containing event ID, timestamp, actor, payload, sequence number, and hash chain links.
+- **`EventEnvelope<T>`**: Generic envelope containing event ID, timestamp, actor, payload, sequence number, and hash chain links.
 - **`EventStore` trait**: Abstract interface for append-only storage with `append()`, `get_events()`, `get_events_since()`, `get_events_by_range()`, and `verify_chain()` operations.
 - **SHA-256 hash computation**: Each event is hashed with inputs including previous event hash, creating an tamper-evident chain.
 - **Sequence numbering**: Monotonically increasing sequence IDs per entity ensure event ordering and detect gaps.
@@ -254,7 +254,7 @@ When designing a new audit-heavy domain, **default to event sourcing** unless ex
 pub struct PolicyEvaluationEvent {
     policy_id: String,
     result: PolicyResult,    // ALLOW, DENY
-    context: HashMap&lt;String, String&gt;,
+    context: HashMap<String, String>,
 }
 
 let event = EventEnvelope::new(
@@ -276,13 +276,13 @@ pub trait EventStore {
         entity_type: &str,
         entity_id: &str,
         state: &serde_json::Value,
-    ) -> Result&lt;()&gt;;
+    ) -> Result<()>;
 
     fn get_latest_snapshot(
         &self,
         entity_type: &str,
         entity_id: &str,
-    ) -> Result<Option&lt;(i64, serde_json::Value)&gt;>;
+    ) -> Result<Option<(i64, serde_json::Value)>>;
 }
 ```
 
@@ -297,13 +297,13 @@ For high-volume streams, add projection handlers:
 
 ```rust
 pub trait ProjectionHandler {
-    fn handle_event(&self, event: &JsonEnvelope) -> Result&lt;()&gt;;
-    fn build_read_model(&self, events: Vec&lt;JsonEnvelope&gt;) -> Result&lt;ReadModel&gt;;
+    fn handle_event(&self, event: &JsonEnvelope) -> Result<()>;
+    fn build_read_model(&self, events: Vec<JsonEnvelope>) -> Result<ReadModel>;
 }
 
 // Example: Policy Application Projection
 pub struct PolicyApplicationProjection {
-    cache: Arc<Mutex<HashMap&lt;String, PolicyState&gt;>>,
+    cache: Arc<Mutex<HashMap<String, PolicyState>>>,
 }
 
 impl ProjectionHandler for PolicyApplicationProjection {
@@ -325,7 +325,7 @@ On service startup, verify event chains:
 
 ```rust
 #[tokio::main]
-async fn main() -> Result&lt;()&gt; {
+async fn main() -> Result<()> {
     let store = get_event_store()?;
 
     // Verify all entity chains
@@ -413,7 +413,7 @@ This ADR adopts a **pragmatic hybrid**:
 ### Phenotype Implementation
 
 - `phenotype-event-sourcing` crate: `/crates/phenotype-event-sourcing/`
-  - `EventEnvelope&lt;T&gt;`: Generic event wrapper with hash chain support
+  - `EventEnvelope<T>`: Generic event wrapper with hash chain support
   - `EventStore` trait: Abstract interface for append-only storage
   - `compute_hash()`, `verify_chain()`: SHA-256 utilities
   - `InMemoryEventStore`: Reference implementation

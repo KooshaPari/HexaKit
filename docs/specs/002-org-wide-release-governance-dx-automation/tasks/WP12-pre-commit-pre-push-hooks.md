@@ -76,7 +76,7 @@ history:
    - On failure: print helpful error message with examples:
      ```
      ❌ Commit message does not follow conventional commits format.
-     Expected format: &lt;type&gt;(&lt;scope&gt;)?: &lt;subject (1-72 chars)&gt;
+     Expected format: <type>(<scope>)?: <subject (1-72 chars)>
      Examples:
        feat: add login page
        fix(auth): resolve token expiration issue
@@ -121,7 +121,7 @@ history:
 
 2. Optimization for speed:
    - Check only staged files, not entire repo: use `git diff --cached --name-only` to get staged files
-   - Pass file list to mise task: `mise run format -- --check -- &lt;file list&gt;`
+   - Pass file list to mise task: `mise run format -- --check -- <file list>`
    - This requires lint task to support file arguments (add to reference configs in WP11)
    - Fallback: run full repo lint if task doesn't support file filtering
 
@@ -186,7 +186,7 @@ history:
 
 **Notes:**
 - Pre-push hooks often fail silently; test thoroughly
-- Git pre-push hook input format: `&lt;local-ref&gt; &lt;local-sha&gt; &lt;remote-ref&gt; &lt;remote-sha&gt;`
+- Git pre-push hook input format: `<local-ref> <local-sha> <remote-ref> <remote-sha>`
 - Document why main is blocked: enforces PR review process
 - Consider allowing `--no-verify` for emergency pushes (rare, but document)
 

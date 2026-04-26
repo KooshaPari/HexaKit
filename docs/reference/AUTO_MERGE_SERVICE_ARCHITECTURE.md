@@ -89,7 +89,7 @@ The **Auto-Merge Service** automatically merges clean specification branches (`s
 ```rust
 use git2::{Repository, BranchType};
 
-pub fn list_agent_branches(repo: &Repository) -> Result&lt;Vec&lt;Branch&gt;, GitError&gt; {
+pub fn list_agent_branches(repo: &Repository) -> Result<Vec<Branch>, GitError> {
     let mut branches = Vec::new();
 
     for branch_iter in repo.branches(Some(BranchType::Remote))? {
@@ -98,7 +98,7 @@ pub fn list_agent_branches(repo: &Repository) -> Result&lt;Vec&lt;Branch&gt;, Gi
 
         // Match pattern: refs/remotes/origin/specs/agent-*
         if branch_name.starts_with("origin/specs/agent-") {
-            // Extract only the local name: specs/agent-&lt;name&gt;-&lt;task&gt;
+            // Extract only the local name: specs/agent-<name>-<task>
             let local_name = branch_name.strip_prefix("origin/").unwrap();
 
             // Get branch tip commit
@@ -121,7 +121,7 @@ pub fn list_agent_branches(repo: &Repository) -> Result&lt;Vec&lt;Branch&gt;, Gi
 
 pub struct Branch {
     pub name: String,
-    pub oid: Option&lt;git2::Oid&gt;,
+    pub oid: Option<git2::Oid>,
     pub age_secs: u64,
     pub is_merged: bool,
 }
@@ -133,7 +133,7 @@ pub struct Branch {
 pub async fn validate_branch(
     repo: &Repository,
     branch: &Branch,
-) -> Result&lt;ValidationResult, ValidationError&gt; {
+) -> Result<ValidationResult, ValidationError> {
     let mut result = ValidationResult {
         branch_name: branch.name.clone(),
         issues: Vec::new(),
@@ -193,7 +193,7 @@ pub async fn validate_branch(
 
 pub struct ValidationResult {
     pub branch_name: String,
-    pub issues: Vec&lt;String&gt;,
+    pub issues: Vec<String>,
     pub can_merge: bool,
 }
 ```
@@ -204,7 +204,7 @@ pub struct ValidationResult {
 pub async fn attempt_merge(
     repo: &Repository,
     branch: &Branch,
-) -> Result&lt;MergeResult, MergeError&gt; {
+) -> Result<MergeResult, MergeError> {
     // 1. Fetch latest
     let mut remote = repo.find_remote("origin")?;
     remote.fetch(&["specs/main", &branch.name], None, None)?;
@@ -279,8 +279,8 @@ pub enum MergeResult {
         commit_hash: String,
         parent_commit_hash: String,
     },
-    Conflict(Vec&lt;ConflictDetail&gt;),
-    ValidationFailed(Vec&lt;String&gt;),
+    Conflict(Vec<ConflictDetail>),
+    ValidationFailed(Vec<String>),
 }
 
 pub struct ConflictDetail {
@@ -300,7 +300,7 @@ use tokio::task;
 pub async fn process_batch(
     repo_path: &str,
     target_branch: &str,
-) -> Result&lt;BatchResult, BatchError&gt; {
+) -> Result<BatchResult, BatchError> {
     let repo = Repository::open(repo_path)?;
 
     // 1. List branches
@@ -422,7 +422,7 @@ pub struct BatchResult {
 #[derive(Clone)]
 pub struct Branch {
     pub name: String,
-    pub oid: Option&lt;git2::Oid&gt;,
+    pub oid: Option<git2::Oid>,
     pub age_secs: u64,
     pub is_merged: bool,
 }
@@ -473,7 +473,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: $&#123;&#123; secrets.GH_BOT_TOKEN }}
+          token: ${{ secrets.GH_BOT_TOKEN }}
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -503,7 +503,7 @@ jobs:
             --target-branch "specs/main" \
             --log-level "info" \
             --max-parallel 10 \
-            $&#123;&#123; github.event.inputs.branch_filter }})
+            ${{ github.event.inputs.branch_filter }})
 
           echo "$OUTPUT" | tee /tmp/merge-output.txt
 
@@ -534,9 +534,9 @@ jobs:
             const summary = `
             # Auto-Merge Batch Report
 
-            **Successful:** $&#123;&#123; steps.merge.outputs.successful }}
-            **Conflicts:** $&#123;&#123; steps.merge.outputs.conflicts }}
-            **Failed:** $&#123;&#123; steps.merge.outputs.failed }}
+            **Successful:** ${{ steps.merge.outputs.successful }}
+            **Conflicts:** ${{ steps.merge.outputs.conflicts }}
+            **Failed:** ${{ steps.merge.outputs.failed }}
 
             \`\`\`
             ${ output }
@@ -556,8 +556,8 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: `⚠️ Batch merge completed with issues:
-              - Conflicts: $&#123;&#123; steps.merge.outputs.conflicts }}
-              - Failed: $&#123;&#123; steps.merge.outputs.failed }}
+              - Conflicts: ${{ steps.merge.outputs.conflicts }}
+              - Failed: ${{ steps.merge.outputs.failed }}
 
               See Actions logs for details.`
             });
@@ -571,10 +571,10 @@ When auto-merge fails due to conflicts, automatically create a GitHub issue:
 
 ```rust
 pub async fn create_github_issues(
-    validation_failures: &[(String, Vec&lt;String&gt;)],
+    validation_failures: &[(String, Vec<String>)],
     merge_failures: &[(String, String)],
-    merge_conflicts: &[(String, Vec&lt;ConflictDetail&gt;)],
-) -> Result&lt;(), GitHubError&gt; {
+    merge_conflicts: &[(String, Vec<ConflictDetail>)],
+) -> Result<(), GitHubError> {
     let client = create_github_client()?;
 
     // 1. Create validation failure issues
@@ -614,7 +614,7 @@ pub async fn create_github_issues(
         let conflict_details = conflicts
             .iter()
             .map(|c| format!("- **{}** (lines {}-{})", c.file, c.ours_start, c.theirs_start))
-            .collect::&lt;Vec&lt;_&gt;&gt;()
+            .collect::<Vec<_>>()
             .join("\n");
 
         let body = format!(
@@ -647,7 +647,7 @@ pub async fn create_github_issues(
 ### Sequence 1: Successful Auto-Merge (No Conflicts)
 
 ```
-Agent pushes specs/agent-&lt;name&gt;-&lt;task&gt;
+Agent pushes specs/agent-<name>-<task>
     ↓
 GitHub Actions triggered (push event)
     ↓
@@ -660,7 +660,7 @@ batch-merger runs: validate_branch()
 batch-merger runs: attempt_merge()
     ✓ 3-way merge succeeds
     ↓
-Merge commit created: "Merge specs/agent-&lt;name&gt;-&lt;task&gt; into specs/main"
+Merge commit created: "Merge specs/agent-<name>-<task> into specs/main"
     ↓
 specs/main updated
     ↓
@@ -676,7 +676,7 @@ Done (no manual action needed)
 ### Sequence 2: Merge with Conflicts
 
 ```
-Agent pushes specs/agent-&lt;name&gt;-&lt;task&gt;
+Agent pushes specs/agent-<name>-<task>
     ↓
 GitHub Actions triggered
     ↓
@@ -689,7 +689,7 @@ batch-merger runs: attempt_merge()
 Conflict details extracted (files, line ranges)
     ↓
 GitHub Issue created:
-  Title: "🔀 Merge Conflict: specs/agent-&lt;name&gt;-&lt;task&gt;"
+  Title: "🔀 Merge Conflict: specs/agent-<name>-<task>"
   Body: Conflicting files, manual resolution steps
     ↓
 Summary posted: "⚠️ Conflict detected in 1 file. Manual review issue #123 created."
@@ -710,7 +710,7 @@ Done (after manual resolution)
 ### Sequence 3: Validation Failure
 
 ```
-Agent pushes specs/agent-&lt;name&gt;-&lt;task&gt;
+Agent pushes specs/agent-<name>-<task>
     ↓
 GitHub Actions triggered
     ↓
@@ -721,7 +721,7 @@ batch-merger runs: validate_branch()
       - OR FR↔Test coverage <100%
     ↓
 GitHub Issue created:
-  Title: "🔴 Validation Failed: specs/agent-&lt;name&gt;-&lt;task&gt;"
+  Title: "🔴 Validation Failed: specs/agent-<name>-<task>"
   Body: Specific validation errors + fix instructions
     ↓
 Summary posted: "❌ Validation failed. See issue #124 for details."
@@ -748,7 +748,7 @@ pub async fn attempt_merge_with_retry(
     repo: &Repository,
     branch: &Branch,
     max_retries: u32,
-) -> Result&lt;MergeResult, MergeError&gt; {
+) -> Result<MergeResult, MergeError> {
     let mut retries = 0;
 
     loop {
@@ -790,8 +790,8 @@ pub enum MergeError {
     RepositoryLocked,
 
     // Permanent (manual review via GitHub issue)
-    Conflict(Vec&lt;ConflictDetail&gt;),
-    ValidationFailed(Vec&lt;String&gt;),
+    Conflict(Vec<ConflictDetail>),
+    ValidationFailed(Vec<String>),
     InvalidBranch(String),
     NoTarget,
 }
@@ -828,7 +828,7 @@ tracing::info!(
 // Track in GitHub Actions summary
 pub struct BatchMetrics {
     pub batch_id: String,
-    pub timestamp: DateTime&lt;Utc&gt;,
+    pub timestamp: DateTime<Utc>,
     pub total_branches: usize,
     pub successful_merges: usize,
     pub conflicts: usize,
@@ -838,7 +838,7 @@ pub struct BatchMetrics {
 }
 
 // Output to /tmp/batch-metrics.json for analysis
-pub async fn publish_metrics(metrics: &BatchMetrics) -> Result&lt;()&gt; {
+pub async fn publish_metrics(metrics: &BatchMetrics) -> Result<()> {
     let json = serde_json::to_string_pretty(metrics)?;
     std::fs::write("/tmp/batch-metrics.json", json)?;
 

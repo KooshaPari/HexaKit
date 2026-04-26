@@ -492,7 +492,7 @@ git push origin test/mold-ci-integration
 ```bash
 # After workflow completes, check artifacts section of Actions
 # Expected artifact: mold-benchmark-results/
-# Contains: mold-&lt;run_id&gt;.json
+# Contains: mold-<run_id>.json
 
 # Sample artifact content:
 cat .github/bench-results/mold-123456789.json
@@ -605,7 +605,7 @@ From workflow artifacts:
 # Download mold-benchmark-results artifact
 # Extract JSON file
 
-cat mold-benchmark-results/mold-&lt;run_id&gt;.json | jq '.'
+cat mold-benchmark-results/mold-<run_id>.json | jq '.'
 
 # Expected output:
 {

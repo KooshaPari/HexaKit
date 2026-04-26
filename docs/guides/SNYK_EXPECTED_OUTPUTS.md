@@ -778,7 +778,7 @@ gh secret set SNYK_TOKEN --org KooshaPari
 - [ ] Snyk login successful
 - [ ] Token generated at https://app.snyk.io
 - [ ] Token copied to clipboard
-- [ ] `snyk auth &lt;token&gt;` outputs "Successfully authenticated"
+- [ ] `snyk auth <token>` outputs "Successfully authenticated"
 - [ ] `snyk test --dry-run` works without errors
 
 ### Local Deployment Phase ✓

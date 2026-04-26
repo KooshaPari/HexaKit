@@ -126,7 +126,7 @@ fn replay_feature_state(
     store: &SqliteEventStore,
     entity_id: &str,
     from_sequence: u64,
-) -> Result&lt;Feature&gt; {
+) -> Result<Feature> {
     let events = store.get_events_from("Feature", entity_id, from_sequence)?;
     let mut feature = Feature::default();
 
@@ -140,7 +140,7 @@ fn replay_feature_state(
 fn replay_feature_with_snapshot(
     store: &SqliteEventStore,
     entity_id: &str,
-) -> Result&lt;Feature&gt; {
+) -> Result<Feature> {
     let snapshot = store.get_latest_snapshot("Feature", entity_id)?;
     let from_sequence = snapshot.map(|s| s.event_sequence + 1).unwrap_or(0);
     let mut feature = snapshot.map(|s| s.state).unwrap_or_default();
@@ -376,7 +376,7 @@ fn memory_usage_benchmark() {
     );
 }
 
-fn get_process_memory(process_name: &str) -> Result&lt;u64&gt; {
+fn get_process_memory(process_name: &str) -> Result<u64> {
     // Use ps or /proc to get RSS of process
     let output = std::process::Command::new("ps")
         .arg("aux")

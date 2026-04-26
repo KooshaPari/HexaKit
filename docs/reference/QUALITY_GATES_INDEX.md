@@ -165,7 +165,7 @@ This index organizes all linting, code quality, and quality gate documentation f
 2. Run 4 commands:
    ```bash
    pip install pre-commit
-   cd &lt;repo&gt;
+   cd <repo>
    pre-commit install
    pre-commit install --hook-type pre-push
    ```

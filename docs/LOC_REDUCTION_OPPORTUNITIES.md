@@ -77,7 +77,7 @@ pub enum Status {
 }
 
 impl std::fmt::Display for Status {
-    fn fmt(&self, f: &mut std::fmt::Formatter&lt;'_&gt;) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Status::Active => write!(f, "active"),
             Status::Inactive => write!(f, "inactive"),
@@ -88,7 +88,7 @@ impl std::fmt::Display for Status {
 
 impl std::str::FromStr for Status {
     type Err = String;
-    fn from_str(s: &str) -> Result&lt;Self, Self::Err&gt; {
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "active" => Ok(Status::Active),
             "inactive" => Ok(Status::Inactive),

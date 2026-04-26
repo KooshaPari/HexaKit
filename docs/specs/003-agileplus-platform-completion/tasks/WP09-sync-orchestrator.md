@@ -51,7 +51,7 @@ pub struct SyncConflict {
     pub remote_version: serde_json::Value,
     pub local_hash: String,
     pub remote_hash: String,
-    pub detected_at: DateTime&lt;Utc&gt;,
+    pub detected_at: DateTime<Utc>,
 }
 ```
 
@@ -66,7 +66,7 @@ pub enum ResolutionStrategy {
     LocalWins,
     RemoteWins,
     Manual(serde_json::Value), // user-provided merged value
-    FieldLevel(HashMap&lt;String, FieldSource&gt;), // per-field selection
+    FieldLevel(HashMap<String, FieldSource>), // per-field selection
 }
 
 pub enum FieldSource {
@@ -83,13 +83,13 @@ Implement trait for persistence:
 
 ```rust
 pub trait SyncMappingStore: Send + Sync {
-    async fn create(&self, mapping: SyncMapping) -> Result&lt;i64&gt;;
+    async fn create(&self, mapping: SyncMapping) -> Result<i64>;
     async fn get_by_entity(&self, entity_type: &str, entity_id: i64)
-        -> Result&lt;Option&lt;SyncMapping&gt;&gt;;
-    async fn update_hash(&self, id: i64, new_hash: String, synced_at: DateTime&lt;Utc&gt;)
-        -> Result&lt;()&gt;;
-    async fn increment_conflict(&self, id: i64) -> Result&lt;()&gt;;
-    async fn list_all(&self) -> Result&lt;Vec&lt;SyncMapping&gt;&gt;;
+        -> Result<Option<SyncMapping>>;
+    async fn update_hash(&self, id: i64, new_hash: String, synced_at: DateTime<Utc>)
+        -> Result<()>;
+    async fn increment_conflict(&self, id: i64) -> Result<()>;
+    async fn list_all(&self) -> Result<Vec<SyncMapping>>;
 }
 ```
 
@@ -99,11 +99,11 @@ Create `SyncReport` struct for audit and CLI output:
 
 ```rust
 pub struct SyncReport {
-    pub created: Vec&lt;(String, i64)&gt;,
-    pub updated: Vec&lt;(String, i64)&gt;,
-    pub skipped: Vec&lt;(String, i64)&gt;,
-    pub conflicts: Vec&lt;SyncConflict&gt;,
-    pub errors: Vec&lt;SyncError&gt;,
+    pub created: Vec<(String, i64)>,
+    pub updated: Vec<(String, i64)>,
+    pub skipped: Vec<(String, i64)>,
+    pub conflicts: Vec<SyncConflict>,
+    pub errors: Vec<SyncError>,
     pub duration: Duration,
 }
 ```

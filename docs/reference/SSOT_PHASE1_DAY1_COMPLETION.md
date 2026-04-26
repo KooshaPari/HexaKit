@@ -135,7 +135,7 @@ The `specs/main` branch is the authoritative Single Source of Truth (SSOT) for P
 ## Enforcement
 
 All changes to specs must:
-1. Be created on `specs/agent-&lt;name&gt;-&lt;task&gt;` branch
+1. Be created on `specs/agent-<name>-<task>` branch
 2. Have at least 1 commit with `Spec-Traces: FR-XXX-NNN`
 3. Pass all CI validation gates
 4. Have no merge conflicts with specs/main
@@ -157,13 +157,13 @@ Force-pushes are disabled for all users. Only SSOT service (GitHub App) can forc
 **File Created:** `.commit-template`
 
 ```
-&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;
+<type>(<scope>): <subject>
 
-&lt;body&gt;
+<body>
 
-Spec-Traces: &lt;FR-XXX, ADR-YYY, ...&gt;
+Spec-Traces: <FR-XXX, ADR-YYY, ...>
 Related-Issues: #123, #456
-Co-Authored-By: &lt;agent-name&gt; &lt;agent@phenotype.local&gt;
+Co-Authored-By: <agent-name> <agent@phenotype.local>
 ```
 
 **Configuration:**

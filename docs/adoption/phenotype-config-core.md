@@ -13,7 +13,7 @@ let config = ConfigLoader::new()
     .with(EnvLoader::with_prefix("APP")?)
     .load()?;
 
-let value = config.get::&lt;String&gt;("database.url")?;
+let value = config.get::<String>("database.url")?;
 ```
 
 ## Multi-Format Support
@@ -36,7 +36,7 @@ let config = ConfigLoader::new()
 use phenotype_config_core::{ConfigLoader, formats::*};
 
 let config = ConfigLoader::new()
-    .with(FileLoader::&lt;Toml&gt;::from_file("config.toml")?)
+    .with(FileLoader::<Toml>::from_file("config.toml")?)
     .with(EnvLoader::with_prefix("APP").separator("__"))
     .load()?;
 ```
@@ -51,7 +51,7 @@ struct CustomLoader;
 impl FormatLoader for CustomLoader {
     fn name(&self) -> &str { "custom" }
     
-    fn load(&self, source: &str) -> Result&lt;ConfigValue, ConfigError&gt; {
+    fn load(&self, source: &str) -> Result<ConfigValue, ConfigError> {
         // Parse custom format
         Ok(ConfigValue::from_json(...))
     }

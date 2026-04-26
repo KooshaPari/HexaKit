@@ -114,14 +114,14 @@ assigned Features are Validated or Shipped before accepting the state change.
        pub end: String,
        /// Optional module slug to scope this cycle
        #[arg(long)]
-       pub module: Option&lt;String&gt;,
+       pub module: Option<String>,
    }
 
    #[derive(Debug, Args)]
    pub struct ListArgs {
        /// Filter by state (Draft, Active, Review, Shipped, Archived)
        #[arg(long)]
-       pub state: Option&lt;String&gt;,
+       pub state: Option<String>,
    }
 
    #[derive(Debug, Args)]
@@ -158,7 +158,7 @@ assigned Features are Validated or Shipped before accepting the state change.
 4. Define the dispatch function with `todo!()` stubs:
 
    ```rust
-   pub async fn run(args: CycleArgs, storage: &dyn StoragePort) -> anyhow::Result&lt;()&gt; {
+   pub async fn run(args: CycleArgs, storage: &dyn StoragePort) -> anyhow::Result<()> {
        match args.command {
            CycleCommand::Create(a)     => create(a, storage).await,
            CycleCommand::List(a)       => list(a, storage).await,
@@ -184,7 +184,7 @@ assigned Features are Validated or Shipped before accepting the state change.
 
 **Steps**:
 
-1. Implement `async fn create(args: CreateArgs, storage: &dyn StoragePort) -> anyhow::Result&lt;()&gt;`:
+1. Implement `async fn create(args: CreateArgs, storage: &dyn StoragePort) -> anyhow::Result<()>`:
 
    - Parse `start_date`:
      ```rust
@@ -202,12 +202,12 @@ assigned Features are Validated or Shipped before accepting the state change.
    - Call `storage.create_cycle(&cycle).await?`.
    - Print: `"Created cycle '{}' (id: {}, state: Draft, {} to {})"`.
 
-2. Implement `async fn list(args: ListArgs, storage: &dyn StoragePort) -> anyhow::Result&lt;()&gt;`:
+2. Implement `async fn list(args: ListArgs, storage: &dyn StoragePort) -> anyhow::Result<()>`:
 
    - Parse optional state filter:
      ```rust
      let state_filter = args.state
-         .map(|s| s.parse::&lt;CycleState&gt;()
+         .map(|s| s.parse::<CycleState>()
              .map_err(|e| anyhow::anyhow!("Unknown state '{}': {}", s, e)))
          .transpose()?;
      ```
@@ -234,7 +234,7 @@ assigned Features are Validated or Shipped before accepting the state change.
 
 **Steps**:
 
-1. Implement `async fn show(args: ShowArgs, storage: &dyn StoragePort) -> anyhow::Result&lt;()&gt;`:
+1. Implement `async fn show(args: ShowArgs, storage: &dyn StoragePort) -> anyhow::Result<()>`:
 
    - Resolve cycle by name: `storage.get_cycle_by_name(&args.name).await?`. If `None`, error.
    - Call `storage.get_cycle_with_features(cycle.id).await?`. If `None`, error
@@ -283,7 +283,7 @@ assigned Features are Validated or Shipped before accepting the state change.
 
 **Steps**:
 
-1. Implement `async fn add(args: AddArgs, storage: &dyn StoragePort) -> anyhow::Result&lt;()&gt;`:
+1. Implement `async fn add(args: AddArgs, storage: &dyn StoragePort) -> anyhow::Result<()>`:
 
    - Resolve cycle by name. If `None`, error `"Cycle '{}' not found"`.
    - Resolve feature by slug. If `None`, error `"Feature '{}' not found"`.
@@ -295,7 +295,7 @@ assigned Features are Validated or Shipped before accepting the state change.
      ```
    - On success, print: `"Added feature '{}' to cycle '{}'."`.
 
-2. Implement `async fn remove(args: RemoveArgs, storage: &dyn StoragePort) -> anyhow::Result&lt;()&gt;`:
+2. Implement `async fn remove(args: RemoveArgs, storage: &dyn StoragePort) -> anyhow::Result<()>`:
 
    - Resolve cycle and feature by name/slug.
    - Call `storage.remove_feature_from_cycle(cycle.id, feature.id).await?`.
@@ -308,8 +308,8 @@ assigned Features are Validated or Shipped before accepting the state change.
    the feature was already there. Detect this by checking if `cycle_features` contains the pair
    BEFORE the insert, OR rely on the fact that `INSERT OR IGNORE` doesn't change row count.
    Simpler: attempt the insert and if affected rows == 0, print the "already present" message.
-   Adjust the `add_feature_to_cycle` return type to `Result&lt;bool, DomainError&gt;` where `true` means
-   inserted and `false` means already existed, OR just keep `Result&lt;()&gt;` and print unconditionally.
+   Adjust the `add_feature_to_cycle` return type to `Result<bool, DomainError>` where `true` means
+   inserted and `false` means already existed, OR just keep `Result<()>` and print unconditionally.
    Follow the simpler path: `Ok(())` prints success unconditionally (idempotent is fine).
 
 **Validation**: `agileplus cycle add` fails with scope error; `agileplus cycle remove` succeeds.
@@ -325,7 +325,7 @@ entry point and add unit tests.
 
 **Steps**:
 
-1. Implement `async fn transition(args: TransitionArgs, storage: &dyn StoragePort) -> anyhow::Result&lt;()&gt;`:
+1. Implement `async fn transition(args: TransitionArgs, storage: &dyn StoragePort) -> anyhow::Result<()>`:
 
    - Resolve cycle by name. If `None`, error.
    - Parse `target_state`:
@@ -345,7 +345,7 @@ entry point and add unit tests.
          let cwf = storage.get_cycle_with_features(cycle.id).await?
              .ok_or_else(|| anyhow::anyhow!("Cycle data not found"))?;
          if !cwf.is_shippable() {
-             let blockers: Vec&lt;String&gt; = cwf.features.iter()
+             let blockers: Vec<String> = cwf.features.iter()
                  .filter(|f| {
                      f.state != FeatureState::Validated && f.state != FeatureState::Shipped
                  })

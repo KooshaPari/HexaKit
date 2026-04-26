@@ -645,14 +645,14 @@ jobs:
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: $&#123;&#123; github.actor }}
-          password: $&#123;&#123; secrets.GITHUB_TOKEN }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ghcr.io/$&#123;&#123; github.repository }}/agileplus-api:$&#123;&#123; github.sha }}
+          tags: ghcr.io/${{ github.repository }}/agileplus-api:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 ```

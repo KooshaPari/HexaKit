@@ -64,16 +64,16 @@ Phase 2 completion report claims these are pending—correct, but FR-TRACKER doe
 `crates/phenotype-policy-engine/src/loader.rs`:
 
 ```rust
-// Line 128 - should return Result&lt;PathBuf, PolicyError&gt;
+// Line 128 - should return Result<PathBuf, PolicyError>
 let config_path = PathBuf::from(&self.config_path).unwrap();
 
 // Line 148 - should return Result with context key error
 let ctx_value = ctx.get(&subject_key).unwrap();
 
-// Line 176 - should return Result&lt;Policies, ConfigError&gt;
-let rules = toml::from_str::&lt;PolicyConfig&gt;(&raw).unwrap();
+// Line 176 - should return Result<Policies, ConfigError>
+let rules = toml::from_str::<PolicyConfig>(&raw).unwrap();
 
-// Line 195 - should return Result&lt;Regex, RegexError&gt;
+// Line 195 - should return Result<Regex, RegexError>
 let pattern = Regex::new(rule.pattern()).unwrap();
 
 // Line 233 - same regex issue
@@ -183,7 +183,7 @@ for rule in rules.iter() {
 
 // Opportunity
 use rayon::prelude::*;
-let results: Vec&lt;bool&gt; = rules.par_iter()
+let results: Vec<bool> = rules.par_iter()
     .map(|rule| self.evaluate_rule(rule, &merged).unwrap_or(false))
     .collect();
 ```
@@ -198,9 +198,9 @@ use std::collections::HashMap;
 use once_cell::sync::Lazy;
 use regex::Regex;
 
-static REGEX_CACHE: Lazy<DashMap&lt;String, Regex&gt;> = Lazy::new(DashMap::new);
+static REGEX_CACHE: Lazy<DashMap<String, Regex>> = Lazy::new(DashMap::new);
 
-fn get_cached_regex(pattern: &str) -> Result&lt;Regex, regex::Error&gt; {
+fn get_cached_regex(pattern: &str) -> Result<Regex, regex::Error> {
     if let Some(cached) = REGEX_CACHE.get(pattern) {
         return Ok(cached.clone());
     }
@@ -215,10 +215,10 @@ fn get_cached_regex(pattern: &str) -> Result&lt;Regex, regex::Error&gt; {
 Add to `PolicyConfig::try_from()`:
 
 ```rust
-impl TryFrom&lt;&RawPolicyConfig&gt; for PolicyConfig {
+impl TryFrom<&RawPolicyConfig> for PolicyConfig {
     type Error = PolicyError;
 
-    fn try_from(raw: &RawPolicyConfig) -> Result&lt;Self, Self::Error&gt; {
+    fn try_from(raw: &RawPolicyConfig) -> Result<Self, Self::Error> {
         // Validate paths
         if raw.policy_path.is_empty() {
             return Err(PolicyError::InvalidPath("policy_path cannot be empty".into()));

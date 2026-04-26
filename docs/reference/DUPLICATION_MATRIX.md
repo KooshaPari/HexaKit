@@ -35,7 +35,7 @@
 | **Timeout/Retry variants** | 8 | 20 | 160 | `Timeout`, `RetryExceeded` |
 | **Domain-specific errors** | 6+ | 15 | 90 | Custom enums per crate |
 | **Anyhow vs thiserror** | Mixed | Varies | 100 | Inconsistent error patterns |
-| **Result type aliases** | 14+ | 3 | 40 | `type Result&lt;T&gt; = std::result::Result&lt;T, E&gt;` |
+| **Result type aliases** | 14+ | 3 | 40 | `type Result<T> = std::result::Result<T, E>` |
 
 **Total**: ~690 LOC (includes variants, impl blocks, doc comments)
 

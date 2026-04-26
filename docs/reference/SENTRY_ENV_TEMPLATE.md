@@ -131,11 +131,11 @@ RUST_LOG=info,helios=debug,sentry=info
 ```yaml
 env:
   # Sentry credentials (from GitHub Secrets)
-  SENTRY_DSN: $&#123;&#123; secrets.SENTRY_DSN_AGILEPLUS }}
-  SENTRY_AUTH_TOKEN: $&#123;&#123; secrets.SENTRY_AUTH_TOKEN_AGILEPLUS }}
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN_AGILEPLUS }}
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN_AGILEPLUS }}
 
   # Environment context
-  ENVIRONMENT: $&#123;&#123; github.event_name == 'release' && 'production' || 'staging' }}
+  ENVIRONMENT: ${{ github.event_name == 'release' && 'production' || 'staging' }}
 
   # Logging
   RUST_LOG: info,agileplus=debug,sentry=info
@@ -148,15 +148,15 @@ jobs:
       - name: Build
         run: cargo build --release
         env:
-          SENTRY_DSN: $&#123;&#123; secrets.SENTRY_DSN_AGILEPLUS }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN_AGILEPLUS }}
 ```
 
 ### phenotype-infrakit (.github/workflows/ci.yml)
 
 ```yaml
 env:
-  SENTRY_DSN: $&#123;&#123; secrets.SENTRY_DSN_INFRAKIT }}
-  SENTRY_AUTH_TOKEN: $&#123;&#123; secrets.SENTRY_AUTH_TOKEN_INFRAKIT }}
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN_INFRAKIT }}
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN_INFRAKIT }}
   ENVIRONMENT: test
   RUST_LOG: info
 ```
@@ -165,8 +165,8 @@ env:
 
 ```yaml
 env:
-  SENTRY_DSN: $&#123;&#123; secrets.SENTRY_DSN_HELIOSCLI }}
-  SENTRY_AUTH_TOKEN: $&#123;&#123; secrets.SENTRY_AUTH_TOKEN_HELIOSCLI }}
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN_HELIOSCLI }}
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN_HELIOSCLI }}
   ENVIRONMENT: test
   RUST_LOG: info
 ```
@@ -298,7 +298,7 @@ cargo run
 ```yaml
 - name: Test
   env:
-    SENTRY_DSN: $&#123;&#123; secrets.SENTRY_DSN_AGILEPLUS }}
+    SENTRY_DSN: ${{ secrets.SENTRY_DSN_AGILEPLUS }}
   run: cargo test
 ```
 
@@ -404,7 +404,7 @@ https://[public-key]:[secret-key]@[host]/[project-id]
 
 1. Check secret name matches exactly
 2. Verify secret is created in repo settings
-3. Use correct syntax in workflow: `$&#123;&#123; secrets.SECRET_NAME }}`
+3. Use correct syntax in workflow: `${{ secrets.SECRET_NAME }}`
 4. Check branch has access to secrets
 
 ## Summary

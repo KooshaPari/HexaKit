@@ -77,7 +77,7 @@ async fn main() {
     }
 }
 
-async fn run_cli() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+async fn run_cli() -> Result<(), Box<dyn std::error::Error>> {
     // CLI logic
     Ok(())
 }
@@ -107,7 +107,7 @@ async fn main() {
         ],
         traces_sample_rate: env::var("SENTRY_TRACES_SAMPLE_RATE")
             .ok()
-            .and_then(|s| s.parse::&lt;f32&gt;().ok())
+            .and_then(|s| s.parse::<f32>().ok())
             .unwrap_or(0.1),
         ..Default::default()
     });
@@ -126,7 +126,7 @@ async fn main() {
     }
 }
 
-async fn start_api_server() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+async fn start_api_server() -> Result<(), Box<dyn std::error::Error>> {
     // Server initialization
     Ok(())
 }
@@ -154,7 +154,7 @@ mod tests {
         let _guard = init_sentry();
 
         // Your test code
-        let result: Result&lt;(), String&gt; = Err("Test error".to_string());
+        let result: Result<(), String> = Err("Test error".to_string());
 
         if let Err(e) = result {
             sentry::capture_message(&format!("Test error: {}", e), sentry::Level::Error);
@@ -232,7 +232,7 @@ async fn main() {
     }
 }
 
-async fn main_logic() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+async fn main_logic() -> Result<(), Box<dyn std::error::Error>> {
     println!("Running phenotype-infrakit");
     Ok(())
 }
@@ -348,7 +348,7 @@ async fn main() {
     }
 }
 
-async fn run_tui() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+async fn run_tui() -> Result<(), Box<dyn std::error::Error>> {
     // TUI event loop
     Ok(())
 }
@@ -361,7 +361,7 @@ async fn run_tui() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
 ```rust
 use std::error::Error as StdError;
 
-pub async fn handle_command(cmd: &str) -> Result<(), Box&lt;dyn StdError&gt;> {
+pub async fn handle_command(cmd: &str) -> Result<(), Box<dyn StdError>> {
     // Add breadcrumb for command execution
     sentry::add_breadcrumb(sentry::Breadcrumb {
         category: "command".into(),
@@ -395,7 +395,7 @@ pub async fn handle_command(cmd: &str) -> Result<(), Box&lt;dyn StdError&gt;> {
     }
 }
 
-async fn execute(_cmd: &str) -> Result<String, Box&lt;dyn StdError&gt;> {
+async fn execute(_cmd: &str) -> Result<String, Box<dyn StdError>> {
     // Command logic
     Ok("Success".to_string())
 }
@@ -418,12 +418,12 @@ ENVIRONMENT=development
 ```rust
 use std::error::Error as StdError;
 
-pub type AppResult&lt;T&gt; = Result<T, Box&lt;dyn StdError&gt;>;
+pub type AppResult<T> = Result<T, Box<dyn StdError>>;
 
-pub fn handle_result&lt;T, E: StdError + 'static&gt;(
-    result: Result&lt;T, E&gt;,
+pub fn handle_result<T, E: StdError + 'static>(
+    result: Result<T, E>,
     context: &str,
-) -> AppResult&lt;T&gt; {
+) -> AppResult<T> {
     match result {
         Ok(val) => {
             sentry::add_breadcrumb(sentry::Breadcrumb {
@@ -455,12 +455,12 @@ pub fn handle_result&lt;T, E: StdError + 'static&gt;(
 ### Pattern: Async Operation Tracing
 
 ```rust
-pub async fn tracked_operation&lt;F, T&gt;(
+pub async fn tracked_operation<F, T>(
     name: &str,
     f: F,
-) -> Result<T, Box&lt;dyn std::error::Error&gt;>
+) -> Result<T, Box<dyn std::error::Error>>
 where
-    F: std::future::Future<Output = Result<T, Box&lt;dyn std::error::Error&gt;>>,
+    F: std::future::Future<Output = Result<T, Box<dyn std::error::Error>>>,
 {
     sentry::add_breadcrumb(sentry::Breadcrumb {
         category: "operation".into(),
@@ -499,7 +499,7 @@ pub fn log_http_error(
     method: &str,
     path: &str,
     status: u16,
-    error: Option&lt;&str&gt;,
+    error: Option<&str>,
 ) {
     if status >= 500 {
         sentry::with_scope(
@@ -598,7 +598,7 @@ mod sentry_integration_tests {
     async fn test_async_error_capture() {
         let _guard = setup_sentry();
 
-        let result: Result&lt;(), _&gt; = Err("Async error");
+        let result: Result<(), _> = Err("Async error");
         if let Err(e) = result {
             sentry::capture_message(&format!("Async error: {}", e), sentry::Level::Error);
         }

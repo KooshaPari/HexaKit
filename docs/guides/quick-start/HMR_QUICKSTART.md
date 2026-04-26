@@ -70,7 +70,7 @@ Open `src/components/Button.tsx` and change a color or text. **Save the file.**
 
 ```bash
 lsof -i :5173
-kill -9 &lt;PID&gt;
+kill -9 <PID>
 npm run dev  # Try again
 ```
 

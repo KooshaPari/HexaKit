@@ -83,20 +83,20 @@
 
 ```typescript
 // src/ports/inbound.ts
-export interface UseCase&lt;Input, Output&gt; {
-  execute(input: Input): Promise&lt;Output&gt;;
+export interface UseCase<Input, Output> {
+  execute(input: Input): Promise<Output>;
 }
 
-export interface CommandHandler&lt;Command&gt; {
-  handle(command: Command): Promise&lt;void&gt;;
+export interface CommandHandler<Command> {
+  handle(command: Command): Promise<void>;
 }
 
-export interface QueryHandler&lt;Query, Result&gt; {
-  handle(query: Query): Promise&lt;Result&gt;;
+export interface QueryHandler<Query, Result> {
+  handle(query: Query): Promise<Result>;
 }
 
-export interface EventHandler&lt;Event&gt; {
-  handle(event: Event): Promise&lt;void&gt;;
+export interface EventHandler<Event> {
+  handle(event: Event): Promise<void>;
 }
 ```
 
@@ -111,10 +111,10 @@ export interface EventHandler&lt;Event&gt; {
 
 ```typescript
 // src/ports/outbound.ts
-export interface Repository&lt;T extends Entity&gt; {
-  save(entity: T): Promise&lt;void&gt;;
-  findById(id: string): Promise&lt;T | null&gt;;
-  delete(id: string): Promise&lt;void&gt;;
+export interface Repository<T extends Entity> {
+  save(entity: T): Promise<void>;
+  findById(id: string): Promise<T | null>;
+  delete(id: string): Promise<void>;
 }
 ```
 
@@ -158,7 +158,7 @@ export class PhenotypeError extends Error {
   constructor(
     public readonly kind: ErrorKind,
     message: string,
-    public readonly context?: Record&lt;string, unknown&gt;,
+    public readonly context?: Record<string, unknown>,
   ) {
     super(message);
   }
@@ -229,7 +229,7 @@ export class PhenotypeError extends Error {
 
 - [ ] Create `packages/pheno-resilience/src/event-sourcing/` directory
 - [ ] Create `event-envelope.ts`
-  - [ ] Implement EventEnvelope&lt;T&gt; interface
+  - [ ] Implement EventEnvelope<T> interface
   - [ ] Include: id (UUID), timestamp, sequence, actor, eventType, payload, hash, prevHash
 - [ ] Create `event-store.ts`
   - [ ] Implement EventStore interface with 6 methods
@@ -240,7 +240,7 @@ export class PhenotypeError extends Error {
   - [ ] Add JSDoc with algorithm explanation
 - [ ] Create `in-memory-store.ts`
   - [ ] Implement InMemoryEventStore
-  - [ ] Use Map<string, Map&lt;string, StoredEvent[]&gt;> for storage
+  - [ ] Use Map<string, Map<string, StoredEvent[]>> for storage
   - [ ] Include clear() and eventCount() methods
 - [ ] Create `index.ts` with all exports
 - [ ] Verify: `pnpm --filter @phenotype/pheno-resilience build`
@@ -312,7 +312,7 @@ export class PhenotypeError extends Error {
 
 - [ ] Create `packages/pheno-resilience/src/cache/` directory
 - [ ] Create `cache.ts` (interface)
-  - [ ] Implement Cache&lt;K, V&gt; interface
+  - [ ] Implement Cache<K, V> interface
   - [ ] Methods: get, set, delete, clear
 - [ ] Create `lru-cache.ts`
   - [ ] Implement LRUCache using lru-cache package

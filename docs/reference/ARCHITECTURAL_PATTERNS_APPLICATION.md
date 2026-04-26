@@ -10,7 +10,7 @@
 **Today's Architecture**:
 - 20+ independent repositories under KooshaPari GitHub org
 - Fork strategy: hyper-modify/extend upstream (aizen, vibeproxy, zen, etc.)
-- Worktree-based development: `repos/&lt;project&gt;-wtrees/&lt;topic&gt;`
+- Worktree-based development: `repos/<project>-wtrees/<topic>`
 - Canonical repos on `main` only; feature work in worktrees
 - Cross-repo integration: submodules (@phenotype/docs), npm packages (@phenotype scope), shared modules (phenotype-shared, phenotype-go-kit)
 - **Problem**: Repos are physically separate but logically isolated — no unified runtime experience

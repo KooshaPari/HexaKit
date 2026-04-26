@@ -55,7 +55,7 @@ pub struct Config {
 pub struct NatsConfig {
     pub url: String,
     pub jetstream_domain: String,
-    pub auth_token: Option&lt;String&gt;,
+    pub auth_token: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -96,7 +96,7 @@ pub struct LoggingConfig {
 }
 
 impl Config {
-    pub fn from_env() -> Result<Self, Box&lt;dyn std::error::Error&gt;> {
+    pub fn from_env() -> Result<Self, Box<dyn std::error::Error>> {
         Ok(Config {
             nats: NatsConfig {
                 url: env::var("NATS_URL").unwrap_or_else(|_| "nats://localhost:4222".to_string()),
@@ -165,19 +165,19 @@ use std::sync::Arc;
 pub struct Infrastructure {
     pub nats: async_nats::Client,
     pub jetstream: async_nats::jetstream::Context,
-    pub redis_pool: bb8::Pool&lt;bb8_redis::RedisConnectionManager&gt;,
+    pub redis_pool: bb8::Pool<bb8_redis::RedisConnectionManager>,
     pub neo4j: neo4rs::Graph,
     pub s3: aws_sdk_s3::Client,
 
     // Readiness flags
-    pub nats_ready: Arc&lt;AtomicBool&gt;,
-    pub redis_ready: Arc&lt;AtomicBool&gt;,
-    pub neo4j_ready: Arc&lt;AtomicBool&gt;,
-    pub s3_ready: Arc&lt;AtomicBool&gt;,
+    pub nats_ready: Arc<AtomicBool>,
+    pub redis_ready: Arc<AtomicBool>,
+    pub neo4j_ready: Arc<AtomicBool>,
+    pub s3_ready: Arc<AtomicBool>,
 }
 
 impl Infrastructure {
-    pub async fn initialize(config: &Config) -> Result<Self, Box&lt;dyn std::error::Error&gt;> {
+    pub async fn initialize(config: &Config) -> Result<Self, Box<dyn std::error::Error>> {
         let nats_ready = Arc::new(AtomicBool::new(false));
         let redis_ready = Arc::new(AtomicBool::new(false));
         let neo4j_ready = Arc::new(AtomicBool::new(false));
@@ -232,14 +232,14 @@ impl Infrastructure {
 use crate::config::NatsConfig;
 use async_nats::jetstream;
 
-pub async fn initialize(config: &NatsConfig) -> Result<async_nats::Client, Box&lt;dyn std::error::Error&gt;> {
+pub async fn initialize(config: &NatsConfig) -> Result<async_nats::Client, Box<dyn std::error::Error>> {
     let client = async_nats::connect(&config.url).await?;
     Ok(client)
 }
 
 pub async fn create_streams(
     jetstream: &jetstream::Context,
-) -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+) -> Result<(), Box<dyn std::error::Error>> {
     jetstream
         .get_or_create_stream(jetstream::stream::Config {
             name: "wp-events".to_string(),
@@ -267,7 +267,7 @@ use std::time::Duration;
 
 pub async fn initialize(
     config: &RedisConfig,
-) -> Result<bb8::Pool&lt;RedisConnectionManager&gt;, Box&lt;dyn std::error::Error&gt;> {
+) -> Result<bb8::Pool<RedisConnectionManager>, Box<dyn std::error::Error>> {
     let manager = RedisConnectionManager::new(config.url.as_str())?;
     let pool = bb8::Pool::builder()
         .max_size(config.max_pool_size)
@@ -288,7 +288,7 @@ pub async fn initialize(
 use crate::config::Neo4jConfig;
 use neo4rs::Graph;
 
-pub async fn initialize(config: &Neo4jConfig) -> Result<Graph, Box&lt;dyn std::error::Error&gt;> {
+pub async fn initialize(config: &Neo4jConfig) -> Result<Graph, Box<dyn std::error::Error>> {
     let graph = Graph::new(&config.url, &config.user, &config.password).await?;
     Ok(graph)
 }
@@ -304,7 +304,7 @@ pub async fn initialize(config: &Neo4jConfig) -> Result<Graph, Box&lt;dyn std::e
 use crate::config::S3Config;
 use aws_sdk_s3::Client;
 
-pub async fn initialize(config: &S3Config) -> Result<Client, Box&lt;dyn std::error::Error&gt;> {
+pub async fn initialize(config: &S3Config) -> Result<Client, Box<dyn std::error::Error>> {
     let s3_config = aws_sdk_s3::config::Builder::from(
         &aws_config::load_from_env().await
     )
@@ -349,8 +349,8 @@ pub struct ServiceStatus {
 }
 
 pub async fn health(
-    State(infra): State&lt;Arc&lt;Infrastructure&gt;&gt;,
-) -> (StatusCode, Json&lt;HealthResponse&gt;) {
+    State(infra): State<Arc<Infrastructure>>,
+) -> (StatusCode, Json<HealthResponse>) {
     let status = HealthResponse {
         status: "ok".to_string(),
         timestamp: chrono::Utc::now().to_rfc3339(),
@@ -369,7 +369,7 @@ pub async fn health(
     }
 }
 
-pub fn routes() -> Router&lt;Arc&lt;Infrastructure&gt;&gt; {
+pub fn routes() -> Router<Arc<Infrastructure>> {
     Router::new()
         .route("/health", get(health))
 }
@@ -392,7 +392,7 @@ use config::Config;
 use infrastructure::Infrastructure;
 
 #[tokio::main]
-async fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = Config::from_env()?;
     let infra = Infrastructure::initialize(&config).await?;
     let infra = Arc::new(infra);

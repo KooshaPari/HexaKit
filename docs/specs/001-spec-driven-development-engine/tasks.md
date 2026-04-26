@@ -136,8 +136,8 @@
 
 ### Implementation Notes
 - State machine uses Rust enums with exhaustive match — compiler enforces all transitions handled
-- Skip transitions return `Result&lt;Warning&gt;` not `Result&lt;()&gt;` — caller decides to log or abort
-- WorkPackage.file_scope is `Vec&lt;String&gt;` for overlap detection
+- Skip transitions return `Result<Warning>` not `Result<()>` — caller decides to log or abort
+- WorkPackage.file_scope is `Vec<String>` for overlap detection
 
 ### Parallel Opportunities
 - T015-T016 (WP model) parallel with T012-T014 (Feature model) after shared types defined
@@ -203,7 +203,7 @@
 
 ### Implementation Notes
 - All ports are async traits (use `async_trait` or Rust 2024 native async traits)
-- Port methods return `Result&lt;T, DomainError&gt;` — domain error type defined in core
+- Port methods return `Result<T, DomainError>` — domain error type defined in core
 - StoragePort methods mirror data-model.md entities
 - VcsPort abstracts git2 — tests can use in-memory mock
 
@@ -267,7 +267,7 @@
 - [x] T043 Write integration tests using temp git repos (git2::Repository::init)
 
 ### Implementation Notes
-- Worktree paths: `.worktrees/&lt;feature-slug&gt;-&lt;WP-id&gt;/`
+- Worktree paths: `.worktrees/<feature-slug>-<WP-id>/`
 - Use git2 for all operations — no shelling out to git CLI
 - Merge conflicts detected via git2 merge analysis, surfaced as structured error
 
@@ -401,7 +401,7 @@
 ### Implementation Notes
 - CLI uses clap derive macros for arg parsing
 - Discovery interview: structured prompts to stdout, read from stdin
-- Spec written to git (`kitty-specs/&lt;feature&gt;/spec.md`) AND indexed in SQLite
+- Spec written to git (`kitty-specs/<feature>/spec.md`) AND indexed in SQLite
 - Research modes determined by presence/absence of spec.md in feature dir
 
 ### Parallel Opportunities
@@ -707,7 +707,7 @@
 
 **Goal**: Replace Make with a modern task runner (evaluate just/task/mise as of 2026) across all 5 repos. Migrate all Makefile targets, ensure cross-platform compatibility (Windows), and update CI/pre-commit to use the new runner.
 **Repos**: All (agileplus-proto, agileplus-core, agileplus-mcp, agileplus-agents, agileplus-integrations)
-**Independent Test**: `&lt;runner&gt; check` runs full local quality suite on all platforms. CI uses same runner. Windows works without WSL.
+**Independent Test**: `<runner> check` runs full local quality suite on all platforms. CI uses same runner. Windows works without WSL.
 **Prompt**: `tasks/WP22-task-runner-dx-migration.md`
 **Estimated**: ~400 lines, 7 subtasks
 

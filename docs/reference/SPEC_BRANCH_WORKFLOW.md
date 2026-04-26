@@ -10,7 +10,7 @@ The `specs/main` branch is the canonical single source of truth (SSOT) for all F
 
 - **Decoupling**: Spec changes (specs/main) are independent from code changes (main)
 - **Async Merges**: Spec PR merges are non-blocking to code PR merges
-- **Agent-First**: Each agent works in isolation on specs/agent-&lt;id&gt; branches
+- **Agent-First**: Each agent works in isolation on specs/agent-<id> branches
 - **Validation**: Automated CI ensures FR uniqueness and traceability before merge
 - **Audit Trail**: All spec changes are tracked separately from code changes
 
@@ -35,7 +35,7 @@ git pull origin specs/main
 
 ### 2. Create Your Spec Branch
 
-Name format: `specs/agent-&lt;YOUR_AGENT_ID&gt;-&lt;FEATURE_NAME&gt;`
+Name format: `specs/agent-<YOUR_AGENT_ID>-<FEATURE_NAME>`
 
 ```bash
 # Example: Adding LLM decomposition specs
@@ -49,14 +49,14 @@ git checkout -b specs/agent-event-sourcing-impl-phase2
 
 #### Adding New FRs
 
-1. Find the appropriate `## FR-&lt;REPO&gt;:` section (or create it if new repo)
+1. Find the appropriate `## FR-<REPO>:` section (or create it if new repo)
 2. Add entry with format:
 
 ```markdown
-#### FR-&lt;REPO&gt;-NNN: Brief Title
+#### FR-<REPO>-NNN: Brief Title
 
 **Requirement:** System SHALL [specific testable requirement].
-**Traces To:** E&lt;X&gt;.&lt;Y&gt; (epic reference)
+**Traces To:** E<X>.<Y> (epic reference)
 **Code Location:** Path/to/implementation/file.rs
 **Repository:** repo-name
 **Status:** Active/Planned/Deprecated
@@ -80,7 +80,7 @@ If you're implementing an FR that exists:
 
 #### Important Notes
 
-- **ID Format**: `FR-&lt;REPO&gt;-&lt;NNN&gt;` where NNN is zero-padded 3 digits
+- **ID Format**: `FR-<REPO>-<NNN>` where NNN is zero-padded 3 digits
 - **Repo Prefix** Use canonical repo prefixes (INFRA, AGILE, HELIOS, THEGENT, WAVE, API, etc.)
 - **Uniqueness**: Run validation (see below) to ensure no duplicates
 - **Traceability**: Every FR must link to a PRD epic (E1.1, E2.3, etc.)
@@ -121,7 +121,7 @@ git add docs/reference/SPEC_BRANCH_WORKFLOW.md  # If you updated this
 git commit -m "specs: add FR-PHENOSDK-001 through FR-PHENOSDK-008 for LLM decomposition"
 
 # Push to your agent branch
-git push origin specs/agent-&lt;YOUR_ID&gt;-&lt;FEATURE&gt;
+git push origin specs/agent-<YOUR_ID>-<FEATURE>
 ```
 
 ### 6. Create Pull Request
@@ -165,7 +165,7 @@ vim FUNCTIONAL_REQUIREMENTS.md
 # Commit and push to same branch (re-uses PR)
 git add FUNCTIONAL_REQUIREMENTS.md
 git commit -m "specs: address review feedback for FR-PHENOSDK-001"
-git push origin specs/agent-&lt;YOUR_ID&gt;-&lt;FEATURE&gt;
+git push origin specs/agent-<YOUR_ID>-<FEATURE>
 ```
 
 ### 8. Merge to specs/main
@@ -174,7 +174,7 @@ After approval:
 
 ```bash
 # GitHub UI or CLI
-gh pr merge &lt;PR_NUMBER&gt; --squash --base specs/main
+gh pr merge <PR_NUMBER> --squash --base specs/main
 
 # Or if using gh CLI from command line
 gh pr merge \
@@ -194,13 +194,13 @@ When you push to `specs/agent-*` branches, GitHub Actions runs:
 1. **FR Uniqueness Check**
    - Ensures no duplicate FR IDs in the merged FUNCTIONAL_REQUIREMENTS.md
    - Blocks merge if duplicates found
-   - Error message: `FR-&lt;REPO&gt;-&lt;NNN&gt; already exists in FUNCTIONAL_REQUIREMENTS.md`
+   - Error message: `FR-<REPO>-<NNN> already exists in FUNCTIONAL_REQUIREMENTS.md`
 
 2. **Traceability Validation**
    - Verifies every FR references a valid epic (E1.1, E2.3, etc.)
    - Ensures Epic references exist in master PRD.md
    - Blocks merge if trace is broken
-   - Error message: `FR-&lt;REPO&gt;-&lt;NNN&gt; traces to invalid epic E99.99`
+   - Error message: `FR-<REPO>-<NNN> traces to invalid epic E99.99`
 
 3. **Code Location Verification**
    - For Active/Deprecated FRs: code location must exist or be marked Planned
@@ -208,10 +208,10 @@ When you push to `specs/agent-*` branches, GitHub Actions runs:
    - Warns if file doesn't exist yet (acceptable for Planned status)
 
 4. **Test Coverage Check**
-   - Scans linked test files for `// Traces to: FR-&lt;REPO&gt;-&lt;NNN&gt;` comments
+   - Scans linked test files for `// Traces to: FR-<REPO>-<NNN>` comments
    - Ensures every FR has >=1 test reference
    - Fails if FR claims test traces but none found
-   - Error message: `FR-&lt;REPO&gt;-&lt;NNN&gt; claims test at X but file not found`
+   - Error message: `FR-<REPO>-<NNN> claims test at X but file not found`
 
 ### Merge Requirements
 
@@ -338,7 +338,7 @@ git rebase origin/specs/main
 vim FUNCTIONAL_REQUIREMENTS.md  # Fix conflicts
 git add FUNCTIONAL_REQUIREMENTS.md
 git rebase --continue
-git push origin specs/agent-&lt;YOUR_ID&gt;-&lt;FEATURE&gt; -f
+git push origin specs/agent-<YOUR_ID>-<FEATURE> -f
 ```
 
 ---
@@ -347,7 +347,7 @@ git push origin specs/agent-&lt;YOUR_ID&gt;-&lt;FEATURE&gt; -f
 
 ### DO
 
-- ✅ Use descriptive branch names: `specs/agent-&lt;purpose&gt;-&lt;repo&gt;`
+- ✅ Use descriptive branch names: `specs/agent-<purpose>-<repo>`
 - ✅ Create PRs with detailed summaries of FRs being added
 - ✅ Reference related code PRs: "See also: https://github.com/.../pull/123"
 - ✅ Group related FRs together (same epic, same component)
@@ -379,7 +379,7 @@ main (SSOT for code)
   ↓
   Code PRs reference spec FR IDs in commit messages
   ↓
-  Tests include "// Traces to: FR-&lt;REPO&gt;-&lt;NNN&gt;" comments
+  Tests include "// Traces to: FR-<REPO>-<NNN>" comments
   ↓
   CI validates that all deployed code has FR traces
 ```

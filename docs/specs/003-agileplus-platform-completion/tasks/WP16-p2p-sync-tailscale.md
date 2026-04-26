@@ -64,7 +64,7 @@ Implement peer discovery by connecting to the Tailscale local API socket:
 Create `src/discovery.rs` with:
 
 ```rust
-pub async fn discover_peers() -> Result&lt;Vec&lt;PeerInfo&gt;, PeerDiscoveryError&gt; {
+pub async fn discover_peers() -> Result<Vec<PeerInfo>, PeerDiscoveryError> {
     // Connect to Tailscale local API socket
     // Query GET /status for list of peers
     // Filter for peers with AgilePlus running (custom Tailscale tag or port probe)
@@ -107,15 +107,15 @@ On first run of the AgilePlus instance:
        pub device_id: String,
        pub hostname: String,
        pub tailscale_ip: String,
-       pub created_at: DateTime&lt;Utc&gt;,
+       pub created_at: DateTime<Utc>,
    }
    ```
-4. Initialize sync vector as empty JSON map: `SyncVector: HashMap&lt;(entity_type, entity_id), u64&gt;`
+4. Initialize sync vector as empty JSON map: `SyncVector: HashMap<(entity_type, entity_id), u64>`
 5. Store device info persistently in SQLite for recovery
 
 Provide:
-- `register_device(db) -> Result&lt;DeviceNode&gt;` — creates or retrieves existing device
-- `get_local_device(db) -> Result&lt;Option&lt;DeviceNode&gt;&gt;` — fetch local device info
+- `register_device(db) -> Result<DeviceNode>` — creates or retrieves existing device
+- `get_local_device(db) -> Result<Option<DeviceNode>>` — fetch local device info
 
 ### T098: Event Replication over NATS
 
@@ -132,8 +132,8 @@ Provide:
 pub async fn replicate_events(
     local_device_id: &str,
     peer: &PeerInfo,
-    events: Vec&lt;DomainEvent&gt;,
-) -> Result&lt;ReplicationResult, SyncError&gt; {
+    events: Vec<DomainEvent>,
+) -> Result<ReplicationResult, SyncError> {
     // Connect to peer NATS
     // Publish events to peer's device subject
     // Subscribe for peer's events to local device subject
@@ -150,7 +150,7 @@ Handle connection failures gracefully:
 
 Implement vector clock synchronization in `src/vector_clock.rs`:
 
-Each device maintains a `SyncVector: Map&lt;(entity_type, entity_id), last_sequence&gt;`.
+Each device maintains a `SyncVector: Map<(entity_type, entity_id), last_sequence>`.
 
 Sync algorithm:
 1. **Exchange vectors**: Device A sends its sync vector to Device B
@@ -165,7 +165,7 @@ Provide:
 ```rust
 pub struct SyncVector {
     pub device_id: String,
-    pub entries: HashMap&lt;(String, String), u64&gt;, // (entity_type, entity_id) -> sequence
+    pub entries: HashMap<(String, String), u64>, // (entity_type, entity_id) -> sequence
 }
 
 pub async fn sync_with_peer(
@@ -174,7 +174,7 @@ pub async fn sync_with_peer(
     local_vector: &SyncVector,
     event_store: &dyn EventStore,
     orchestrator: &SyncOrchestrator,
-) -> Result&lt;SyncResult, SyncError&gt; {
+) -> Result<SyncResult, SyncError> {
     // Exchange vectors with peer
     // Identify missing events
     // Transfer missing events

@@ -64,7 +64,7 @@ Key requirements:
 | Python 3.11+ + `.venv` | Plane API/worker |
 | Node.js + `npx` | Plane web frontend |
 
-OrbStack must be installed and running: &lt;https://orbstack.dev&gt;
+OrbStack must be installed and running: <https://orbstack.dev>
 
 ---
 
@@ -169,4 +169,4 @@ Key variables:
 - Run `cargo build -p agileplus-api` manually to see errors
 
 **Port already in use**
-- Check: `lsof -i :&lt;port&gt;` and kill the conflicting process
+- Check: `lsof -i :<port>` and kill the conflicting process

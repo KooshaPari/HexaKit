@@ -414,9 +414,9 @@ Phase 2B follows phase2a consolidation and focuses on repairing the workspace fo
 **Acceptance Criteria (Detailed):**
 - [ ] trait ForgecodeGenerator { fn forgecode(&self) -> String; }
 - [ ] impl for String: sha256(utf8_bytes).to_hex()
-- [ ] impl for Vec&lt;T&gt;: concatenate all elements' forgecodes, then sha256
-- [ ] impl for HashMap&lt;K,V&gt;: sort by key, concatenate all kv forgecodes, then sha256
-- [ ] impl for Option&lt;T&gt;: "None" or T.forgecode()
+- [ ] impl for Vec<T>: concatenate all elements' forgecodes, then sha256
+- [ ] impl for HashMap<K,V>: sort by key, concatenate all kv forgecodes, then sha256
+- [ ] impl for Option<T>: "None" or T.forgecode()
 - [ ] impl for custom structs: derive macro or manual impl
 - [ ] Test: determinism (same input → same code)
 - [ ] Test: collision resistance (different inputs → different codes with high probability)
@@ -436,10 +436,10 @@ Phase 2B follows phase2a consolidation and focuses on repairing the workspace fo
 - [ ] 3 stage implementations: PreFlight, Deploy, PostValidation
 - [ ] Tests: stage transitions, guard execution, failure handling
 - [ ] Traces: All tests reference FR-PHASE2B-003-*
-- [ ] Integration: Contracts can be composed (Contract&lt;A&gt; + Contract&lt;B&gt;)
+- [ ] Integration: Contracts can be composed (Contract<A> + Contract<B>)
 
 **Acceptance Criteria (Detailed):**
-- [ ] trait BifrostContract { fn validate(&self) -> Result&lt;()&gt;; fn execute(&mut self) -> Result&lt;()&gt;; }
+- [ ] trait BifrostContract { fn validate(&self) -> Result<()>; fn execute(&mut self) -> Result<()>; }
 - [ ] struct PreFlightStage; impl stage validation (preconditions)
 - [ ] struct DeployStage; impl actual deployment logic
 - [ ] struct PostValidationStage; impl post-deploy checks
@@ -458,7 +458,7 @@ Phase 2B follows phase2a consolidation and focuses on repairing the workspace fo
 
 **Acceptance Criteria:**
 - [ ] `crates/phenotype-test-infra/` enhanced with:
-  - [ ] MockBuilder&lt;T&gt; for quick test doubles
+  - [ ] MockBuilder<T> for quick test doubles
   - [ ] PropertyTest trait for property-based testing
   - [ ] SpecTrace macro for linking tests to FR specs
   - [ ] Suite of example implementations (MockDB, MockCache, etc.)
@@ -585,13 +585,13 @@ Phase 2C unblocks the router monitoring system (civ) by implementing missing Web
 
 **Acceptance Criteria:**
 - [ ] `crates/phenotype-monitor/` created (or enhanced)
-- [ ] RouterMonitor trait: `fn observe(&self, route: Route) -> Result&lt;()&gt;`
+- [ ] RouterMonitor trait: `fn observe(&self, route: Route) -> Result<()>`
 - [ ] WebSocket handler implemented: `fn handle_websocket(&mut self, msg: Message)`
 - [ ] Tests: 100% coverage (observe, websocket handling, error cases)
 - [ ] Traces: All tests → FR-PHASE2C-001
 
 **Acceptance Criteria (Detailed):**
-- [ ] trait RouterMonitor { fn observe(&self, route: Route) -> Result&lt;()&gt;; }
+- [ ] trait RouterMonitor { fn observe(&self, route: Route) -> Result<()>; }
 - [ ] impl for HTTP routes: track request/response pairs
 - [ ] impl for WebSocket: bidirectional message handling
 - [ ] WebSocket message types: Subscribe, Unsubscribe, Update, Error
@@ -611,15 +611,15 @@ Phase 2C unblocks the router monitoring system (civ) by implementing missing Web
 **Description:** Implement full observer pattern support for route monitoring.
 
 **Acceptance Criteria:**
-- [ ] Observer trait: `fn on_route_change(&mut self, route: &Route) -> Result&lt;()&gt;`
-- [ ] Observable trait: `fn subscribe(&mut self, observer: Box&lt;dyn Observer&gt;)`
+- [ ] Observer trait: `fn on_route_change(&mut self, route: &Route) -> Result<()>`
+- [ ] Observable trait: `fn subscribe(&mut self, observer: Box<dyn Observer>)`
 - [ ] Notifications: All observers notified on route state changes
 - [ ] Tests: 100% coverage (subscribe, notify, unsubscribe)
 - [ ] Integration: Works with RouterMonitor
 
 **Acceptance Criteria (Detailed):**
-- [ ] trait Observer { fn on_route_change(&mut self, route: &Route) -> Result&lt;()&gt;; }
-- [ ] trait Observable { fn subscribe(&mut self, obs: Box&lt;dyn Observer&gt;); fn notify_all(&mut self, route: &Route); }
+- [ ] trait Observer { fn on_route_change(&mut self, route: &Route) -> Result<()>; }
+- [ ] trait Observable { fn subscribe(&mut self, obs: Box<dyn Observer>); fn notify_all(&mut self, route: &Route); }
 - [ ] Tests: Subscribe observer successfully
 - [ ] Tests: Observer notified on route change
 - [ ] Tests: Multiple observers (all notified)

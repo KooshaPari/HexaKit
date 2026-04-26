@@ -22,7 +22,7 @@ The architecture uses a **three-branch model** combined with a **specs/main regi
 |-----------|---------|--------|-----------|
 | **Canonical Repo** | Source of truth for production code | `main` | Immutable (fast-forward only) |
 | **Specs Registry** | Authoritative FR/ADR/PLAN definitions | `specs/main` | Immutable (append-only semantics) |
-| **Feature Worktrees** | Agent-driven parallel work | `.worktrees/&lt;project&gt;/&lt;topic&gt;` | Ephemeral (lifecycle-managed) |
+| **Feature Worktrees** | Agent-driven parallel work | `.worktrees/<project>/<topic>` | Ephemeral (lifecycle-managed) |
 | **Integration Branch** | Temporary staging for multi-agent work | `integration/*` | Ephemeral (auto-cleanup on merge) |
 
 ---
@@ -120,7 +120,7 @@ Current Worktree Structure:
 .worktrees/
 ├── docs/                           # docs refactoring
 ├── feat/
-│   └── &lt;feature-name&gt;/
+│   └── <feature-name>/
 ├── infrastructure/                 # infrastructure/CI work
 ├── phase2-routes-dashboard/        # legacy (merged ~7 days ago)
 ├── phenotype-errors/               # error consolidation work
@@ -131,10 +131,10 @@ Current Worktree Structure:
 - Naming is inconsistent (some have `feat/` prefix, others have `phase` prefix)
 - No TTL or cleanup strategy
 - Some branches are likely merged (e.g., `phase2-routes-dashboard`)
-- No central registry mapping `.worktrees/&lt;path&gt;` → AgilePlus spec ID
+- No central registry mapping `.worktrees/<path>` → AgilePlus spec ID
 
 **Agent Behavior**:
-- Agents create `.worktrees/&lt;project&gt;/&lt;topic&gt;` for feature work (per CLAUDE.md)
+- Agents create `.worktrees/<project>/<topic>` for feature work (per CLAUDE.md)
 - Agents should commit to these branches, then open PR to `main`
 - Agents do NOT clean up merged worktrees (orphaned data accumulates)
 
@@ -242,9 +242,9 @@ Current Worktree Structure:
        6. Record in AUDIT_LOG.md
 
      ATOMIC MERGE:
-       git merge --no-ff &lt;agent-branch&gt; \
+       git merge --no-ff <agent-branch> \
          --author "spec-reconciliation" \
-         -m "Merge specs: &lt;ID list&gt;"
+         -m "Merge specs: <ID list>"
      ```
 
 5. **FR↔Test Traceability Gate**
@@ -666,7 +666,7 @@ Agent 1: Clicks "Rebase", branch updated automatically
 
 ```
 States:
-  CREATED       → Feature branch created in .worktrees/&lt;project&gt;/&lt;topic&gt;
+  CREATED       → Feature branch created in .worktrees/<project>/<topic>
   ACTIVE        → Agent actively commits to this branch
   SUSPENDED     → Agent paused work; branch preserved
   MERGED        → All commits merged to main
@@ -679,9 +679,9 @@ CREATED ──→ ACTIVE (Agent makes first commit)
             ↓
         [commit loop]
             ↓
-ACTIVE ──→ SUSPENDED (Agent calls: worktree-pause &lt;branch&gt;)
+ACTIVE ──→ SUSPENDED (Agent calls: worktree-pause <branch>)
        ↓     ↓
-       MERGED ARCHIVED (Agent calls: worktree-cleanup &lt;branch&gt;)
+       MERGED ARCHIVED (Agent calls: worktree-cleanup <branch>)
        ↓
     (deleted from remote)
 
@@ -772,7 +772,7 @@ All agents eventually merge without blocking
 ### 4.2 Feature Branch Naming Convention
 
 ```
-.worktrees/&lt;project&gt;/&lt;category&gt;/&lt;name&gt;
+.worktrees/<project>/<category>/<name>
 
 Examples:
   .worktrees/agileplus/feat/fr-consolidation
@@ -781,9 +781,9 @@ Examples:
   .worktrees/heliosCLI/docs/user-guide-expansion
 
 Convention:
-  &lt;project&gt;   = Target project or crate
-  &lt;category&gt;  = Type: feat|fix|refactor|docs|chore|test
-  &lt;name&gt;      = Kebab-case, descriptive (feature or bug name)
+  <project>   = Target project or crate
+  <category>  = Type: feat|fix|refactor|docs|chore|test
+  <name>      = Kebab-case, descriptive (feature or bug name)
 
 Maximum length: 80 chars total
 Status tracking: Branch name maps to AgilePlus spec ID (via registry)

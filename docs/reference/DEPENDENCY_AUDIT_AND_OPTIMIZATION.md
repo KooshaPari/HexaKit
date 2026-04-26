@@ -324,7 +324,7 @@ phenotype-router-monitor: 2 usages (monitoring error reporting)
 ```
 
 **Change Plan**:
-- Replace `anyhow::Result&lt;T&gt;` with `Result&lt;T, PhenotypeError&gt;` in libraries
+- Replace `anyhow::Result<T>` with `Result<T, PhenotypeError>` in libraries
 - Keep `anyhow` only in CLI/binary crates
 - Use `phenotype-error-core` canonical error types
 
@@ -395,7 +395,7 @@ Estimated Effort: 1 tool call (Cargo.toml change)
 use once_cell::sync::Lazy;
 use regex::Regex;
 
-static POLICY_PATTERN: Lazy&lt;Regex&gt; = Lazy::new(|| {
+static POLICY_PATTERN: Lazy<Regex> = Lazy::new(|| {
     Regex::new(r"...\").expect("...")
 });
 ```

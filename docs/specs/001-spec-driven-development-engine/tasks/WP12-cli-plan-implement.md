@@ -51,7 +51,7 @@ history:
 ---
 
 ## Markdown Formatting
-Wrap HTML/XML tags in backticks: `` `<div>` ``, `` `&lt;script&gt;` ``
+Wrap HTML/XML tags in backticks: `` `<div>` ``, `` `<script>` ``
 Use language identifiers in code blocks: ````python`, ````bash`
 
 ---
@@ -112,7 +112,7 @@ agileplus-review = { path = "../agileplus-review" }
 - **Purpose**: Implement the plan command that reads the spec and research, generates work packages with acceptance criteria traced to FRs, creates a governance contract, and persists everything.
 - **Steps**:
   1. Create `crates/agileplus-cli/src/commands/plan.rs`.
-  2. Implement `run_plan(args: PlanArgs, ctx: &AppContext) -> Result&lt;()&gt;`:
+  2. Implement `run_plan(args: PlanArgs, ctx: &AppContext) -> Result<()>`:
      - Validate feature state is `researched` (or allow skip with warning per FR-034).
      - Read `spec.md` and `research.md` from git via VcsPort.
      - Parse FRs from spec.md (extract `FR-NNN: description` patterns).
@@ -163,7 +163,7 @@ agileplus-review = { path = "../agileplus-review" }
 - **Purpose**: Parse each WP's planned implementation scope to identify which files it will touch, then build a graph of file overlaps between WPs to inform the scheduler.
 - **Steps**:
   1. Add file scope detection to `commands/plan.rs` or create a utility module `crates/agileplus-cli/src/commands/scope.rs`.
-  2. Implement `detect_file_scope(wp_description: &str, repo_files: &[String]) -> Vec&lt;String&gt;`:
+  2. Implement `detect_file_scope(wp_description: &str, repo_files: &[String]) -> Vec<String>`:
      - Parse file paths mentioned in WP acceptance criteria and description.
      - Match patterns: explicit paths (`src/foo/bar.rs`), glob patterns (`src/models/*.rs`), module references (`the auth module`).
      - Cross-reference with actual repo file listing to validate paths exist or are plausible new files.
@@ -171,12 +171,12 @@ agileplus-review = { path = "../agileplus-review" }
   3. Implement `build_overlap_graph(wps: &[WorkPackage]) -> OverlapGraph`:
      ```rust
      pub struct OverlapGraph {
-         edges: Vec&lt;(WpId, WpId, Vec&lt;String&gt;)&gt;,  // (wp_a, wp_b, shared_files)
+         edges: Vec<(WpId, WpId, Vec<String>)>,  // (wp_a, wp_b, shared_files)
      }
      ```
      - For each pair of WPs, compute `file_scope` intersection.
      - If intersection is non-empty, add an edge with the shared file list.
-  4. Implement `OverlapGraph::parallel_groups(&self) -> Vec&lt;Vec&lt;WpId&gt;&gt;`:
+  4. Implement `OverlapGraph::parallel_groups(&self) -> Vec<Vec<WpId>>`:
      - Graph coloring: WPs with no overlap edges can be in the same parallel group.
      - Use a greedy coloring algorithm (NP-hard in general, greedy is good enough for 10-20 WPs).
      - Return groups where all WPs within a group have no overlapping files.
@@ -199,24 +199,24 @@ agileplus-review = { path = "../agileplus-review" }
   2. Implement `Scheduler` struct:
      ```rust
      pub struct Scheduler {
-         wps: Vec&lt;WorkPackage&gt;,
-         deps: Vec&lt;WpDependency&gt;,
+         wps: Vec<WorkPackage>,
+         deps: Vec<WpDependency>,
      }
      ```
-  3. Implement `Scheduler::execution_plan(&self) -> Vec&lt;ExecutionWave&gt;`:
+  3. Implement `Scheduler::execution_plan(&self) -> Vec<ExecutionWave>`:
      ```rust
      pub struct ExecutionWave {
          pub wave_number: u32,
-         pub wp_ids: Vec&lt;WpId&gt;,
+         pub wp_ids: Vec<WpId>,
      }
      ```
      - Topological sort of the dependency graph.
      - Group into waves: wave 0 = WPs with no dependencies; wave 1 = WPs whose deps are all in wave 0; etc.
      - Within each wave, all WPs can run in parallel.
-  4. Implement `Scheduler::next_ready(&self, completed: &HashSet&lt;WpId&gt;) -> Vec&lt;WpId&gt;`:
+  4. Implement `Scheduler::next_ready(&self, completed: &HashSet<WpId>) -> Vec<WpId>`:
      - Return WPs whose dependencies are all in the `completed` set and whose state is `planned`.
      - This is the runtime query used during `implement` to decide what to dispatch next.
-  5. Implement `Scheduler::is_blocked(&self, wp_id: WpId, completed: &HashSet&lt;WpId&gt;) -> Option&lt;Vec&lt;WpId&gt;&gt;`:
+  5. Implement `Scheduler::is_blocked(&self, wp_id: WpId, completed: &HashSet<WpId>) -> Option<Vec<WpId>>`:
      - If the WP has unmet dependencies, return the list of blocking WP IDs.
   6. Implement cycle detection in the dependency graph:
      - Run DFS-based cycle detection during plan generation.
@@ -234,7 +234,7 @@ agileplus-review = { path = "../agileplus-review" }
 - **Purpose**: Implement the implement command that orchestrates the full agent workflow: check dependencies, create worktrees, dispatch agents, create PRs, and manage the review-fix loop.
 - **Steps**:
   1. Create `crates/agileplus-cli/src/commands/implement.rs`.
-  2. Implement `run_implement(args: ImplementArgs, ctx: &AppContext) -> Result&lt;()&gt;`:
+  2. Implement `run_implement(args: ImplementArgs, ctx: &AppContext) -> Result<()>`:
      - Validate feature state is `planned` (or `implementing` for resume).
      - Transition feature to `implementing` if not already.
      - Build the scheduler from WP records and dependencies.
@@ -257,7 +257,7 @@ agileplus-review = { path = "../agileplus-review" }
 
          /// Implement a specific WP only
          #[arg(long)]
-         wp: Option&lt;String&gt;,
+         wp: Option<String>,
 
          /// Max parallel agents
          #[arg(long, default_value = "3")]
@@ -348,12 +348,12 @@ agileplus-review = { path = "../agileplus-review" }
 - **Purpose**: Orchestrate the loop where AgilePlus waits for code review (Coderabbit + CI), feeds feedback to the agent for fixes, re-pushes, and re-polls until the PR is approved and CI passes.
 - **Steps**:
   1. Create `crates/agileplus-cli/src/commands/review_loop.rs`.
-  2. Implement `run_review_loop(wp: &WorkPackage, ctx: &AppContext, max_cycles: u32) -> Result&lt;ReviewOutcome&gt;`:
+  2. Implement `run_review_loop(wp: &WorkPackage, ctx: &AppContext, max_cycles: u32) -> Result<ReviewOutcome>`:
      ```rust
      pub enum ReviewOutcome {
          Approved,
-         MaxCyclesReached { cycles: u32, last_comments: Vec&lt;String&gt; },
-         CiFailed { details: Vec&lt;CheckResult&gt; },
+         MaxCyclesReached { cycles: u32, last_comments: Vec<String> },
+         CiFailed { details: Vec<CheckResult> },
          Cancelled,
      }
      ```
@@ -415,11 +415,11 @@ agileplus-review = { path = "../agileplus-review" }
   1. Update `AppContext` in `main.rs` or `context.rs`:
      ```rust
      struct AppContext {
-         storage: Box&lt;dyn StoragePort&gt;,
-         vcs: Box&lt;dyn VcsPort&gt;,
-         telemetry: Box&lt;dyn ObservabilityPort&gt;,
-         agent: Box&lt;dyn AgentPort&gt;,       // NEW
-         review: Box&lt;dyn ReviewPort&gt;,     // NEW
+         storage: Box<dyn StoragePort>,
+         vcs: Box<dyn VcsPort>,
+         telemetry: Box<dyn ObservabilityPort>,
+         agent: Box<dyn AgentPort>,       // NEW
+         review: Box<dyn ReviewPort>,     // NEW
      }
      ```
   2. Update `AppContext::init()` to construct the new adapters:
@@ -527,14 +527,14 @@ agileplus-review = { path = "../agileplus-review" }
 **When adding an entry**:
 1. Scroll to the bottom of this file (Activity Log section below "Valid lanes")
 2. **APPEND the new entry at the END** (do NOT prepend or insert in middle)
-3. Use exact format: `- YYYY-MM-DDTHH:MM:SSZ -- agent_id -- lane=&lt;lane&gt; -- &lt;action&gt;`
+3. Use exact format: `- YYYY-MM-DDTHH:MM:SSZ -- agent_id -- lane=<lane> -- <action>`
 4. Timestamp MUST be current time in UTC (check with `date -u "+%Y-%m-%dT%H:%M:%SZ"`)
 5. Lane MUST match the frontmatter `lane:` field exactly
 6. Agent ID should identify who made the change (claude-sonnet-4-5, codex, etc.)
 
 **Format**:
 ```
-- YYYY-MM-DDTHH:MM:SSZ -- &lt;agent_id&gt; -- lane=&lt;lane&gt; -- &lt;brief action description&gt;
+- YYYY-MM-DDTHH:MM:SSZ -- <agent_id> -- lane=<lane> -- <brief action description>
 ```
 
 **Valid lanes**: `planned`, `doing`, `for_review`, `done`
@@ -544,7 +544,7 @@ agileplus-review = { path = "../agileplus-review" }
 To change a work package's lane, either:
 
 1. **Edit directly**: Change the `lane:` field in frontmatter AND append activity log entry (at the end)
-2. **Use CLI**: `spec-kitty agent tasks move-task WP12 --to &lt;lane&gt; --note "message"` (recommended)
+2. **Use CLI**: `spec-kitty agent tasks move-task WP12 --to <lane> --note "message"` (recommended)
 
 **Initial entry**:
 - 2026-02-27T00:00:00Z -- system -- lane=planned -- Prompt created.

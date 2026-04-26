@@ -34,7 +34,7 @@ Establish module files, create public API re-exports, verify compilation.
 ---
 
 #### WI-1.2: Define public trait contracts
-1. Create trait stubs for `SyncStore&lt;T&gt;`
+1. Create trait stubs for `SyncStore<T>`
 2. Create trait stubs for `QueryBuilder`
 3. Create trait stubs for `MigrationRunner`
 

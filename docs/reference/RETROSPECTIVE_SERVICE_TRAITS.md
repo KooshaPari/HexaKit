@@ -51,7 +51,7 @@ pub trait RetrospectiveService: Send + Sync {
         &self,
         range: TimeRange,
         config: RetrospectiveConfig,
-    ) -> Result&lt;Retrospective, RetrospectiveError&gt;;
+    ) -> Result<Retrospective, RetrospectiveError>;
 
     /// Compute aggregated metrics for an existing retrospective.
     ///
@@ -69,7 +69,7 @@ pub trait RetrospectiveService: Send + Sync {
     async fn compute_aggregates(
         &self,
         retrospective_id: Uuid,
-    ) -> Result&lt;AggregateResult, RetrospectiveError&gt;;
+    ) -> Result<AggregateResult, RetrospectiveError>;
 
     /// Export retrospective in specified format.
     ///
@@ -83,7 +83,7 @@ pub trait RetrospectiveService: Send + Sync {
         &self,
         retrospective_id: Uuid,
         format: ExportFormat,
-    ) -> Result&lt;Bytes, RetrospectiveError&gt;;
+    ) -> Result<Bytes, RetrospectiveError>;
 
     /// Retrieve metadata for a retrospective.
     ///
@@ -98,7 +98,7 @@ pub trait RetrospectiveService: Send + Sync {
     async fn get_metadata(
         &self,
         retrospective_id: Uuid,
-    ) -> Result&lt;RetrospectiveMetadata, RetrospectiveError&gt;;
+    ) -> Result<RetrospectiveMetadata, RetrospectiveError>;
 
     /// List retrospectives in a time range.
     ///
@@ -112,11 +112,11 @@ pub trait RetrospectiveService: Send + Sync {
     /// Paginated list of retrospective metadata
     async fn list_retrospectives(
         &self,
-        from: DateTime&lt;Utc&gt;,
-        to: DateTime&lt;Utc&gt;,
+        from: DateTime<Utc>,
+        to: DateTime<Utc>,
         limit: usize,
         offset: usize,
-    ) -> Result&lt;Vec&lt;RetrospectiveMetadata&gt;, RetrospectiveError&gt;;
+    ) -> Result<Vec<RetrospectiveMetadata>, RetrospectiveError>;
 
     /// Delete a retrospective.
     ///
@@ -131,7 +131,7 @@ pub trait RetrospectiveService: Send + Sync {
         &self,
         retrospective_id: Uuid,
         cascade: bool,
-    ) -> Result&lt;(), RetrospectiveError&gt;;
+    ) -> Result<(), RetrospectiveError>;
 }
 
 /// Configuration for retrospective generation.
@@ -155,10 +155,10 @@ pub struct RetrospectiveConfig {
     pub timezone: String,
 
     /// Optional custom title
-    pub title: Option&lt;String&gt;,
+    pub title: Option<String>,
 
     /// Optional filter tags
-    pub tags: Vec&lt;String&gt;,
+    pub tags: Vec<String>,
 
     /// Include archived items
     #[serde(default)]
@@ -198,7 +198,7 @@ pub enum ExportFormat {
 }
 
 impl fmt::Display for ExportFormat {
-    fn fmt(&self, f: &mut fmt::Formatter&lt;'_&gt;) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Json => write!(f, "json"),
             Self::Markdown => write!(f, "markdown"),
@@ -209,7 +209,7 @@ impl fmt::Display for ExportFormat {
 }
 
 impl ExportFormat {
-    pub fn from_str(s: &str) -> Result&lt;Self, RetrospectiveError&gt; {
+    pub fn from_str(s: &str) -> Result<Self, RetrospectiveError> {
         match s.to_lowercase().as_str() {
             "json" => Ok(Self::Json),
             "markdown" | "md" => Ok(Self::Markdown),
@@ -337,7 +337,7 @@ pub trait RetrospectiveRepository: Send + Sync {
     /// # Errors
     /// - Database connectivity errors
     /// - Constraint violations
-    async fn create(&self, retrospective: Retrospective) -> Result&lt;Uuid, RepositoryError&gt;;
+    async fn create(&self, retrospective: Retrospective) -> Result<Uuid, RepositoryError>;
 
     /// Retrieve a retrospective by ID.
     ///
@@ -349,7 +349,7 @@ pub trait RetrospectiveRepository: Send + Sync {
     ///
     /// # Errors
     /// - Database errors (not 404s)
-    async fn get(&self, id: Uuid) -> Result&lt;Option&lt;Retrospective&gt;, RepositoryError&gt;;
+    async fn get(&self, id: Uuid) -> Result<Option<Retrospective>, RepositoryError>;
 
     /// Query retrospectives by date range.
     ///
@@ -364,9 +364,9 @@ pub trait RetrospectiveRepository: Send + Sync {
     /// Indexed query. Expected <100ms for typical datasets.
     async fn list_by_range(
         &self,
-        from: DateTime&lt;Utc&gt;,
-        to: DateTime&lt;Utc&gt;,
-    ) -> Result&lt;Vec&lt;Retrospective&gt;, RepositoryError&gt;;
+        from: DateTime<Utc>,
+        to: DateTime<Utc>,
+    ) -> Result<Vec<Retrospective>, RepositoryError>;
 
     /// Update an existing retrospective.
     ///
@@ -379,7 +379,7 @@ pub trait RetrospectiveRepository: Send + Sync {
     /// # Errors
     /// - `NotFound` - If ID doesn't exist
     /// - Database errors
-    async fn update(&self, retrospective: Retrospective) -> Result&lt;DateTime&lt;Utc&gt;, RepositoryError&gt;;
+    async fn update(&self, retrospective: Retrospective) -> Result<DateTime<Utc>, RepositoryError>;
 
     /// Delete a retrospective.
     ///
@@ -389,16 +389,16 @@ pub trait RetrospectiveRepository: Send + Sync {
     /// # Errors
     /// - `NotFound` - If ID doesn't exist
     /// - Database errors
-    async fn delete(&self, id: Uuid) -> Result&lt;(), RepositoryError&gt;;
+    async fn delete(&self, id: Uuid) -> Result<(), RepositoryError>;
 
     /// Count retrospectives matching criteria.
     ///
     /// Used for pagination metadata.
     async fn count_by_range(
         &self,
-        from: DateTime&lt;Utc&gt;,
-        to: DateTime&lt;Utc&gt;,
-    ) -> Result&lt;usize, RepositoryError&gt;;
+        from: DateTime<Utc>,
+        to: DateTime<Utc>,
+    ) -> Result<usize, RepositoryError>;
 }
 
 #[derive(Error, Debug, Clone)]
@@ -461,7 +461,7 @@ pub trait RetrospectiveCache: Send + Sync {
         key: &str,
         aggregates: &AggregateResult,
         ttl: Duration,
-    ) -> Result&lt;(), CacheError&gt;;
+    ) -> Result<(), CacheError>;
 
     /// Retrieve cached aggregates.
     ///
@@ -473,7 +473,7 @@ pub trait RetrospectiveCache: Send + Sync {
     ///
     /// # Performance
     /// Expected <5ms
-    async fn get_aggregates(&self, key: &str) -> Result&lt;Option&lt;AggregateResult&gt;, CacheError&gt;;
+    async fn get_aggregates(&self, key: &str) -> Result<Option<AggregateResult>, CacheError>;
 
     /// Invalidate cache entry.
     ///
@@ -485,17 +485,17 @@ pub trait RetrospectiveCache: Send + Sync {
     /// # Behavior
     /// - No-op if key doesn't exist
     /// - Returns Ok() even if cache is unavailable
-    async fn invalidate(&self, id: Uuid) -> Result&lt;(), CacheError&gt;;
+    async fn invalidate(&self, id: Uuid) -> Result<(), CacheError>;
 
     /// Clear all retrospective cache entries.
     ///
     /// Useful for testing, admin operations, cache resets.
-    async fn clear_all(&self) -> Result&lt;(), CacheError&gt;;
+    async fn clear_all(&self) -> Result<(), CacheError>;
 
     /// Get cache statistics.
     ///
     /// Useful for observability.
-    async fn stats(&self) -> Result&lt;CacheStats, CacheError&gt;;
+    async fn stats(&self) -> Result<CacheStats, CacheError>;
 }
 
 #[derive(Clone, Debug)]
@@ -575,7 +575,7 @@ pub trait RetrospectiveEventBus: Send + Sync {
     ///
     /// # Performance
     /// Expected <10ms
-    async fn publish(&self, event: RetrospectiveEvent) -> Result&lt;(), EventBusError&gt;;
+    async fn publish(&self, event: RetrospectiveEvent) -> Result<(), EventBusError>;
 
     /// Subscribe to events.
     ///
@@ -583,7 +583,7 @@ pub trait RetrospectiveEventBus: Send + Sync {
     async fn subscribe(
         &self,
         from: EventFilter,
-    ) -> Result<Box&lt;dyn EventStream&gt;, EventBusError>;
+    ) -> Result<Box<dyn EventStream>, EventBusError>;
 }
 
 /// Retrospective domain events.
@@ -598,17 +598,17 @@ pub enum RetrospectiveEvent {
         id: Uuid,
         range: TimeRange,
         config: RetrospectiveConfig,
-        timestamp: DateTime&lt;Utc&gt;,
-        user_id: Option&lt;Uuid&gt;,
+        timestamp: DateTime<Utc>,
+        user_id: Option<Uuid>,
     },
 
     /// Retrospective was exported
     Exported {
         id: Uuid,
         format: ExportFormat,
-        timestamp: DateTime&lt;Utc&gt;,
+        timestamp: DateTime<Utc>,
         file_size: usize,
-        user_id: Option&lt;Uuid&gt;,
+        user_id: Option<Uuid>,
     },
 
     /// Aggregates were computed
@@ -616,15 +616,15 @@ pub enum RetrospectiveEvent {
         id: Uuid,
         metrics_count: usize,
         aggregate_result: AggregateResult,
-        timestamp: DateTime&lt;Utc&gt;,
+        timestamp: DateTime<Utc>,
     },
 
     /// Retrospective was deleted
     Deleted {
         id: Uuid,
-        timestamp: DateTime&lt;Utc&gt;,
-        user_id: Option&lt;Uuid&gt;,
-        reason: Option&lt;String&gt;,
+        timestamp: DateTime<Utc>,
+        user_id: Option<Uuid>,
+        reason: Option<String>,
     },
 
     /// Metrics were updated
@@ -632,7 +632,7 @@ pub enum RetrospectiveEvent {
         id: Uuid,
         added_count: usize,
         removed_count: usize,
-        timestamp: DateTime&lt;Utc&gt;,
+        timestamp: DateTime<Utc>,
     },
 }
 
@@ -647,7 +647,7 @@ impl RetrospectiveEvent {
         }
     }
 
-    pub fn timestamp(&self) -> DateTime&lt;Utc&gt; {
+    pub fn timestamp(&self) -> DateTime<Utc> {
         match self {
             Self::Generated { timestamp, .. }
             | Self::Exported { timestamp, .. }
@@ -671,16 +671,16 @@ impl RetrospectiveEvent {
 /// Filter for event subscriptions.
 #[derive(Clone, Debug)]
 pub struct EventFilter {
-    pub aggregate_id: Option&lt;Uuid&gt;,
-    pub event_types: Vec&lt;String&gt;,
-    pub from_timestamp: Option&lt;DateTime&lt;Utc&gt;&gt;,
-    pub to_timestamp: Option&lt;DateTime&lt;Utc&gt;&gt;,
+    pub aggregate_id: Option<Uuid>,
+    pub event_types: Vec<String>,
+    pub from_timestamp: Option<DateTime<Utc>>,
+    pub to_timestamp: Option<DateTime<Utc>>,
 }
 
 /// Async event stream for subscriptions.
 #[async_trait]
 pub trait EventStream: Send {
-    async fn next_event(&mut self) -> Option&lt;RetrospectiveEvent&gt;;
+    async fn next_event(&mut self) -> Option<RetrospectiveEvent>;
 }
 
 #[derive(Error, Debug, Clone)]
@@ -720,30 +720,30 @@ pub struct Retrospective {
 
     pub range: TimeRange,
 
-    pub metrics: Vec&lt;Metric&gt;,
+    pub metrics: Vec<Metric>,
 
-    pub trends: Vec&lt;Trend&gt;,
+    pub trends: Vec<Trend>,
 
-    pub insights: Vec&lt;Insight&gt;,
+    pub insights: Vec<Insight>,
 
-    pub created_at: DateTime&lt;Utc&gt;,
+    pub created_at: DateTime<Utc>,
 
-    pub updated_at: DateTime&lt;Utc&gt;,
+    pub updated_at: DateTime<Utc>,
 
-    pub author: Option&lt;String&gt;,
+    pub author: Option<String>,
 
-    pub tags: Vec&lt;String&gt;,
+    pub tags: Vec<String>,
 }
 
 /// Time range for analysis.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct TimeRange {
-    pub from: DateTime&lt;Utc&gt;,
-    pub to: DateTime&lt;Utc&gt;,
+    pub from: DateTime<Utc>,
+    pub to: DateTime<Utc>,
 }
 
 impl TimeRange {
-    pub fn parse(from_str: &str, to_str: &str) -> Result&lt;Self, String&gt; {
+    pub fn parse(from_str: &str, to_str: &str) -> Result<Self, String> {
         let from = DateTime::parse_from_rfc3339(from_str)
             .map_err(|_| "Invalid from date")?
             .with_timezone(&Utc);
@@ -770,7 +770,7 @@ pub struct Metric {
     pub name: String,
     pub value: f64,
     pub unit: String,
-    pub timestamp: DateTime&lt;Utc&gt;,
+    pub timestamp: DateTime<Utc>,
 }
 
 /// Trend analysis result.
@@ -801,7 +801,7 @@ pub enum TrendSignificance {
 pub struct Insight {
     pub title: String,
     pub description: String,
-    pub recommendation: Option&lt;String&gt;,
+    pub recommendation: Option<String>,
     pub confidence: f64,
 }
 
@@ -813,16 +813,16 @@ pub struct AggregateResult {
     pub avg_value: f64,
     pub min_value: f64,
     pub max_value: f64,
-    pub timestamp: DateTime&lt;Utc&gt;,
+    pub timestamp: DateTime<Utc>,
 }
 
 /// Lightweight metadata.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RetrospectiveMetadata {
     pub id: Uuid,
-    pub created_at: DateTime&lt;Utc&gt;,
-    pub updated_at: DateTime&lt;Utc&gt;,
-    pub author: Option&lt;String&gt;,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+    pub author: Option<String>,
     pub range: TimeRange,
     pub metric_count: usize,
 }
@@ -842,13 +842,13 @@ use std::sync::Arc;
 
 /// Mock repository for testing.
 pub struct MockRetrospectiveRepository {
-    pub calls: Arc&lt;AtomicUsize&gt;,
-    pub should_fail: Arc&lt;AtomicBool&gt;,
+    pub calls: Arc<AtomicUsize>,
+    pub should_fail: Arc<AtomicBool>,
 }
 
 #[async_trait]
 impl RetrospectiveRepository for MockRetrospectiveRepository {
-    async fn create(&self, retrospective: Retrospective) -> Result&lt;Uuid, RepositoryError&gt; {
+    async fn create(&self, retrospective: Retrospective) -> Result<Uuid, RepositoryError> {
         self.calls.fetch_add(1, Ordering::Relaxed);
 
         if self.should_fail.load(Ordering::Relaxed) {
@@ -858,7 +858,7 @@ impl RetrospectiveRepository for MockRetrospectiveRepository {
         Ok(retrospective.id)
     }
 
-    async fn get(&self, id: Uuid) -> Result&lt;Option&lt;Retrospective&gt;, RepositoryError&gt; {
+    async fn get(&self, id: Uuid) -> Result<Option<Retrospective>, RepositoryError> {
         self.calls.fetch_add(1, Ordering::Relaxed);
         Ok(None)
     }
@@ -868,9 +868,9 @@ impl RetrospectiveRepository for MockRetrospectiveRepository {
 
 /// Builder for test scenarios.
 pub struct RetrospectiveTestFixture {
-    repository: Arc&lt;dyn RetrospectiveRepository&gt;,
-    cache: Arc&lt;dyn RetrospectiveCache&gt;,
-    event_bus: Arc&lt;dyn RetrospectiveEventBus&gt;,
+    repository: Arc<dyn RetrospectiveRepository>,
+    cache: Arc<dyn RetrospectiveCache>,
+    event_bus: Arc<dyn RetrospectiveEventBus>,
 }
 
 impl RetrospectiveTestFixture {
@@ -882,7 +882,7 @@ impl RetrospectiveTestFixture {
         }
     }
 
-    pub fn build_service(self) -> Arc&lt;dyn RetrospectiveService&gt; {
+    pub fn build_service(self) -> Arc<dyn RetrospectiveService> {
         Arc::new(RetrospectiveServiceImpl::new(
             self.repository,
             self.cache,

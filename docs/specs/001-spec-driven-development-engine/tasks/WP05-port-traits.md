@@ -43,7 +43,7 @@ Define all port traits in `crates/agileplus-core/src/ports/` that adapter crates
 
 1. `cargo build --workspace` succeeds with all port traits defined and referenced by adapter crate stubs.
 2. Every domain type from WP03 (Feature, WorkPackage, FeatureState, StateTransition, WpDependency) and WP04 (GovernanceContract, AuditEntry, Evidence, PolicyRule) is correctly referenced in port method signatures.
-3. All port traits are async and return `Result&lt;T, DomainError&gt;`.
+3. All port traits are async and return `Result<T, DomainError>`.
 4. `ports/mod.rs` re-exports all traits, and each adapter crate's `Cargo.toml` depends on `agileplus-core`.
 5. No adapter implementation logic exists in this WP -- traits only.
 
@@ -51,7 +51,7 @@ Define all port traits in `crates/agileplus-core/src/ports/` that adapter crates
 
 - **Architecture**: Hexagonal / ports-and-adapters. The core crate defines port traits; adapter crates provide implementations. See `plan.md` dependency graph.
 - **Async traits**: Use Rust 2024 native async trait support (the workspace targets Rust 2024 edition nightly). If native async traits cause issues, fall back to `async_trait` proc macro.
-- **Error type**: All port methods return `Result&lt;T, DomainError&gt;`. Define `DomainError` in `crates/agileplus-core/src/domain/error.rs` if not already present from WP03/WP04.
+- **Error type**: All port methods return `Result<T, DomainError>`. Define `DomainError` in `crates/agileplus-core/src/domain/error.rs` if not already present from WP03/WP04.
 - **Domain types**: Port signatures reference types from `domain/feature.rs`, `domain/work_package.rs`, `domain/governance.rs`, `domain/audit.rs`. These must exist from WP03 and WP04.
 - **Data model reference**: See `data-model.md` for entity fields, relationships, and valid states.
 - **Plan reference**: See `plan.md` "Project Structure" section for exact file paths.
@@ -70,40 +70,40 @@ Define all port traits in `crates/agileplus-core/src/ports/` that adapter crates
 3. Define the `StoragePort` trait with the following method groups:
 
 **Feature CRUD**:
-- `async fn create_feature(&self, feature: &Feature) -> Result&lt;i64, DomainError&gt;` -- returns new ID
-- `async fn get_feature_by_slug(&self, slug: &str) -> Result&lt;Option&lt;Feature&gt;, DomainError&gt;`
-- `async fn get_feature_by_id(&self, id: i64) -> Result&lt;Option&lt;Feature&gt;, DomainError&gt;`
-- `async fn update_feature_state(&self, id: i64, state: FeatureState) -> Result&lt;(), DomainError&gt;`
-- `async fn list_features_by_state(&self, state: FeatureState) -> Result&lt;Vec&lt;Feature&gt;, DomainError&gt;`
-- `async fn list_all_features(&self) -> Result&lt;Vec&lt;Feature&gt;, DomainError&gt;`
+- `async fn create_feature(&self, feature: &Feature) -> Result<i64, DomainError>` -- returns new ID
+- `async fn get_feature_by_slug(&self, slug: &str) -> Result<Option<Feature>, DomainError>`
+- `async fn get_feature_by_id(&self, id: i64) -> Result<Option<Feature>, DomainError>`
+- `async fn update_feature_state(&self, id: i64, state: FeatureState) -> Result<(), DomainError>`
+- `async fn list_features_by_state(&self, state: FeatureState) -> Result<Vec<Feature>, DomainError>`
+- `async fn list_all_features(&self) -> Result<Vec<Feature>, DomainError>`
 
 **Work Package CRUD**:
-- `async fn create_work_package(&self, wp: &WorkPackage) -> Result&lt;i64, DomainError&gt;`
-- `async fn get_work_package(&self, id: i64) -> Result&lt;Option&lt;WorkPackage&gt;, DomainError&gt;`
-- `async fn update_wp_state(&self, id: i64, state: WpState) -> Result&lt;(), DomainError&gt;`
-- `async fn list_wps_by_feature(&self, feature_id: i64) -> Result&lt;Vec&lt;WorkPackage&gt;, DomainError&gt;`
-- `async fn add_wp_dependency(&self, dep: &WpDependency) -> Result&lt;(), DomainError&gt;`
-- `async fn get_wp_dependencies(&self, wp_id: i64) -> Result&lt;Vec&lt;WpDependency&gt;, DomainError&gt;`
-- `async fn get_ready_wps(&self, feature_id: i64) -> Result&lt;Vec&lt;WorkPackage&gt;, DomainError&gt;` -- WPs whose deps are all `done`
+- `async fn create_work_package(&self, wp: &WorkPackage) -> Result<i64, DomainError>`
+- `async fn get_work_package(&self, id: i64) -> Result<Option<WorkPackage>, DomainError>`
+- `async fn update_wp_state(&self, id: i64, state: WpState) -> Result<(), DomainError>`
+- `async fn list_wps_by_feature(&self, feature_id: i64) -> Result<Vec<WorkPackage>, DomainError>`
+- `async fn add_wp_dependency(&self, dep: &WpDependency) -> Result<(), DomainError>`
+- `async fn get_wp_dependencies(&self, wp_id: i64) -> Result<Vec<WpDependency>, DomainError>`
+- `async fn get_ready_wps(&self, feature_id: i64) -> Result<Vec<WorkPackage>, DomainError>` -- WPs whose deps are all `done`
 
 **Audit CRUD**:
-- `async fn append_audit_entry(&self, entry: &AuditEntry) -> Result&lt;i64, DomainError&gt;`
-- `async fn get_audit_trail(&self, feature_id: i64) -> Result&lt;Vec&lt;AuditEntry&gt;, DomainError&gt;`
-- `async fn get_latest_audit_entry(&self, feature_id: i64) -> Result&lt;Option&lt;AuditEntry&gt;, DomainError&gt;`
+- `async fn append_audit_entry(&self, entry: &AuditEntry) -> Result<i64, DomainError>`
+- `async fn get_audit_trail(&self, feature_id: i64) -> Result<Vec<AuditEntry>, DomainError>`
+- `async fn get_latest_audit_entry(&self, feature_id: i64) -> Result<Option<AuditEntry>, DomainError>`
 
 **Evidence + Policy + Metric CRUD**:
-- `async fn create_evidence(&self, evidence: &Evidence) -> Result&lt;i64, DomainError&gt;`
-- `async fn get_evidence_by_wp(&self, wp_id: i64) -> Result&lt;Vec&lt;Evidence&gt;, DomainError&gt;`
-- `async fn get_evidence_by_fr(&self, fr_id: &str) -> Result&lt;Vec&lt;Evidence&gt;, DomainError&gt;`
-- `async fn create_policy_rule(&self, rule: &PolicyRule) -> Result&lt;i64, DomainError&gt;`
-- `async fn list_active_policies(&self) -> Result&lt;Vec&lt;PolicyRule&gt;, DomainError&gt;`
-- `async fn record_metric(&self, metric: &Metric) -> Result&lt;i64, DomainError&gt;`
-- `async fn get_metrics_by_feature(&self, feature_id: i64) -> Result&lt;Vec&lt;Metric&gt;, DomainError&gt;`
+- `async fn create_evidence(&self, evidence: &Evidence) -> Result<i64, DomainError>`
+- `async fn get_evidence_by_wp(&self, wp_id: i64) -> Result<Vec<Evidence>, DomainError>`
+- `async fn get_evidence_by_fr(&self, fr_id: &str) -> Result<Vec<Evidence>, DomainError>`
+- `async fn create_policy_rule(&self, rule: &PolicyRule) -> Result<i64, DomainError>`
+- `async fn list_active_policies(&self) -> Result<Vec<PolicyRule>, DomainError>`
+- `async fn record_metric(&self, metric: &Metric) -> Result<i64, DomainError>`
+- `async fn get_metrics_by_feature(&self, feature_id: i64) -> Result<Vec<Metric>, DomainError>`
 
 **Governance**:
-- `async fn create_governance_contract(&self, contract: &GovernanceContract) -> Result&lt;i64, DomainError&gt;`
-- `async fn get_governance_contract(&self, feature_id: i64, version: i32) -> Result&lt;Option&lt;GovernanceContract&gt;, DomainError&gt;`
-- `async fn get_latest_governance_contract(&self, feature_id: i64) -> Result&lt;Option&lt;GovernanceContract&gt;, DomainError&gt;`
+- `async fn create_governance_contract(&self, contract: &GovernanceContract) -> Result<i64, DomainError>`
+- `async fn get_governance_contract(&self, feature_id: i64, version: i32) -> Result<Option<GovernanceContract>, DomainError>`
+- `async fn get_latest_governance_contract(&self, feature_id: i64) -> Result<Option<GovernanceContract>, DomainError>`
 
 4. Ensure all method signatures use borrowed references for inputs (`&self`, `&Feature`) and owned types for outputs.
 5. Add doc comments to the trait and each method referencing the relevant FR IDs.
@@ -127,35 +127,35 @@ Define all port traits in `crates/agileplus-core/src/ports/` that adapter crates
 3. Define the `VcsPort` trait:
 
 **Worktree operations** (FR-010):
-- `async fn create_worktree(&self, feature_slug: &str, wp_id: &str) -> Result&lt;PathBuf, DomainError&gt;` -- returns worktree absolute path
-- `async fn list_worktrees(&self) -> Result&lt;Vec&lt;WorktreeInfo&gt;, DomainError&gt;`
-- `async fn cleanup_worktree(&self, worktree_path: &Path) -> Result&lt;(), DomainError&gt;`
+- `async fn create_worktree(&self, feature_slug: &str, wp_id: &str) -> Result<PathBuf, DomainError>` -- returns worktree absolute path
+- `async fn list_worktrees(&self) -> Result<Vec<WorktreeInfo>, DomainError>`
+- `async fn cleanup_worktree(&self, worktree_path: &Path) -> Result<(), DomainError>`
 
 **Branch operations**:
-- `async fn create_branch(&self, branch_name: &str, base: &str) -> Result&lt;(), DomainError&gt;`
-- `async fn checkout_branch(&self, branch_name: &str) -> Result&lt;(), DomainError&gt;`
-- `async fn merge_to_target(&self, source: &str, target: &str) -> Result&lt;MergeResult, DomainError&gt;`
-- `async fn detect_conflicts(&self, source: &str, target: &str) -> Result&lt;Vec&lt;ConflictInfo&gt;, DomainError&gt;`
+- `async fn create_branch(&self, branch_name: &str, base: &str) -> Result<(), DomainError>`
+- `async fn checkout_branch(&self, branch_name: &str) -> Result<(), DomainError>`
+- `async fn merge_to_target(&self, source: &str, target: &str) -> Result<MergeResult, DomainError>`
+- `async fn detect_conflicts(&self, source: &str, target: &str) -> Result<Vec<ConflictInfo>, DomainError>`
 
 **Artifact operations** (FR-014):
-- `async fn read_artifact(&self, feature_slug: &str, relative_path: &str) -> Result&lt;String, DomainError&gt;`
-- `async fn write_artifact(&self, feature_slug: &str, relative_path: &str, content: &str) -> Result&lt;(), DomainError&gt;`
-- `async fn artifact_exists(&self, feature_slug: &str, relative_path: &str) -> Result&lt;bool, DomainError&gt;`
+- `async fn read_artifact(&self, feature_slug: &str, relative_path: &str) -> Result<String, DomainError>`
+- `async fn write_artifact(&self, feature_slug: &str, relative_path: &str, content: &str) -> Result<(), DomainError>`
+- `async fn artifact_exists(&self, feature_slug: &str, relative_path: &str) -> Result<bool, DomainError>`
 
 **History scanning** (FR-017 support):
-- `async fn scan_feature_artifacts(&self, feature_slug: &str) -> Result&lt;FeatureArtifacts, DomainError&gt;`
+- `async fn scan_feature_artifacts(&self, feature_slug: &str) -> Result<FeatureArtifacts, DomainError>`
 
 4. Define supporting types in the same file or a `ports/types.rs`:
    - `WorktreeInfo { path: PathBuf, branch: String, feature_slug: String, wp_id: String }`
-   - `MergeResult { success: bool, conflicts: Vec&lt;ConflictInfo&gt;, merged_commit: Option&lt;String&gt; }`
-   - `ConflictInfo { path: String, ours: Option&lt;String&gt;, theirs: Option&lt;String&gt; }`
-   - `FeatureArtifacts { meta_json: Option&lt;String&gt;, audit_chain: Option&lt;String&gt;, evidence_paths: Vec&lt;String&gt; }`
+   - `MergeResult { success: bool, conflicts: Vec<ConflictInfo>, merged_commit: Option<String> }`
+   - `ConflictInfo { path: String, ours: Option<String>, theirs: Option<String> }`
+   - `FeatureArtifacts { meta_json: Option<String>, audit_chain: Option<String>, evidence_paths: Vec<String> }`
 
 **Files**: `crates/agileplus-core/src/ports/vcs.rs`
 
 **Validation**:
 - `cargo check -p agileplus-core` succeeds.
-- Worktree path convention matches plan.md: `.worktrees/&lt;feature-slug&gt;-&lt;WP-id&gt;/`.
+- Worktree path convention matches plan.md: `.worktrees/<feature-slug>-<WP-id>/`.
 - Supporting types are serializable (`#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]`).
 
 ---
@@ -168,17 +168,17 @@ Define all port traits in `crates/agileplus-core/src/ports/` that adapter crates
 1. Create `crates/agileplus-core/src/ports/agent.rs`.
 2. Define supporting types:
    - `AgentKind` enum: `ClaudeCode`, `Codex`
-   - `AgentConfig { kind: AgentKind, max_review_cycles: u32, timeout_secs: u64, extra_args: Vec&lt;String&gt; }`
-   - `AgentTask { wp_id: String, feature_slug: String, prompt_path: PathBuf, worktree_path: PathBuf, context_files: Vec&lt;PathBuf&gt; }`
-   - `AgentResult { success: bool, pr_url: Option&lt;String&gt;, commits: Vec&lt;String&gt;, stdout: String, stderr: String, exit_code: i32 }`
+   - `AgentConfig { kind: AgentKind, max_review_cycles: u32, timeout_secs: u64, extra_args: Vec<String> }`
+   - `AgentTask { wp_id: String, feature_slug: String, prompt_path: PathBuf, worktree_path: PathBuf, context_files: Vec<PathBuf> }`
+   - `AgentResult { success: bool, pr_url: Option<String>, commits: Vec<String>, stdout: String, stderr: String, exit_code: i32 }`
    - `AgentStatus` enum: `Pending`, `Running { pid: u32 }`, `WaitingForReview { pr_url: String }`, `Completed { result: AgentResult }`, `Failed { error: String }`
 
 3. Define the `AgentPort` trait:
-- `async fn dispatch(&self, task: AgentTask, config: &AgentConfig) -> Result&lt;AgentResult, DomainError&gt;` -- spawn agent, wait for completion
-- `async fn dispatch_async(&self, task: AgentTask, config: &AgentConfig) -> Result&lt;String, DomainError&gt;` -- returns job ID, non-blocking
-- `async fn query_status(&self, job_id: &str) -> Result&lt;AgentStatus, DomainError&gt;`
-- `async fn cancel(&self, job_id: &str) -> Result&lt;(), DomainError&gt;`
-- `async fn send_instruction(&self, job_id: &str, instruction: &str) -> Result&lt;(), DomainError&gt;` -- send follow-up instruction to running agent
+- `async fn dispatch(&self, task: AgentTask, config: &AgentConfig) -> Result<AgentResult, DomainError>` -- spawn agent, wait for completion
+- `async fn dispatch_async(&self, task: AgentTask, config: &AgentConfig) -> Result<String, DomainError>` -- returns job ID, non-blocking
+- `async fn query_status(&self, job_id: &str) -> Result<AgentStatus, DomainError>`
+- `async fn cancel(&self, job_id: &str) -> Result<(), DomainError>`
+- `async fn send_instruction(&self, job_id: &str, instruction: &str) -> Result<(), DomainError>` -- send follow-up instruction to running agent
 
 4. Add doc comments referencing FR-004, FR-010, FR-011, FR-012, FR-013.
 
@@ -198,20 +198,20 @@ Define all port traits in `crates/agileplus-core/src/ports/` that adapter crates
 **Steps**:
 1. Create `crates/agileplus-core/src/ports/review.rs`.
 2. Define supporting types:
-   - `ReviewStatus` enum: `Pending`, `InProgress`, `Approved`, `ChangesRequested { comments: Vec&lt;ReviewComment&gt; }`, `Rejected { reason: String }`
-   - `ReviewComment { author: String, body: String, file_path: Option&lt;String&gt;, line: Option&lt;u32&gt;, severity: CommentSeverity, actionable: bool }`
+   - `ReviewStatus` enum: `Pending`, `InProgress`, `Approved`, `ChangesRequested { comments: Vec<ReviewComment> }`, `Rejected { reason: String }`
+   - `ReviewComment { author: String, body: String, file_path: Option<String>, line: Option<u32>, severity: CommentSeverity, actionable: bool }`
    - `CommentSeverity` enum: `Critical`, `Major`, `Minor`, `Informational`
    - `CiStatus` enum: `Pending`, `Running`, `Passed`, `Failed { logs_url: String }`, `Cancelled`
    - `PrInfo { url: String, number: u64, title: String, state: String, review_status: ReviewStatus, ci_status: CiStatus }`
 
 3. Define the `ReviewPort` trait:
-- `async fn get_review_status(&self, pr_url: &str) -> Result&lt;ReviewStatus, DomainError&gt;`
-- `async fn get_review_comments(&self, pr_url: &str) -> Result&lt;Vec&lt;ReviewComment&gt;, DomainError&gt;`
-- `async fn get_actionable_comments(&self, pr_url: &str) -> Result&lt;Vec&lt;ReviewComment&gt;, DomainError&gt;` -- filter for actionable only
-- `async fn get_ci_status(&self, pr_url: &str) -> Result&lt;CiStatus, DomainError&gt;`
-- `async fn get_pr_info(&self, pr_url: &str) -> Result&lt;PrInfo, DomainError&gt;`
-- `async fn await_review(&self, pr_url: &str, timeout_secs: u64) -> Result&lt;ReviewStatus, DomainError&gt;` -- poll until review complete or timeout
-- `async fn await_ci(&self, pr_url: &str, timeout_secs: u64) -> Result&lt;CiStatus, DomainError&gt;`
+- `async fn get_review_status(&self, pr_url: &str) -> Result<ReviewStatus, DomainError>`
+- `async fn get_review_comments(&self, pr_url: &str) -> Result<Vec<ReviewComment>, DomainError>`
+- `async fn get_actionable_comments(&self, pr_url: &str) -> Result<Vec<ReviewComment>, DomainError>` -- filter for actionable only
+- `async fn get_ci_status(&self, pr_url: &str) -> Result<CiStatus, DomainError>`
+- `async fn get_pr_info(&self, pr_url: &str) -> Result<PrInfo, DomainError>`
+- `async fn await_review(&self, pr_url: &str, timeout_secs: u64) -> Result<ReviewStatus, DomainError>` -- poll until review complete or timeout
+- `async fn await_ci(&self, pr_url: &str, timeout_secs: u64) -> Result<CiStatus, DomainError>`
 
 4. Add doc comments referencing FR-012, FR-013.
 
@@ -231,15 +231,15 @@ Define all port traits in `crates/agileplus-core/src/ports/` that adapter crates
 **Steps**:
 1. Create `crates/agileplus-core/src/ports/observability.rs`.
 2. Define supporting types:
-   - `SpanContext { trace_id: String, span_id: String, parent_span_id: Option&lt;String&gt; }`
+   - `SpanContext { trace_id: String, span_id: String, parent_span_id: Option<String> }`
    - `MetricValue` enum: `Counter(u64)`, `Histogram(f64)`, `Gauge(f64)`
    - `LogLevel` enum: `Trace`, `Debug`, `Info`, `Warn`, `Error`
-   - `LogEntry { level: LogLevel, message: String, fields: HashMap&lt;String, String&gt;, span_context: Option&lt;SpanContext&gt; }`
+   - `LogEntry { level: LogLevel, message: String, fields: HashMap<String, String>, span_context: Option<SpanContext> }`
 
 3. Define the `ObservabilityPort` trait:
 
 **Tracing**:
-- `fn start_span(&self, name: &str, parent: Option&lt;&SpanContext&gt;) -> SpanContext`
+- `fn start_span(&self, name: &str, parent: Option<&SpanContext>) -> SpanContext`
 - `fn end_span(&self, ctx: &SpanContext)`
 - `fn add_span_event(&self, ctx: &SpanContext, name: &str, attributes: &[(&str, &str)])`
 - `fn set_span_error(&self, ctx: &SpanContext, error: &str)`
@@ -292,11 +292,11 @@ Define all port traits in `crates/agileplus-core/src/ports/` that adapter crates
 5. Optionally define an `AppContext` struct or trait that bundles all ports for dependency injection:
    ```rust
    pub struct AppContext {
-       pub storage: Box&lt;dyn StoragePort + Send + Sync&gt;,
-       pub vcs: Box&lt;dyn VcsPort + Send + Sync&gt;,
-       pub agent: Box&lt;dyn AgentPort + Send + Sync&gt;,
-       pub review: Box&lt;dyn ReviewPort + Send + Sync&gt;,
-       pub telemetry: Box&lt;dyn ObservabilityPort + Send + Sync&gt;,
+       pub storage: Box<dyn StoragePort + Send + Sync>,
+       pub vcs: Box<dyn VcsPort + Send + Sync>,
+       pub agent: Box<dyn AgentPort + Send + Sync>,
+       pub review: Box<dyn ReviewPort + Send + Sync>,
+       pub telemetry: Box<dyn ObservabilityPort + Send + Sync>,
    }
    ```
 6. Update `crates/agileplus-core/src/lib.rs` to declare `pub mod ports;`.
@@ -315,7 +315,7 @@ Define all port traits in `crates/agileplus-core/src/ports/` that adapter crates
 | Risk | Impact | Mitigation |
 |------|--------|------------|
 | Port trait design lock-in | High -- changing traits later breaks all adapters | Keep traits minimal. Add methods only when needed by a concrete use case. Use extension traits for optional capabilities. |
-| Async trait object safety | Medium -- `dyn AsyncTrait` requires `Send + Sync` bounds | Use `#[async_trait]` if native async traits cause object safety issues. Test with `Box&lt;dyn StoragePort + Send + Sync&gt;` early. |
+| Async trait object safety | Medium -- `dyn AsyncTrait` requires `Send + Sync` bounds | Use `#[async_trait]` if native async traits cause object safety issues. Test with `Box<dyn StoragePort + Send + Sync>` early. |
 | Missing domain types from WP03/WP04 | High -- port signatures reference types that don't exist | Verify WP03 and WP04 are complete before starting. If types are missing, define placeholder structs in domain. |
 | Over-specification of ports | Medium -- too many methods make adapters burdensome | Start with CRUD essentials. Convenience methods (e.g., `get_ready_wps`) can be added in later WPs if needed. |
 | Supporting type proliferation | Low -- many small types across port files | Consolidate shared types in `ports/types.rs` or at the domain level. |
@@ -324,7 +324,7 @@ Define all port traits in `crates/agileplus-core/src/ports/` that adapter crates
 
 1. **Trait completeness**: Every entity from `data-model.md` should have create/read/list coverage in `StoragePort`.
 2. **Consistency**: All methods use `DomainError`, all async methods are consistent in their `&self` receiver.
-3. **Object safety**: Verify all traits work as `Box&lt;dyn Trait + Send + Sync&gt;`.
+3. **Object safety**: Verify all traits work as `Box<dyn Trait + Send + Sync>`.
 4. **No implementation**: This WP should contain zero adapter logic -- pure trait definitions and supporting types only.
 5. **Doc comments**: Every trait and method should have a doc comment referencing the relevant FR or design decision.
 6. **Cross-reference**: Port method names should be intuitive for someone reading `plan.md` adapter descriptions.

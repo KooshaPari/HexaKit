@@ -61,7 +61,7 @@ sqlite/lib.rs (1,582 LOC)
 │                    (Port Abstractions)                           │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│  Repository&lt;T&gt;  QueryBuilder   MigrationRunner   SyncStore     │
+│  Repository<T>  QueryBuilder   MigrationRunner   SyncStore     │
 │      trait            trait          trait          trait      │
 │                                                                 │
 ├─────────────────────────────────────────────────────────────────┤

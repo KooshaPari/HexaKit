@@ -63,7 +63,7 @@ Each project will generate a DSN token, configured as GitHub Secrets for CI/CD i
 3. **Platform:** Rust
 4. **Alert Rule:** Default or skip
 5. Click **Create Project**
-6. Copy the **DSN** token (format: `https://&lt;key&gt;@&lt;subdomain&gt;.ingest.sentry.io/&lt;id&gt;`)
+6. Copy the **DSN** token (format: `https://<key>@<subdomain>.ingest.sentry.io/<id>`)
 
 ### Step 3: Create phenotype-infrakit Project
 
@@ -83,13 +83,13 @@ Each project will generate a DSN token, configured as GitHub Secrets for CI/CD i
 
 ```bash
 # Set secrets for AgilePlus
-gh secret set SENTRY_DSN_AGILEPLUS --body '&lt;DSN_FROM_STEP_2&gt;'
+gh secret set SENTRY_DSN_AGILEPLUS --body '<DSN_FROM_STEP_2>'
 
 # Set secrets for phenotype-infrakit
-gh secret set SENTRY_DSN_INFRAKIT --body '&lt;DSN_FROM_STEP_3&gt;'
+gh secret set SENTRY_DSN_INFRAKIT --body '<DSN_FROM_STEP_3>'
 
 # Set secrets for heliosCLI
-gh secret set SENTRY_DSN_HELIOSCLI --body '&lt;DSN_FROM_STEP_4&gt;'
+gh secret set SENTRY_DSN_HELIOSCLI --body '<DSN_FROM_STEP_4>'
 ```
 
 ### Step 6: Verify Configuration
@@ -144,12 +144,12 @@ SENTRY_DSN_INFRAKIT     Updated 2026-03-31
    mkdir -p ~/.config/sentry
    cat > ~/.sentryclirc <<EOF
    [auth]
-   token=&lt;YOUR_TOKEN_HERE&gt;
+   token=<YOUR_TOKEN_HERE>
    EOF
    ```
 
 2. Get token from: https://sentry.io/settings/auth-tokens/
-3. Replace `&lt;YOUR_TOKEN_HERE&gt;` with your actual token
+3. Replace `<YOUR_TOKEN_HERE>` with your actual token
 4. Verify:
    ```bash
    sentry-cli organizations list
@@ -212,7 +212,7 @@ Integration using `SENTRY_DSN_HELIOSCLI`
 - [ ] GitHub Secrets configured (`SENTRY_DSN_*`)
 - [ ] `sentry-cli` can authenticate: `sentry-cli organizations list`
 - [ ] Projects appear in Sentry dashboard: https://sentry.io/organizations/stealth-startup-3u/projects/
-- [ ] Each project has valid DSN in format: `https://&lt;key&gt;@&lt;subdomain&gt;.ingest.sentry.io/&lt;id&gt;`
+- [ ] Each project has valid DSN in format: `https://<key>@<subdomain>.ingest.sentry.io/<id>`
 
 ---
 

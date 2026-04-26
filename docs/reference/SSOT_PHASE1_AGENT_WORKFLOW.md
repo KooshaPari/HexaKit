@@ -25,13 +25,13 @@ This guide defines how agents collaborate on specifications using the unified `s
 Create feature branches following this pattern:
 
 ```
-specs/agent-&lt;agent-name&gt;-&lt;task-id&gt;
+specs/agent-<agent-name>-<task-id>
 ```
 
 **Components:**
 - `specs/` — Spec branch prefix (reserved for specification work only)
-- `agent-&lt;name&gt;` — Your agent identifier (lowercase, hyphens)
-- `&lt;task-id&gt;` — Work item ID (from AgilePlus: WP-XXX-NNN, FR-XXX-NNN, or ADR-YYY)
+- `agent-<name>` — Your agent identifier (lowercase, hyphens)
+- `<task-id>` — Work item ID (from AgilePlus: WP-XXX-NNN, FR-XXX-NNN, or ADR-YYY)
 
 **Examples:**
 
@@ -50,11 +50,11 @@ git checkout specs/main
 git pull origin specs/main
 
 # 2. Create feature branch
-git checkout -b specs/agent-&lt;your-name&gt;-&lt;task-id&gt;
+git checkout -b specs/agent-<your-name>-<task-id>
 
 # 3. Verify you're on correct branch
 git branch -v
-# Should show: * specs/agent-&lt;name&gt;-&lt;task&gt; &lt;commit&gt;
+# Should show: * specs/agent-<name>-<task> <commit>
 ```
 
 ---
@@ -64,12 +64,12 @@ git branch -v
 Every commit to specs/* branches **must include spec traceability**. Use this format:
 
 ```
-&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;
+<type>(<scope>): <subject>
 
-&lt;body&gt;
+<body>
 
-Spec-Traces: &lt;FR-XXX-NNN, ADR-YYY, PLAN-ZZZ&gt;
-Co-Authored-By: &lt;agent-name&gt; &lt;agent@phenotype.local&gt;
+Spec-Traces: <FR-XXX-NNN, ADR-YYY, PLAN-ZZZ>
+Co-Authored-By: <agent-name> <agent@phenotype.local>
 ```
 
 ### Example Commits
@@ -85,7 +85,7 @@ including acceptance criteria for:
 - Zero-dependency constraint
 
 Spec-Traces: FR-PHENOSDK-001
-Co-Authored-By: phenosdk-decomposer &lt;agent@phenotype.local&gt;
+Co-Authored-By: phenosdk-decomposer <agent@phenotype.local>
 ```
 
 #### Example 2: Updating ADR
@@ -98,7 +98,7 @@ Expand decision rationale for monorepo structure:
 - Dependency management rules
 
 Spec-Traces: ADR-015
-Co-Authored-By: agileplus-merger &lt;agent@phenotype.local&gt;
+Co-Authored-By: agileplus-merger <agent@phenotype.local>
 ```
 
 #### Example 3: Adding test traces
@@ -109,7 +109,7 @@ Update test file with Spec-Traces comment referencing
 FR-CORE-042: Cache invalidation strategies
 
 Spec-Traces: FR-CORE-042
-Co-Authored-By: explorer &lt;agent@phenotype.local&gt;
+Co-Authored-By: explorer <agent@phenotype.local>
 ```
 
 #### Example 4: Multiple specs in one commit
@@ -122,7 +122,7 @@ Update three documents to reflect unified multi-agent orchestration model:
 - PLAN-2026Q2: Quarterly roadmap
 
 Spec-Traces: FR-THEGENT-012, ADR-023, PLAN-2026Q2
-Co-Authored-By: thegent-specs &lt;agent@phenotype.local&gt;
+Co-Authored-By: thegent-specs <agent@phenotype.local>
 ```
 
 ### Commit Types
@@ -192,7 +192,7 @@ Add comprehensive functional requirement for phenosdk-decompose-core,
 including acceptance criteria and test mappings.
 
 Spec-Traces: FR-PHENOSDK-001
-Co-Authored-By: phenosdk-decomposer &lt;agent@phenotype.local&gt;"
+Co-Authored-By: phenosdk-decomposer <agent@phenotype.local>"
 
 # Verify commit message
 git show --format=%B -s
@@ -264,7 +264,7 @@ If merge conflicts detected:
 # → GitHub creates manual review issue
 
 # Example issue:
-# Title: "🔀 Merge Conflict: specs/agent-&lt;name&gt;-&lt;task&gt;"
+# Title: "🔀 Merge Conflict: specs/agent-<name>-<task>"
 # Body: Lists conflict details + resolution instructions
 ```
 
@@ -278,15 +278,15 @@ git fetch origin
 git diff origin/specs/main..HEAD
 
 # 3. Manually resolve in editor
-# (Fix the conflicting sections marked with <<<<<<&lt;, =======, &gt;>>>>>>)
+# (Fix the conflicting sections marked with <<<<<<<, =======, >>>>>>>)
 vim FUNCTIONAL_REQUIREMENTS.md
 
 # 4. Re-commit
 git add FUNCTIONAL_REQUIREMENTS.md
-git commit -m "resolve: merge conflict in specs/agent-&lt;name&gt;-&lt;task&gt;"
+git commit -m "resolve: merge conflict in specs/agent-<name>-<task>"
 
 # 5. Push again
-git push origin specs/agent-&lt;name&gt;-&lt;task&gt;
+git push origin specs/agent-<name>-<task>
 
 # → Auto-merge retry happens automatically (within next 5 min batch)
 ```
@@ -480,7 +480,7 @@ Your specs/agent-* branch auto-merges to specs/main when **all** criteria met:
 ### Merge Timeline
 
 ```
-specs/agent-&lt;name&gt;-&lt;task&gt; pushed
+specs/agent-<name>-<task> pushed
           ↓
      Validation runs (2-3 min)
           ↓
@@ -586,7 +586,7 @@ No manual review needed for clean, spec-compliant changes.
 git checkout specs/main && git pull
 
 # 2. Create branch
-git checkout -b specs/agent-&lt;name&gt;-fr-&lt;id&gt;
+git checkout -b specs/agent-<name>-fr-<id>
 
 # 3. Edit FR
 vim FUNCTIONAL_REQUIREMENTS.md
@@ -599,13 +599,13 @@ Refined cache invalidation strategy acceptance criteria based on
 initial implementation feedback.
 
 Spec-Traces: FR-CORE-042
-Co-Authored-By: &lt;name&gt; &lt;agent@phenotype.local&gt;"
+Co-Authored-By: <name> <agent@phenotype.local>"
 
 # 5. Validate
 pre-commit run --all-files
 
 # 6. Push
-git push origin specs/agent-&lt;name&gt;-fr-&lt;id&gt;
+git push origin specs/agent-<name>-fr-<id>
 
 # → Auto-merge within 5 min
 ```
@@ -617,7 +617,7 @@ git push origin specs/agent-&lt;name&gt;-fr-&lt;id&gt;
 git checkout specs/main && git pull
 
 # 2. Create branch
-git checkout -b specs/agent-&lt;name&gt;-multi-&lt;ids&gt;
+git checkout -b specs/agent-<name>-multi-<ids>
 
 # 3. Edit multiple files
 vim FUNCTIONAL_REQUIREMENTS.md  # Add FR-XXX-001, FR-XXX-002
@@ -629,7 +629,7 @@ git add FUNCTIONAL_REQUIREMENTS.md
 git commit -m "specs(fr): add FR-XXX-001 and FR-XXX-002 for feature X
 
 Spec-Traces: FR-XXX-001, FR-XXX-002
-Co-Authored-By: &lt;name&gt; &lt;agent@phenotype.local&gt;"
+Co-Authored-By: <name> <agent@phenotype.local>"
 
 git add ADR.md
 git commit -m "specs(adr): add ADR-025 for system design decision
@@ -637,14 +637,14 @@ git commit -m "specs(adr): add ADR-025 for system design decision
 Rationale: Addresses design question from FR-XXX-001 implementation
 
 Spec-Traces: ADR-025, FR-XXX-001
-Co-Authored-By: &lt;name&gt; &lt;agent@phenotype.local&gt;"
+Co-Authored-By: <name> <agent@phenotype.local>"
 
 # 5. Validate
 python3 scripts/validate-fr-test-coverage.py
 pre-commit run --all-files
 
 # 6. Push
-git push origin specs/agent-&lt;name&gt;-multi-&lt;ids&gt;
+git push origin specs/agent-<name>-multi-<ids>
 
 # → Auto-merge all commits to specs/main within 5 min
 ```
@@ -653,9 +653,9 @@ git push origin specs/agent-&lt;name&gt;-multi-&lt;ids&gt;
 
 ```bash
 # 1. Push initially (auto-merge fails)
-git push origin specs/agent-&lt;name&gt;-&lt;task&gt;
+git push origin specs/agent-<name>-<task>
 # → ❌ Merge conflict detected
-# → GitHub creates issue: "Merge Conflict: specs/agent-&lt;name&gt;-&lt;task&gt;"
+# → GitHub creates issue: "Merge Conflict: specs/agent-<name>-<task>"
 
 # 2. Fetch origin and check conflict
 git fetch origin
@@ -667,14 +667,14 @@ vim FUNCTIONAL_REQUIREMENTS.md
 
 # 4. Re-commit and push
 git add FUNCTIONAL_REQUIREMENTS.md
-git commit -m "resolve: merge conflict in specs/agent-&lt;name&gt;-&lt;task&gt;
+git commit -m "resolve: merge conflict in specs/agent-<name>-<task>
 
 Merged both FR-XXX-001 and FR-YYY-002 additions.
 
 Spec-Traces: FR-XXX-001, FR-YYY-002
-Co-Authored-By: &lt;name&gt; &lt;agent@phenotype.local&gt;"
+Co-Authored-By: <name> <agent@phenotype.local>"
 
-git push origin specs/agent-&lt;name&gt;-&lt;task&gt;
+git push origin specs/agent-<name>-<task>
 
 # → Auto-merge retry within next 5-min batch
 ```
@@ -687,7 +687,7 @@ git push origin specs/agent-&lt;name&gt;-&lt;task&gt;
 
 **Error:**
 ```
-ERROR: Commit &lt;hash&gt; missing Spec-Traces in correct format
+ERROR: Commit <hash> missing Spec-Traces in correct format
 Expected: Spec-Traces: FR-XXX-NNN
 ```
 
@@ -718,7 +718,7 @@ grep -n "## FR-CORE-042" FUNCTIONAL_REQUIREMENTS.md
 
 # If not found, add it first
 vim FUNCTIONAL_REQUIREMENTS.md
-# Add: ## FR-CORE-042: &lt;Title&gt;
+# Add: ## FR-CORE-042: <Title>
 
 # Then re-commit
 git add FUNCTIONAL_REQUIREMENTS.md
@@ -743,12 +743,12 @@ git push
 gh run list --workflow auto-merge-specs.yml
 
 # View logs
-gh run view &lt;run-id&gt; --log
+gh run view <run-id> --log
 
 # If workflow failed, check:
 # 1. Branch exists: git branch -r | grep agent
-# 2. No conflicts: git merge-base origin/specs/main origin/specs/agent-&lt;name&gt;-&lt;task&gt;
-# 3. CI passed: gh pr list | grep agent-&lt;name&gt;
+# 2. No conflicts: git merge-base origin/specs/main origin/specs/agent-<name>-<task>
+# 3. CI passed: gh pr list | grep agent-<name>
 
 # Manual trigger (if stuck):
 gh workflow run auto-merge-specs.yml
@@ -757,7 +757,7 @@ gh workflow run auto-merge-specs.yml
 ### Issue: "Merge conflict requires manual resolution"
 
 **Symptoms:**
-- GitHub issue created: "Merge Conflict: specs/agent-&lt;name&gt;-&lt;task&gt;"
+- GitHub issue created: "Merge Conflict: specs/agent-<name>-<task>"
 - Auto-merge failed
 
 **Resolution Steps:**
@@ -766,12 +766,12 @@ gh workflow run auto-merge-specs.yml
 git fetch origin
 
 # 2. Check what conflicts
-git diff origin/specs/main origin/specs/agent-&lt;name&gt;-&lt;task&gt; | head -50
+git diff origin/specs/main origin/specs/agent-<name>-<task> | head -50
 
 # 3. Resolve manually (see Workflow C above)
 
 # 4. Push re-resolved branch
-git push origin specs/agent-&lt;name&gt;-&lt;task&gt;
+git push origin specs/agent-<name>-<task>
 
 # → Auto-merge retries automatically
 ```
@@ -782,18 +782,18 @@ git push origin specs/agent-&lt;name&gt;-&lt;task&gt;
 
 ### For New Agents
 
-1. ✅ Run `scripts/agent-setup.sh &lt;your-name&gt;`
+1. ✅ Run `scripts/agent-setup.sh <your-name>`
 2. ✅ Read this guide (Section 1-3)
-3. ✅ Create first branch: `specs/agent-&lt;name&gt;-&lt;task&gt;`
+3. ✅ Create first branch: `specs/agent-<name>-<task>`
 4. ✅ Make changes, commit with Spec-Traces
 5. ✅ Push and watch auto-merge (5 min)
 
 ### For Experienced Agents
 
-1. ✅ Branch: `specs/agent-&lt;name&gt;-&lt;task&gt;`
+1. ✅ Branch: `specs/agent-<name>-<task>`
 2. ✅ Edit, commit with Spec-Traces
 3. ✅ Run `pre-commit run --all-files`
-4. ✅ Push: `git push origin specs/agent-&lt;name&gt;-&lt;task&gt;`
+4. ✅ Push: `git push origin specs/agent-<name>-<task>`
 5. ✅ Auto-merge happens automatically
 
 ### For Spec Administrators

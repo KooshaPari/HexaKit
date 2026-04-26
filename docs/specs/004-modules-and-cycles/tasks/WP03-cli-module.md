@@ -44,7 +44,7 @@ All commands wire into `crates/agileplus-cli/src/commands/mod.rs` and the CLI en
 
 - **Pattern**: Examine an existing command file (e.g., `crates/agileplus-cli/src/commands/specify.rs`
   or `plan.rs`) to understand the clap derive pattern, the storage port initialisation, and how
-  commands return `anyhow::Result&lt;()&gt;`.
+  commands return `anyhow::Result<()>`.
 - **Clap**: Use `#[derive(Parser)]` and `#[derive(Subcommand)]` from `clap`. Follow the exact
   style already used in the crate.
 - **Storage**: Commands call `StoragePort` methods asynchronously. The CLI uses a Tokio runtime
@@ -112,7 +112,7 @@ All commands wire into `crates/agileplus-cli/src/commands/mod.rs` and the CLI en
        pub name: String,
        /// Slug of the parent module (creates a child if provided)
        #[arg(long)]
-       pub parent: Option&lt;String&gt;,
+       pub parent: Option<String>,
    }
 
    #[derive(Debug, Args)]
@@ -158,7 +158,7 @@ All commands wire into `crates/agileplus-cli/src/commands/mod.rs` and the CLI en
 4. Define the top-level dispatch function signature:
 
    ```rust
-   pub async fn run(args: ModuleArgs, storage: &dyn StoragePort) -> anyhow::Result&lt;()&gt; {
+   pub async fn run(args: ModuleArgs, storage: &dyn StoragePort) -> anyhow::Result<()> {
        match args.command {
            ModuleCommand::Create(a) => create(a, storage).await,
            ModuleCommand::List(a)   => list(a, storage).await,
@@ -188,7 +188,7 @@ resolution) and deletion (with guard enforcement).
 
 **Steps**:
 
-1. Implement `async fn create(args: CreateArgs, storage: &dyn StoragePort) -> anyhow::Result&lt;()&gt;`:
+1. Implement `async fn create(args: CreateArgs, storage: &dyn StoragePort) -> anyhow::Result<()>`:
 
    - If `args.parent` is `Some(parent_slug)`:
      - Call `storage.get_module_by_slug(&parent_slug, None).await?`.
@@ -203,7 +203,7 @@ resolution) and deletion (with guard enforcement).
    user's system has deeply nested parents with duplicate slugs, they must provide the full path
    -- document this limitation in a CLI help note.
 
-2. Implement `async fn delete(args: DeleteArgs, storage: &dyn StoragePort) -> anyhow::Result&lt;()&gt;`:
+2. Implement `async fn delete(args: DeleteArgs, storage: &dyn StoragePort) -> anyhow::Result<()>`:
 
    - Resolve slug to id: call `get_module_by_slug(&args.slug, None).await?`.
    - If `None`, return `Err(anyhow::anyhow!("Module '{}' not found", args.slug))`.
@@ -228,7 +228,7 @@ resolution) and deletion (with guard enforcement).
 
 **Steps**:
 
-1. Implement `async fn list(args: ListArgs, storage: &dyn StoragePort) -> anyhow::Result&lt;()&gt;`:
+1. Implement `async fn list(args: ListArgs, storage: &dyn StoragePort) -> anyhow::Result<()>`:
 
    - Fetch root modules: `storage.list_root_modules().await?`.
    - If `!args.tree`:
@@ -243,7 +243,7 @@ resolution) and deletion (with guard enforcement).
        module: &Module,
        storage: &dyn StoragePort,
        depth: usize,
-   ) -> anyhow::Result&lt;()&gt; {
+   ) -> anyhow::Result<()> {
        let indent = "  ".repeat(depth);
        let connector = if depth == 0 { "" } else { "+-- " };
        // Count owned features
@@ -272,7 +272,7 @@ resolution) and deletion (with guard enforcement).
    notifications (2 owned, 2 tagged)
    ```
 
-3. Implement `async fn show(args: ShowArgs, storage: &dyn StoragePort) -> anyhow::Result&lt;()&gt;`:
+3. Implement `async fn show(args: ShowArgs, storage: &dyn StoragePort) -> anyhow::Result<()>`:
 
    - Resolve slug to module (same root-search pattern as `delete`).
    - Call `storage.get_module_with_features(module.id).await?`.
@@ -305,7 +305,7 @@ resolution) and deletion (with guard enforcement).
 
 **Steps**:
 
-1. Implement `async fn assign(args: AssignArgs, storage: &dyn StoragePort) -> anyhow::Result&lt;()&gt;`:
+1. Implement `async fn assign(args: AssignArgs, storage: &dyn StoragePort) -> anyhow::Result<()>`:
 
    - Resolve feature slug: `storage.get_feature_by_slug(&args.feature_slug).await?`. If `None`, error.
    - Resolve module slug: `storage.get_module_by_slug(&args.module_slug, None).await?`. If `None`, error.

@@ -96,7 +96,7 @@ This work package exposes the core publication and promotion workflows through t
   1. Create `cmd/promote.go` with Cobra command definition:
      ```go
      var promoteCmd = &cobra.Command{
-         Use:   "promote &lt;channel&gt; [flags]",
+         Use:   "promote <channel> [flags]",
          Short: "Promote packages to a release channel",
          Long:  "Validate gate criteria and promote packages to a release channel (alpha, canary, beta, rc, prod)",
          Args:  cobra.ExactArgs(1),
@@ -387,7 +387,7 @@ This work package exposes the core publication and promotion workflows through t
 When reviewing WP07 completion:
 
 1. **Publish Command**: Verify `pheno publish` detects language, selects correct adapter, builds successfully, and publishes (or dry-runs). Test workspace ordering.
-2. **Promote Command**: Verify `pheno promote &lt;channel&gt;` validates transition, calls gate evaluation, shows results table, and publishes on pass. Test gate failure handling.
+2. **Promote Command**: Verify `pheno promote <channel>` validates transition, calls gate evaluation, shows results table, and publishes on pass. Test gate failure handling.
 3. **Orchestrator**: Review topological sort logic; verify parallel publishing within phases; check cycle detection and partial failure handling.
 4. **Lipgloss Output**: Render sample output at various terminal widths; verify colors and tables are readable; ensure non-TTY graceful degradation.
 5. **Config System**: Check that `~/.config/pheno/config.toml` and `.pheno.toml` are both loaded; verify env var override works; test credential handling (ensure no secrets logged).

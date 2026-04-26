@@ -147,8 +147,8 @@ Worktree Location (active development):
 
 **Key Functions**:
 - `html_escape(s: &str) -> String` — HTML sanitization
-- `build_feature_events(features: &[Feature]) -> Vec&lt;EventView&gt;` — Data transformation
-- `build_feature_media_assets(wp: &WorkPackage) -> Vec&lt;MediaAssetView&gt;` — Media extraction
+- `build_feature_events(features: &[Feature]) -> Vec<EventView>` — Data transformation
+- `build_feature_media_assets(wp: &WorkPackage) -> Vec<MediaAssetView>` — Media extraction
 
 **Characteristics**: No I/O, no side effects, highly testable
 
@@ -303,7 +303,7 @@ use agileplus_dashboard::routes::{
 **File**: `routes/pages.rs`
 
 ```rust
-pub async fn my_new_page(State(state): State&lt;SharedState&gt;) -> Html&lt;String&gt; {
+pub async fn my_new_page(State(state): State<SharedState>) -> Html<String> {
     let store = state.read().await;
     let html = MyPageTemplate {
         // Extract data from state
@@ -331,13 +331,13 @@ pub async fn my_new_page(State(state): State&lt;SharedState&gt;) -> Html&lt;Stri
 #[derive(Debug, Deserialize)]
 pub struct MyFormData {
     pub field1: String,
-    pub field2: Option&lt;i32&gt;,
+    pub field2: Option<i32>,
 }
 
 // 2. Implement the handler in pages.rs:
 pub async fn process_my_form(
-    State(state): State&lt;SharedState&gt;,
-    Form(form): Form&lt;MyFormData&gt;,
+    State(state): State<SharedState>,
+    Form(form): Form<MyFormData>,
 ) -> impl IntoResponse {
     let mut store = state.write().await;
     // Process form data
@@ -371,7 +371,7 @@ pub struct MyJsonResponse {
 }
 
 // 2. Implement the handler:
-pub async fn my_json_endpoint(State(state): State&lt;SharedState&gt;) -> impl IntoResponse {
+pub async fn my_json_endpoint(State(state): State<SharedState>) -> impl IntoResponse {
     let store = state.read().await;
     let data = MyJsonResponse {
         id: "abc-123".to_string(),
@@ -404,7 +404,7 @@ pub fn transform_data(input: &str) -> String {
 }
 
 /// Builds a list of items from a collection.
-pub fn build_item_list(items: &[Item]) -> Vec&lt;ItemView&gt; {
+pub fn build_item_list(items: &[Item]) -> Vec<ItemView> {
     items.iter().map(|item| ItemView {
         id: item.id.clone(),
         name: item.name.clone(),
@@ -497,7 +497,7 @@ cargo clippy --package agileplus-dashboard
 |------|-----------|
 | **Handler** | Async function that processes HTTP requests |
 | **Router** | Axum router that maps routes to handlers |
-| **State** | Shared application state (`Arc&lt;RwLock&lt;AppState&gt;&gt;`) |
+| **State** | Shared application state (`Arc<RwLock<AppState>>`) |
 | **HTMX Partial** | HTML fragment returned for dynamic page updates |
 | **Form DTO** | Data Transfer Object for request form deserialization |
 | **Re-export** | Publicly exposing a type from another module |

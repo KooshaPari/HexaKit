@@ -55,7 +55,7 @@ retrospective.rs (630 LOC)
 │    • compute_aggregates() → AggregateResult            │
 │    • export() → Bytes                                  │
 │    • get_metadata() → Metadata                         │
-│    • list_retrospectives() → Vec&lt;Metadata&gt;            │
+│    • list_retrospectives() → Vec<Metadata>            │
 └────────────────┬────────────────────────────────────────┘
                  │
 ┌────────────────▼────────────────────────────────────────┐

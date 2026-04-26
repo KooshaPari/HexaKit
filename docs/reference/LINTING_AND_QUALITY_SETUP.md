@@ -52,7 +52,7 @@ Pre-commit hooks run locally before each commit. They are **fast**, **blocking**
 pip install pre-commit
 
 # In each repo: install hooks
-cd &lt;repo&gt;
+cd <repo>
 pre-commit install
 pre-commit install --hook-type pre-push
 
@@ -592,7 +592,7 @@ jobs:
     steps:
       - name: Check job status
         run: |
-          if [[ "$&#123;&#123; needs.lint-and-format.result }}" == "failure" || "$&#123;&#123; needs.type-check.result }}" == "failure" ]]; then
+          if [[ "${{ needs.lint-and-format.result }}" == "failure" || "${{ needs.type-check.result }}" == "failure" ]]; then
             echo "❌ Quality gate failed"
             exit 1
           fi
@@ -622,8 +622,8 @@ Configure branch protection in GitHub:
 
 ```bash
 # 1. Clone repo (if not done)
-git clone &lt;repo-url&gt;
-cd &lt;repo-name&gt;
+git clone <repo-url>
+cd <repo-name>
 
 # 2. Install pre-commit hooks
 pip install pre-commit
@@ -639,7 +639,7 @@ git commit -m "feat: add new feature"  # hooks run here
 
 # 5. Before push, quality gate runs (pre-push hooks)
 # If all pass, push succeeds
-git push origin &lt;branch&gt;
+git push origin <branch>
 ```
 
 ### Suppressing Warnings (With Justification)

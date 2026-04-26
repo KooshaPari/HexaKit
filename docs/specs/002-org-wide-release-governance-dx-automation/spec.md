@@ -48,7 +48,7 @@ A developer clones any Phenotype repo and immediately has access to consistent t
 1. **Given** a freshly cloned Phenotype repo with the task runner installed, **When** the developer runs the `lint` task, **Then** the appropriate language-specific linter executes and reports results.
 2. **Given** any repo, **When** the developer runs the `test` task, **Then** the repo's test suite runs with correct environment setup.
 3. **Given** any repo, **When** the developer runs the `build` task, **Then** the project compiles/builds successfully.
-4. **Given** a publishable repo, **When** the developer runs the `release:promote &lt;channel&gt;` task, **Then** the promotion workflow initiates with appropriate gate checks.
+4. **Given** a publishable repo, **When** the developer runs the `release:promote <channel>` task, **Then** the promotion workflow initiates with appropriate gate checks.
 5. **Given** a repo without a specific task (e.g., Rust repo has no `docs:build`), **When** the developer runs that task, **Then** a clear message indicates the task is not applicable to this repo.
 
 ---

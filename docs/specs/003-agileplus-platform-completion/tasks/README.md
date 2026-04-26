@@ -55,7 +55,7 @@ history:
 
 Use the CLI (updates frontmatter only, no file movement):
 ```bash
-spec-kitty agent tasks move-task &lt;WPID&gt; --to &lt;lane&gt;
+spec-kitty agent tasks move-task <WPID> --to <lane>
 ```
 
 Example:

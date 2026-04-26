@@ -49,7 +49,7 @@ Command-line interface using `clap` for argument parsing and subcommand routing.
 | `commands/queue` | `agileplus queue {add,list,show,pop}` |
 
 **Key Types:**
-- `Cli { command: Commands, verbose: u8, db: PathBuf, repo: Option&lt;PathBuf&gt; }`
+- `Cli { command: Commands, verbose: u8, db: PathBuf, repo: Option<PathBuf> }`
 - `Commands` enum (Specify, Research, Plan, Implement, Validate, Ship, Retrospective, Triage, Queue)
 - Individual command args structs (SpecifyArgs, PlanArgs, ImplementArgs, etc.)
 

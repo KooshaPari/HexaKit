@@ -31,8 +31,8 @@ cat >> FUNCTIONAL_REQUIREMENTS.md <<EOF
 ## FR-XXX-YYY: My Feature Title
 
 - **Status**: PROPOSED
-- **Traces To**: &lt;AgilePlus Spec ID&gt;
-- **Tests**: &lt;path/to/test&gt;
+- **Traces To**: <AgilePlus Spec ID>
+- **Tests**: <path/to/test>
 
 Description...
 EOF
@@ -105,7 +105,7 @@ Result: Your feature is in production (main)
 ## Decision Tree: Resolving a Conflict
 
 ```
-Git says: "CONFLICT in &lt;file&gt;"
+Git says: "CONFLICT in <file>"
 
 IF file == FUNCTIONAL_REQUIREMENTS.md:
   → Do nothing! Spec merge service resolves automatically.
@@ -196,7 +196,7 @@ AUDIT_LOG.md
 
 **PR stuck in queue**:
 - Check `gh pr status` for blocking reviews
-- Check `gh pr view &lt;number&gt; --json checks`
+- Check `gh pr view <number> --json checks`
 - If service-caused: Post in #engineering Slack
 
 **Test failures appearing out of nowhere**:

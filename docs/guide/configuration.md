@@ -216,7 +216,7 @@ agileplus specify "title" -vv  # Show more details
 ### Database
 
 ```bash
---db &lt;PATH&gt;                   # Custom database path
+--db <PATH>                   # Custom database path
 # Default: .kittify/agileplus.db
 
 Example:
@@ -226,7 +226,7 @@ agileplus list --db /tmp/agileplus.db
 ### Repository
 
 ```bash
---repo &lt;PATH&gt;                 # Repository root (if not current dir)
+--repo <PATH>                 # Repository root (if not current dir)
 # Default: current directory
 
 Example:
@@ -236,7 +236,7 @@ agileplus list --repo /path/to/project
 ### Output Format
 
 ```bash
---output &lt;FORMAT&gt;             # Output format
+--output <FORMAT>             # Output format
 # Options: text, json, csv, markdown
 
 Example:
@@ -246,7 +246,7 @@ agileplus queue list --output json
 ### Color Output
 
 ```bash
---color &lt;WHEN&gt;                # When to use colors
+--color <WHEN>                # When to use colors
 # Options: auto (default), always, never
 
 Example:

@@ -280,10 +280,10 @@ Each transition requires evidence per governance contract. Skip transitions log 
 ```rust
 struct AuditEntry {
     id: u64,
-    timestamp: DateTime&lt;Utc&gt;,
+    timestamp: DateTime<Utc>,
     actor: String,           // "user", "agent:claude-code", "system"
     transition: StateTransition,
-    evidence: Vec&lt;EvidenceRef&gt;,
+    evidence: Vec<EvidenceRef>,
     prev_hash: [u8; 32],    // SHA-256 of previous entry
     hash: [u8; 32],         // SHA-256(id + timestamp + actor + transition + evidence + prev_hash)
 }

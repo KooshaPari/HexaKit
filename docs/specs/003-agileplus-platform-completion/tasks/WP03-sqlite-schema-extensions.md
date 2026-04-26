@@ -196,7 +196,7 @@ impl SqliteEventStore {
 
 #[async_trait]
 impl EventStore for SqliteEventStore {
-    async fn append(&self, event: &Event) -> Result&lt;i64, EventError&gt; {
+    async fn append(&self, event: &Event) -> Result<i64, EventError> {
         let result = sqlx::query(
             r#"
             INSERT INTO events (
@@ -238,7 +238,7 @@ impl EventStore for SqliteEventStore {
         &self,
         entity_type: &str,
         entity_id: i64,
-    ) -> Result&lt;Vec&lt;Event&gt;, EventError&gt; {
+    ) -> Result<Vec<Event>, EventError> {
         let rows = sqlx::query(
             r#"
             SELECT id, entity_type, entity_id, event_type, payload, actor,
@@ -261,11 +261,11 @@ impl EventStore for SqliteEventStore {
                     .map_err(|e| EventError::StorageError(e.to_string()))?
                     .with_timezone(&Utc);
 
-                let prev_hash_vec: Vec&lt;u8&gt; = row.get(7);
+                let prev_hash_vec: Vec<u8> = row.get(7);
                 let mut prev_hash = [0u8; 32];
                 prev_hash.copy_from_slice(&prev_hash_vec);
 
-                let hash_vec: Vec&lt;u8&gt; = row.get(8);
+                let hash_vec: Vec<u8> = row.get(8);
                 let mut hash = [0u8; 32];
                 hash.copy_from_slice(&hash_vec);
 
@@ -294,7 +294,7 @@ impl EventStore for SqliteEventStore {
         entity_type: &str,
         entity_id: i64,
         sequence: i64,
-    ) -> Result&lt;Vec&lt;Event&gt;, EventError&gt; {
+    ) -> Result<Vec<Event>, EventError> {
         let rows = sqlx::query(
             r#"
             SELECT id, entity_type, entity_id, event_type, payload, actor,
@@ -319,11 +319,11 @@ impl EventStore for SqliteEventStore {
                     .map_err(|e| EventError::StorageError(e.to_string()))?
                     .with_timezone(&Utc);
 
-                let prev_hash_vec: Vec&lt;u8&gt; = row.get(7);
+                let prev_hash_vec: Vec<u8> = row.get(7);
                 let mut prev_hash = [0u8; 32];
                 prev_hash.copy_from_slice(&prev_hash_vec);
 
-                let hash_vec: Vec&lt;u8&gt; = row.get(8);
+                let hash_vec: Vec<u8> = row.get(8);
                 let mut hash = [0u8; 32];
                 hash.copy_from_slice(&hash_vec);
 
@@ -351,9 +351,9 @@ impl EventStore for SqliteEventStore {
         &self,
         entity_type: &str,
         entity_id: i64,
-        from: DateTime&lt;Utc&gt;,
-        to: DateTime&lt;Utc&gt;,
-    ) -> Result&lt;Vec&lt;Event&gt;, EventError&gt; {
+        from: DateTime<Utc>,
+        to: DateTime<Utc>,
+    ) -> Result<Vec<Event>, EventError> {
         let rows = sqlx::query(
             r#"
             SELECT id, entity_type, entity_id, event_type, payload, actor,
@@ -379,11 +379,11 @@ impl EventStore for SqliteEventStore {
                     .map_err(|e| EventError::StorageError(e.to_string()))?
                     .with_timezone(&Utc);
 
-                let prev_hash_vec: Vec&lt;u8&gt; = row.get(7);
+                let prev_hash_vec: Vec<u8> = row.get(7);
                 let mut prev_hash = [0u8; 32];
                 prev_hash.copy_from_slice(&prev_hash_vec);
 
-                let hash_vec: Vec&lt;u8&gt; = row.get(8);
+                let hash_vec: Vec<u8> = row.get(8);
                 let mut hash = [0u8; 32];
                 hash.copy_from_slice(&hash_vec);
 
@@ -411,7 +411,7 @@ impl EventStore for SqliteEventStore {
         &self,
         entity_type: &str,
         entity_id: i64,
-    ) -> Result&lt;i64, EventError&gt; {
+    ) -> Result<i64, EventError> {
         let row = sqlx::query("SELECT MAX(sequence) FROM events WHERE entity_type = ? AND entity_id = ?")
             .bind(entity_type)
             .bind(entity_id)
@@ -419,7 +419,7 @@ impl EventStore for SqliteEventStore {
             .await
             .map_err(|e| EventError::StorageError(e.to_string()))?;
 
-        Ok(row.get::&lt;Option&lt;i64&gt;, _&gt;(0).unwrap_or(0))
+        Ok(row.get::<Option<i64>, _>(0).unwrap_or(0))
     }
 }
 ```
@@ -436,7 +436,7 @@ impl EventStore for SqliteEventStore {
 Update the SQLite pool initialization in `crates/agileplus-sqlite/src/lib.rs`:
 
 ```rust
-pub async fn init_pool(database_url: &str) -> Result&lt;SqlitePool, Error&gt; {
+pub async fn init_pool(database_url: &str) -> Result<SqlitePool, Error> {
     let pool = SqlitePool::connect(database_url).await?;
 
     // Enable WAL mode for concurrent reads
@@ -463,7 +463,7 @@ pub async fn init_pool(database_url: &str) -> Result&lt;SqlitePool, Error&gt; {
     Ok(pool)
 }
 
-async fn migrate_internal(pool: &SqlitePool) -> Result&lt;(), Error&gt; {
+async fn migrate_internal(pool: &SqlitePool) -> Result<(), Error> {
     // Include all migration files from migrations/ directory
     // Using sqlx::migrate! macro or manual SQL execution
 

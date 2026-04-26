@@ -365,7 +365,7 @@ const response = await fetch('/api/v1/specs');
 lsof -i :5173
 
 # Kill the process
-kill -9 &lt;PID&gt;
+kill -9 <PID>
 
 # Or change the port in vite.config.ts
 ```

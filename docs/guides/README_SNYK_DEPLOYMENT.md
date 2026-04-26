@@ -403,7 +403,7 @@ Tier 1 Status:
 You'll know you've succeeded when:
 
 ✅ **Phase 1: Token Acquired**
-- `snyk auth &lt;token&gt;` succeeds
+- `snyk auth <token>` succeeds
 - `snyk test --dry-run` works
 
 ✅ **Phase 2: Local Deployment Complete**

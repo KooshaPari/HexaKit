@@ -248,7 +248,7 @@ date: 2026-03-29
 
 <FRTraceTable
   spec="FUNCTIONAL_REQUIREMENTS.md"
-  filters=&#123;&#123; category: "AUTH" }}
+  filters={{ category: "AUTH" }}
 />
 ```
 

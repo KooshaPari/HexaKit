@@ -44,7 +44,7 @@ fn main() {
 
 ```rust
 #[tokio::main]
-async fn main() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     phenotype_logging::init(&Default::default());
     // Your code
     Ok(())

@@ -128,8 +128,8 @@ impl SyncMetrics {
 ///     age: i32,
 /// }
 ///
-/// impl RowMapper&lt;User&gt; for User {
-///     fn map_row(row: &rusqlite::Row) -> Result&lt;Self&gt; {
+/// impl RowMapper<User> for User {
+///     fn map_row(row: &rusqlite::Row) -> Result<Self> {
 ///         Ok(User {
 ///             id: row.get(0)?,
 ///             name: row.get(1)?,
@@ -138,16 +138,16 @@ impl SyncMetrics {
 ///     }
 /// }
 /// ```
-pub trait RowMapper&lt;T&gt;: Send + Sync {
+pub trait RowMapper<T>: Send + Sync {
     /// Map a database row to type T.
-    fn map_row(row: &rusqlite::Row) -> Result&lt;T, SqliteError&gt;;
+    fn map_row(row: &rusqlite::Row) -> Result<T, SqliteError>;
 }
 
 /// Trait for synchronous store operations with transaction support.
 ///
 /// Provides transaction context (read-only and read-write) for database operations.
 #[async_trait]
-pub trait SyncStore&lt;T&gt;: Send + Sync {
+pub trait SyncStore<T>: Send + Sync {
     /// Connection type for this store
     type Connection: Send + Sync;
 
@@ -155,32 +155,32 @@ pub trait SyncStore&lt;T&gt;: Send + Sync {
     ///
     /// The connection parameter is immutable, preventing accidental writes.
     /// Transaction is automatically rolled back on error.
-    async fn read_tx&lt;F, R&gt;(&self, f: F) -> Result&lt;R, SqliteError&gt;
+    async fn read_tx<F, R>(&self, f: F) -> Result<R, SqliteError>
     where
-        F: FnOnce(&Self::Connection) -> Result&lt;R, SqliteError&gt; + Send,
+        F: FnOnce(&Self::Connection) -> Result<R, SqliteError> + Send,
         R: Send;
 
     /// Execute a read-write transaction.
     ///
     /// The connection parameter is mutable, allowing writes.
     /// Transaction is automatically rolled back on error, committed on success.
-    async fn write_tx&lt;F, R&gt;(&self, f: F) -> Result&lt;R, SqliteError&gt;
+    async fn write_tx<F, R>(&self, f: F) -> Result<R, SqliteError>
     where
-        F: FnOnce(&mut Self::Connection) -> Result&lt;R, SqliteError&gt; + Send,
+        F: FnOnce(&mut Self::Connection) -> Result<R, SqliteError> + Send,
         R: Send;
 
     /// Bulk insert multiple records atomically.
     ///
     /// If any insert fails, the entire batch is rolled back.
     /// Returns the number of successfully inserted records.
-    async fn bulk_insert&lt;U: Send&gt;(&self, records: Vec&lt;U&gt;) -> Result&lt;usize, SqliteError&gt;;
+    async fn bulk_insert<U: Send>(&self, records: Vec<U>) -> Result<usize, SqliteError>;
 
     /// Stream results without loading all into memory.
     ///
     /// Useful for large result sets.
-    async fn stream&lt;F&gt;(&self, sql: &str, f: F) -> Result&lt;(), SqliteError&gt;
+    async fn stream<F>(&self, sql: &str, f: F) -> Result<(), SqliteError>
     where
-        F: FnMut(&rusqlite::Row) -> Result&lt;(), SqliteError&gt; + Send;
+        F: FnMut(&rusqlite::Row) -> Result<(), SqliteError> + Send;
 }
 
 // ============================================================================
@@ -193,13 +193,13 @@ pub trait SyncStore&lt;T&gt;: Send + Sync {
 /// and provides synchronization metrics.
 pub struct ConnectionPool {
     /// Stack of available connections (wrapped in Arc for sharing)
-    connections: Vec&lt;Arc&lt;Mutex&lt;Connection&gt;&gt;&gt;,
+    connections: Vec<Arc<Mutex<Connection>>>,
 
     /// Configuration used to create this pool
     config: ConnectionConfig,
 
     /// Operation metrics
-    metrics: Arc&lt;Mutex&lt;SyncMetrics&gt;&gt;,
+    metrics: Arc<Mutex<SyncMetrics>>,
 }
 
 impl ConnectionPool {
@@ -212,7 +212,7 @@ impl ConnectionPool {
     /// # Returns
     ///
     /// New pool or error if connections cannot be created
-    pub fn new(config: ConnectionConfig) -> Result&lt;Self, SqliteError&gt; {
+    pub fn new(config: ConnectionConfig) -> Result<Self, SqliteError> {
         let mut connections = Vec::with_capacity(config.pool_size);
 
         for _ in 0..config.pool_size {
@@ -243,7 +243,7 @@ impl ConnectionPool {
     }
 
     /// Internal: acquire a connection from the pool (round-robin).
-    async fn acquire(&self, index: usize) -> Arc&lt;Mutex&lt;Connection&gt;&gt; {
+    async fn acquire(&self, index: usize) -> Arc<Mutex<Connection>> {
         self.connections[index % self.connections.len()].clone()
     }
 
@@ -265,9 +265,9 @@ impl ConnectionPool {
     ///     Ok(count)
     /// }).await?;
     /// ```
-    pub async fn read_tx&lt;F, R&gt;(&self, f: F) -> Result&lt;R, SqliteError&gt;
+    pub async fn read_tx<F, R>(&self, f: F) -> Result<R, SqliteError>
     where
-        F: FnOnce(&Connection) -> Result&lt;R, SqliteError&gt; + Send,
+        F: FnOnce(&Connection) -> Result<R, SqliteError> + Send,
         R: Send,
     {
         let start = std::time::Instant::now();
@@ -305,9 +305,9 @@ impl ConnectionPool {
     ///     Ok(())
     /// }).await?;
     /// ```
-    pub async fn write_tx&lt;F, R&gt;(&self, f: F) -> Result&lt;R, SqliteError&gt;
+    pub async fn write_tx<F, R>(&self, f: F) -> Result<R, SqliteError>
     where
-        F: FnOnce(&mut Connection) -> Result&lt;R, SqliteError&gt; + Send,
+        F: FnOnce(&mut Connection) -> Result<R, SqliteError> + Send,
         R: Send,
     {
         let start = std::time::Instant::now();
@@ -339,10 +339,10 @@ impl ConnectionPool {
     /// Bulk insert with automatic transaction.
     ///
     /// All records inserted atomically. If any fails, entire batch rolled back.
-    pub async fn bulk_insert&lt;T, U&gt;(
+    pub async fn bulk_insert<T, U>(
         &self,
-        records: Vec&lt;U&gt;,
-    ) -> Result&lt;usize, SqliteError&gt;
+        records: Vec<U>,
+    ) -> Result<usize, SqliteError>
     where
         U: Send,
         T: Send,
@@ -362,13 +362,13 @@ impl ConnectionPool {
     /// Stream results without materializing all rows.
     ///
     /// Useful for processing large result sets.
-    pub async fn stream&lt;F&gt;(
+    pub async fn stream<F>(
         &self,
         sql: &str,
         mut f: F,
-    ) -> Result&lt;(), SqliteError&gt;
+    ) -> Result<(), SqliteError>
     where
-        F: FnMut(&rusqlite::Row) -> Result&lt;(), SqliteError&gt; + Send,
+        F: FnMut(&rusqlite::Row) -> Result<(), SqliteError> + Send,
     {
         self.read_tx(|conn| {
             let mut stmt = conn.prepare(sql)?;
@@ -387,7 +387,7 @@ impl ConnectionPool {
     }
 
     /// Health check: verify connections work.
-    pub async fn health_check(&self) -> Result&lt;bool, SqliteError&gt; {
+    pub async fn health_check(&self) -> Result<bool, SqliteError> {
         self.read_tx(|conn| {
             conn.query_row("SELECT 1", [], |_| Ok(()))?;
             Ok(true)
@@ -396,7 +396,7 @@ impl ConnectionPool {
     }
 
     /// Close all connections (explicit cleanup).
-    pub async fn close(&mut self) -> Result&lt;(), SqliteError&gt; {
+    pub async fn close(&mut self) -> Result<(), SqliteError> {
         self.connections.clear();
         Ok(())
     }
@@ -407,32 +407,32 @@ impl ConnectionPool {
 // ============================================================================
 
 #[async_trait]
-impl SyncStore&lt;()&gt; for ConnectionPool {
+impl SyncStore<()> for ConnectionPool {
     type Connection = Connection;
 
-    async fn read_tx&lt;F, R&gt;(&self, f: F) -> Result&lt;R, SqliteError&gt;
+    async fn read_tx<F, R>(&self, f: F) -> Result<R, SqliteError>
     where
-        F: FnOnce(&Connection) -> Result&lt;R, SqliteError&gt; + Send,
+        F: FnOnce(&Connection) -> Result<R, SqliteError> + Send,
         R: Send,
     {
         ConnectionPool::read_tx(self, f).await
     }
 
-    async fn write_tx&lt;F, R&gt;(&self, f: F) -> Result&lt;R, SqliteError&gt;
+    async fn write_tx<F, R>(&self, f: F) -> Result<R, SqliteError>
     where
-        F: FnOnce(&mut Connection) -> Result&lt;R, SqliteError&gt; + Send,
+        F: FnOnce(&mut Connection) -> Result<R, SqliteError> + Send,
         R: Send,
     {
         ConnectionPool::write_tx(self, f).await
     }
 
-    async fn bulk_insert&lt;U: Send&gt;(&self, _records: Vec&lt;U&gt;) -> Result&lt;usize, SqliteError&gt; {
+    async fn bulk_insert<U: Send>(&self, _records: Vec<U>) -> Result<usize, SqliteError> {
         Ok(0) // Implement with actual logic
     }
 
-    async fn stream&lt;F&gt;(&self, sql: &str, f: F) -> Result&lt;(), SqliteError&gt;
+    async fn stream<F>(&self, sql: &str, f: F) -> Result<(), SqliteError>
     where
-        F: FnMut(&rusqlite::Row) -> Result&lt;(), SqliteError&gt; + Send,
+        F: FnMut(&rusqlite::Row) -> Result<(), SqliteError> + Send,
     {
         ConnectionPool::stream(self, sql, f).await
     }
@@ -485,7 +485,7 @@ mod tests {
 
         let result = pool.read_tx(|conn| {
             conn.query_row("SELECT name FROM sqlite_master WHERE type='table'", [], |row| {
-                row.get::&lt;_, String&gt;(0)
+                row.get::<_, String>(0)
             })
         }).await;
 
@@ -547,7 +547,7 @@ pub enum SqlValue {
     Real(f64),
     Boolean(bool),
     Null,
-    Blob(Vec&lt;u8&gt;),
+    Blob(Vec<u8>),
 }
 
 impl SqlValue {
@@ -563,37 +563,37 @@ impl SqlValue {
     }
 }
 
-impl From&lt;String&gt; for SqlValue {
+impl From<String> for SqlValue {
     fn from(s: String) -> Self {
         SqlValue::String(s)
     }
 }
 
-impl From&lt;&str&gt; for SqlValue {
+impl From<&str> for SqlValue {
     fn from(s: &str) -> Self {
         SqlValue::String(s.to_string())
     }
 }
 
-impl From&lt;i32&gt; for SqlValue {
+impl From<i32> for SqlValue {
     fn from(i: i32) -> Self {
         SqlValue::Integer(i as i64)
     }
 }
 
-impl From&lt;i64&gt; for SqlValue {
+impl From<i64> for SqlValue {
     fn from(i: i64) -> Self {
         SqlValue::Integer(i)
     }
 }
 
-impl From&lt;f64&gt; for SqlValue {
+impl From<f64> for SqlValue {
     fn from(f: f64) -> Self {
         SqlValue::Real(f)
     }
 }
 
-impl From&lt;bool&gt; for SqlValue {
+impl From<bool> for SqlValue {
     fn from(b: bool) -> Self {
         SqlValue::Boolean(b)
     }
@@ -662,8 +662,8 @@ impl fmt::Display for Logic {
 pub struct Filter {
     pub column: String,
     pub operator: Operator,
-    pub value: Option&lt;SqlValue&gt;,
-    pub values: Vec&lt;SqlValue&gt;, // For IN, NOT IN
+    pub value: Option<SqlValue>,
+    pub values: Vec<SqlValue>, // For IN, NOT IN
     pub logic: Logic,           // How to combine with next filter
 }
 
@@ -735,7 +735,7 @@ impl Filter {
     }
 
     /// Column IN (values)
-    pub fn in_list(column: &str, values: Vec&lt;SqlValue&gt;) -> Self {
+    pub fn in_list(column: &str, values: Vec<SqlValue>) -> Self {
         Self {
             column: column.to_string(),
             operator: Operator::In,
@@ -746,7 +746,7 @@ impl Filter {
     }
 
     /// Column NOT IN (values)
-    pub fn not_in(column: &str, values: Vec&lt;SqlValue&gt;) -> Self {
+    pub fn not_in(column: &str, values: Vec<SqlValue>) -> Self {
         Self {
             column: column.to_string(),
             operator: Operator::NotIn,
@@ -832,7 +832,7 @@ impl fmt::Display for JoinType {
 pub struct Join {
     pub join_type: JoinType,
     pub table: String,
-    pub on: Option&lt;String&gt;,
+    pub on: Option<String>,
 }
 
 impl Join {
@@ -934,7 +934,7 @@ pub trait QueryBuilder: Send + Sync + Sized {
     fn offset(self, offset: usize) -> Self;
 
     /// Build final SQL and parameters.
-    fn build(self) -> Result&lt;(String, Vec&lt;SqlValue&gt;), SqliteError&gt;;
+    fn build(self) -> Result<(String, Vec<SqlValue>), SqliteError>;
 }
 
 // ============================================================================
@@ -943,20 +943,20 @@ pub trait QueryBuilder: Send + Sync + Sized {
 
 /// SQLite-specific query builder with fluent API.
 pub struct SqliteQueryBuilder {
-    columns: Vec&lt;String&gt;,
-    from_table: Option&lt;String&gt;,
-    filters: Vec&lt;Filter&gt;,
-    joins: Vec&lt;Join&gt;,
-    group_by: Vec&lt;String&gt;,
-    having: Option&lt;String&gt;,
-    order_by: Vec&lt;(String, bool)&gt;, // (column, asc)
-    limit: Option&lt;usize&gt;,
-    offset: Option&lt;usize&gt;,
+    columns: Vec<String>,
+    from_table: Option<String>,
+    filters: Vec<Filter>,
+    joins: Vec<Join>,
+    group_by: Vec<String>,
+    having: Option<String>,
+    order_by: Vec<(String, bool)>, // (column, asc)
+    limit: Option<usize>,
+    offset: Option<usize>,
 }
 
 impl SqliteQueryBuilder {
     /// Validate query structure before building.
-    fn validate(&self) -> Result&lt;(), SqliteError&gt; {
+    fn validate(&self) -> Result<(), SqliteError> {
         if self.columns.is_empty() {
             return Err(SqliteError::QueryValidation("SELECT requires columns".to_string()));
         }
@@ -967,7 +967,7 @@ impl SqliteQueryBuilder {
     }
 
     /// Build WHERE clause from filters.
-    fn build_where_clause(&self) -> (String, Vec&lt;SqlValue&gt;) {
+    fn build_where_clause(&self) -> (String, Vec<SqlValue>) {
         if self.filters.is_empty() {
             return ("".to_string(), vec![]);
         }
@@ -1014,7 +1014,7 @@ impl SqliteQueryBuilder {
     }
 
     /// Build complete SQL query.
-    fn build_sql(&self) -> (String, Vec&lt;SqlValue&gt;) {
+    fn build_sql(&self) -> (String, Vec<SqlValue>) {
         let mut sql = String::from("SELECT ");
 
         // Columns
@@ -1053,7 +1053,7 @@ impl SqliteQueryBuilder {
         // ORDER BY
         if !self.order_by.is_empty() {
             sql.push_str(" ORDER BY ");
-            let order_parts: Vec&lt;String&gt; = self.order_by.iter()
+            let order_parts: Vec<String> = self.order_by.iter()
                 .map(|(col, asc)| {
                     if *asc {
                         format!("{} ASC", col)
@@ -1124,7 +1124,7 @@ impl QueryBuilder for SqliteQueryBuilder {
         self
     }
 
-    fn build(self) -> Result&lt;(String, Vec&lt;SqlValue&gt;), SqliteError&gt; {
+    fn build(self) -> Result<(String, Vec<SqlValue>), SqliteError> {
         self.validate()?;
         let (sql, params) = self.build_sql();
         Ok((sql, params))
@@ -1247,9 +1247,9 @@ pub struct MigrationVersion {
 /// Schema verification results.
 #[derive(Clone, Debug)]
 pub struct SchemaVerification {
-    pub tables: Vec&lt;String&gt;,
-    pub indexes: Vec&lt;String&gt;,
-    pub constraints: Vec&lt;String&gt;,
+    pub tables: Vec<String>,
+    pub indexes: Vec<String>,
+    pub constraints: Vec<String>,
     pub integrity_ok: bool,
 }
 
@@ -1258,7 +1258,7 @@ pub struct SchemaVerification {
 pub struct MigrationStatus {
     pub current_version: i32,
     pub previous_version: i32,
-    pub applied: Vec&lt;MigrationVersion&gt;,
+    pub applied: Vec<MigrationVersion>,
     pub duration: std::time::Duration,
 }
 
@@ -1279,26 +1279,26 @@ pub trait Migration: Send + Sync {
     fn checksum(&self) -> String;
 
     /// Apply the migration (upgrade).
-    async fn up(&self, conn: &mut Connection) -> Result&lt;(), SqliteError&gt;;
+    async fn up(&self, conn: &mut Connection) -> Result<(), SqliteError>;
 
     /// Rollback the migration (downgrade).
-    async fn down(&self, conn: &mut Connection) -> Result&lt;(), SqliteError&gt;;
+    async fn down(&self, conn: &mut Connection) -> Result<(), SqliteError>;
 }
 
 /// Trait for managing migrations.
 #[async_trait]
 pub trait MigrationRunner: Send + Sync {
     /// Apply migrations up to target version (or all if None).
-    async fn migrate(&self, target_version: Option&lt;i32&gt;) -> Result&lt;MigrationStatus, SqliteError&gt;;
+    async fn migrate(&self, target_version: Option<i32>) -> Result<MigrationStatus, SqliteError>;
 
     /// Rollback N steps.
-    async fn rollback(&self, steps: usize) -> Result&lt;MigrationStatus, SqliteError&gt;;
+    async fn rollback(&self, steps: usize) -> Result<MigrationStatus, SqliteError>;
 
     /// Get current schema version.
-    async fn current_version(&self) -> Result&lt;i32, SqliteError&gt;;
+    async fn current_version(&self) -> Result<i32, SqliteError>;
 
     /// Verify schema integrity.
-    async fn verify(&self) -> Result&lt;SchemaVerification, SqliteError&gt;;
+    async fn verify(&self) -> Result<SchemaVerification, SqliteError>;
 }
 
 // ============================================================================
@@ -1307,13 +1307,13 @@ pub trait MigrationRunner: Send + Sync {
 
 /// SQLite migration runner with transaction safety.
 pub struct SqliteMigrationRunner {
-    migrations: BTreeMap<i32, Box&lt;dyn Migration&gt;>,
-    pool: Arc&lt;ConnectionPool&gt;,
+    migrations: BTreeMap<i32, Box<dyn Migration>>,
+    pool: Arc<ConnectionPool>,
 }
 
 impl SqliteMigrationRunner {
     /// Create new migration runner.
-    pub fn new(pool: Arc&lt;ConnectionPool&gt;) -> Self {
+    pub fn new(pool: Arc<ConnectionPool>) -> Self {
         Self {
             migrations: BTreeMap::new(),
             pool,
@@ -1321,7 +1321,7 @@ impl SqliteMigrationRunner {
     }
 
     /// Register a migration.
-    pub fn add_migration(&mut self, migration: Box&lt;dyn Migration&gt;) -> Result&lt;(), SqliteError&gt; {
+    pub fn add_migration(&mut self, migration: Box<dyn Migration>) -> Result<(), SqliteError> {
         let version = migration.version();
 
         if self.migrations.contains_key(&version) {
@@ -1335,7 +1335,7 @@ impl SqliteMigrationRunner {
     }
 
     /// Initialize migration history table (internal).
-    async fn ensure_migration_table(&self) -> Result&lt;(), SqliteError&gt; {
+    async fn ensure_migration_table(&self) -> Result<(), SqliteError> {
         self.pool.write_tx(|conn| {
             conn.execute(
                 "CREATE TABLE IF NOT EXISTS __migrations (
@@ -1351,7 +1351,7 @@ impl SqliteMigrationRunner {
     }
 
     /// Execute a single migration.
-    async fn execute_migration(&self, m: &dyn Migration) -> Result&lt;(), SqliteError&gt; {
+    async fn execute_migration(&self, m: &dyn Migration) -> Result<(), SqliteError> {
         self.pool.write_tx(|conn| {
             m.up(conn)?;
             Ok(())
@@ -1359,7 +1359,7 @@ impl SqliteMigrationRunner {
     }
 
     /// Track a migration in history.
-    async fn track_migration(&self, m: &dyn Migration) -> Result&lt;(), SqliteError&gt; {
+    async fn track_migration(&self, m: &dyn Migration) -> Result<(), SqliteError> {
         let version = m.version();
         let name = m.name();
         let checksum = m.checksum();
@@ -1382,7 +1382,7 @@ impl SqliteMigrationRunner {
 
 #[async_trait]
 impl MigrationRunner for SqliteMigrationRunner {
-    async fn migrate(&self, target_version: Option&lt;i32&gt;) -> Result&lt;MigrationStatus, SqliteError&gt; {
+    async fn migrate(&self, target_version: Option<i32>) -> Result<MigrationStatus, SqliteError> {
         let start = std::time::Instant::now();
 
         self.ensure_migration_table().await?;
@@ -1414,7 +1414,7 @@ impl MigrationRunner for SqliteMigrationRunner {
         })
     }
 
-    async fn rollback(&self, steps: usize) -> Result&lt;MigrationStatus, SqliteError&gt; {
+    async fn rollback(&self, steps: usize) -> Result<MigrationStatus, SqliteError> {
         let start = std::time::Instant::now();
 
         let current = self.current_version().await?;
@@ -1460,7 +1460,7 @@ impl MigrationRunner for SqliteMigrationRunner {
         })
     }
 
-    async fn current_version(&self) -> Result&lt;i32, SqliteError&gt; {
+    async fn current_version(&self) -> Result<i32, SqliteError> {
         self.pool.read_tx(|conn| {
             conn.query_row(
                 "SELECT COALESCE(MAX(version), 0) FROM __migrations",
@@ -1470,19 +1470,19 @@ impl MigrationRunner for SqliteMigrationRunner {
         }).await
     }
 
-    async fn verify(&self) -> Result&lt;SchemaVerification, SqliteError&gt; {
+    async fn verify(&self) -> Result<SchemaVerification, SqliteError> {
         self.pool.read_tx(|conn| {
             let mut stmt = conn.prepare(
                 "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
             )?;
             let tables = stmt.query_map([], |row| row.get(0))?
-                .collect::<Result&lt;Vec&lt;_&gt;, _&gt;>()?;
+                .collect::<Result<Vec<_>, _>>()?;
 
             let mut stmt = conn.prepare(
                 "SELECT name FROM sqlite_master WHERE type='index' ORDER BY name"
             )?;
             let indexes = stmt.query_map([], |row| row.get(0))?
-                .collect::<Result&lt;Vec&lt;_&gt;, _&gt;>()?;
+                .collect::<Result<Vec<_>, _>>()?;
 
             Ok(SchemaVerification {
                 tables,
@@ -1522,11 +1522,11 @@ mod tests {
         fn name(&self) -> &str { &self.name }
         fn checksum(&self) -> String { format!("{}-{}", self.version, self.name) }
 
-        async fn up(&self, _conn: &mut Connection) -> Result&lt;(), SqliteError&gt; {
+        async fn up(&self, _conn: &mut Connection) -> Result<(), SqliteError> {
             Ok(())
         }
 
-        async fn down(&self, _conn: &mut Connection) -> Result&lt;(), SqliteError&gt; {
+        async fn down(&self, _conn: &mut Connection) -> Result<(), SqliteError> {
             Ok(())
         }
     }
@@ -1540,7 +1540,7 @@ mod tests {
         runner.add_migration(box MockMigration::new(2, "add_users")).ok();
         runner.add_migration(box MockMigration::new(1, "init")).ok();
 
-        let versions: Vec&lt;_&gt; = runner.migrations.keys().copied().collect();
+        let versions: Vec<_> = runner.migrations.keys().copied().collect();
         assert_eq!(versions, vec![1, 2]);
     }
 
@@ -1563,7 +1563,7 @@ mod tests {
 
 | Module | File | LOC | Responsibility | Key Structs | Traits |
 |--------|------|-----|-----------------|-------------|--------|
-| Sync | `store/sync.rs` | 400 | Connection pooling, transactions | `ConnectionPool`, `ConnectionConfig`, `SyncMetrics` | `SyncStore&lt;T&gt;`, `RowMapper&lt;T&gt;` |
+| Sync | `store/sync.rs` | 400 | Connection pooling, transactions | `ConnectionPool`, `ConnectionConfig`, `SyncMetrics` | `SyncStore<T>`, `RowMapper<T>` |
 | Query | `store/query_builder.rs` | 300 | SQL construction | `SqliteQueryBuilder`, `Filter`, `Join` | `QueryBuilder` |
 | Migrations | `store/migrations.rs` | 250 | Schema management | `SqliteMigrationRunner`, `MigrationVersion`, `MigrationStatus` | `Migration`, `MigrationRunner` |
 | **Total** | **3 modules** | **950** | **Complete adapter** | **9 main structs** | **5 traits** |
@@ -1592,13 +1592,13 @@ pub enum SqliteError {
     MigrationError(String),
 }
 
-pub struct SqliteRepository&lt;T&gt; {
-    pool: Arc&lt;ConnectionPool&gt;,
-    _phantom: std::marker::PhantomData&lt;T&gt;,
+pub struct SqliteRepository<T> {
+    pool: Arc<ConnectionPool>,
+    _phantom: std::marker::PhantomData<T>,
 }
 
-impl&lt;T&gt; SqliteRepository&lt;T&gt; {
-    pub fn new(config: ConnectionConfig) -> Result&lt;Self, SqliteError&gt; {
+impl<T> SqliteRepository<T> {
+    pub fn new(config: ConnectionConfig) -> Result<Self, SqliteError> {
         let pool = Arc::new(ConnectionPool::new(config)?);
         Ok(Self {
             pool,

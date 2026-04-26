@@ -255,7 +255,7 @@ Triaged bugs, feature ideas, and tasks queued for future processing.
 | state | TEXT | NOT NULL, DEFAULT 'open' | Backlog state |
 | external_ref | TEXT | nullable | GitHub issue URL or Plane.so item URL |
 | tags | TEXT | nullable, JSON array | User-defined tags |
-| triaged_by | TEXT | NOT NULL | "user" or "agent:&lt;name&gt;" |
+| triaged_by | TEXT | NOT NULL | "user" or "agent:<name>" |
 | created_at | TEXT | NOT NULL | ISO 8601 |
 | updated_at | TEXT | NOT NULL | ISO 8601 |
 
@@ -290,7 +290,7 @@ Audit log for agent sub-command usage (separate from state-transition audit chai
 | wp_id | INTEGER | FK → work_packages.id, nullable | Context WP |
 | command | TEXT | NOT NULL | Sub-command name (e.g., "triage:classify") |
 | args | TEXT | nullable, JSON | Arguments passed |
-| caller | TEXT | NOT NULL | "user" or "agent:&lt;name&gt;" |
+| caller | TEXT | NOT NULL | "user" or "agent:<name>" |
 | result | TEXT | NOT NULL | "success" or "error" |
 | duration_ms | INTEGER | nullable | Execution time |
 | timestamp | TEXT | NOT NULL | ISO 8601 |
@@ -321,7 +321,7 @@ CREATE INDEX idx_subcmd_command ON subcommand_invocations(command, timestamp);
 All artifacts stored as files in git (source of truth). SQLite is a queryable cache that can be rebuilt.
 
 ```
-kitty-specs/&lt;feature&gt;/
+kitty-specs/<feature>/
 ├── spec.md                    # Specification
 ├── research.md                # Research findings
 ├── plan.md                    # Implementation plan

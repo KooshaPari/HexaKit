@@ -175,7 +175,7 @@ pub struct GraphStore {
 }
 
 impl GraphStore {
-    pub async fn new(config: GraphConfig) -> Result&lt;Self, GraphError&gt; {
+    pub async fn new(config: GraphConfig) -> Result<Self, GraphError> {
         let graph = Graph::new(
             config.bolt_uri.clone(),
             config.username.clone(),
@@ -191,7 +191,7 @@ impl GraphStore {
         &self.graph
     }
 
-    pub async fn init_constraints(&self) -> Result&lt;(), GraphError&gt; {
+    pub async fn init_constraints(&self) -> Result<(), GraphError> {
         // Create uniqueness constraints for all node types
         // Feature uniqueness on id
         self.graph
@@ -246,7 +246,7 @@ impl GraphStore {
         Ok(())
     }
 
-    pub async fn health_check(&self) -> Result&lt;(), GraphError&gt; {
+    pub async fn health_check(&self) -> Result<(), GraphError> {
         self.graph
             .run(neo4rs::query("RETURN 1"))
             .await
@@ -263,11 +263,11 @@ Create `crates/agileplus-graph/src/nodes.rs`:
 use crate::store::{GraphError, GraphStore};
 use serde_json::json;
 
-pub struct NodeStore&lt;'a&gt; {
+pub struct NodeStore<'a> {
     store: &'a GraphStore,
 }
 
-impl&lt;'a&gt; NodeStore&lt;'a&gt; {
+impl<'a> NodeStore<'a> {
     pub fn new(store: &'a GraphStore) -> Self {
         NodeStore { store }
     }
@@ -280,7 +280,7 @@ impl&lt;'a&gt; NodeStore&lt;'a&gt; {
         slug: String,
         state: String,
         friendly_name: String,
-    ) -> Result&lt;(), GraphError&gt; {
+    ) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(
@@ -303,7 +303,7 @@ impl&lt;'a&gt; NodeStore&lt;'a&gt; {
         Ok(())
     }
 
-    pub async fn get_feature(&self, feature_id: i64) -> Result&lt;Option&lt;serde_json::Value&gt;, GraphError&gt; {
+    pub async fn get_feature(&self, feature_id: i64) -> Result<Option<serde_json::Value>, GraphError> {
         let mut result = self
             .store
             .raw_graph()
@@ -326,7 +326,7 @@ impl&lt;'a&gt; NodeStore&lt;'a&gt; {
         &self,
         feature_id: i64,
         new_state: String,
-    ) -> Result&lt;(), GraphError&gt; {
+    ) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(
@@ -339,7 +339,7 @@ impl&lt;'a&gt; NodeStore&lt;'a&gt; {
         Ok(())
     }
 
-    pub async fn delete_feature(&self, feature_id: i64) -> Result&lt;(), GraphError&gt; {
+    pub async fn delete_feature(&self, feature_id: i64) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(
@@ -359,7 +359,7 @@ impl&lt;'a&gt; NodeStore&lt;'a&gt; {
         title: String,
         state: String,
         ordinal: i32,
-    ) -> Result&lt;(), GraphError&gt; {
+    ) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(
@@ -376,7 +376,7 @@ impl&lt;'a&gt; NodeStore&lt;'a&gt; {
         Ok(())
     }
 
-    pub async fn get_workpackage(&self, wp_id: i64) -> Result&lt;Option&lt;serde_json::Value&gt;, GraphError&gt; {
+    pub async fn get_workpackage(&self, wp_id: i64) -> Result<Option<serde_json::Value>, GraphError> {
         let mut result = self
             .store
             .raw_graph()
@@ -395,7 +395,7 @@ impl&lt;'a&gt; NodeStore&lt;'a&gt; {
         }
     }
 
-    pub async fn delete_workpackage(&self, wp_id: i64) -> Result&lt;(), GraphError&gt; {
+    pub async fn delete_workpackage(&self, wp_id: i64) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(
@@ -413,7 +413,7 @@ impl&lt;'a&gt; NodeStore&lt;'a&gt; {
         &self,
         name: String,
         agent_type: String,
-    ) -> Result&lt;(), GraphError&gt; {
+    ) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(
@@ -426,7 +426,7 @@ impl&lt;'a&gt; NodeStore&lt;'a&gt; {
         Ok(())
     }
 
-    pub async fn get_agent(&self, name: &str) -> Result&lt;Option&lt;serde_json::Value&gt;, GraphError&gt; {
+    pub async fn get_agent(&self, name: &str) -> Result<Option<serde_json::Value>, GraphError> {
         let mut result = self
             .store
             .raw_graph()
@@ -451,7 +451,7 @@ impl&lt;'a&gt; NodeStore&lt;'a&gt; {
         &self,
         name: String,
         color: String,
-    ) -> Result&lt;(), GraphError&gt; {
+    ) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(
@@ -470,7 +470,7 @@ impl&lt;'a&gt; NodeStore&lt;'a&gt; {
         &self,
         name: String,
         slug: String,
-    ) -> Result&lt;(), GraphError&gt; {
+    ) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(
@@ -483,7 +483,7 @@ impl&lt;'a&gt; NodeStore&lt;'a&gt; {
         Ok(())
     }
 
-    pub async fn get_project(&self, slug: &str) -> Result&lt;Option&lt;serde_json::Value&gt;, GraphError&gt; {
+    pub async fn get_project(&self, slug: &str) -> Result<Option<serde_json::Value>, GraphError> {
         let mut result = self
             .store
             .raw_graph()
@@ -556,11 +556,11 @@ Create `crates/agileplus-graph/src/relationships.rs`:
 ```rust
 use crate::store::{GraphError, GraphStore};
 
-pub struct RelationshipStore&lt;'a&gt; {
+pub struct RelationshipStore<'a> {
     store: &'a GraphStore,
 }
 
-impl&lt;'a&gt; RelationshipStore&lt;'a&gt; {
+impl<'a> RelationshipStore<'a> {
     pub fn new(store: &'a GraphStore) -> Self {
         RelationshipStore { store }
     }
@@ -571,7 +571,7 @@ impl&lt;'a&gt; RelationshipStore&lt;'a&gt; {
         &self,
         feature_id: i64,
         wp_id: i64,
-    ) -> Result&lt;(), GraphError&gt; {
+    ) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(
@@ -593,7 +593,7 @@ impl&lt;'a&gt; RelationshipStore&lt;'a&gt; {
         &self,
         wp_id: i64,
         agent_name: String,
-    ) -> Result&lt;(), GraphError&gt; {
+    ) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(
@@ -615,7 +615,7 @@ impl&lt;'a&gt; RelationshipStore&lt;'a&gt; {
         &self,
         from_feature_id: i64,
         to_feature_id: i64,
-    ) -> Result&lt;(), GraphError&gt; {
+    ) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(
@@ -637,7 +637,7 @@ impl&lt;'a&gt; RelationshipStore&lt;'a&gt; {
         &self,
         blocking_wp_id: i64,
         blocked_wp_id: i64,
-    ) -> Result&lt;(), GraphError&gt; {
+    ) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(
@@ -659,7 +659,7 @@ impl&lt;'a&gt; RelationshipStore&lt;'a&gt; {
         &self,
         feature_id: i64,
         label_name: String,
-    ) -> Result&lt;(), GraphError&gt; {
+    ) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(
@@ -681,7 +681,7 @@ impl&lt;'a&gt; RelationshipStore&lt;'a&gt; {
         &self,
         feature_id: i64,
         project_slug: String,
-    ) -> Result&lt;(), GraphError&gt; {
+    ) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(
@@ -701,7 +701,7 @@ impl&lt;'a&gt; RelationshipStore&lt;'a&gt; {
         &self,
         wp_id: i64,
         project_slug: String,
-    ) -> Result&lt;(), GraphError&gt; {
+    ) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(
@@ -726,12 +726,12 @@ impl&lt;'a&gt; RelationshipStore&lt;'a&gt; {
         rel_type: &str,
         to_type: &str,
         to_id: i64,
-    ) -> Result&lt;(), GraphError&gt; {
+    ) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(
                 neo4rs::query(&format!(
-                    "MATCH (from:{} &#123;&#123;id: $from_id}})-[r:{}]->(to:{} &#123;&#123;id: $to_id}}) \
+                    "MATCH (from:{} {{id: $from_id}})-[r:{}]->(to:{} {{id: $to_id}}) \
                      DELETE r",
                     from_type, rel_type, to_type
                 ))
@@ -752,11 +752,11 @@ Create `crates/agileplus-graph/src/queries.rs`:
 ```rust
 use crate::store::{GraphError, GraphStore};
 
-pub struct GraphQueries&lt;'a&gt; {
+pub struct GraphQueries<'a> {
     store: &'a GraphStore,
 }
 
-impl&lt;'a&gt; GraphQueries&lt;'a&gt; {
+impl<'a> GraphQueries<'a> {
     pub fn new(store: &'a GraphStore) -> Self {
         GraphQueries { store }
     }
@@ -765,7 +765,7 @@ impl&lt;'a&gt; GraphQueries&lt;'a&gt; {
     pub async fn get_dependency_chain(
         &self,
         feature_id: i64,
-    ) -> Result<Vec&lt;(i64, String)&gt;, GraphError> {
+    ) -> Result<Vec<(i64, String)>, GraphError> {
         let mut result = self
             .store
             .raw_graph()
@@ -792,7 +792,7 @@ impl&lt;'a&gt; GraphQueries&lt;'a&gt; {
     pub async fn get_blocking_path(
         &self,
         wp_id: i64,
-    ) -> Result<Vec&lt;(i64, String)&gt;, GraphError> {
+    ) -> Result<Vec<(i64, String)>, GraphError> {
         let mut result = self
             .store
             .raw_graph()
@@ -819,7 +819,7 @@ impl&lt;'a&gt; GraphQueries&lt;'a&gt; {
     pub async fn get_project_features(
         &self,
         project_slug: &str,
-    ) -> Result<Vec&lt;(i64, String)&gt;, GraphError> {
+    ) -> Result<Vec<(i64, String)>, GraphError> {
         let mut result = self
             .store
             .raw_graph()
@@ -846,7 +846,7 @@ impl&lt;'a&gt; GraphQueries&lt;'a&gt; {
     pub async fn get_agent_workload(
         &self,
         agent_name: &str,
-    ) -> Result<Vec&lt;(i64, String)&gt;, GraphError> {
+    ) -> Result<Vec<(i64, String)>, GraphError> {
         let mut result = self
             .store
             .raw_graph()
@@ -873,7 +873,7 @@ impl&lt;'a&gt; GraphQueries&lt;'a&gt; {
     pub async fn get_features_by_label(
         &self,
         label_name: &str,
-    ) -> Result<Vec&lt;(i64, String)&gt;, GraphError> {
+    ) -> Result<Vec<(i64, String)>, GraphError> {
         let mut result = self
             .store
             .raw_graph()
@@ -911,11 +911,11 @@ pub enum GraphHealth {
     Unavailable,
 }
 
-pub struct GraphHealthChecker&lt;'a&gt; {
+pub struct GraphHealthChecker<'a> {
     store: &'a GraphStore,
 }
 
-impl&lt;'a&gt; GraphHealthChecker&lt;'a&gt; {
+impl<'a> GraphHealthChecker<'a> {
     pub fn new(store: &'a GraphStore) -> Self {
         GraphHealthChecker { store }
     }
@@ -928,16 +928,16 @@ impl&lt;'a&gt; GraphHealthChecker&lt;'a&gt; {
     }
 }
 
-pub struct IndexManager&lt;'a&gt; {
+pub struct IndexManager<'a> {
     store: &'a GraphStore,
 }
 
-impl&lt;'a&gt; IndexManager&lt;'a&gt; {
+impl<'a> IndexManager<'a> {
     pub fn new(store: &'a GraphStore) -> Self {
         IndexManager { store }
     }
 
-    pub async fn create_indexes(&self) -> Result&lt;(), GraphError&gt; {
+    pub async fn create_indexes(&self) -> Result<(), GraphError> {
         // Create indexes for fast lookups
         self.store
             .raw_graph()
@@ -974,7 +974,7 @@ impl&lt;'a&gt; IndexManager&lt;'a&gt; {
         Ok(())
     }
 
-    pub async fn delete_indexes(&self) -> Result&lt;(), GraphError&gt; {
+    pub async fn delete_indexes(&self) -> Result<(), GraphError> {
         self.store
             .raw_graph()
             .run(neo4rs::query("DROP INDEX feature_slug IF EXISTS"))

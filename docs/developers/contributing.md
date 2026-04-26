@@ -358,12 +358,12 @@ Keep functions under 50 lines (soft limit):
 
 ```rust
 // ✗ Bad - 80 lines
-fn process_spec(spec: &Spec) -> Result&lt;Plan&gt; {
+fn process_spec(spec: &Spec) -> Result<Plan> {
     // ... lots of logic ...
 }
 
 // ✓ Good - breaks into smaller functions
-fn process_spec(spec: &Spec) -> Result&lt;Plan&gt; {
+fn process_spec(spec: &Spec) -> Result<Plan> {
     let requirements = extract_requirements(spec)?;
     let packages = decompose_requirements(&requirements)?;
     let dependencies = analyze_dependencies(&packages)?;
@@ -383,7 +383,7 @@ pub enum Error {
     DatabaseError(String),
 }
 
-impl From&lt;sqlx::Error&gt; for Error {
+impl From<sqlx::Error> for Error {
     fn from(e: sqlx::Error) -> Self {
         Error::DatabaseError(e.to_string())
     }
@@ -393,10 +393,10 @@ impl From&lt;sqlx::Error&gt; for Error {
 Use `Result` type alias:
 
 ```rust
-pub type Result&lt;T&gt; = std::result::Result&lt;T, Error&gt;;
+pub type Result<T> = std::result::Result<T, Error>;
 
-pub fn read_spec(id: &FeatureId) -> Result&lt;Spec&gt; {
-    // Returns Result&lt;Spec, Error&gt;
+pub fn read_spec(id: &FeatureId) -> Result<Spec> {
+    // Returns Result<Spec, Error>
 }
 ```
 
@@ -589,14 +589,14 @@ CLI commands must be thin — no business logic here. Commands are orchestrators
 
 ```rust
 // ✓ Thin command handler
-async fn handle_specify(args: SpecifyArgs, ctx: &Context) -> Result&lt;()&gt; {
+async fn handle_specify(args: SpecifyArgs, ctx: &Context) -> Result<()> {
     let result = ctx.engine.specify_feature(&args.title, &args.description).await?;
     println!("✓ Created feature: {}", result.slug);
     Ok(())
 }
 
 // ✗ Business logic in CLI handler
-async fn handle_specify(args: SpecifyArgs, ctx: &Context) -> Result&lt;()&gt; {
+async fn handle_specify(args: SpecifyArgs, ctx: &Context) -> Result<()> {
     // Don't put domain logic here — it belongs in the engine
     let spec = validate_spec(&args.title)?;
     let hash = sha256(spec.as_bytes());

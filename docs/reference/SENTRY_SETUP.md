@@ -94,7 +94,7 @@ async fn main() {
     }
 }
 
-async fn run_app() -> Result<(), Box&lt;dyn std::error::Error&gt;> {
+async fn run_app() -> Result<(), Box<dyn std::error::Error>> {
     // Application logic here
     Ok(())
 }
@@ -115,7 +115,7 @@ pub enum Error {
 }
 
 impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter&lt;'_&gt;) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Error::IoError(e) => write!(f, "IO error: {}", e),
             Error::ParseError(s) => write!(f, "Parse error: {}", s),
@@ -127,7 +127,7 @@ impl fmt::Display for Error {
 impl std::error::Error for Error {}
 
 // Capture errors in binary entry points
-impl From&lt;Error&gt; for sentry::event::Event&lt;'static&gt; {
+impl From<Error> for sentry::event::Event<'static> {
     fn from(err: Error) -> Self {
         sentry::event::Event {
             message: Some(format!("{:?}", err)),
@@ -214,7 +214,7 @@ Store DSN in GitHub Secrets and inject via CI/CD:
 
 ```yaml
 env:
-  SENTRY_DSN: $&#123;&#123; secrets.SENTRY_DSN_AGILEPLUS }}
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN_AGILEPLUS }}
   ENVIRONMENT: production
 ```
 
@@ -362,7 +362,7 @@ jobs:
 
       - name: Create Sentry release
         env:
-          SENTRY_AUTH_TOKEN: $&#123;&#123; secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: phenotype
           SENTRY_PROJECT: agileplus
         run: |

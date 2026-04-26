@@ -162,7 +162,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      SENTRY_DSN: $&#123;&#123; secrets.SENTRY_DSN }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       SENTRY_ENVIRONMENT: ci
 
     steps:

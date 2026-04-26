@@ -61,7 +61,7 @@ All outbound GitHub API calls must go through the `GitHubClient` struct. The syn
   - `octocrab.issues(owner, repo).get(issue_number).await` — fetch a single issue.
   - `octocrab.issues(owner, repo).update(issue_number).state(state).send().await` — update an issue's state.
   - `octocrab.issues(owner, repo).list().state(params::State::Open).since(since).send().await` — list issues modified since a timestamp.
-- `octocrab` models: `octocrab::models::issues::Issue` (fields: `number: u64`, `title: String`, `body: Option&lt;String&gt;`, `state: IssueState`, `labels: Vec&lt;Label&gt;`, `updated_at: DateTime&lt;Utc&gt;`).
+- `octocrab` models: `octocrab::models::issues::Issue` (fields: `number: u64`, `title: String`, `body: Option<String>`, `state: IssueState`, `labels: Vec<Label>`, `updated_at: DateTime<Utc>`).
 - For wiremock-based testing, `octocrab` can be constructed with a custom `base_uri`. Pass the wiremock server URI as the base URI.
 
 ### GitHub API Rate Limits
@@ -72,7 +72,7 @@ All outbound GitHub API calls must go through the `GitHubClient` struct. The syn
 
 ### Dependencies
 
-- **WP17**: Provides `BacklogItem` and `BacklogAdapter` for updating the backlog item state after a GitHub status poll. Also provides `ProjectConfig` (includes `github_owner: String`, `github_repo: String`, `github_labels: Vec&lt;String&gt;` — default labels to apply to all AgilePlus-created issues).
+- **WP17**: Provides `BacklogItem` and `BacklogAdapter` for updating the backlog item state after a GitHub status poll. Also provides `ProjectConfig` (includes `github_owner: String`, `github_repo: String`, `github_labels: Vec<String>` — default labels to apply to all AgilePlus-created issues).
 
 Credential management is delegated to the `agileplus-integrations` service configuration. The adapter reads the GitHub token from the integrations service config rather than from a credential store (no dependency on WP15). All cross-service communication uses gRPC as described below.
 
@@ -119,8 +119,8 @@ crates/agileplus-github/
 pub struct GitHubConfig {
     pub owner: String,
     pub repo: String,
-    pub default_labels: Vec&lt;String&gt;,  // e.g. ["bug", "agileplus"]
-    pub base_uri: Option&lt;String&gt;,     // override for testing; None → GitHub production
+    pub default_labels: Vec<String>,  // e.g. ["bug", "agileplus"]
+    pub base_uri: Option<String>,     // override for testing; None → GitHub production
 }
 ```
 
@@ -128,13 +128,13 @@ pub struct GitHubConfig {
 
 ```rust
 pub struct GitHubClient {
-    inner: Arc&lt;octocrab::Octocrab&gt;,
+    inner: Arc<octocrab::Octocrab>,
     config: GitHubConfig,
-    rate_limiter: Arc&lt;Mutex&lt;TokenBucket&gt;&gt;,
+    rate_limiter: Arc<Mutex<TokenBucket>>,
 }
 
 impl GitHubClient {
-    pub fn new(config: GitHubConfig, token: String) -> Result&lt;Self, GitHubError&gt;;
+    pub fn new(config: GitHubConfig, token: String) -> Result<Self, GitHubError>;
 }
 ```
 
@@ -150,18 +150,18 @@ pub trait GitHubClientPort: Send + Sync {
         title: &str,
         body: &str,
         labels: &[String],
-    ) -> Result&lt;GitHubIssueRef, GitHubError&gt;;
+    ) -> Result<GitHubIssueRef, GitHubError>;
 
-    async fn get_issue(&self, number: u64) -> Result&lt;GitHubIssue, GitHubError&gt;;
+    async fn get_issue(&self, number: u64) -> Result<GitHubIssue, GitHubError>;
 
-    async fn close_issue(&self, number: u64) -> Result&lt;(), GitHubError&gt;;
+    async fn close_issue(&self, number: u64) -> Result<(), GitHubError>;
 
-    async fn reopen_issue(&self, number: u64) -> Result&lt;(), GitHubError&gt;;
+    async fn reopen_issue(&self, number: u64) -> Result<(), GitHubError>;
 
     async fn list_issues_updated_since(
         &self,
-        since: chrono::DateTime&lt;chrono::Utc&gt;,
-    ) -> Result&lt;Vec&lt;GitHubIssue&gt;, GitHubError&gt;;
+        since: chrono::DateTime<chrono::Utc>,
+    ) -> Result<Vec<GitHubIssue>, GitHubError>;
 }
 ```
 
@@ -180,10 +180,10 @@ pub struct GitHubIssueRef {
 pub struct GitHubIssue {
     pub number: u64,
     pub title: String,
-    pub body: Option&lt;String&gt;,
+    pub body: Option<String>,
     pub state: GitHubIssueState,
-    pub labels: Vec&lt;String&gt;,
-    pub updated_at: chrono::DateTime&lt;chrono::Utc&gt;,
+    pub labels: Vec<String>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -213,25 +213,25 @@ pub enum GitHubError {
 **`GitHubSyncAdapter`** (public facade in `lib.rs`):
 
 ```rust
-pub struct GitHubSyncAdapter&lt;C: GitHubClientPort = GitHubClient&gt; {
-    client: Arc&lt;C&gt;,
-    storage: Arc&lt;dyn StoragePort&gt;,
-    backlog: Arc&lt;BacklogAdapter&gt;,
+pub struct GitHubSyncAdapter<C: GitHubClientPort = GitHubClient> {
+    client: Arc<C>,
+    storage: Arc<dyn StoragePort>,
+    backlog: Arc<BacklogAdapter>,
     config: GitHubConfig,
 }
 
-impl&lt;C: GitHubClientPort&gt; GitHubSyncAdapter&lt;C&gt; {
+impl<C: GitHubClientPort> GitHubSyncAdapter<C> {
     pub fn new(
-        client: Arc&lt;C&gt;,
-        storage: Arc&lt;dyn StoragePort&gt;,
-        backlog: Arc&lt;BacklogAdapter&gt;,
+        client: Arc<C>,
+        storage: Arc<dyn StoragePort>,
+        backlog: Arc<BacklogAdapter>,
         config: GitHubConfig,
     ) -> Self;
 
-    pub async fn ensure_schema(&self) -> Result&lt;(), GitHubError&gt;;
-    pub async fn sync_bug(&self, item: &BacklogItem) -> Result&lt;GitHubIssueRef, GitHubError&gt;;
-    pub async fn poll_status_changes(&self) -> Result&lt;Vec&lt;StatusChange&gt;, GitHubError&gt;;
-    pub async fn detect_conflicts(&self) -> Result&lt;Vec&lt;BodyConflictReport&gt;, GitHubError&gt;;
+    pub async fn ensure_schema(&self) -> Result<(), GitHubError>;
+    pub async fn sync_bug(&self, item: &BacklogItem) -> Result<GitHubIssueRef, GitHubError>;
+    pub async fn poll_status_changes(&self) -> Result<Vec<StatusChange>, GitHubError>;
+    pub async fn detect_conflicts(&self) -> Result<Vec<BodyConflictReport>, GitHubError>;
 }
 ```
 
@@ -317,7 +317,7 @@ labels.dedup();
 5. Insert into `github_sync_state`.
 6. Return `GitHubIssueRef { number, html_url }`.
 
-**Stack trace extraction** — reuse the pattern logic from `agileplus-triage`. Define a free function `extract_stack_trace(text: &str) -> Option&lt;String&gt;` in `issues.rs` that returns the first stack trace block found, or `None`.
+**Stack trace extraction** — reuse the pattern logic from `agileplus-triage`. Define a free function `extract_stack_trace(text: &str) -> Option<String>` in `issues.rs` that returns the first stack trace block found, or `None`.
 
 ---
 
@@ -511,7 +511,7 @@ The reviewer should:
 5. Confirm the GitHub token is read from the integrations service configuration (not from a CredentialStore / WP15 dependency) in the production code path and never hard-coded or logged.
 6. Verify the `body_hash` is computed after body construction and stored in `github_sync_state`; confirm it is not updated during conflict detection.
 7. Check label deduplication logic in T110: confirm `dedup()` is called after extending with the feature slug.
-8. Confirm stack trace extraction in T110 handles both Python (`Traceback (most recent call last)`) and generic (`at &lt;method&gt;(&lt;file&gt;)`) formats. If only one format is handled, file a follow-up backlog task for the other.
+8. Confirm stack trace extraction in T110 handles both Python (`Traceback (most recent call last)`) and generic (`at <method>(<file>)`) formats. If only one format is handled, file a follow-up backlog task for the other.
 9. Confirm the token bucket implementation is shared with WP18 (via `agileplus-core`) rather than duplicated. If duplication occurred, flag as a follow-up refactor task.
 10. Verify `github_sync_state` adds no columns to tables introduced by prior WPs.
 

@@ -26,7 +26,7 @@ struct Event {
 }
 
 impl Hashable for Event {
-    fn hash_content(&self) -> Vec&lt;u8&gt; {
+    fn hash_content(&self) -> Vec<u8> {
         format!("{}:{}:{}", self.id, self.data, self.timestamp).into_bytes()
     }
 }

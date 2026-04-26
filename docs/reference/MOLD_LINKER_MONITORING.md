@@ -13,8 +13,8 @@
 | Metric | Target | Alert Threshold | Measurement |
 |--------|--------|-----------------|-------------|
 | **Link Time** | 12s | >13.3s (>10% increase) | Per CI build |
-| **Improvement %** | 73% | &lt;65% or &gt;85% | Per CI build |
-| **Build Variance** | &lt;1s | &gt;2s (std dev) | 3-run average |
+| **Improvement %** | 73% | <65% or >85% | Per CI build |
+| **Build Variance** | <1s | >2s (std dev) | 3-run average |
 | **Linker Errors** | 0 | >0 errors | Per CI build |
 | **mold Version** | Latest | >1 minor behind | Monthly audit |
 | **Success Rate** | 100% | <99% | Monthly review |

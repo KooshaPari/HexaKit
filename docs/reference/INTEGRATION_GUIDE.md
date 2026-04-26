@@ -87,17 +87,17 @@ Every service integrating phenotype-infrakit crates must adopt **Hexagonal Archi
 ```rust
 // Domain logic depends ONLY on traits (ports)
 pub struct MyUseCase {
-    repo: Box&lt;dyn RepositoryPort&gt;,
-    cache: Box&lt;dyn CachePort&gt;,
-    logger: Box&lt;dyn LoggerPort&gt;,
+    repo: Box<dyn RepositoryPort>,
+    cache: Box<dyn CachePort>,
+    logger: Box<dyn LoggerPort>,
 }
 
 // Implementations depend on concrete adapters
 impl MyUseCase {
     pub fn new(
-        repo: Box&lt;dyn RepositoryPort&gt;,
-        cache: Box&lt;dyn CachePort&gt;,
-        logger: Box&lt;dyn LoggerPort&gt;,
+        repo: Box<dyn RepositoryPort>,
+        cache: Box<dyn CachePort>,
+        logger: Box<dyn LoggerPort>,
     ) -> Self {
         Self { repo, cache, logger }
     }
@@ -130,16 +130,16 @@ All external interactions are defined by **traits** in `phenotype-contracts` and
 ```rust
 // Port: cache access
 pub trait CachePort: Send + Sync {
-    async fn get(&self, key: &str) -> Result&lt;Option&lt;Value&gt;&gt;;
-    async fn set(&self, key: String, value: Value, ttl: Duration) -> Result&lt;()&gt;;
-    async fn delete(&self, key: &str) -> Result&lt;()&gt;;
+    async fn get(&self, key: &str) -> Result<Option<Value>>;
+    async fn set(&self, key: String, value: Value, ttl: Duration) -> Result<()>;
+    async fn delete(&self, key: &str) -> Result<()>;
 }
 
 // Port: repository access
 pub trait RepositoryPort: Send + Sync {
-    async fn fetch(&self, id: &str) -> Result&lt;Entity&gt;;
-    async fn store(&self, entity: Entity) -> Result&lt;()&gt;;
-    async fn list(&self, filter: Filter) -> Result&lt;Vec&lt;Entity&gt;&gt;;
+    async fn fetch(&self, id: &str) -> Result<Entity>;
+    async fn store(&self, entity: Entity) -> Result<()>;
+    async fn list(&self, filter: Filter) -> Result<Vec<Entity>>;
 }
 ```
 
@@ -148,7 +148,7 @@ Consumer code **never** depends on concrete adapters:
 ```rust
 pub struct MyService {
     // Always a port (trait), never a concrete adapter
-    repo: Arc&lt;dyn RepositoryPort&gt;,
+    repo: Arc<dyn RepositoryPort>,
 }
 ```
 
@@ -162,7 +162,7 @@ pub struct MyService {
 
 **Exports:**
 - `ErrorKind`: Enum with 11 standard error variants
-- `Result&lt;T&gt;`: Type alias `std::result::Result&lt;T, ErrorKind&gt;`
+- `Result<T>`: Type alias `std::result::Result<T, ErrorKind>`
 - Helper methods: `not_found()`, `validation()`, `timeout()`, etc.
 
 **Usage:**
@@ -170,7 +170,7 @@ pub struct MyService {
 ```rust
 use phenotype_error_core::{ErrorKind, Result};
 
-fn fetch_user(id: &str) -> Result&lt;User&gt; {
+fn fetch_user(id: &str) -> Result<User> {
     let user = database.find(id)
         .ok_or_else(|| ErrorKind::not_found(format!("user {}", id)))?;
     Ok(user)
@@ -191,7 +191,7 @@ match fetch_user("123") {
 **Purpose:** Unified configuration with multiple sources.
 
 **Exports:**
-- `Config`: Key-value container backed by `HashMap&lt;String, serde_json::Value&gt;`
+- `Config`: Key-value container backed by `HashMap<String, serde_json::Value>`
 - `ConfigSource`: Trait for loading from different sources
 - `builder::ConfigBuilder`: Fluent API for construction
 
@@ -227,14 +227,14 @@ use phenotype_async_traits::async_trait;
 
 #[async_trait]
 pub trait AsyncPort {
-    async fn do_work(&self) -> Result&lt;Output&gt;;
+    async fn do_work(&self) -> Result<Output>;
 }
 
 struct ConcreteImpl;
 
 #[async_trait]
 impl AsyncPort for ConcreteImpl {
-    async fn do_work(&self) -> Result&lt;Output&gt; {
+    async fn do_work(&self) -> Result<Output> {
         // async implementation
         Ok(Output::default())
     }
@@ -258,8 +258,8 @@ impl AsyncPort for ConcreteImpl {
 use phenotype_health::{HealthChecker, HealthStatus};
 
 pub struct AppHealthCheck {
-    db: Arc&lt;dyn DatabasePort&gt;,
-    cache: Arc&lt;dyn CachePort&gt;,
+    db: Arc<dyn DatabasePort>,
+    cache: Arc<dyn CachePort>,
 }
 
 #[async_trait]
@@ -275,7 +275,7 @@ impl HealthChecker for AppHealthCheck {
 }
 
 // Expose health endpoint
-async fn health_handler(checker: Arc&lt;dyn HealthChecker&gt;) -> Response {
+async fn health_handler(checker: Arc<dyn HealthChecker>) -> Response {
     let status = checker.check().await;
     match status {
         HealthStatus::Healthy => Response::ok(),
@@ -565,21 +565,21 @@ error!(reason = "timeout", "Request failed");
 
 ```rust
 pub struct MyService {
-    repo: Arc&lt;dyn RepositoryPort&gt;,
-    cache: Arc&lt;dyn CachePort&gt;,
-    logger: Arc&lt;dyn LoggerPort&gt;,
+    repo: Arc<dyn RepositoryPort>,
+    cache: Arc<dyn CachePort>,
+    logger: Arc<dyn LoggerPort>,
 }
 
 impl MyService {
     pub fn new(
-        repo: Arc&lt;dyn RepositoryPort&gt;,
-        cache: Arc&lt;dyn CachePort&gt;,
-        logger: Arc&lt;dyn LoggerPort&gt;,
+        repo: Arc<dyn RepositoryPort>,
+        cache: Arc<dyn CachePort>,
+        logger: Arc<dyn LoggerPort>,
     ) -> Self {
         Self { repo, cache, logger }
     }
 
-    pub async fn get_user(&self, id: &str) -> Result&lt;User&gt; {
+    pub async fn get_user(&self, id: &str) -> Result<User> {
         // Check cache first
         if let Ok(Some(user)) = self.cache.get(&format!("user:{}", id)).await {
             self.logger.debug("Cache hit");
@@ -603,9 +603,9 @@ impl MyService {
 
 ```rust
 pub struct ServiceBuilder {
-    repo: Option<Arc&lt;dyn RepositoryPort&gt;>,
-    cache: Option<Arc&lt;dyn CachePort&gt;>,
-    logger: Option<Arc&lt;dyn LoggerPort&gt;>,
+    repo: Option<Arc<dyn RepositoryPort>>,
+    cache: Option<Arc<dyn CachePort>>,
+    logger: Option<Arc<dyn LoggerPort>>,
 }
 
 impl ServiceBuilder {
@@ -617,22 +617,22 @@ impl ServiceBuilder {
         }
     }
 
-    pub fn with_repo(mut self, repo: Arc&lt;dyn RepositoryPort&gt;) -> Self {
+    pub fn with_repo(mut self, repo: Arc<dyn RepositoryPort>) -> Self {
         self.repo = Some(repo);
         self
     }
 
-    pub fn with_cache(mut self, cache: Arc&lt;dyn CachePort&gt;) -> Self {
+    pub fn with_cache(mut self, cache: Arc<dyn CachePort>) -> Self {
         self.cache = Some(cache);
         self
     }
 
-    pub fn with_logger(mut self, logger: Arc&lt;dyn LoggerPort&gt;) -> Self {
+    pub fn with_logger(mut self, logger: Arc<dyn LoggerPort>) -> Self {
         self.logger = Some(logger);
         self
     }
 
-    pub fn build(self) -> Result&lt;MyService&gt; {
+    pub fn build(self) -> Result<MyService> {
         let repo = self.repo.ok_or(ErrorKind::configuration("repo not provided"))?;
         let cache = self.cache.ok_or(ErrorKind::configuration("cache not provided"))?;
         let logger = self.logger.ok_or(ErrorKind::configuration("logger not provided"))?;
@@ -652,7 +652,7 @@ let service = ServiceBuilder::new()
 ### Pattern 3: Factory Function
 
 ```rust
-pub async fn build_service(config: &Config) -> Result&lt;Arc&lt;MyService&gt;&gt; {
+pub async fn build_service(config: &Config) -> Result<Arc<MyService>> {
     let repo = Arc::new(PostgresRepository::new(&config.db_url).await?);
     let cache = Arc::new(RedisCache::new(&config.redis_url).await?);
     let logger = Arc::new(TracingLogger::new());
@@ -662,7 +662,7 @@ pub async fn build_service(config: &Config) -> Result&lt;Arc&lt;MyService&gt;&gt
 
 // Usage in main
 #[tokio::main]
-async fn main() -> Result&lt;()&gt; {
+async fn main() -> Result<()> {
     let config = Config::from_env()?;
     let service = build_service(&config).await?;
 
@@ -675,13 +675,13 @@ async fn main() -> Result&lt;()&gt; {
 
 ```rust
 pub struct Container {
-    repo: Arc&lt;dyn RepositoryPort&gt;,
-    cache: Arc&lt;dyn CachePort&gt;,
-    logger: Arc&lt;dyn LoggerPort&gt;,
+    repo: Arc<dyn RepositoryPort>,
+    cache: Arc<dyn CachePort>,
+    logger: Arc<dyn LoggerPort>,
 }
 
 impl Container {
-    pub async fn new(config: &Config) -> Result&lt;Self&gt; {
+    pub async fn new(config: &Config) -> Result<Self> {
         let repo = Arc::new(PostgresRepository::new(&config.db_url).await?);
         let cache = Arc::new(RedisCache::new(&config.redis_url).await?);
         let logger = Arc::new(TracingLogger::new());
@@ -689,7 +689,7 @@ impl Container {
         Ok(Self { repo, cache, logger })
     }
 
-    pub fn service(&self) -> Arc&lt;MyService&gt; {
+    pub fn service(&self) -> Arc<MyService> {
         Arc::new(MyService::new(
             self.repo.clone(),
             self.cache.clone(),
@@ -697,7 +697,7 @@ impl Container {
         ))
     }
 
-    pub fn health_checker(&self) -> Arc&lt;dyn HealthChecker&gt; {
+    pub fn health_checker(&self) -> Arc<dyn HealthChecker> {
         Arc::new(AppHealthCheck {
             repo: self.repo.clone(),
             cache: self.cache.clone(),
@@ -763,14 +763,14 @@ src/
 ```rust
 use phenotype_error_core::{ErrorKind, Result};
 
-fn parse_config(data: &str) -> Result&lt;Config&gt; {
-    serde_json::from_str::&lt;RawConfig&gt;(data)
+fn parse_config(data: &str) -> Result<Config> {
+    serde_json::from_str::<RawConfig>(data)
         .map_err(|e| ErrorKind::serialization(e.to_string()))?
         .validate()
         .map_err(|e| ErrorKind::validation(e))
 }
 
-fn fetch_with_timeout(id: &str) -> Result&lt;Data&gt; {
+fn fetch_with_timeout(id: &str) -> Result<Data> {
     let future = async_fetch(id);
     tokio::time::timeout(
         Duration::from_secs(5),
@@ -814,7 +814,7 @@ pub async fn handle_request(req: Request) -> Response {
 use phenotype_config_core::Config;
 
 #[tokio::main]
-async fn main() -> Result&lt;()&gt; {
+async fn main() -> Result<()> {
     // Layer 1: Defaults
     let mut config = Config::new();
     config.insert("log_level".into(), "info".into());
@@ -854,7 +854,7 @@ use phenotype_async_traits::async_trait;
 
 #[async_trait]
 pub struct CompositeHealthCheck {
-    checkers: Vec<(String, Arc&lt;dyn HealthChecker&gt;)>,
+    checkers: Vec<(String, Arc<dyn HealthChecker>)>,
 }
 
 #[async_trait]
@@ -883,7 +883,7 @@ impl HealthChecker for CompositeHealthCheck {
 
 // Usage
 let checks = vec![
-    ("database".into(), Arc::new(DbHealthCheck { ... }) as Arc&lt;dyn HealthChecker&gt;),
+    ("database".into(), Arc::new(DbHealthCheck { ... }) as Arc<dyn HealthChecker>),
     ("cache".into(), Arc::new(CacheHealthCheck { ... })),
     ("api".into(), Arc::new(ApiHealthCheck { ... })),
 ];
@@ -901,7 +901,7 @@ use tracing::{info, warn, error, instrument};
 async fn process_user(
     service: &MyService,
     user_id: &str,
-) -> Result&lt;()&gt; {
+) -> Result<()> {
     info!(%user_id, "Processing user");
 
     let user = service.get_user(user_id).await?;
@@ -936,7 +936,7 @@ use phenotype_error_core::Result;
 use phenotype_health::{HealthChecker, HealthStatus};
 
 #[tokio::main]
-async fn main() -> Result&lt;()&gt; {
+async fn main() -> Result<()> {
     // 1. Load config
     let config = Config::from_env_prefix("HELIOS")?;
 
@@ -990,11 +990,11 @@ use phenotype_policy_engine::PolicyEngine;
 use phenotype_error_core::Result;
 
 pub struct AgentPolicyEnforcer {
-    engine: Arc&lt;PolicyEngine&gt;,
+    engine: Arc<PolicyEngine>,
 }
 
 impl AgentPolicyEnforcer {
-    pub async fn can_agent_execute(&self, agent: &Agent, action: &str) -> Result&lt;bool&gt; {
+    pub async fn can_agent_execute(&self, agent: &Agent, action: &str) -> Result<bool> {
         let context = serde_json::json!({
             "agent": {
                 "id": agent.id,
@@ -1013,7 +1013,7 @@ impl AgentPolicyEnforcer {
 use phenotype_event_sourcing::EventStore;
 
 pub struct AgentEventLog {
-    store: Arc&lt;EventStore&gt;,
+    store: Arc<EventStore>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -1023,7 +1023,7 @@ pub struct AgentStarted { pub agent_id: String, pub timestamp: i64 }
 pub struct AgentTaskAssigned { pub task_id: String, pub timestamp: i64 }
 
 impl AgentEventLog {
-    pub async fn record_start(&self, agent_id: &str) -> Result&lt;()&gt; {
+    pub async fn record_start(&self, agent_id: &str) -> Result<()> {
         let event = AgentStarted {
             agent_id: agent_id.into(),
             timestamp: now(),
@@ -1032,7 +1032,7 @@ impl AgentEventLog {
         Ok(())
     }
 
-    pub async fn record_task_assignment(&self, agent_id: &str, task_id: &str) -> Result&lt;()&gt; {
+    pub async fn record_task_assignment(&self, agent_id: &str, task_id: &str) -> Result<()> {
         let event = AgentTaskAssigned {
             task_id: task_id.into(),
             timestamp: now(),
@@ -1067,7 +1067,7 @@ impl StateOrdinal for AgentState {
 }
 
 pub struct AgentStateMachine {
-    machine: StateMachine&lt;AgentState&gt;,
+    machine: StateMachine<AgentState>,
 }
 
 impl AgentStateMachine {
@@ -1077,7 +1077,7 @@ impl AgentStateMachine {
         Self { machine }
     }
 
-    pub fn transition(&mut self, to: AgentState) -> Result&lt;()&gt; {
+    pub fn transition(&mut self, to: AgentState) -> Result<()> {
         self.machine.transition(to, None)?;
         Ok(())
     }
@@ -1111,12 +1111,12 @@ use phenotype_cache_adapter::CacheAdapter;
 use shared::domain::{WorkflowStarted, WorkflowCompleted};
 
 pub struct WorkflowOrchestrator {
-    events: Arc&lt;EventStore&gt;,
-    cache: Arc&lt;CacheAdapter&gt;,
+    events: Arc<EventStore>,
+    cache: Arc<CacheAdapter>,
 }
 
 impl WorkflowOrchestrator {
-    pub async fn start_workflow(&self, workflow_id: &str) -> Result&lt;()&gt; {
+    pub async fn start_workflow(&self, workflow_id: &str) -> Result<()> {
         let event = WorkflowStarted {
             workflow_id: workflow_id.into(),
             initiator: "system".into(),
@@ -1138,16 +1138,16 @@ impl WorkflowOrchestrator {
 
 // service-b/src/lib.rs
 pub struct WorkflowMonitor {
-    events: Arc&lt;EventStore&gt;,
+    events: Arc<EventStore>,
 }
 
 impl WorkflowMonitor {
-    pub async fn get_workflow_history(&self, workflow_id: &str) -> Result&lt;Vec&lt;String&gt;&gt; {
+    pub async fn get_workflow_history(&self, workflow_id: &str) -> Result<Vec<String>> {
         let history = self.events.get_history(workflow_id)?;
         Ok(history.iter().map(|e| e.event_type.clone()).collect())
     }
 
-    pub async fn verify_workflow(&self, workflow_id: &str) -> Result&lt;bool&gt; {
+    pub async fn verify_workflow(&self, workflow_id: &str) -> Result<bool> {
         self.events.verify_chain(workflow_id)
     }
 }
@@ -1186,7 +1186,7 @@ mod tests {
 
     #[test]
     fn test_error_propagation() {
-        let result: Result&lt;i32&gt; = Err(ErrorKind::validation("invalid input"));
+        let result: Result<i32> = Err(ErrorKind::validation("invalid input"));
         assert_err_contains!(result, "invalid input");
     }
 }
@@ -1201,12 +1201,12 @@ mod integration_tests {
     use async_trait::async_trait;
 
     struct MockRepository {
-        data: std::sync::Arc&lt;std::sync::Mutex&lt;Vec&lt;Entity&gt;&gt;&gt;,
+        data: std::sync::Arc<std::sync::Mutex<Vec<Entity>>>,
     }
 
     #[async_trait]
     impl RepositoryPort for MockRepository {
-        async fn fetch(&self, id: &str) -> Result&lt;Entity&gt; {
+        async fn fetch(&self, id: &str) -> Result<Entity> {
             let data = self.data.lock().unwrap();
             data.iter()
                 .find(|e| e.id == id)
@@ -1214,7 +1214,7 @@ mod integration_tests {
                 .ok_or(ErrorKind::not_found(id))
         }
 
-        async fn store(&self, entity: Entity) -> Result&lt;()&gt; {
+        async fn store(&self, entity: Entity) -> Result<()> {
             let mut data = self.data.lock().unwrap();
             data.push(entity);
             Ok(())
@@ -1250,12 +1250,12 @@ mod integration_tests {
 ```rust
 // ✅ Correct
 pub trait MyPort: Send + Sync {
-    async fn do_work(&self) -> Result&lt;()&gt;;
+    async fn do_work(&self) -> Result<()>;
 }
 
 // ❌ Wrong
 pub trait MyPort {
-    async fn do_work(&self) -> Result&lt;()&gt;;
+    async fn do_work(&self) -> Result<()>;
 }
 ```
 
@@ -1268,7 +1268,7 @@ pub trait MyPort {
 ```rust
 // phenotype-contracts/src/lib.rs
 pub trait RepositoryPort: Send + Sync {
-    async fn fetch(&self, id: &str) -> Result&lt;Entity&gt;;
+    async fn fetch(&self, id: &str) -> Result<Entity>;
 }
 
 // crate-a/Cargo.toml
@@ -1290,11 +1290,11 @@ phenotype-contracts = { path = "../../crates/phenotype-contracts" }
 use dashmap::DashMap;
 
 pub struct PolicyRegistry {
-    policies: DashMap&lt;String, Policy&gt;,
+    policies: DashMap<String, Policy>,
 }
 
 impl PolicyRegistry {
-    pub fn get(&self, key: &str) -> Option&lt;Policy&gt; {
+    pub fn get(&self, key: &str) -> Option<Policy> {
         self.policies.get(key).map(|r| r.clone())
     }
 }

@@ -50,7 +50,7 @@ Add Module and Cycle views to the `agileplus-api` dashboard crate. This includes
 - **Askama**: Templates live in `crates/agileplus-api/templates/`. Templates are compiled at
   build time. All template variables must have correct Rust types with `Display` impl or be
   serializable as strings.
-- **SSE**: The existing SSE broadcast channel is typed (likely `tokio::sync::broadcast::Sender&lt;SseEvent&gt;`
+- **SSE**: The existing SSE broadcast channel is typed (likely `tokio::sync::broadcast::Sender<SseEvent>`
   or similar). Add new event variants to the existing `SseEvent` enum rather than creating a
   new channel. Check `crates/agileplus-api/src/sse.rs` (or equivalent) for the pattern.
 - **No new crate dependencies** unless absolutely necessary and justified.
@@ -84,17 +84,17 @@ Add Module and Cycle views to the `agileplus-api` dashboard crate. This includes
    /// GET /api/modules
    /// Returns all root modules with feature counts. Traces to: FR-D01, FR-D04
    pub async fn list_modules(
-       State(storage): State<Arc&lt;dyn StoragePort&gt;>,
-   ) -> Result&lt;Json&lt;Vec&lt;Module&gt;&gt;, ApiError&gt; {
+       State(storage): State<Arc<dyn StoragePort>>,
+   ) -> Result<Json<Vec<Module>>, ApiError> {
        let modules = storage.list_root_modules().await.map_err(ApiError::Domain)?;
        Ok(Json(modules))
    }
 
    /// GET /api/modules/:id
    pub async fn get_module(
-       Path(id): Path&lt;i64&gt;,
-       State(storage): State<Arc&lt;dyn StoragePort&gt;>,
-   ) -> Result&lt;Json&lt;ModuleWithFeatures&gt;, ApiError&gt; {
+       Path(id): Path<i64>,
+       State(storage): State<Arc<dyn StoragePort>>,
+   ) -> Result<Json<ModuleWithFeatures>, ApiError> {
        storage.get_module_with_features(id).await
            .map_err(ApiError::Domain)?
            .map(Json)
@@ -102,11 +102,11 @@ Add Module and Cycle views to the `agileplus-api` dashboard crate. This includes
    }
 
    /// GET /api/modules/:id/tree
-   /// Returns flattened tree as Vec&lt;(Module, depth)&gt;
+   /// Returns flattened tree as Vec<(Module, depth)>
    pub async fn get_module_tree(
-       Path(id): Path&lt;i64&gt;,
-       State(storage): State<Arc&lt;dyn StoragePort&gt;>,
-   ) -> Result&lt;Json&lt;Vec&lt;ModuleTreeNode&gt;&gt;, ApiError&gt; { ... }
+       Path(id): Path<i64>,
+       State(storage): State<Arc<dyn StoragePort>>,
+   ) -> Result<Json<Vec<ModuleTreeNode>>, ApiError> { ... }
    ```
 
 2. Define `ModuleTreeNode` in `module.rs`:
@@ -128,8 +128,8 @@ Add Module and Cycle views to the `agileplus-api` dashboard crate. This includes
        module_id: i64,
        depth: usize,
        storage: &dyn StoragePort,
-       out: &mut Vec&lt;ModuleTreeNode&gt;,
-   ) -> Result&lt;(), DomainError&gt; {
+       out: &mut Vec<ModuleTreeNode>,
+   ) -> Result<(), DomainError> {
        let mwf = storage.get_module_with_features(module_id).await?;
        if let Some(mwf) = mwf {
            out.push(ModuleTreeNode {
@@ -151,15 +151,15 @@ Add Module and Cycle views to the `agileplus-api` dashboard crate. This includes
    ```rust
    /// GET /api/cycles?state=active
    pub async fn list_cycles(
-       Query(params): Query&lt;CycleListParams&gt;,
-       State(storage): State<Arc&lt;dyn StoragePort&gt;>,
-   ) -> Result&lt;Json&lt;Vec&lt;Cycle&gt;&gt;, ApiError&gt; { ... }
+       Query(params): Query<CycleListParams>,
+       State(storage): State<Arc<dyn StoragePort>>,
+   ) -> Result<Json<Vec<Cycle>>, ApiError> { ... }
 
    /// GET /api/cycles/:id
    pub async fn get_cycle(
-       Path(id): Path&lt;i64&gt;,
-       State(storage): State<Arc&lt;dyn StoragePort&gt;>,
-   ) -> Result&lt;Json&lt;CycleWithFeatures&gt;, ApiError&gt; { ... }
+       Path(id): Path<i64>,
+       State(storage): State<Arc<dyn StoragePort>>,
+   ) -> Result<Json<CycleWithFeatures>, ApiError> { ... }
    ```
 
 5. Define `CycleListParams`:
@@ -167,7 +167,7 @@ Add Module and Cycle views to the `agileplus-api` dashboard crate. This includes
    ```rust
    #[derive(Debug, Deserialize)]
    pub struct CycleListParams {
-       pub state: Option&lt;String&gt;,
+       pub state: Option<String>,
    }
    ```
 
@@ -189,7 +189,7 @@ Add Module and Cycle views to the `agileplus-api` dashboard crate. This includes
    #[derive(Template)]
    #[template(path = "module_tree.html")]
    pub struct ModuleTreeTemplate {
-       pub nodes: Vec&lt;ModuleTreeNode&gt;,
+       pub nodes: Vec<ModuleTreeNode>,
    }
    ```
 
@@ -197,27 +197,27 @@ Add Module and Cycle views to the `agileplus-api` dashboard crate. This includes
    list and use CSS `padding-left` based on `depth` for visual indentation:
 
    ```html
-   &lt;!DOCTYPE html&gt;
-   &lt;html&gt;
-   &lt;head&gt;&lt;title&gt;Modules&lt;/title&gt;&lt;/head&gt;
-   &lt;body&gt;
-   &lt;nav class="module-tree"&gt;
+   <!DOCTYPE html>
+   <html>
+   <head><title>Modules</title></head>
+   <body>
+   <nav class="module-tree">
      <h2>Modules</h2>
      <ul>
      {% for node in nodes %}
-       <li style="padding-left: &#123;&#123; node.depth * 16 }}px">
-         <a href="/modules/&#123;&#123; node.module.id }}">
-           &#123;&#123; node.module.friendly_name }}
+       <li style="padding-left: {{ node.depth * 16 }}px">
+         <a href="/modules/{{ node.module.id }}">
+           {{ node.module.friendly_name }}
          </a>
          <span class="counts">
-           (&#123;&#123; node.owned_count }} owned, &#123;&#123; node.tagged_count }} tagged)
+           ({{ node.owned_count }} owned, {{ node.tagged_count }} tagged)
          </span>
        </li>
      {% endfor %}
      </ul>
-   &lt;/nav&gt;
-   &lt;/body&gt;
-   &lt;/html&gt;
+   </nav>
+   </body>
+   </html>
    ```
 
 3. Add a `GET /modules` route handler that builds the full tree starting from all root modules,
@@ -225,8 +225,8 @@ Add Module and Cycle views to the `agileplus-api` dashboard crate. This includes
 
    ```rust
    pub async fn module_tree_page(
-       State(storage): State<Arc&lt;dyn StoragePort&gt;>,
-   ) -> Result&lt;Html&lt;String&gt;, ApiError&gt; {
+       State(storage): State<Arc<dyn StoragePort>>,
+   ) -> Result<Html<String>, ApiError> {
        let roots = storage.list_root_modules().await.map_err(ApiError::Domain)?;
        let mut nodes = Vec::new();
        for root in &roots {
@@ -262,11 +262,11 @@ Add Module and Cycle views to the `agileplus-api` dashboard crate. This includes
    #[derive(Template)]
    #[template(path = "cycle_kanban.html")]
    pub struct CycleKanbanTemplate {
-       pub draft:    Vec&lt;CycleColumnEntry&gt;,
-       pub active:   Vec&lt;CycleColumnEntry&gt;,
-       pub review:   Vec&lt;CycleColumnEntry&gt;,
-       pub shipped:  Vec&lt;CycleColumnEntry&gt;,
-       pub archived: Vec&lt;CycleColumnEntry&gt;,
+       pub draft:    Vec<CycleColumnEntry>,
+       pub active:   Vec<CycleColumnEntry>,
+       pub review:   Vec<CycleColumnEntry>,
+       pub shipped:  Vec<CycleColumnEntry>,
+       pub archived: Vec<CycleColumnEntry>,
    }
    ```
 
@@ -279,28 +279,28 @@ Add Module and Cycle views to the `agileplus-api` dashboard crate. This includes
 3. Write the HTML template with 5 state columns:
 
    ```html
-   &lt;!DOCTYPE html&gt;
-   &lt;html&gt;
-   &lt;head&gt;&lt;title&gt;Cycles&lt;/title&gt;&lt;/head&gt;
-   &lt;body&gt;
+   <!DOCTYPE html>
+   <html>
+   <head><title>Cycles</title></head>
+   <body>
    <div class="kanban">
      <div class="column">
-       <h3>Draft (&#123;&#123; draft|length }})</h3>
+       <h3>Draft ({{ draft|length }})</h3>
        {% for entry in draft %}
          <div class="card">
-           <a href="/cycles/&#123;&#123; entry.cycle.id }}">&#123;&#123; entry.cycle.name }}</a>
-           <div>&#123;&#123; entry.cycle.start_date }} - &#123;&#123; entry.cycle.end_date }}</div>
-           <div>&#123;&#123; entry.feature_count }} features</div>
+           <a href="/cycles/{{ entry.cycle.id }}">{{ entry.cycle.name }}</a>
+           <div>{{ entry.cycle.start_date }} - {{ entry.cycle.end_date }}</div>
+           <div>{{ entry.feature_count }} features</div>
          </div>
        {% endfor %}
      </div>
      {# Repeat for active, review, shipped, archived #}
    </div>
-   &lt;/body&gt;
-   &lt;/html&gt;
+   </body>
+   </html>
    ```
 
-   Note: Askama uses `&#123;&#123; value|length }}` filter syntax. Verify with the Askama version in use.
+   Note: Askama uses `{{ value|length }}` filter syntax. Verify with the Askama version in use.
    If `|length` is not available, pass the length pre-computed in the struct.
 
 **Validation**: `GET /cycles` returns HTML with 5 columns; cycles appear in correct column.
@@ -322,7 +322,7 @@ Add Module and Cycle views to the `agileplus-api` dashboard crate. This includes
    #[template(path = "cycle_detail.html")]
    pub struct CycleDetailTemplate {
        pub cwf: CycleWithFeatures,
-       pub scope_module_name: Option&lt;String&gt;,
+       pub scope_module_name: Option<String>,
        pub days_remaining: i64,
    }
    ```
@@ -336,41 +336,41 @@ Add Module and Cycle views to the `agileplus-api` dashboard crate. This includes
 3. Write the template:
 
    ```html
-   &lt;!DOCTYPE html&gt;
-   &lt;html&gt;
-   &lt;head&gt;&lt;title&gt;Cycle: &#123;&#123; cwf.cycle.name }}&lt;/title&gt;&lt;/head&gt;
-   &lt;body&gt;
-   <h1>&#123;&#123; cwf.cycle.name }}</h1>
-   <p>State: &#123;&#123; cwf.cycle.state }}</p>
-   <p>&#123;&#123; cwf.cycle.start_date }} to &#123;&#123; cwf.cycle.end_date }}
-      (&#123;&#123; days_remaining }} days remaining)</p>
+   <!DOCTYPE html>
+   <html>
+   <head><title>Cycle: {{ cwf.cycle.name }}</title></head>
+   <body>
+   <h1>{{ cwf.cycle.name }}</h1>
+   <p>State: {{ cwf.cycle.state }}</p>
+   <p>{{ cwf.cycle.start_date }} to {{ cwf.cycle.end_date }}
+      ({{ days_remaining }} days remaining)</p>
    {% if let Some(scope) = scope_module_name %}
-   <p>Scope: &#123;&#123; scope }}</p>
+   <p>Scope: {{ scope }}</p>
    {% endif %}
 
    <h2>WP Burndown</h2>
    <table>
      <tr><th>State</th><th>Count</th></tr>
-     <tr><td>Done</td><td>&#123;&#123; cwf.wp_progress.done }}</td></tr>
-     <tr><td>In Progress</td><td>&#123;&#123; cwf.wp_progress.in_progress }}</td></tr>
-     <tr><td>Planned</td><td>&#123;&#123; cwf.wp_progress.planned }}</td></tr>
-     <tr><td>Blocked</td><td>&#123;&#123; cwf.wp_progress.blocked }}</td></tr>
-     <tr><td>Total</td><td>&#123;&#123; cwf.wp_progress.total }}</td></tr>
+     <tr><td>Done</td><td>{{ cwf.wp_progress.done }}</td></tr>
+     <tr><td>In Progress</td><td>{{ cwf.wp_progress.in_progress }}</td></tr>
+     <tr><td>Planned</td><td>{{ cwf.wp_progress.planned }}</td></tr>
+     <tr><td>Blocked</td><td>{{ cwf.wp_progress.blocked }}</td></tr>
+     <tr><td>Total</td><td>{{ cwf.wp_progress.total }}</td></tr>
    </table>
 
-   <h2>Features (&#123;&#123; cwf.features|length }})</h2>
+   <h2>Features ({{ cwf.features|length }})</h2>
    <table>
      <tr><th>Slug</th><th>State</th></tr>
      {% for f in cwf.features %}
-     <tr><td>&#123;&#123; f.slug }}</td><td>&#123;&#123; f.state }}</td></tr>
+     <tr><td>{{ f.slug }}</td><td>{{ f.state }}</td></tr>
      {% endfor %}
    </table>
-   &lt;/body&gt;
-   &lt;/html&gt;
+   </body>
+   </html>
    ```
 
    Note: Askama `{% if let Some(...) %}` syntax -- verify with crate version. If unavailable, use
-   `{% if scope_module_name.is_some() %}&#123;&#123; scope_module_name.as_deref().unwrap_or("") }}{% endif %}`.
+   `{% if scope_module_name.is_some() %}{{ scope_module_name.as_deref().unwrap_or("") }}{% endif %}`.
 
 **Validation**: `GET /cycles/{id}` renders full detail with burndown table.
 
