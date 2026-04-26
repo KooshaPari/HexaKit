@@ -10,6 +10,9 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   legacy-tooling-scan:
     uses: KooshaPari/phenoShared/.github/workflows/legacy-tooling-gate.yml@main
