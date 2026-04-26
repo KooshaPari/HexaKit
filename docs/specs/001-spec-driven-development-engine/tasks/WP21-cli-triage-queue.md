@@ -475,7 +475,7 @@ appropriate sub-command chain for the agent to execute first.
 
 **Integration with router output**:
 
-The `PromptRouter` (WP17) must embed a `<!-- FIRST_ACTION_HINTS: {...} -->` HTML comment
+The `PromptRouter` (WP17) must embed a `&lt;!-- FIRST_ACTION_HINTS: {...} --&gt;` HTML comment
 block in the generated `CLAUDE.md`. The classifier reads this block rather than parsing
 the full Markdown prose. This decouples the classifier from CLAUDE.md formatting changes.
 
@@ -563,7 +563,7 @@ Write tests in `tests/cli/` that invoke the compiled binary via `assert_cmd`:
 Create one Markdown prompt file per sub-command registered in the WP20 registry
 (~24 files based on the T114 catalogue). Each file follows this template:
 
-```markdown
+````markdown
 ---
 subcommand: triage:classify
 category: triage
@@ -609,7 +609,7 @@ upstream trigger and downstream action.]
 
 [List of analogous commands from spec-kitty, bmad, gsd, openspec that
 informed this sub-command's design.]
-```
+````
 
 The seeding tool must:
 

@@ -369,7 +369,7 @@ impl RouterGenerator {
 
 **`write_claude_md` template** (use a `format!` or a simple template string; do not pull in a template engine dependency unless one is already in the workspace):
 
-```
+````
 # {project_name} — Agent Routing Guide
 
 ## Project Context
@@ -408,7 +408,7 @@ This bypasses the triage flow and creates a minimal WP directly in the active fe
 - All commits must use Conventional Commits format.
 - PRs must reference a WP ID in the title (e.g., `feat(WP17): implement triage adapter`).
 - Do not modify files outside the active feature's work package scope without explicit user approval.
-```
+````
 
 Replace `{project_name}`, `{project_slug}`, `{current_phase}`, `{timestamp}`, and `{command_list}` from `ProjectConfig` fields. `{command_list}` is a bullet list built from `ProjectConfig::available_commands`.
 
@@ -424,7 +424,7 @@ Write to `{output_dir}/CLAUDE.md`. Return the written path. If the file already 
 
 **`write_agents_md` template**:
 
-```
+````
 # {project_name} — Agent Behavioral Rules
 
 ## Sub-Command Vocabulary
@@ -472,7 +472,7 @@ Each significant agent action should be logged to the WP prompt file's `history`
   shell_pid: '<pid>'
   action: <description>
 ```
-```
+````
 
 Write to `{output_dir}/AGENTS.md`. Return the written path. Overwrite if exists.
 

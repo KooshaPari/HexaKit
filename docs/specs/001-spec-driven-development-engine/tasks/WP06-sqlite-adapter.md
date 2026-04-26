@@ -211,7 +211,7 @@ Implement the SQLite storage adapter in `crates/agileplus-sqlite/` that fulfills
 **Files**: `crates/agileplus-sqlite/src/lib.rs` or `crates/agileplus-sqlite/src/repository/work_packages.rs`
 
 **Validation**:
-- `file_scope` round-trips correctly (Vec<String> -> JSON text -> Vec<String>).
+- `file_scope` round-trips correctly (`Vec<String>` -> JSON text -> `Vec<String>`).
 - `get_ready_wps` correctly evaluates transitive dependency satisfaction.
 - WP foreign key to features is enforced.
 
