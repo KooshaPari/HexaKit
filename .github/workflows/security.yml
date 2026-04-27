@@ -43,11 +43,7 @@ jobs:
       - name: Install cargo-deny
         run: cargo install cargo-deny
       - name: Check advisories, licenses, duplicates
-<<<<<<< HEAD
         run: cargo deny check -c rust/deny.toml
-=======
-        run: cargo deny check
->>>>>>> origin/main
 
   # ─── Gitleaks Secret Detection ────────────────────────────────────────
   gitleaks:
@@ -92,8 +88,6 @@ jobs:
       - name: Run bandit
         run: bandit -r python/src -ll
         continue-on-error: true
-<<<<<<< HEAD
-=======
 
   # ─── OSV-Scanner (Rust lockfile; repo does not commit Cargo.lock) ───────
   osv-scanner:
@@ -128,4 +122,3 @@ jobs:
       - name: OSV table (on vulnerability findings)
         if: failure() && steps.osv.outcome == 'failure'
         run: osv-scanner scan -L Cargo.lock --format table
->>>>>>> origin/main
