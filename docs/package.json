@@ -17,6 +17,6 @@
   "devDependencies": {
     "@playwright/test": "^1.53.2",
     "vitepress": "^1.6.3",
-    "vitepress-plugin-mermaid": "^2.0.17"
+    "vitepress-plugin-mermaid": "^2.0.10"
   }
 }
