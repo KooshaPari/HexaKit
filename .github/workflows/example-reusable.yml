@@ -41,5 +41,3 @@ jobs:
       rust-version: stable
       setup-protoc: true
       strip-binary: true
-    secrets:
-      inherit
