@@ -18,5 +18,10 @@
     "@playwright/test": "^1.53.2",
     "vitepress": "^1.6.3",
     "vitepress-plugin-mermaid": "^2.0.10"
+  },
+  "overrides": {
+    "esbuild": "^0.25.0",
+    "uuid": "^14.0.0",
+    "vite": "^6.4.2"
   }
 }
