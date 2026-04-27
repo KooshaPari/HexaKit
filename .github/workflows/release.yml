@@ -172,6 +172,7 @@ jobs:
         with:
           artifacts: "./release-assets/*"
           token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', inputs.version) || github.ref_name }}
           draft: false
           prerelease: false
           generateReleaseNotes: true
