@@ -1,3 +1,10 @@
+> **Pinned references (Phenotype-org)**
+> - MSRV: see rust-toolchain.toml
+> - cargo-deny config: see deny.toml
+> - cargo-audit: rustsec/audit-check@v2 weekly
+> - Branch protection: 1 reviewer required, no force-push
+> - Authority: phenotype-org-governance/SUPERSEDED.md
+
 # phenotype-infrakit — Phenotype Infrastructure Kit
 
 **HexaKit** is the GitHub repository name for **phenotype-infrakit**, the Phenotype Infrastructure Kit.
