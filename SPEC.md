@@ -719,7 +719,7 @@ __Content Guidelines__
 git clone https://github.com/KooshaPari/phenotype-infrakit
 
 # 2. List all projects
-cat projects/INDEX.md
+find . -maxdepth 1 -mindepth 1 -type d | sort
 
 # 3. Navigate to project of interest
 cd agileplus

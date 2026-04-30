@@ -7,8 +7,8 @@ metadata:
   annotations:
     github.com/project-slug: KooshaPari/HexaKit
     backstage.io/techdocs-ref: dir:./docs
-    phenotype.dev/registry-type: templates
-    phenotype.dev/language: polyglot
+    kooshapari.com/registry-type: templates
+    kooshapari.com/language: polyglot
   tags:
     - templates
     - hexagonal
