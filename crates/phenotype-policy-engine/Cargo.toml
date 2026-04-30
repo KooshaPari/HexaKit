@@ -15,7 +15,6 @@ dashmap = "5"
 regex = "1"
 toml = "0.8"
 phenotype-error-core = { path = "../phenotype-error-core" }
-phenotype-casbin-wrapper = { path = "../phenotype-casbin-wrapper", optional = true }
 async-trait = "0.1"
 tokio = { version = "1", features = ["full"] }
 
@@ -25,4 +24,3 @@ tokio = { version = "1", features = ["full"] }
 
 [features]
 default = []
-casbin-backend = ["dep:phenotype-casbin-wrapper"]
