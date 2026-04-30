@@ -3,7 +3,7 @@
 > - cargo-deny config: see deny.toml
 > - cargo-audit: rustsec/audit-check@v2 weekly
 > - Branch protection: 1 reviewer required, no force-push
-> - Authority: phenotype-org-governance/SUPERSEDED.md
+> - Authority: AGENTS.md
 
 # phenotype-infrakit — Phenotype Infrastructure Kit
 
@@ -21,8 +21,8 @@ Each project is a standalone git repo; the shelf is their shared home.
 
 ### Finding a project
 ```bash
-ls projects/INDEX.md   # Master project list with descriptions
-cat projects/INDEX.md   # Find your project
+find . -maxdepth 1 -mindepth 1 -type d | sort   # Top-level project directories
+cat README.md                                  # Shelf overview and navigation
 ```
 
 ### Working on a project
@@ -50,18 +50,19 @@ Projects are organized into functional categories at the top level:
 | `platforms/` | Platform-as-product projects |
 
 Note: Not all projects are yet in these categories — the reorganization is ongoing.
-Use `projects/INDEX.md` for the authoritative list.
+Use the top-level directory listing and each project's `README.md` or `AGENTS.md` as the
+authoritative source.
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
-| `projects/INDEX.md` | Master project catalog |
+| `README.md` | Shelf overview and navigation |
 | `AGENTS.md` | Agent interaction rules |
 | `GOVERNANCE.md` | Shelf governance |
 | `CLAUDE.md` | Claude Code settings |
-| `WORKSTORES.md` | Worktree management guide |
-| `REPOS_INDEX.md` | Detailed shelf index |
+| `STATUS.md` | Current shelf status |
+| `CHANGELOG.md` | Shelf change history |
 
 ## Architecture
 
@@ -83,7 +84,7 @@ repos/                          # ← Shelf root (YOU ARE HERE)
 
 ## Agent Workflow
 
-1. **Identify the project** — Check `projects/INDEX.md` or ask the user
+1. **Identify the project** - Check the target project's `README.md` or ask the user
 2. **Navigate to project** — `cd <project-name>`
 3. **Read project rules** — Check for `CLAUDE.md` or `AGENTS.md` in project
 4. **Do the work** — Follow shelf rules in `AGENTS.md`
@@ -105,5 +106,5 @@ their correct locations:
 
 - Shelf-level issues: Ask here
 - Project-specific issues: `cd <project>` and check that project's docs
-- Architecture decisions: `cat docs/adr/INDEX.md`
-- General questions: Check `projects/INDEX.md` first
+- Architecture decisions: `cat docs/adr/INDEX.md` or inspect `docs/`
+- General questions: Check this `README.md` and the target project's `README.md` first

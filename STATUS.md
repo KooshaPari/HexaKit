@@ -16,5 +16,5 @@ TBD - GitHub Actions billing-blocked org-wide
 GitHub Actions billing-blocked. Local cargo-deny+audit weekly via `governance/scripts/cargo-deny-org-weekly.sh`.
 
 ## Cross-references
-See `phenotype-org-governance/SUPERSEDED.md` for canonical authority.
-See `phenotype-org-governance/CHANGELOG_2026_04_27.md` for current sprint state.
+See `AGENTS.md` for canonical authority.
+See `CHANGELOG.md` for current sprint state.
