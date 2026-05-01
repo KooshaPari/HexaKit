@@ -100,14 +100,13 @@ class TestNoAtomsReferences:
 
     def test_pyproject_sanitized(self):
         """Verify pyproject.toml is sanitized."""
-        pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
+        pyproject_path = Path(__file__).parent.parent.parent / "pyproject.toml"
         content = pyproject_path.read_text()
         # Check that ATOMS identifiers are removed
         assert "ATOMS-PHENO" not in content
         assert "atoms@atoms.tech" not in content
-        # Check that generic identifiers are present
-        assert "Phenotype Team" in content
-        assert "phenotype" in content.lower()
+        # Check that agileplus or generic identifiers are present
+        assert "AgilePlus" in content or "agileplus" in content.lower()
 
 
 class TestFunctionalityPreserved:

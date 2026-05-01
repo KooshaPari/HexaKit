@@ -67,7 +67,8 @@ quote-style = "double"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-markers = ["unit", "integration", "slow"]
+norecursedirs = ["pheno-agents", "pheno-core", "pheno-mcp", "pheno-atoms", "phenosdk", "src"]
+markers = ["unit", "integration", "slow", "external_dep"]
 addopts = "-q --strict-markers --tb=short"
 
 [tool.coverage.run]

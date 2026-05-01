@@ -214,8 +214,28 @@ class ConfigLoader:
         Returns:
             Self for method chaining.
         """
-        config = from_env(self.config_cls, env_prefix)
-        self._data.update(config.model_dump())
+        import os
+        
+        if env_prefix:
+            config = from_env(self.config_cls, env_prefix)
+            self._data.update(config.model_dump())
+        else:
+            # When no prefix, only update values that are actually set in env
+            # to avoid overwriting file values with defaults
+            # Pydantic env var convention: APP_NAME -> app_name (uppercase, remove _)
+            model_fields = self.config_cls.model_fields
+            for env_key, env_value in os.environ.items():
+                # Convert APP_NAME -> app_name
+                base_key = env_key.replace(env_prefix or "", "").strip("_") if env_prefix else env_key
+                field_name = base_key.lower()
+                if field_name in model_fields:
+                    field_type = model_fields[field_name].annotation
+                    try:
+                        from pydantic import TypeAdapter
+                        ta = TypeAdapter(field_type)
+                        self._data[field_name] = ta.validate_python(env_value)
+                    except Exception:
+                        pass  # Skip values that can't be converted
         return self
 
     def build(self) -> T:
@@ -229,7 +249,9 @@ class ConfigLoader:
             ConfigurationError: If configuration is invalid.
         """
         try:
-            return self.config_cls(**self._data)  # type: ignore
+            # Use model_validate to bypass BaseSettings env reading
+            # since we've already accumulated all data from file/env sources
+            return self.config_cls.model_validate(self._data)  # type: ignore
         except PydanticValidationError as e:
             raise ConfigurationError(
                 f"Configuration validation failed: {str(e)}",
