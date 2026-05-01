@@ -15,8 +15,13 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
         return
 
     skip_marker = pytest.mark.skip(reason=SKIP_REASON)
+    # Get the path to tests/integration directory
+    integration_dir = os.path.dirname(__file__)
     for item in items:
-        item.add_marker(skip_marker)
+        # Only skip items from integration directory
+        item_path = os.path.dirname(item.fspath)
+        if item_path == integration_dir or item_path.startswith(integration_dir + os.sep):
+            item.add_marker(skip_marker)
 
 
 @pytest.fixture
