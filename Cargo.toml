@@ -9,7 +9,7 @@ description = "Phenotype Infrastructure Kit"
 
 [workspace]
 resolver = "2"
-members = []
+members = ["crates/phenotype-test-infra"]
 [workspace.dependencies]
 # Core
 serde = { version = "1", features = ["derive"] }
