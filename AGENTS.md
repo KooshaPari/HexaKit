@@ -1,36 +1,19 @@
-# AGENTS.md - repos shelf agent rules
+# AGENTS.md — HexaKit
 
-## Shelf Identity
+## Project Overview
+- **Name**: HexaKit
+- **Location**: KooshaPari/HexaKit
+- **Status**: Active development
 
-This is the `repos` shelf for `CodeProjects/Phenotype/organizational-shelf/repos`.
-Each top-level directory is a separate project repository.
+## AgilePlus Mandate
+All work MUST be tracked in AgilePlus:
+- Reference: /Users/kooshapari/CodeProjects/Phenotype/repos/AgilePlus
+- CLI: `cd /Users/kooshapari/CodeProjects/Phenotype/repos/AgilePlus && agileplus <command>`
 
-**Never treat this shelf as a single project.** Always identify which project
-is being worked on before taking action.
+## Git & Branch Discipline
+- Feature branches: `worktrees/<topic>/`
+- Canonical: `main`
+- Never commit directly to `main`
 
-## Agent Rules
-
-- Use the target project's `README.md` and `CLAUDE.md` as the primary truth surfaces.
-- Run commands from inside the project directory, not the shelf root.
-- Treat shelf-level docs as navigation and governance, not implementation guidance.
-- Do not overwrite project-specific instructions with shelf defaults.
-
-## Project Navigation
-
-1. If the user names a project, use it.
-2. If a path mentions a project directory, use that project.
-3. If you are unsure, inspect the shelf root and choose the smallest relevant project.
-4. Verify with `pwd` after `cd` into the project.
-
-## Work Boundaries
-
-- Shelf-level work: navigation, governance, cross-project audits, and repo organization.
-- Project-level work: code changes, tests, docs, and project-specific workflows.
-- Use the project's own `AGENTS.md` or `CLAUDE.md` if present.
-
-## Quick Reference
-
-- Find projects: use `README.md`.
-- Shelf governance: use `GOVERNANCE.md`.
-- Project docs: use the target project directory.
-- Avoid assuming old shelf catalogs exist.
+## References
+- Parent workspace: /Users/kooshapari/CodeProjects/Phenotype/repos/CLAUDE.md
