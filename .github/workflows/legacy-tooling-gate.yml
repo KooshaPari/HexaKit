@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   legacy-tooling-scan:
-    uses: KooshaPari/phenoShared/.github/workflows/legacy-tooling-gate.yml@main
+    uses: KooshaPari/phenoShared/.github/workflows/legacy-tooling-gate.yml@d95bb6755390f73c56ea496b246d098fbf97bbe9
     permissions:
       contents: read
       security-events: write
