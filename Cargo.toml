@@ -106,3 +106,9 @@ tower-http = { version = "0.5", features = ["trace"] }
 tracing-actix-web = "4"
 tracing-opentelemetry = "0.24"
 
+
+[package]
+name = "hexakit"
+version = "0.1.0"
+edition = "2021"
+publish = false
