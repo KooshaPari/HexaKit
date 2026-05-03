@@ -131,7 +131,7 @@ jobs:
       - name: Semver compatibility check
         run: cd rust && cargo semver-checks check-release || true
       - name: Typo check
-        uses: crate-ci/typos@v1
+        uses: crate-ci/typos@bbaefadf97b0ec5fdc942684b647f1a6ab250274
 
   # ─── Rust Coverage ────────────────────────────────────────────────
   rust-coverage:
@@ -152,7 +152,7 @@ jobs:
       - name: Generate coverage
         run: cargo tarpaulin --workspace --out xml --output-dir coverage
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238
         with:
           files: ./coverage/cobertura.xml
           flags: rust
@@ -287,7 +287,7 @@ jobs:
       - name: TOML format check
         run: taplo format --check Cargo.toml rust/Cargo.toml python/pyproject.toml
       - name: actionlint
-        uses: reviewdog/action-actionlint@v1
+        uses: reviewdog/action-actionlint@6fb7acc99f4a1008869fa8a0f09cfca740837d9d
 
   # ─── Commit Lint ───────────────────────────────────────────────────
   commit-lint:
