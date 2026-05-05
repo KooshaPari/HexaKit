@@ -87,7 +87,7 @@ jobs:
 
       - name: Upload SARIF to GitHub Code Scanning
         if: always() && hashFiles('snyk.sarif') != ''
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@0daab03d71ff584ef619d027a3fd9146679c5d84
         with:
           sarif_file: snyk.sarif
           category: snyk-security-scan
@@ -166,7 +166,7 @@ jobs:
 
       - name: Create fix PR
         if: steps.check_changes.outputs.changes == 'true'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676
         with:
           commit-message: 'chore(security): apply Snyk vulnerability fixes'
           title: 'chore(security): apply Snyk vulnerability fixes'

@@ -9,7 +9,42 @@ description = "Phenotype Infrastructure Kit"
 
 [workspace]
 resolver = "2"
-members = ["crates/phenotype-test-infra"]
+members = [
+  "crates/phenotype-async-traits",
+  "crates/phenotype-cache-adapter",
+  "crates/phenotype-contract",
+  "crates/phenotype-contracts",
+  "crates/phenotype-cost-core",
+  "crates/phenotype-crypto",
+  "crates/phenotype-error-core",
+  "crates/phenotype-error-macros",
+  "crates/phenotype-errors",
+  "crates/phenotype-event-sourcing",
+  "crates/phenotype-git-core",
+  "crates/phenotype-health",
+  "crates/phenotype-http-client-core",
+  "crates/phenotype-iter",
+  "crates/phenotype-logging",
+  "crates/phenotype-macros",
+  "crates/phenotype-mcp",
+  "crates/phenotype-policy-engine",
+  "crates/phenotype-port-traits",
+  "crates/phenotype-ports-canonical",
+  "crates/phenotype-process",
+  "crates/phenotype-retry",
+  "crates/phenotype-shared-config",
+  "crates/phenotype-state-machine",
+  "crates/phenotype-string",
+  "crates/phenotype-telemetry",
+  "crates/phenotype-test-infra",
+  "crates/phenotype-time",
+  "crates/phenotype-validation",
+  "crates/phenotype-casbin-wrapper",
+  "crates/phenotype-rate-limit",
+  "forgecode-fork",
+  "libs/nexus",
+  "libs/phenotype-config-core",
+]
 [workspace.dependencies]
 # Core
 serde = { version = "1", features = ["derive"] }
@@ -106,3 +141,15 @@ tower-http = { version = "0.5", features = ["trace"] }
 tracing-actix-web = "4"
 tracing-opentelemetry = "0.24"
 
+
+[package]
+name = "hexakit"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+sha2 = { workspace = true }
+blake3 = { workspace = true }
+hex = { workspace = true }
+thiserror = { workspace = true }
