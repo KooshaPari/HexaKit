@@ -1,12 +1,12 @@
-name: VitePress Pages
-
 on:
   push:
-    branches: [main]
-    paths:
-      - "docs/**"
-      - ".github/workflows/deploy.yml"
-  workflow_dispatch:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+name: VitePress Pages
+
+
 
 permissions:
   contents: read

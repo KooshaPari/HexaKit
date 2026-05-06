@@ -1,12 +1,12 @@
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
 name: Audit Workspace
 
-on:
-  workflow_call:
-    inputs:
-      repos_dir:
-        required: true
-        type: string
-        description: 'Directory containing repos to audit'
+
 
 permissions:
   contents: read

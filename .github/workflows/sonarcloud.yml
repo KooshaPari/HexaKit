@@ -1,13 +1,16 @@
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
 name: SonarCloud
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 
-on:
-  push:
-    branches:
-      - main
+
 
 permissions:
   contents: read

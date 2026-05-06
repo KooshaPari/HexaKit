@@ -1,12 +1,12 @@
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
 name: Generate Changelog
 
-on:
-  workflow_call:
-    inputs:
-      version:
-        required: true
-        type: string
-        description: 'Version for changelog entry'
+
 
 permissions:
   contents: read

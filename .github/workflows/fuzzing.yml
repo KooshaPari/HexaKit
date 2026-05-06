@@ -1,16 +1,16 @@
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
 name: Fuzzing
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 
-on:
-  push:
-    paths:
-      - '**.rs'
-      - '**.go'
-  schedule:
-    - cron: '0 0 * * *'
+
 
 permissions:
   contents: read

@@ -1,16 +1,16 @@
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
 name: Workflow Sync to Repos
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 
-on:
-  push:
-    paths:
-      - '.github/workflows/*.yml'
-    branches:
-      - main
-  workflow_dispatch:
+
 
 permissions:
   contents: read

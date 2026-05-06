@@ -1,17 +1,16 @@
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
 name: IaC Scanning
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 
-on:
-  push:
-    paths:
-      - '**.tf'
-      - '**.yaml'
-      - '**.json'
-  schedule:
-    - cron: '0 0 * * *'
+
 
 permissions:
   contents: read

@@ -1,38 +1,12 @@
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
 name: Security Scan
 
-on:
-  workflow_call:
-    inputs:
-      workspace:
-        description: 'Cargo workspace path'
-        required: false
-        default: '.'
-        type: string
-      cargo-audit:
-        description: 'Run cargo-audit'
-        required: false
-        default: true
-        type: boolean
-      cargo-deny:
-        description: 'Run cargo-deny'
-        required: false
-        default: true
-        type: boolean
-      gitleaks:
-        description: 'Run gitleaks'
-        required: false
-        default: true
-        type: boolean
-      python-bandit:
-        description: 'Run bandit (Python)'
-        required: false
-        default: false
-        type: boolean
-      bandit-path:
-        description: 'Path for bandit scan'
-        required: false
-        default: '.'
-        type: string
+
 
 jobs:
   security:

@@ -1,9 +1,12 @@
-name: Sync Canary
-
 on:
   push:
-    branches: [main]
-  workflow_dispatch:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+name: Sync Canary
+
+
 
 permissions:
   contents: write

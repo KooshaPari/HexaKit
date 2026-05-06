@@ -1,32 +1,12 @@
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
 name: Publish Package
 
-on:
-  workflow_call:
-    inputs:
-      language:
-        required: true
-        type: string
-        description: 'Programming language (npm, pypi, crates.io)'
-      registry:
-        required: true
-        type: string
-        description: 'Package registry'
-      version:
-        required: true
-        type: string
-        description: 'Package version to publish'
-      dry_run:
-        required: false
-        type: boolean
-        default: false
-        description: 'Run without publishing'
-    secrets:
-      NPM_TOKEN:
-        required: false
-      PYPI_TOKEN:
-        required: false
-      CARGO_TOKEN:
-        required: false
+
 
 permissions:
   contents: read
