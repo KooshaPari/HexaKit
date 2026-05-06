@@ -22,6 +22,10 @@ permissions:
   contents: read
 
 name: Journey Gate
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 
 on:
   push:
