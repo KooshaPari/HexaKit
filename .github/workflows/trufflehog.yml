@@ -1,4 +1,8 @@
 name: TruffleHog Secrets Scan
+
+permissions:
+  contents: read
+
 on:
   push:
     branches: ["**"]

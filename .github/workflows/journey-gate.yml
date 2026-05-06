@@ -18,6 +18,9 @@
 #   - PASSES only when all manifests pass validation AND all assertions pass.
 # =============================================================================
 
+permissions:
+  contents: read
+
 name: Journey Gate
 
 on:

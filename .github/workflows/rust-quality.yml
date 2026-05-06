@@ -29,6 +29,9 @@ on:
         default: 'cargo test --workspace'
         type: string
 
+permissions:
+  contents: read
+
 jobs:
   quality:
     name: Quality Checks
