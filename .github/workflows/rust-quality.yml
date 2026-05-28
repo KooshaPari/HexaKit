@@ -26,6 +26,10 @@ on:
         type: string
         default: 'cargo test --workspace'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 name: Rust Quality Gate
 
 

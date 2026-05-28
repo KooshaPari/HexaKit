@@ -3,6 +3,27 @@ on:
     branches: [main, master, develop]
   pull_request:
     branches: [main, master, develop]
+  workflow_call:
+    inputs:
+      language:
+        required: true
+        type: string
+      to_channel:
+        required: true
+        type: string
+      risk_profile:
+        required: true
+        type: string
+      registry:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 name: Promote Package
 

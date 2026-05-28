@@ -26,6 +26,10 @@ on:
       CARGO_TOKEN:
         required: false
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 name: Publish Package
 
 
