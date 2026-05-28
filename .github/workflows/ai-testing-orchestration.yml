@@ -18,7 +18,7 @@ permissions:
 jobs:
   orchestration:
     name: Test Orchestration
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
@@ -27,7 +27,7 @@ jobs:
 
   nanovms:
     name: NanoVMS Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: nanovms
@@ -51,7 +51,7 @@ jobs:
 
   agileplus:
     name: AgilePlus Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: AgilePlus
@@ -74,7 +74,7 @@ jobs:
 
   thegent:
     name: thegent Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: thegent
@@ -102,7 +102,7 @@ jobs:
 
   aggregate-results:
     name: Aggregate Results
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [nanovms, agileplus, thegent]
     if: always()
     steps:

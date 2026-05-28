@@ -15,7 +15,7 @@ permissions:
   contents: read
 jobs:
   gate-check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       LANGUAGE: ${{ inputs.language }}
       CHANNEL: ${{ inputs.channel }}

@@ -22,18 +22,18 @@ jobs:
   # ─── Build Release Binaries ───────────────────────────────────────────
   build-release:
     name: Build Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         include:
           - target: x86_64-unknown-linux-gnu
-            os: ubuntu-latest
+            os: ubuntu-24.04
             use_cross: false
           - target: x86_64-apple-darwin
-            os: ubuntu-latest
+            os: ubuntu-24.04
             use_cross: true
           - target: aarch64-apple-darwin
-            os: ubuntu-latest
+            os: ubuntu-24.04
             use_cross: true
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -55,7 +55,7 @@ jobs:
           fi
       - name: Strip binary
         run: |
-          if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+          if [ "${{ matrix.os }}" = "ubuntu-24.04" ]; then
             strip target/${{ matrix.target }}/release/agileplus || true
           fi
       - name: Upload artifact
@@ -68,7 +68,7 @@ jobs:
   # ─── CycloneDX SBOMs (attached to GitHub Release with binaries) ───────
   cyclonedx-sboms:
     name: CycloneDX SBOMs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
@@ -93,7 +93,7 @@ jobs:
   # ─── Syft SPDX (complements CycloneDX per-crate JSON) ─────────────────
   syft-spdx:
     name: Syft SPDX (workspace)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
@@ -126,7 +126,7 @@ jobs:
   # ─── Create GitHub Release ────────────────────────────────────────────
   create-release:
     name: Create GitHub Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - build-release
       - cyclonedx-sboms
