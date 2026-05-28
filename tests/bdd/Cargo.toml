@@ -1,9 +1,9 @@
 [package]
 name = "agileplus-bdd"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
-rust-version.workspace = true
+version = "0.2.0"
+edition = "2021"
+license = "MIT"
+rust-version = "1.75"
 
 [[test]]
 name = "bdd"
@@ -16,12 +16,12 @@ harness = true
 path = "fixtures_test.rs"
 
 [dependencies]
-agileplus-domain = { path = "../../crates/agileplus-domain" }
+agileplus-domain = { path = "../../agileplus/crates/agileplus-domain" }
 cucumber = "0.21"
-tokio.workspace = true
-chrono.workspace = true
-sha2.workspace = true
-serde.workspace = true
-serde_json.workspace = true
+tokio = { version = "1", features = ["full"] }
+chrono = { version = "0.4", features = ["serde"] }
+sha2 = "0.10"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 futures = "0.3"
 tempfile = "3"
