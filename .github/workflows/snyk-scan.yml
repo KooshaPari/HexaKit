@@ -42,6 +42,8 @@ jobs:
   snyk-test:
     name: Snyk Vulnerability Test
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     strategy:
       fail-fast: false
       matrix:
@@ -61,7 +63,7 @@ jobs:
 
       - name: Install Snyk CLI
         if: env.SNYK_TOKEN != ''
-        run: npm ci -g snyk
+        run: npm install -g snyk
 
       - name: Authenticate with Snyk
         if: env.SNYK_TOKEN != ''
@@ -143,7 +145,7 @@ jobs:
 
       - name: Install Snyk CLI
         if: env.SNYK_TOKEN != ''
-        run: npm ci -g snyk
+        run: npm install -g snyk
 
       - name: Authenticate with Snyk
         if: env.SNYK_TOKEN != ''
@@ -208,7 +210,7 @@ jobs:
       - name: Run Snyk monitor
         if: env.SNYK_TOKEN != ''
         run: |
-          npm ci -g snyk
+          npm install -g snyk
           snyk config set api="$SNYK_TOKEN"
           snyk monitor \
             --all-projects \

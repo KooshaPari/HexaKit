@@ -3,6 +3,32 @@ on:
     branches: [main, master, develop]
   pull_request:
     branches: [main, master, develop]
+  workflow_call:
+    inputs:
+      workspace:
+        required: false
+        type: string
+        default: '.'
+      cargo-audit:
+        required: false
+        type: boolean
+        default: true
+      cargo-deny:
+        required: false
+        type: boolean
+        default: true
+      gitleaks:
+        required: false
+        type: boolean
+        default: true
+      python-bandit:
+        required: false
+        type: boolean
+        default: false
+      bandit-path:
+        required: false
+        type: string
+        default: '.'
 
 name: Security Scan
 

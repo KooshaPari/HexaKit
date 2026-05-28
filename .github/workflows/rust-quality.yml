@@ -3,6 +3,28 @@ on:
     branches: [main, master, develop]
   pull_request:
     branches: [main, master, develop]
+  workflow_call:
+    inputs:
+      rust-version:
+        required: false
+        type: string
+        default: 'stable'
+      workspace:
+        required: false
+        type: string
+        default: '.'
+      setup-protoc:
+        required: false
+        type: boolean
+        default: false
+      coverage-threshold:
+        required: false
+        type: number
+        default: 0
+      test-command:
+        required: false
+        type: string
+        default: 'cargo test --workspace'
 
 name: Rust Quality Gate
 

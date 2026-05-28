@@ -3,6 +3,28 @@ on:
     branches: [main, master, develop]
   pull_request:
     branches: [main, master, develop]
+  workflow_call:
+    inputs:
+      language:
+        required: true
+        type: string
+      registry:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+      dry_run:
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      NPM_TOKEN:
+        required: false
+      PYPI_TOKEN:
+        required: false
+      CARGO_TOKEN:
+        required: false
 
 name: Publish Package
 

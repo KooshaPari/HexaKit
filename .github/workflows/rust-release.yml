@@ -3,6 +3,27 @@ on:
     branches: [main, master, develop]
   pull_request:
     branches: [main, master, develop]
+  workflow_call:
+    inputs:
+      binary-name:
+        required: true
+        type: string
+      rust-version:
+        required: false
+        type: string
+        default: 'stable'
+      workspace:
+        required: false
+        type: string
+        default: '.'
+      setup-protoc:
+        required: false
+        type: boolean
+        default: false
+      strip-binary:
+        required: false
+        type: boolean
+        default: true
 
 name: Rust Release Build
 
