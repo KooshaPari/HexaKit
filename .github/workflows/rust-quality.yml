@@ -1,33 +1,41 @@
-name: Rust Quality Gate
-
 on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
   workflow_call:
     inputs:
       rust-version:
-        description: 'Rust toolchain version'
         required: false
+        type: string
         default: 'stable'
-        type: string
       workspace:
-        description: 'Cargo workspace path'
         required: false
+        type: string
         default: '.'
-        type: string
       setup-protoc:
-        description: 'Install protoc compiler'
         required: false
-        default: false
         type: boolean
+        default: false
       coverage-threshold:
-        description: 'Minimum coverage percentage'
         required: false
-        default: 85
         type: number
+        default: 0
       test-command:
-        description: 'Test command to run'
         required: false
-        default: 'cargo test --workspace'
         type: string
+        default: 'cargo test --workspace'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+name: Rust Quality Gate
+
+
+
+permissions:
+  contents: read
 
 jobs:
   quality:

@@ -1,20 +1,27 @@
-name: Gate Check
-
 on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
   workflow_call:
     inputs:
       language:
         required: true
         type: string
-        description: 'Programming language'
       channel:
         required: true
         type: string
-        description: 'Release channel (alpha, beta, stable)'
       risk_profile:
         required: true
         type: string
-        description: 'Risk profile (low, medium, high)'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+name: Gate Check
+
+
 
 permissions:
   contents: read

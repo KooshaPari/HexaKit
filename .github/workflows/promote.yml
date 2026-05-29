@@ -1,39 +1,33 @@
-name: Promote Package
-
 on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
   workflow_call:
     inputs:
       language:
         required: true
         type: string
-        description: 'Programming language'
-      registry:
-        required: true
-        type: string
-        description: 'Package registry'
-      from_channel:
-        required: true
-        type: string
-        description: 'Source release channel'
       to_channel:
         required: true
         type: string
-        description: 'Target release channel'
       risk_profile:
         required: true
         type: string
-        description: 'Risk profile (low, medium, high)'
+      registry:
+        required: true
+        type: string
       version:
         required: true
         type: string
-        description: 'Package version to promote'
-    secrets:
-      NPM_TOKEN:
-        required: false
-      PYPI_TOKEN:
-        required: false
-      CARGO_TOKEN:
-        required: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+name: Promote Package
+
+
 
 permissions:
   contents: read

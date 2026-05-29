@@ -1,25 +1,23 @@
-name: Publish Package
-
 on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
   workflow_call:
     inputs:
       language:
         required: true
         type: string
-        description: 'Programming language (npm, pypi, crates.io)'
       registry:
         required: true
         type: string
-        description: 'Package registry'
       version:
         required: true
         type: string
-        description: 'Package version to publish'
       dry_run:
         required: false
         type: boolean
         default: false
-        description: 'Run without publishing'
     secrets:
       NPM_TOKEN:
         required: false
@@ -27,6 +25,17 @@ on:
         required: false
       CARGO_TOKEN:
         required: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+name: Publish Package
+
+
+
+permissions:
+  contents: read
 
 jobs:
   publish:

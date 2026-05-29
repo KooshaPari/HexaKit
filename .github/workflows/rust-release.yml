@@ -1,37 +1,37 @@
-name: Rust Release Build
-
 on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
   workflow_call:
     inputs:
       binary-name:
-        description: 'Name of the binary to build'
         required: true
         type: string
       rust-version:
-        description: 'Rust toolchain version'
         required: false
+        type: string
         default: 'stable'
-        type: string
-      targets:
-        description: 'JSON array of target triples'
-        required: false
-        default: '["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu", "x86_64-apple-darwin", "aarch64-apple-darwin"]'
-        type: string
       workspace:
-        description: 'Cargo workspace path'
         required: false
-        default: '.'
         type: string
+        default: '.'
       setup-protoc:
-        description: 'Install protoc compiler'
         required: false
+        type: boolean
         default: false
-        type: boolean
       strip-binary:
-        description: 'Strip debug symbols'
         required: false
-        default: true
         type: boolean
+        default: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+name: Rust Release Build
+
+
 
 jobs:
   build:
@@ -74,7 +74,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Download all artifacts
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c

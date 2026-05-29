@@ -1,12 +1,16 @@
-name: Fuzzing
-
 on:
   push:
-    paths:
-      - '**.rs'
-      - '**.go'
-  schedule:
-    - cron: '0 0 * * *'
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+name: Fuzzing
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
+
 
 permissions:
   contents: read
@@ -15,7 +19,7 @@ jobs:
   cargo-fuzz:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - name: Install Rust
         uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8
       - name: Install cargo-fuzz

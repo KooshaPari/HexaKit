@@ -1,38 +1,42 @@
-name: Security Scan
-
 on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
   workflow_call:
     inputs:
       workspace:
-        description: 'Cargo workspace path'
         required: false
-        default: '.'
         type: string
+        default: '.'
       cargo-audit:
-        description: 'Run cargo-audit'
         required: false
-        default: true
         type: boolean
+        default: true
       cargo-deny:
-        description: 'Run cargo-deny'
         required: false
-        default: true
         type: boolean
+        default: true
       gitleaks:
-        description: 'Run gitleaks'
         required: false
+        type: boolean
         default: true
-        type: boolean
       python-bandit:
-        description: 'Run bandit (Python)'
         required: false
-        default: false
         type: boolean
+        default: false
       bandit-path:
-        description: 'Path for bandit scan'
         required: false
-        default: '.'
         type: string
+        default: '.'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+name: Security Scan
+
+
 
 jobs:
   security:
@@ -68,7 +72,7 @@ jobs:
       matrix:
         language: [cpp, python, ruby]
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - uses: github/codeql-action/init@0daab03d71ff584ef619d027a3fd9146679c5d84
         with:
           languages: ${{ matrix.language }}
