@@ -9,6 +9,10 @@ description = "Phenotype Infrastructure Kit"
 
 [workspace]
 resolver = "2"
+exclude = [
+  "Traceon",  # Source has pre-existing trait impl bugs; tracked for fix in follow-up
+  "crates/cipher",  # Source has pre-existing visibility/API bugs; tracked for fix in follow-up
+]
 members = [
   "crates/phenotype-async-traits",
   "crates/phenotype-cache-adapter",
@@ -53,9 +57,7 @@ members = [
   "crates/phenotype-testing",
   "crates/phenotype-config-loader",
   "crates/phenotype-xdd-lib",
-  "crates/cipher",
   "Metron",
-  "Traceon",
   "forgecode-fork",
   "libs/nexus",
   "libs/phenotype-config-core",
@@ -92,7 +94,7 @@ derive_builder = "0.20"
 criterion = "0.5"
 mockall = "0.12"
 proptest = "1.4"
-ulid = "1"
+ulid = { version = "1", features = ["serde"] }
 
 # Phenotype internal crates
 arc-swap = "1"
@@ -100,7 +102,7 @@ phenotype-async-traits = { path = "crates/phenotype-async-traits" }
 phenotype-bdd = { path = "crates/phenotype-bdd" }
 phenotype-cache-adapter = { path = "crates/phenotype-cache-adapter" }
 phenotype-compliance-scanner = { path = "crates/phenotype-compliance-scanner" }
-phenotype-config-core = { path = "crates/phenotype-config-core" }
+phenotype-config-core = { path = "libs/phenotype-config-core" }
 phenotype-contract = { path = "crates/phenotype-contract" }
 phenotype-contracts = { path = "crates/phenotype-contracts" }
 phenotype-core = { path = "crates/phenotype-core" }

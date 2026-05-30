@@ -13,6 +13,7 @@ thiserror = { workspace = true }
 serde = { workspace = true }
 tokio = { workspace = true }
 async-trait = { workspace = true }
+dashmap = { workspace = true }
 
 [dev-dependencies]
-tokio = { workspace = true, features = ["full"] }
+tokio = { workspace = true }

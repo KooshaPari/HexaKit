@@ -13,6 +13,9 @@ thiserror = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 chrono = { workspace = true }
+rand = { workspace = true }
+proptest = { workspace = true }
+serde_yaml_ng = "0.9"
 
 [dev-dependencies]
-tokio = { workspace = true, features = ["full"] }
+tokio = { workspace = true }

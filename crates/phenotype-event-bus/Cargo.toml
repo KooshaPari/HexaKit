@@ -14,6 +14,8 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 async-trait = { workspace = true }
 tokio = { workspace = true }
+ulid = { workspace = true, features = ["serde"] }
+dashmap = { workspace = true }
 phenotype-error-core = { workspace = true }
 
 [dev-dependencies]

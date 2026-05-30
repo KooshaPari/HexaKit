@@ -12,6 +12,7 @@ parking_lot = { workspace = true }
 chrono = { workspace = true }
 tokio = { workspace = true }
 hyper = { workspace = true }
+hyper-util = { workspace = true }
 http-body-util = { workspace = true }
 bytes = "1.0"
 
