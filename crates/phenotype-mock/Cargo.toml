@@ -1,0 +1,17 @@
+[package]
+name = "phenotype-mock"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Mock trait generators and test doubles for the Phenotype ecosystem"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+mockall = { workspace = true }
+serde = { workspace = true }
+tokio = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["full"] }

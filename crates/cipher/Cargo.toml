@@ -1,0 +1,20 @@
+[package]
+name = "phenotype-cipher"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Simple, safe cryptography (encryption, hashing, signatures) for Phenotype"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+thiserror = { workspace = true }
+sha2 = { workspace = true }
+blake3 = { workspace = true }
+hex = { workspace = true }
+rand = { workspace = true }
+zstd = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
