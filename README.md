@@ -108,3 +108,23 @@ their correct locations:
 - Project-specific issues: `cd <project>` and check that project's docs
 - Architecture decisions: `cat docs/adr/INDEX.md` or inspect `docs/`
 - General questions: Check this `README.md` and the target project's `README.md` first
+
+---
+
+## Rich Media Stubs
+
+<!-- RICH-MEDIA-STUB type="annotated-screenshot" subject="HexaKit quickstart — scaffold a new project from template" journey="" status="TODO" -->
+> **[RICH MEDIA PLACEHOLDER]** *Annotated screenshot of the terminal after running the HexaKit scaffold command.*
+<!-- END-RICH-MEDIA-STUB -->
+
+<!-- RICH-MEDIA-STUB type="recording-gif" subject="Template browser — browsing and selecting a scaffold template" journey="" status="TODO" -->
+> **[RICH MEDIA PLACEHOLDER]** *GIF of browsing available templates and scaffolding a new project.*
+<!-- END-RICH-MEDIA-STUB -->
+
+<!-- RICH-MEDIA-STUB type="recording-mp4" subject="Template authoring — creating a new HexaKit template" journey="" status="TODO" -->
+> **[RICH MEDIA PLACEHOLDER]** *Video of authoring a new template and publishing it to the HexaKit registry.*
+<!-- END-RICH-MEDIA-STUB -->
+
+<!-- RICH-MEDIA-STUB type="annotated-screenshot" subject="HexaKit architecture — template registry + scaffold engine diagram" journey="" status="TODO" -->
+> **[RICH MEDIA PLACEHOLDER]** *Annotated component diagram of HexaKit scaffold engine and template registry.*
+<!-- END-RICH-MEDIA-STUB -->
