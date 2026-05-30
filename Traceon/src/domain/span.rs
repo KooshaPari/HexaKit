@@ -1,10 +1,9 @@
 //! Span - Domain Entity
 
+use std::sync::Mutex;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-
-use super::SpanStatus;
 
 /// Span ID
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -33,7 +32,7 @@ pub enum SpanKind {
 }
 
 /// Span status
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum SpanStatus {
     Unset,
     Ok,
@@ -154,6 +153,39 @@ pub struct SpanContext {
     pub trace_id: Uuid,
     pub span_id: Uuid,
     pub sampled: bool,
+}
+
+/// Thread-safe active span that implements SpanHandle via interior mutability.
+pub struct ActiveSpan(pub Mutex<Span>);
+
+impl ActiveSpan {
+    pub fn new(span: Span) -> Self {
+        Self(Mutex::new(span))
+    }
+
+    pub fn into_inner(self) -> Span {
+        self.0.into_inner().expect("mutex poisoned")
+    }
+}
+
+impl super::SpanHandle for ActiveSpan {
+    fn set_attribute(&self, key: String, value: super::AttributeValue) {
+        if let Ok(mut s) = self.0.lock() {
+            s.set_attribute(key, value);
+        }
+    }
+
+    fn add_event(&self, name: String) {
+        if let Ok(mut s) = self.0.lock() {
+            s.add_event(name);
+        }
+    }
+
+    fn end(&self) {
+        if let Ok(mut s) = self.0.lock() {
+            s.end();
+        }
+    }
 }
 
 #[cfg(test)]

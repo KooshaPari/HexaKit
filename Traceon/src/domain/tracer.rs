@@ -1,9 +1,8 @@
 //! Tracer Trait - Port Interface
 
 use async_trait::async_trait;
-use uuid::Uuid;
 
-use super::{Span, SpanKind, SpanContext, TraceId};
+use super::{SpanKind, SpanContext};
 
 /// Tracer trait - primary port
 #[async_trait]

@@ -10,10 +10,10 @@ description = "Phenotype Infrastructure Kit"
 [workspace]
 resolver = "2"
 exclude = [
-  "Traceon",  # Source has pre-existing trait impl bugs; tracked for fix in follow-up
   "crates/cipher",  # Source has pre-existing visibility/API bugs; tracked for fix in follow-up
 ]
 members = [
+  "Traceon",
   "crates/phenotype-async-traits",
   "crates/phenotype-cache-adapter",
   "crates/phenotype-contract",
