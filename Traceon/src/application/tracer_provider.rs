@@ -5,8 +5,6 @@ use async_trait::async_trait;
 
 use crate::domain::*;
 
-pub type TraceResult<T> = Result<T, TraceError>;
-
 pub struct TracerProviderBuilder {
     name: String,
     version: Option<String>,
@@ -81,18 +79,15 @@ pub struct TracerInstance<'a> {
 
 impl<'a> Tracer for TracerInstance<'a> {
     fn span(&self, name: &str) -> Box<dyn SpanHandle> {
-        let span = Span::new(name, uuid::Uuid::new_v4());
-        Box::new(span) as Box<dyn SpanHandle>
+        Box::new(ActiveSpan::new(Span::new(name, uuid::Uuid::new_v4())))
     }
 
     fn span_with_parent(&self, name: &str, parent: &SpanContext) -> Box<dyn SpanHandle> {
-        let span = Span::new(name, parent.trace_id);
-        Box::new(span) as Box<dyn SpanHandle>
+        Box::new(ActiveSpan::new(Span::new(name, parent.trace_id)))
     }
 
     fn span_with_kind(&self, name: &str, kind: SpanKind) -> Box<dyn SpanHandle> {
-        let span = Span::new(name, uuid::Uuid::new_v4()).with_kind(kind);
-        Box::new(span) as Box<dyn SpanHandle>
+        Box::new(ActiveSpan::new(Span::new(name, uuid::Uuid::new_v4()).with_kind(kind)))
     }
 
     fn name(&self) -> &str {
