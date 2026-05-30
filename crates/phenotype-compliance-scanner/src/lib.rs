@@ -2,6 +2,7 @@
 //!
 //! Provides compliance scanning functionality for security and policy enforcement.
 
+use regex::Regex;
 use thiserror::Error;
 
 /// Result type for compliance operations
@@ -52,6 +53,152 @@ impl std::fmt::Display for Severity {
 /// Scanner for compliance checks
 pub struct Scanner {
     rules: Vec<Box<dyn ComplianceRule>>,
+}
+
+/// KodeVibe rule category configuration.
+#[derive(Debug, Clone)]
+pub struct KodeVibeCategoryConfig {
+    pub enabled: bool,
+    pub level: String,
+    pub max_function_length: Option<u32>,
+    pub max_nesting_depth: Option<u32>,
+    pub max_bundle_size: Option<String>,
+    pub min_commit_message_length: Option<u32>,
+    pub check_vulnerabilities: Option<bool>,
+}
+
+impl KodeVibeCategoryConfig {
+    fn new(enabled: bool, level: impl Into<String>) -> Self {
+        Self {
+            enabled,
+            level: level.into(),
+            max_function_length: None,
+            max_nesting_depth: None,
+            max_bundle_size: None,
+            min_commit_message_length: None,
+            check_vulnerabilities: None,
+        }
+    }
+}
+
+/// Full KodeVibe rule-set configuration.
+#[derive(Debug, Clone)]
+pub struct KodeVibeRuleSet {
+    pub security: KodeVibeCategoryConfig,
+    pub code: KodeVibeCategoryConfig,
+    pub performance: KodeVibeCategoryConfig,
+    pub file: KodeVibeCategoryConfig,
+    pub git: KodeVibeCategoryConfig,
+    pub dependency: KodeVibeCategoryConfig,
+    pub documentation: KodeVibeCategoryConfig,
+}
+
+impl Default for KodeVibeRuleSet {
+    fn default() -> Self {
+        Self {
+            security: KodeVibeCategoryConfig::new(true, "strict"),
+            code: KodeVibeCategoryConfig {
+                max_function_length: Some(50),
+                max_nesting_depth: Some(4),
+                ..KodeVibeCategoryConfig::new(true, "moderate")
+            },
+            performance: KodeVibeCategoryConfig {
+                max_bundle_size: Some("2MB".to_string()),
+                ..KodeVibeCategoryConfig::new(true, "moderate")
+            },
+            file: KodeVibeCategoryConfig::new(true, "strict"),
+            git: KodeVibeCategoryConfig {
+                min_commit_message_length: Some(10),
+                ..KodeVibeCategoryConfig::new(true, "moderate")
+            },
+            dependency: KodeVibeCategoryConfig {
+                check_vulnerabilities: Some(true),
+                ..KodeVibeCategoryConfig::new(true, "moderate")
+            },
+            documentation: KodeVibeCategoryConfig::new(false, "moderate"),
+        }
+    }
+}
+
+/// Regex-backed KodeVibe compliance rule.
+pub struct KodeVibeRule {
+    id: String,
+    description: String,
+    message: String,
+    severity: Severity,
+    pattern: Regex,
+}
+
+impl KodeVibeRule {
+    pub fn new(
+        id: impl Into<String>,
+        description: impl Into<String>,
+        message: impl Into<String>,
+        severity: Severity,
+        pattern: impl AsRef<str>,
+    ) -> Result<Self> {
+        Ok(Self {
+            id: id.into(),
+            description: description.into(),
+            message: message.into(),
+            severity,
+            pattern: Regex::new(pattern.as_ref())?,
+        })
+    }
+}
+
+impl ComplianceRule for KodeVibeRule {
+    fn id(&self) -> &str {
+        &self.id
+    }
+
+    fn description(&self) -> &str {
+        &self.description
+    }
+
+    fn check(&self, target: &ScanTarget) -> Result<ComplianceResult> {
+        let content = match target {
+            ScanTarget::Content(content) => content.as_str(),
+            ScanTarget::File(path) | ScanTarget::Directory(path) => path.as_str(),
+        };
+
+        let passed = !self.pattern.is_match(content);
+        Ok(ComplianceResult {
+            rule_id: self.id.clone(),
+            passed,
+            message: if passed {
+                format!("{} passed", self.description)
+            } else {
+                self.message.clone()
+            },
+            severity: self.severity,
+        })
+    }
+}
+
+pub fn default_kodevibe_rules() -> Vec<Box<dyn ComplianceRule>> {
+    vec![
+        Box::new(
+            KodeVibeRule::new(
+                "KODEVIBE-001",
+                "Remove console.log statements before committing",
+                "Remove console.log statements before committing",
+                Severity::Low,
+                r"console\.log\(",
+            )
+            .expect("valid kodevibe console.log rule"),
+        ),
+        Box::new(
+            KodeVibeRule::new(
+                "KODEVIBE-002",
+                "TODO comments should be tracked in issues",
+                "TODO comments should be tracked in issues",
+                Severity::Info,
+                r"(?i)\b(todo|fixme|hack|xxx)\b",
+            )
+            .expect("valid kodevibe todo rule"),
+        ),
+    ]
 }
 
 /// Trait for compliance rules
@@ -133,5 +280,24 @@ mod tests {
 
         assert_eq!(results.len(), 1);
         assert!(results[0].passed);
+    }
+
+    #[test]
+    fn test_kodevibe_console_log_rule_fires() {
+        let rule = default_kodevibe_rules()
+            .into_iter()
+            .find(|rule| rule.id() == "KODEVIBE-001")
+            .expect("console.log rule should exist");
+
+        let result = rule
+            .check(&ScanTarget::Content("console.log('debug');".to_string()))
+            .expect("rule check should succeed");
+
+        assert!(!result.passed);
+        assert_eq!(result.rule_id, "KODEVIBE-001");
+        assert_eq!(
+            result.message,
+            "Remove console.log statements before committing"
+        );
     }
 }

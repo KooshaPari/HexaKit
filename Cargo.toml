@@ -14,6 +14,7 @@ members = [
   "crates/phenotype-cache-adapter",
   "crates/phenotype-contract",
   "crates/phenotype-contracts",
+  "crates/phenotype-compliance-scanner",
   "crates/phenotype-cost-core",
   "crates/phenotype-crypto",
   "crates/phenotype-error-core",

@@ -1383,6 +1383,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "phenotype-compliance-scanner"
+version = "0.2.0"
+dependencies = [
+ "regex",
+ "thiserror 2.0.18",
+]
+
+[[package]]
 name = "phenotype-config-core"
 version = "0.2.0"
 dependencies = [
