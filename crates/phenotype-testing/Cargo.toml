@@ -1,0 +1,26 @@
+[package]
+name = "phenotype-testing"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Testing utilities, builders, and mock ports for the Phenotype ecosystem"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+thiserror = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+tokio = { workspace = true }
+async-trait = { workspace = true }
+mockall = { workspace = true }
+proptest = { workspace = true }
+phenotype-error-core = { workspace = true }
+phenotype-contracts = { workspace = true }
+phenotype-port-traits = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }

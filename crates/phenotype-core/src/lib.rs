@@ -76,7 +76,7 @@ pub mod error {
 
 /// Configuration re-exports
 pub mod config {
-    pub use phenotype_config_core::{ConfigLoader, ConfigSource, Priority};
+    pub use phenotype_config_core::{ConfigLoader};
 }
 
 /// Event bus re-exports

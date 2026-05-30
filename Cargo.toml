@@ -9,6 +9,10 @@ description = "Phenotype Infrastructure Kit"
 
 [workspace]
 resolver = "2"
+exclude = [
+  "Traceon",  # Source has pre-existing trait impl bugs; tracked for fix in follow-up
+  "crates/cipher",  # Source has pre-existing visibility/API bugs; tracked for fix in follow-up
+]
 members = [
   "crates/phenotype-async-traits",
   "crates/phenotype-cache-adapter",
@@ -42,6 +46,18 @@ members = [
   "crates/phenotype-validation",
   "crates/phenotype-casbin-wrapper",
   "crates/phenotype-rate-limit",
+  "crates/phenotype-bdd",
+  "crates/phenotype-core",
+  "crates/phenotype-event-bus",
+  "crates/phenotype-infrastructure",
+  "crates/phenotype-mock",
+  "crates/phenotype-project-registry",
+  "crates/phenotype-security-aggregator",
+  "crates/phenotype-test-fixtures",
+  "crates/phenotype-testing",
+  "crates/phenotype-config-loader",
+  "crates/phenotype-xdd-lib",
+  "Metron",
   "forgecode-fork",
   "libs/nexus",
   "libs/phenotype-config-core",
@@ -78,7 +94,7 @@ derive_builder = "0.20"
 criterion = "0.5"
 mockall = "0.12"
 proptest = "1.4"
-ulid = "1"
+ulid = { version = "1", features = ["serde"] }
 
 # Phenotype internal crates
 arc-swap = "1"
@@ -86,7 +102,7 @@ phenotype-async-traits = { path = "crates/phenotype-async-traits" }
 phenotype-bdd = { path = "crates/phenotype-bdd" }
 phenotype-cache-adapter = { path = "crates/phenotype-cache-adapter" }
 phenotype-compliance-scanner = { path = "crates/phenotype-compliance-scanner" }
-phenotype-config-core = { path = "crates/phenotype-config-core" }
+phenotype-config-core = { path = "libs/phenotype-config-core" }
 phenotype-contract = { path = "crates/phenotype-contract" }
 phenotype-contracts = { path = "crates/phenotype-contracts" }
 phenotype-core = { path = "crates/phenotype-core" }
@@ -122,6 +138,7 @@ phenotype-test-infra = { path = "crates/phenotype-test-infra" }
 phenotype-testing = { path = "crates/phenotype-testing" }
 phenotype-time = { path = "crates/phenotype-time" }
 phenotype-validation = { path = "crates/phenotype-validation" }
+phenotype-cipher = { path = "crates/cipher" }
 
 # External utilities
 axum = "0.7"
@@ -130,7 +147,9 @@ clap = { version = "4", features = ["derive"] }
 figment = "0.10"
 futures-util = "0.3"
 http-body-util = "0.1"
-hyper = "1"
+hyper = { version = "1", features = ["full"] }
+hyper-util = { version = "0.1", features = ["full"] }
+bytes = "1.0"
 opentelemetry = { version = "0.24", features = ["trace"] }
 opentelemetry_sdk = { version = "0.24", features = ["trace"] }
 reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
