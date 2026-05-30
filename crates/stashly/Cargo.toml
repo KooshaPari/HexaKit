@@ -1,46 +1,46 @@
 [package]
 name = "stashly"
-version = "0.2.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 authors = ["Phenotype Team"]
-description = "Universal caching abstraction with TTL, multi-tier, and singleflight support — absorbs thegent-cache"
-license = "MIT OR Apache-2.0"
+description = "Universal caching abstraction with TTL, multi-tier, and singleflight support"
+license.workspace = true
 repository = "https://github.com/KooshaPari/Stashly"
 documentation = "https://docs.rs/stashly"
 keywords = ["cache", "caching", "memory", "redis", "ttl", "tiered", "singleflight"]
 categories = ["caching", "data-structures"]
-rust-version = "1.75"
+rust-version.workspace = true
 
 [dependencies]
 # Async runtime
-tokio = { version = "1", features = ["full"] }
-async-trait = "0.1"
+tokio = { workspace = true }
+async-trait = { workspace = true }
 
 # Serialization
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+serde = { workspace = true }
+serde_json = { workspace = true }
 
 # Time
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { workspace = true }
 
 # Error handling
-thiserror = "2.0"
-anyhow = "1.0"
+thiserror = { workspace = true }
+anyhow = { workspace = true }
 
 # Logging
-tracing = "0.1"
+tracing = { workspace = true }
 
-# Caching
+# Caching — pinned standalone (workspace has older lru/dashmap; tracked for upgrade)
 lru = "0.17"
 dashmap = "6.1"
-parking_lot = "0.12"
+parking_lot = { workspace = true }
 
 # HashMap for hashing
 hashlink = "0.11"
 
 [dev-dependencies]
-tokio-test = "0.4"
-tempfile = "3"
+tokio-test = { workspace = true }
+tempfile = { workspace = true }
 
 [profile.release]
 lto = true

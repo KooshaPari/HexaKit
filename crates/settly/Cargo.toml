@@ -1,48 +1,48 @@
 [package]
 name = "settly"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 authors = ["Phenotype Team"]
 description = "Settings management with validation, versioning, and migration support"
-license = "MIT OR Apache-2.0"
+license.workspace = true
 repository = "https://github.com/phenotype-dev/settly"
 documentation = "https://docs.rs/settly"
 keywords = ["settings", "config", "validation", "migration"]
 categories = ["config", "validation"]
-rust-version = "1.75"
+rust-version.workspace = true
 
 [dependencies]
 # Async runtime
-tokio = { version = "1", features = ["full"] }
-async-trait = "0.1"
+tokio = { workspace = true }
+async-trait = { workspace = true }
 
 # Serialization
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-serde_yaml = "0.9"
-toml = "0.8"
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = "0.9"  # not in workspace; standalone
+toml = { workspace = true }
 
 # Error handling
-thiserror = "1.0"
-anyhow = "1.0"
+thiserror = { workspace = true }
+anyhow = { workspace = true }
 
 # Utilities
-uuid = { version = "1", features = ["v4", "serde"] }
-chrono = { version = "0.4", features = ["serde"] }
-validator = { version = "0.18", features = ["derive"] }
+uuid = { workspace = true }
+chrono = { workspace = true }
+validator = { version = "0.18", features = ["derive"] }  # not in workspace
 
-# Database
+# Database — not in workspace; standalone
 tokio-postgres = "0.7"
 sqlx = { version = "0.7", features = ["runtime-tokio", "postgres", "chrono", "uuid"] }
 
-# Cache
+# Cache — not in workspace; standalone
 redis = { version = "1.2", features = ["tokio-comp", "connection-manager"] }
 
 # Logging
-tracing = "0.1"
+tracing = { workspace = true }
 
 [dev-dependencies]
-tempfile = "3"
+tempfile = { workspace = true }
 
 [profile.release]
 lto = true
