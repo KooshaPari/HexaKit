@@ -1,0 +1,23 @@
+[workspace]
+resolver = "2"
+
+[package]
+name = "metrickit"
+version = "0.1.0"
+edition = "2021"
+description = "Metrics collection with Prometheus support"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "2.0"
+parking_lot = "0.12"
+chrono = { version = "0.4", features = ["serde"] }
+tokio = { version = "1.0", features = ["full"] }
+hyper = { version = "1.9", features = ["full"] }
+hyper-util = { version = "0.1", features = ["full"] }
+http-body-util = "0.1"
+bytes = "1.0"
+
+[dev-dependencies]
+serde_json = "1"
