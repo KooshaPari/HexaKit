@@ -1,0 +1,9 @@
+{
+  "id": "metron-main",
+  "intent": "Demonstrate primary user interaction: Metron: metrics and timing",
+  "recording": null,
+  "recording_gif": null,
+  "keyframe_count": 0,
+  "passed": false,
+  "steps": []
+}
