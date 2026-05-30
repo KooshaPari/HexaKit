@@ -11,6 +11,8 @@ description = "Phenotype Infrastructure Kit"
 resolver = "2"
 exclude = [
   "crates/cipher",  # Source has pre-existing visibility/API bugs; tracked for fix in follow-up
+  "crates/focalpoint",  # 867MB repo with vendor dir; fetch too large for subtree-add; pending manual absorption
+  "crates/stashly",  # Pre-existing build bugs: missing tiered adapter + domain events modules (9 errors); tracked for fix
 ]
 members = [
   "Traceon",
@@ -57,6 +59,7 @@ members = [
   "crates/phenotype-testing",
   "crates/phenotype-config-loader",
   "crates/phenotype-xdd-lib",
+  "crates/settly",
   "Metron",
   "forgecode-fork",
   "libs/nexus",
