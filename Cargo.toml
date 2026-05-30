@@ -122,6 +122,7 @@ phenotype-test-infra = { path = "crates/phenotype-test-infra" }
 phenotype-testing = { path = "crates/phenotype-testing" }
 phenotype-time = { path = "crates/phenotype-time" }
 phenotype-validation = { path = "crates/phenotype-validation" }
+phenotype-cipher = { path = "crates/cipher" }
 
 # External utilities
 axum = "0.7"
