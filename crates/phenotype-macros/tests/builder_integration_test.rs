@@ -26,8 +26,7 @@ fn test_builder_derive_signature() {
 #[test]
 fn test_all_derive_modules_present() {
     // Verify that all derive modules are present and accounted for
-    let modules = vec![
-        "aggregate",
+    let modules = ["aggregate",
         "command",
         "entity",
         "error",
@@ -35,8 +34,7 @@ fn test_all_derive_modules_present() {
         "value_object",
         "derive_builder",
         "derive_errors",
-        "derive_serde",
-    ];
+        "derive_serde"];
 
     assert_eq!(
         modules.len(),

@@ -81,10 +81,10 @@ pub struct DomainEvent {
 
 /// Helper to create a feature tag
 pub fn feature_tag(id: &str) -> String {
-    format!("@FR-{}", id)
+    format!("@FR-{id}")
 }
 
 /// Helper to create a test type tag
 pub fn test_type_tag(test_type: &str) -> String {
-    format!("@{}", test_type)
+    format!("@{test_type}")
 }

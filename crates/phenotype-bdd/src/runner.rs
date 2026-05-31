@@ -20,7 +20,7 @@ impl From<RunError> for BddError {
     fn from(e: RunError) -> Self {
         match e {
             RunError::StepNotFound { step_type, text } => {
-                BddError::StepNotFound(format!("{:?}: {}", step_type, text))
+                BddError::StepNotFound(format!("{step_type:?}: {text}"))
             }
             RunError::StepExecutionFailed(msg) => BddError::StepExecutionFailed(msg),
             RunError::ScenarioFailed(name) => BddError::ScenarioFailed(name),

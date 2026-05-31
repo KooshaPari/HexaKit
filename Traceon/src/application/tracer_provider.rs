@@ -50,6 +50,7 @@ impl TracerProviderBuilder {
 pub struct TracerProvider {
     name: String,
     version: Option<String>,
+    #[allow(dead_code)] // sampler retained on provider for future sampling decisions
     sampler: Arc<Box<dyn Sampler>>,
     exporter: Option<Arc<Box<dyn SpanExporter>>>,
 }
@@ -59,7 +60,7 @@ impl TracerProvider {
         TracerProviderBuilder::new(name)
     }
 
-    pub fn tracer(&self) -> TracerInstance {
+    pub fn tracer(&self) -> TracerInstance<'_> {
         TracerInstance {
             provider: self,
         }

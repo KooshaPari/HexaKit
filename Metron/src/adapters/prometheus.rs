@@ -21,7 +21,7 @@ pub async fn start_prometheus_server(
     let registry = std::sync::Arc::new(registry);
 
     let listener = TcpListener::bind(addr).await?;
-    println!("Prometheus server listening on {}", addr);
+    println!("Prometheus server listening on {addr}");
 
     loop {
         let (stream, _) = listener.accept().await?;
@@ -46,7 +46,7 @@ pub async fn start_prometheus_server(
                 .serve_connection(io, svc)
                 .await
             {
-                eprintln!("Error serving connection: {}", e);
+                eprintln!("Error serving connection: {e}");
             }
         });
     }

@@ -59,17 +59,11 @@ impl Contract for StorageContract {
 // Memory Storage Adapter (Implements the port)
 // ============================================================================
 
+#[derive(Default)]
 struct MemoryStorage {
     data: HashMap<String, String>,
 }
 
-impl Default for MemoryStorage {
-    fn default() -> Self {
-        Self {
-            data: HashMap::new(),
-        }
-    }
-}
 
 impl StoragePort for MemoryStorage {
     fn get(&self, key: &str) -> Option<String> {

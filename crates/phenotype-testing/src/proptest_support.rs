@@ -44,7 +44,7 @@ pub mod strategies {
     /// - FR-TEST-002-005: Email strategy
     pub fn email() -> impl Strategy<Value = String> {
         ("[a-z]{5,15}", "[a-z]{5,10}", "(com|org|net|io)")
-            .prop_map(|(user, domain, tld)| format!("{}@{}.{}", user, domain, tld))
+            .prop_map(|(user, domain, tld)| format!("{user}@{domain}.{tld}"))
     }
 }
 
@@ -72,7 +72,7 @@ pub mod helpers {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use proptest::prelude::*;
+    
 
     // Traces to: FR-TEST-002-002
     proptest! {

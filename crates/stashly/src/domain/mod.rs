@@ -4,6 +4,9 @@ pub mod cache;
 pub mod policy;
 pub mod ports;
 pub mod errors;
+pub mod entities;
+pub mod events;
+pub mod value_objects;
 
 // Re-exports
 pub use cache::{CacheKey, CacheValue, Entry};

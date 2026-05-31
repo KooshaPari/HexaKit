@@ -141,6 +141,7 @@ impl PropertyTest {
     {
         for i in 0..self.iterations {
             test();
+            #[allow(clippy::manual_is_multiple_of)] // is_multiple_of stabilized in 1.87; MSRV is 1.86
             if i % 10 == 0 {
                 println!("  [{}] iteration {}/{}", self.name, i, self.iterations);
             }
@@ -194,12 +195,12 @@ mod tests {
 
     #[test]
     fn test_property_test() {
-        let mut counter = 0;
+        let counter = std::cell::Cell::new(0);
         PropertyTest::new("test")
             .iterations(10)
             .run(|| {
-                counter += 1;
+                counter.set(counter.get() + 1);
             });
-        assert_eq!(counter, 10);
+        assert_eq!(counter.get(), 10);
     }
 }

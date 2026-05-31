@@ -110,33 +110,27 @@ pub struct Requirement {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
+#[derive(Default)]
 pub enum Priority {
     Critical,
     High,
+    #[default]
     Medium,
     Low,
 }
 
-impl Default for Priority {
-    fn default() -> Self {
-        Priority::Medium
-    }
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
+#[derive(Default)]
 pub enum Status {
+    #[default]
     Pending,
     Implemented,
     Verified,
     Deferred,
 }
 
-impl Default for Status {
-    fn default() -> Self {
-        Status::Pending
-    }
-}
 
 /// Parsed and validated specification.
 pub mod parser {
@@ -145,7 +139,7 @@ pub mod parser {
     /// Parse specification from YAML string.
     pub fn parse_yaml(yaml: &str) -> XddResult<Spec> {
         serde_yaml_ng::from_str(yaml).map_err(|e| {
-            XddError::spec(format!("Failed to parse YAML: {}", e))
+            XddError::spec(format!("Failed to parse YAML: {e}"))
         })
     }
 
@@ -168,7 +162,7 @@ pub mod parser {
         /// Parse from a file.
         pub fn parse_file(path: &std::path::Path) -> XddResult<Spec> {
             let content = std::fs::read_to_string(path)
-                .map_err(|e| XddError::spec(format!("Failed to read file: {}", e)))?;
+                .map_err(|e| XddError::spec(format!("Failed to read file: {e}")))?;
             Self::parse(&content)
         }
     }

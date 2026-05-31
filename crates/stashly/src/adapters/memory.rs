@@ -137,7 +137,7 @@ mod tests {
         let cache = InMemoryCache::new(2);
 
         for i in 0..3 {
-            let key = CacheKey::from(format!("key{}", i));
+            let key = CacheKey::from(format!("key{i}"));
             let value = CacheValue::serialize(&i).unwrap();
             cache.set(key, value).await.unwrap();
         }
