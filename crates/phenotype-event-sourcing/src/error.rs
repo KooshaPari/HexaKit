@@ -44,11 +44,11 @@ impl From<HashError> for EventSourcingError {
     fn from(err: HashError) -> Self {
         match err {
             HashError::InvalidHashLength(len) => {
-                EventSourcingError::Hash(format!("invalid hash length: {}", len))
+                EventSourcingError::Hash(format!("invalid hash length: {len}"))
             }
             HashError::ChainBroken { sequence } => EventSourcingError::ChainBroken { sequence },
             HashError::HexDecode(msg) => {
-                EventSourcingError::Hash(format!("hex decode error: {}", msg))
+                EventSourcingError::Hash(format!("hex decode error: {msg}"))
             }
         }
     }

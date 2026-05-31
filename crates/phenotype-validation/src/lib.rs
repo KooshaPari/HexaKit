@@ -42,7 +42,7 @@ impl ValidationError {
 
     /// Create an error for an invalid field.
     pub fn invalid_field(field: &str, reason: &str) -> Self {
-        Self::new(format!("{}: {}", field, reason))
+        Self::new(format!("{field}: {reason}"))
     }
 }
 
@@ -169,7 +169,7 @@ impl PatternRule {
     pub fn new(pattern: &str) -> Result<Self> {
         Ok(Self {
             pattern: regex::Regex::new(pattern).map_err(|e| ValidationError::new(e.to_string()))?,
-            description: format!("must match pattern: {}", pattern),
+            description: format!("must match pattern: {pattern}"),
         })
     }
 
@@ -241,8 +241,7 @@ impl ValidationRule for NumericRangeRule {
         if let Some(min) = self.min {
             if num < min {
                 return Err(ValidationError::new(format!(
-                    "value {} is less than minimum {}",
-                    num, min
+                    "value {num} is less than minimum {min}"
                 )));
             }
         }
@@ -250,8 +249,7 @@ impl ValidationRule for NumericRangeRule {
         if let Some(max) = self.max {
             if num > max {
                 return Err(ValidationError::new(format!(
-                    "value {} exceeds maximum {}",
-                    num, max
+                    "value {num} exceeds maximum {max}"
                 )));
             }
         }

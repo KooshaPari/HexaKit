@@ -168,8 +168,8 @@ pub mod scenarios {
         let mut fixture = TestFixture::new();
         for i in 0..count {
             let entity = TestEntityBuilder::new()
-                .id(format!("entity-{}", i))
-                .name(format!("Entity {}", i))
+                .id(format!("entity-{i}"))
+                .name(format!("Entity {i}"))
                 .build();
             fixture = fixture.with_entity(entity);
         }

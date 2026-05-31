@@ -1,4 +1,5 @@
 //! Unit tests for Metron domain and application layers.
+#![allow(clippy::approx_constant)] // -3.14 is an arbitrary test value, not PI
 
 use metrickit::domain::{
     Counter, CounterValue, Gauge, GaugeValue,
@@ -583,7 +584,7 @@ mod prometheus_exporter {
     #[test]
     fn new_and_default_are_equivalent() {
         let e1 = PrometheusExporter::new();
-        let e2 = PrometheusExporter::default();
+        let e2 = PrometheusExporter;
         let reg = Registry::new();
         let o1 = e1.export(&reg).unwrap();
         let o2 = e2.export(&reg).unwrap();

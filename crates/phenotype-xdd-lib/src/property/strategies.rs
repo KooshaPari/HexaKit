@@ -77,7 +77,7 @@ pub fn positive_int(n: i64) -> XddResult<i64> {
 pub fn bounded_int(n: i64, min: i64, max: i64) -> XddResult<i64> {
     if n < min || n > max {
         return Err(XddError::property(format!(
-            "Value {} must be between {} and {}", n, min, max
+            "Value {n} must be between {min} and {max}"
         )));
     }
     Ok(n)
@@ -104,7 +104,7 @@ pub fn bounded_length(s: &str, min: usize, max: usize) -> XddResult<&str> {
     let len = s.len();
     if len < min || len > max {
         return Err(XddError::property(format!(
-            "String length {} must be between {} and {}", len, min, max
+            "String length {len} must be between {min} and {max}"
         )));
     }
     Ok(s)
@@ -123,7 +123,7 @@ pub fn uuid_strategy() -> impl Strategy<Value = String> {
 /// Generate a random valid email.
 pub fn email_strategy() -> impl Strategy<Value = String> {
     (".+@+.+", 3..100)
-        .prop_map(|(local, domain)| format!("{}@{}", local, domain))
+        .prop_map(|(local, domain)| format!("{local}@{domain}"))
 }
 
 /// Generate a random bounded integer.
@@ -133,7 +133,7 @@ pub fn int_strategy(min: i64, max: i64) -> impl Strategy<Value = i64> {
 
 /// Generate a random non-empty string.
 pub fn non_empty_string_strategy(max_len: usize) -> impl Strategy<Value = String> {
-    proptest::string::string_regex(&format!(".{{1,{}}}", max_len)).unwrap()
+    proptest::string::string_regex(&format!(".{{1,{max_len}}}")).unwrap()
 }
 
 /// Generate a random valid URL.

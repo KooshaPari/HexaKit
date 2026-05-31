@@ -1,9 +1,8 @@
 //! Tracer Trait - Port Interface
 
 use async_trait::async_trait;
-use uuid::Uuid;
 
-use super::{Span, SpanKind, SpanContext, TraceId};
+use super::{SpanKind, SpanContext};
 
 /// Tracer trait - primary port
 #[async_trait]
@@ -33,7 +32,9 @@ pub trait SpanHandle: Send {
 
 /// Span wrapper for scoped spans
 pub struct ScopedSpan<'a> {
+    #[allow(dead_code)] // retained to tie span lifetime to its tracer
     tracer: &'a dyn Tracer,
+    #[allow(dead_code)] // retained for diagnostics/future use
     name: String,
     span: Box<dyn SpanHandle>,
 }
@@ -48,12 +49,12 @@ impl<'a> ScopedSpan<'a> {
         }
     }
 
-    pub fn with_attribute(mut self, key: &str, value: super::AttributeValue) -> Self {
+    pub fn with_attribute(self, key: &str, value: super::AttributeValue) -> Self {
         self.span.set_attribute(key.to_string(), value);
         self
     }
 
-    pub fn with_event(mut self, name: &str) -> Self {
+    pub fn with_event(self, name: &str) -> Self {
         self.span.add_event(name.to_string());
         self
     }

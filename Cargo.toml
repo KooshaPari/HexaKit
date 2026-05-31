@@ -10,10 +10,11 @@ description = "Phenotype Infrastructure Kit"
 [workspace]
 resolver = "2"
 exclude = [
-  "Traceon",  # Source has pre-existing trait impl bugs; tracked for fix in follow-up
   "crates/cipher",  # Source has pre-existing visibility/API bugs; tracked for fix in follow-up
+  "crates/focalpoint",  # 867MB repo with vendor dir; fetch too large for subtree-add; pending manual absorption
 ]
 members = [
+  "Traceon",
   "crates/phenotype-async-traits",
   "crates/phenotype-cache-adapter",
   "crates/phenotype-contract",
@@ -57,6 +58,8 @@ members = [
   "crates/phenotype-testing",
   "crates/phenotype-config-loader",
   "crates/phenotype-xdd-lib",
+  "crates/settly",
+  "crates/stashly",
   "Metron",
   "forgecode-fork",
   "libs/nexus",

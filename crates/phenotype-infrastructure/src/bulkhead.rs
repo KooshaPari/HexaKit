@@ -27,6 +27,7 @@ struct BulkheadInner {
 }
 
 /// Bulkhead for limiting concurrent operations
+#[derive(Clone)]
 pub struct Bulkhead {
     inner: Arc<BulkheadInner>,
 }

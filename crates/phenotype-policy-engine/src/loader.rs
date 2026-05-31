@@ -54,7 +54,7 @@ impl RuleConfig {
             "require" => RuleType::Require,
             other => {
                 return Err(PolicyEngineError::RuleValidationError {
-                    message: format!("Invalid rule type: '{}'", other),
+                    message: format!("Invalid rule type: '{other}'"),
                 })
             }
         };
@@ -66,8 +66,7 @@ impl RuleConfig {
             other => {
                 return Err(PolicyEngineError::RuleValidationError {
                     message: format!(
-                        "Invalid severity: '{}'. Expected Info, Warning, or Error",
-                        other
+                        "Invalid severity: '{other}'. Expected Info, Warning, or Error"
                     ),
                 })
             }

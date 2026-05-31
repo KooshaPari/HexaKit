@@ -12,13 +12,18 @@ pub struct W3CTraceContext {
 impl W3CTraceContext {
     pub fn new(trace_id: Uuid, span_id: Uuid, sampled: bool) -> Self {
         let flags = if sampled { "01" } else { "00" };
-        let traceparent = format!("00-{}-{}-{}", trace_id, span_id, flags);
+        // W3C traceparent: 00-<32hex trace-id>-<16hex parent-id>-<2hex flags>
+        let tid = format!("{:032x}", trace_id.as_u128());
+        let sid = format!("{:016x}", (span_id.as_u128() & 0xFFFF_FFFF_FFFF_FFFF) as u64);
+        let traceparent = format!("00-{tid}-{sid}-{flags}");
         Self { traceparent }
     }
 
     pub fn trace_id(&self) -> Option<Uuid> {
-        let parts: Vec<&str> = self.traceparent.split('-').collect();
+        // traceparent = "00-<32hex>-<16hex>-<2hex>"
+        let parts: Vec<&str> = self.traceparent.splitn(4, '-').collect();
         if parts.len() >= 2 {
+            // Parse 32 hex chars as UUID (no hyphens)
             Uuid::parse_str(parts[1]).ok()
         } else {
             None
@@ -37,8 +42,8 @@ pub struct B3Context {
 impl B3Context {
     pub fn new(trace_id: Uuid, span_id: Uuid, sampled: bool) -> Self {
         Self {
-            trace_id: Some(trace_id.to_string().replace("-", "")),
-            span_id: Some(format!("{:016x}", span_id.as_u128())),
+            trace_id: Some(format!("{:032x}", trace_id.as_u128())),
+            span_id: Some(format!("{:016x}", (span_id.as_u128() & 0xFFFF_FFFF_FFFF_FFFF) as u64)),
             sampled: Some(sampled),
         }
     }

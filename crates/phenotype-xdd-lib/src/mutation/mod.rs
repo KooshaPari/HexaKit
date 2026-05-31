@@ -90,7 +90,7 @@ impl MutationTracker {
 
     /// Record a mutation introduction.
     pub fn introduce_mutation(&mut self, file: &str, line: usize, kind: MutationKind) -> String {
-        let id = format!("{}:{}:{:?}", file, line, kind);
+        let id = format!("{file}:{line}:{kind:?}");
         self.total_mutations += 1;
         self.files
             .entry(file.to_string())

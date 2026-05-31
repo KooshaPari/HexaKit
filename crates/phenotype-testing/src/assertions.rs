@@ -69,9 +69,7 @@ macro_rules! assert_ok_eq {
 pub fn assert_contains<T: Debug>(collection: &[T], predicate: impl Fn(&T) -> bool, msg: &str) {
     assert!(
         collection.iter().any(predicate),
-        "{}: Collection {:?} did not contain matching element",
-        msg,
-        collection
+        "{msg}: Collection {collection:?} did not contain matching element"
     );
 }
 
@@ -98,9 +96,9 @@ pub fn assert_count<T: Debug>(collection: &[T], expected: usize, msg: &str) {
 pub fn assert_set_eq<T: Eq + Debug + Clone>(a: &[T], b: &[T], msg: &str) {
     let mut a_sorted: Vec<_> = a.to_vec();
     let mut b_sorted: Vec<_> = b.to_vec();
-    a_sorted.sort_by(|x, y| format!("{:?}", x).cmp(&format!("{:?}", y)));
-    b_sorted.sort_by(|x, y| format!("{:?}", x).cmp(&format!("{:?}", y)));
-    assert_eq!(a_sorted, b_sorted, "{}: Sets not equal", msg);
+    a_sorted.sort_by(|x, y| format!("{x:?}").cmp(&format!("{y:?}")));
+    b_sorted.sort_by(|x, y| format!("{x:?}").cmp(&format!("{y:?}")));
+    assert_eq!(a_sorted, b_sorted, "{msg}: Sets not equal");
 }
 
 /// Assert that a string contains a substring.
@@ -110,10 +108,7 @@ pub fn assert_set_eq<T: Eq + Debug + Clone>(a: &[T], b: &[T], msg: &str) {
 pub fn assert_str_contains(haystack: &str, needle: &str, msg: &str) {
     assert!(
         haystack.contains(needle),
-        "{}: '{}' does not contain '{}'",
-        msg,
-        haystack,
-        needle
+        "{msg}: '{haystack}' does not contain '{needle}'"
     );
 }
 
@@ -123,15 +118,12 @@ pub fn assert_str_contains(haystack: &str, needle: &str, msg: &str) {
 /// - FR-TEST-004-008: Error message assertion
 pub fn assert_err_contains<E: Debug>(result: &Result<(), E>, expected: &str, msg: &str) {
     match result {
-        Ok(_) => panic!("{}: Expected error, got Ok", msg),
+        Ok(_) => panic!("{msg}: Expected error, got Ok"),
         Err(e) => {
-            let err_str = format!("{:?}", e);
+            let err_str = format!("{e:?}");
             assert!(
                 err_str.contains(expected),
-                "{}: Error '{}' does not contain '{}'",
-                msg,
-                err_str,
-                expected
+                "{msg}: Error '{err_str}' does not contain '{expected}'"
             );
         }
     }

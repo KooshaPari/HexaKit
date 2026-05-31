@@ -76,8 +76,7 @@ impl<T: std::fmt::Debug + PartialEq> SpyAssertions<T> for Spy<T> {
     fn assert_called_with(&self, expected: &T) {
         assert!(
             self.calls().contains(expected),
-            "Expected spy to be called with {:?}",
-            expected
+            "Expected spy to be called with {expected:?}"
         );
     }
 }

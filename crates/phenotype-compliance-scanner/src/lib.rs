@@ -231,10 +231,7 @@ impl Scanner {
     pub fn scan(&self, target: &ScanTarget) -> Vec<ComplianceResult> {
         self.rules
             .iter()
-            .filter_map(|rule| match rule.check(target) {
-                Ok(result) => Some(result),
-                Err(_) => None,
-            })
+            .filter_map(|rule| rule.check(target).ok())
             .collect()
     }
 }

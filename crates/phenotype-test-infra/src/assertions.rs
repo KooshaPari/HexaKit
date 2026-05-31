@@ -29,7 +29,7 @@ impl<T: PartialEq + std::fmt::Debug> Assertion for T {
     fn assert_eq(&self, expected: &T, msg: &str) -> AssertionResult {
         if self != expected {
             return Err(AssertionError {
-                message: format!("{}: expected {:?}, got {:?}", msg, expected, self),
+                message: format!("{msg}: expected {expected:?}, got {self:?}"),
             });
         }
         Ok(())
@@ -38,7 +38,7 @@ impl<T: PartialEq + std::fmt::Debug> Assertion for T {
     fn assert_ne(&self, unexpected: &T, msg: &str) -> AssertionResult {
         if self == unexpected {
             return Err(AssertionError {
-                message: format!("{}: expected not equal to {:?}", msg, unexpected),
+                message: format!("{msg}: expected not equal to {unexpected:?}"),
             });
         }
         Ok(())
@@ -49,7 +49,7 @@ impl<T: PartialEq + std::fmt::Debug> Assertion for T {
 pub fn assert_some<T>(opt: &Option<T>, msg: &str) -> AssertionResult {
     if opt.is_none() {
         return Err(AssertionError {
-            message: format!("{}: expected Some, got None", msg),
+            message: format!("{msg}: expected Some, got None"),
         });
     }
     Ok(())
@@ -59,7 +59,7 @@ pub fn assert_some<T>(opt: &Option<T>, msg: &str) -> AssertionResult {
 pub fn assert_none<T>(opt: &Option<T>, msg: &str) -> AssertionResult {
     if opt.is_some() {
         return Err(AssertionError {
-            message: format!("{}: expected None, got Some", msg),
+            message: format!("{msg}: expected None, got Some"),
         });
     }
     Ok(())
@@ -69,7 +69,7 @@ pub fn assert_none<T>(opt: &Option<T>, msg: &str) -> AssertionResult {
 pub fn assert_ok<T, E>(res: &Result<T, E>, msg: &str) -> AssertionResult {
     if res.is_err() {
         return Err(AssertionError {
-            message: format!("{}: expected Ok, got Err", msg),
+            message: format!("{msg}: expected Ok, got Err"),
         });
     }
     Ok(())
@@ -79,7 +79,7 @@ pub fn assert_ok<T, E>(res: &Result<T, E>, msg: &str) -> AssertionResult {
 pub fn assert_err<T, E>(res: &Result<T, E>, msg: &str) -> AssertionResult {
     if res.is_ok() {
         return Err(AssertionError {
-            message: format!("{}: expected Err, got Ok", msg),
+            message: format!("{msg}: expected Err, got Ok"),
         });
     }
     Ok(())
@@ -89,7 +89,7 @@ pub fn assert_err<T, E>(res: &Result<T, E>, msg: &str) -> AssertionResult {
 pub fn assert_contains<T: PartialEq + std::fmt::Debug>(vec: &[T], item: &T, msg: &str) -> AssertionResult {
     if !vec.contains(item) {
         return Err(AssertionError {
-            message: format!("{}: expected vector to contain {:?}", msg, item),
+            message: format!("{msg}: expected vector to contain {item:?}"),
         });
     }
     Ok(())
@@ -100,8 +100,7 @@ pub fn assert_matches(haystack: &str, needle: &str, msg: &str) -> AssertionResul
     if !haystack.contains(needle) {
         return Err(AssertionError {
             message: format!(
-                "{}: expected '{}' to contain '{}'",
-                msg, haystack, needle
+                "{msg}: expected '{haystack}' to contain '{needle}'"
             ),
         });
     }
