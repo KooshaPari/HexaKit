@@ -141,6 +141,7 @@ impl PropertyTest {
     {
         for i in 0..self.iterations {
             test();
+            #[allow(clippy::manual_is_multiple_of)] // is_multiple_of stabilized in 1.87; MSRV is 1.86
             if i % 10 == 0 {
                 println!("  [{}] iteration {}/{}", self.name, i, self.iterations);
             }

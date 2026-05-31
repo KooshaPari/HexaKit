@@ -26,10 +26,10 @@ pub fn join_oxford(parts: &[impl Display]) -> String {
             let last = &parts[parts.len() - 1];
             let all_but_last_str = all_but_last
                 .iter()
-                .map(|p| format!("{}", p))
+                .map(|p| format!("{p}"))
                 .collect::<Vec<_>>()
                 .join(", ");
-            format!("{}, and {}", all_but_last_str, last)
+            format!("{all_but_last_str}, and {last}")
         }
     }
 }

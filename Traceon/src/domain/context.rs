@@ -15,7 +15,7 @@ impl W3CTraceContext {
         // W3C traceparent: 00-<32hex trace-id>-<16hex parent-id>-<2hex flags>
         let tid = format!("{:032x}", trace_id.as_u128());
         let sid = format!("{:016x}", (span_id.as_u128() & 0xFFFF_FFFF_FFFF_FFFF) as u64);
-        let traceparent = format!("00-{}-{}-{}", tid, sid, flags);
+        let traceparent = format!("00-{tid}-{sid}-{flags}");
         Self { traceparent }
     }
 

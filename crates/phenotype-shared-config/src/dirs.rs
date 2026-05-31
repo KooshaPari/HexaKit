@@ -30,7 +30,7 @@ impl ConfigDir {
                 {
                     std::env::var("PROGRAMDATA")
                         .ok()
-                        .map(|p| PathBuf::from(format!("{}/{}", p, app_name)))
+                        .map(|p| PathBuf::from(format!("{p}/{app_name}")))
                 }
                 #[cfg(not(any(unix, windows)))]
                 {

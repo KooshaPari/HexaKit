@@ -583,7 +583,7 @@ mod prometheus_exporter {
     #[test]
     fn new_and_default_are_equivalent() {
         let e1 = PrometheusExporter::new();
-        let e2 = PrometheusExporter::default();
+        let e2 = PrometheusExporter;
         let reg = Registry::new();
         let o1 = e1.export(&reg).unwrap();
         let o2 = e2.export(&reg).unwrap();

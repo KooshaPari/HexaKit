@@ -12,9 +12,9 @@ pub enum CacheKitError {
 impl fmt::Display for CacheKitError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            CacheKitError::Config(msg) => write!(f, "Configuration error: {}", msg),
-            CacheKitError::Init(msg) => write!(f, "Initialization error: {}", msg),
-            CacheKitError::Runtime(msg) => write!(f, "Runtime error: {}", msg),
+            CacheKitError::Config(msg) => write!(f, "Configuration error: {msg}"),
+            CacheKitError::Init(msg) => write!(f, "Initialization error: {msg}"),
+            CacheKitError::Runtime(msg) => write!(f, "Runtime error: {msg}"),
         }
     }
 }

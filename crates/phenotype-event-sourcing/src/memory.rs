@@ -52,7 +52,7 @@ impl InMemoryEventStore {
     }
 
     fn get_entity_key(entity_type: &str, entity_id: &str) -> String {
-        format!("{}:{}", entity_type, entity_id)
+        format!("{entity_type}:{entity_id}")
     }
 }
 
@@ -127,7 +127,7 @@ impl EventStore for InMemoryEventStore {
             .get(&key)
             .and_then(|m| m.get(entity_id))
             .ok_or_else(|| {
-                EventSourcingError::EntityNotFound(format!("{}/{}", entity_type, entity_id))
+                EventSourcingError::EntityNotFound(format!("{entity_type}/{entity_id}"))
             })?;
 
         Ok(events
@@ -171,7 +171,7 @@ impl EventStore for InMemoryEventStore {
             .get(&key)
             .and_then(|m| m.get(entity_id))
             .ok_or_else(|| {
-                EventSourcingError::EntityNotFound(format!("{}/{}", entity_type, entity_id))
+                EventSourcingError::EntityNotFound(format!("{entity_type}/{entity_id}"))
             })?;
 
         let chain: Vec<(String, String)> = events

@@ -17,7 +17,7 @@ proptest! {
     #[test]
     fn test_bounded_int_always_in_range(n in -1000i64..=1000i64) {
         let result = bounded_int(n, -100, 100);
-        if n >= -100 && n <= 100 {
+        if (-100..=100).contains(&n) {
             prop_assert!(result.is_ok());
         } else {
             prop_assert!(result.is_err());

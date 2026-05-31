@@ -194,8 +194,7 @@ impl SecuritySource for GitHubDependabotSource {
         repo: &str,
     ) -> anyhow::Result<Vec<SecurityAlert>> {
         let url = format!(
-            "https://api.github.com/repos/{}/{}/dependabot/alerts",
-            owner, repo
+            "https://api.github.com/repos/{owner}/{repo}/dependabot/alerts"
         );
 
         let _response = self

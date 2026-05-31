@@ -5,6 +5,7 @@ use std::sync::{Arc, Mutex};
 /// A simple stub that returns a fixed value or executes a closure
 #[derive(Clone)]
 pub struct Stub<I, O> {
+    #[allow(clippy::type_complexity)]
     func: Arc<Mutex<Box<dyn Fn(I) -> O + Send>>>,
     call_count: Arc<Mutex<usize>>,
     recorded_calls: Arc<Mutex<Vec<I>>>,

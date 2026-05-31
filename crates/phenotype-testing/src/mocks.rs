@@ -73,7 +73,7 @@ impl<
             .lock()
             .unwrap()
             .iter()
-            .map(|c| format!("{:?}", c))
+            .map(|c| format!("{c:?}"))
             .collect()
     }
 
@@ -91,7 +91,7 @@ impl<
             .lock()
             .unwrap()
             .iter()
-            .any(|c| matches!(c, RepoCall::Save { id: saved_id } if format!("{:?}", saved_id) == format!("{:?}", id)))
+            .any(|c| matches!(c, RepoCall::Save { id: saved_id } if format!("{saved_id:?}") == format!("{id:?}")))
     }
 
     /// Clear all data and call history.
@@ -150,7 +150,7 @@ impl<
             .cloned()
             .ok_or_else(|| DomainError::NotFound {
                 entity: "Entity".to_string(),
-                id: format!("{:?}", id),
+                id: format!("{id:?}"),
             })
     }
 
@@ -235,7 +235,7 @@ impl<Key: Clone + Eq + std::hash::Hash + Debug, Value: Clone> MockCache<Key, Val
             .lock()
             .unwrap()
             .iter()
-            .map(|c| format!("{:?}", c))
+            .map(|c| format!("{c:?}"))
             .collect()
     }
 

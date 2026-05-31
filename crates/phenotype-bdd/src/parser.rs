@@ -167,8 +167,8 @@ pub fn parse_feature(content: &str) -> Result<Feature> {
         // Parse steps
         let step_keywords = ["Given", "When", "Then", "And", "But"];
         for keyword in &step_keywords {
-            if trimmed.starts_with(&format!("{} ", keyword))
-                || trimmed.starts_with(&format!("{}\t", keyword))
+            if trimmed.starts_with(&format!("{keyword} "))
+                || trimmed.starts_with(&format!("{keyword}\t"))
             {
                 let text = trimmed
                     .trim_start_matches(keyword)

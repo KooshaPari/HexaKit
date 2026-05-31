@@ -45,7 +45,7 @@ fn test_error_display() {
 #[test]
 fn test_service_error_display() {
     let err = ServiceError::Other("test error".to_string());
-    let display = format!("{}", err);
+    let display = format!("{err}");
     assert!(display.contains("test error"));
 }
 

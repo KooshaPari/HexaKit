@@ -152,8 +152,8 @@ impl ContractVerifier {
         self.assertions += 1;
         if expected != actual {
             self.failures.push(ContractFailure {
-                expectation: format!("{:?}", expected),
-                actual: format!("{:?}", actual),
+                expectation: format!("{expected:?}"),
+                actual: format!("{actual:?}"),
                 location: None,
             });
         }

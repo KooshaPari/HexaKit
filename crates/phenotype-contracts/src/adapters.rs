@@ -83,7 +83,7 @@ impl<
             .expect("in-memory adapter lock poisoned")
             .get(id)
             .cloned()
-            .ok_or_else(|| error::ErrorKind::not_found(format!("Entity not found: {:?}", id)))
+            .ok_or_else(|| error::ErrorKind::not_found(format!("Entity not found: {id:?}")))
     }
 
     fn delete(&self, id: &Self::Id) -> error::Result<()> {
@@ -293,7 +293,7 @@ impl crate::outbound::SecretManager for InMemorySecretManager {
             .expect("in-memory adapter lock poisoned")
             .get(name)
             .cloned()
-            .ok_or_else(|| error::ErrorKind::not_found(format!("Secret not found: {}", name)))
+            .ok_or_else(|| error::ErrorKind::not_found(format!("Secret not found: {name}")))
     }
 
     fn set(&self, name: String, value: String) -> error::Result<()> {
