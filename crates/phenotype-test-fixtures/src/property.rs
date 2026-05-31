@@ -195,12 +195,12 @@ mod tests {
 
     #[test]
     fn test_property_test() {
-        let mut counter = 0;
+        let counter = std::cell::Cell::new(0);
         PropertyTest::new("test")
             .iterations(10)
             .run(|| {
-                counter += 1;
+                counter.set(counter.get() + 1);
             });
-        assert_eq!(counter, 10);
+        assert_eq!(counter.get(), 10);
     }
 }

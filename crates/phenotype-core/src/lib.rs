@@ -202,16 +202,27 @@ pub mod types {
 
 #[cfg(test)]
 mod tests {
+    use super::external;
     use super::prelude::*;
     use super::types::*;
 
+    fn sample_domain_not_found() -> DomainError {
+        DomainError::NotFound {
+            entity: "test".to_string(),
+            id: "1".to_string(),
+        }
+    }
+
     #[test]
     fn fr_core_001_error_types_available() {
-        let domain_err = DomainError::not_found("test");
-        assert!(matches!(domain_err, DomainError::NotFound(_)));
+        let domain_err = sample_domain_not_found();
+        assert!(matches!(domain_err, DomainError::NotFound { .. }));
 
-        let api_err = ApiError::not_found("test");
-        assert!(matches!(api_err, ApiError::NotFound(_)));
+        let api_err = ApiError::NotFound {
+            resource: "test".to_string(),
+            id: "1".to_string(),
+        };
+        assert!(matches!(api_err, ApiError::NotFound { .. }));
     }
 
     #[test]
@@ -221,7 +232,7 @@ mod tests {
         }
 
         fn returns_error() -> DomainResult<String> {
-            Err(DomainError::not_found("test"))
+            Err(sample_domain_not_found())
         }
 
         assert!(returns_result().is_ok());
@@ -230,7 +241,8 @@ mod tests {
 
     #[test]
     fn fr_core_003_external_crates_available() {
-        let id = external::Ulid::new();
-        assert!(!id.to_string().is_empty());
+        // external re-exports serde/thiserror/async-trait/tokio; verify the
+        // tokio re-export resolves to a usable runtime builder.
+        let _rt = external::tokio::runtime::Builder::new_current_thread();
     }
 }

@@ -43,6 +43,7 @@ tracing = { workspace = true }
 
 [dev-dependencies]
 tempfile = { workspace = true }
+criterion = { workspace = true }
 
 [profile.release]
 lto = true

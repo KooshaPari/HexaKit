@@ -1,4 +1,5 @@
 //! Unit tests for Metron domain and application layers.
+#![allow(clippy::approx_constant)] // -3.14 is an arbitrary test value, not PI
 
 use metrickit::domain::{
     Counter, CounterValue, Gauge, GaugeValue,
