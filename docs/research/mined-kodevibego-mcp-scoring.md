@@ -103,7 +103,7 @@ Extending: implement `ComplianceRule` trait and register in `default_kodevibe_ru
 
 Tracks `HistoricalScore` entries with momentum and trend direction (`improving` | `declining` | `stable`). Used for CI gate trending in quality-gate workflows.
 
-**HexaKit integration:** Quality gates in `.github/workflows/quality-gate.yml` and `gate-check.yml` should reference these thresholds when evaluating KodeVibe scan output.
+**HexaKit integration (planned):** `.github/workflows/quality-gate.yml` and `gate-check.yml` do not yet parse KodeVibe JSON thresholds; wire a verifier step when KodeVibe scan output is added to CI.
 
 ---
 
@@ -162,7 +162,7 @@ type QualityTargets struct {
 }
 ```
 
-**HexaKit integration:** PhenoMCP tools should accept this payload shape when wrapping KodeVibe scan output for agent consumption.
+**Future integration:** [`phenotype-mcp`](https://github.com/KooshaPari/phenotype-mcp) (placeholder crate today) or agent MCP servers may adopt this payload shape when wrapping KodeVibe scan output — not implemented in HexaKit yet.
 
 ---
 
@@ -184,17 +184,17 @@ WebSocket endpoint at `/ws` streams live scan progress during watch mode.
 
 ---
 
-## Migration Checklist (100% Moved)
+## Migration Checklist (mostly migrated)
 
 | Component | Status |
 |-----------|--------|
-| Checker registry interface | ✅ `phenotype-compliance-scanner` |
-| KodeVibe rule set defaults | ✅ `KodeVibeRuleSet` in lib.rs |
-| Scoring weights/thresholds | ✅ Documented here |
-| MCP context types | ✅ Documented here |
-| Agent quick endpoints | ✅ Documented in KodeVibe schema |
-| HTML report templates | ✅ Reference pattern only |
-| VS Code extension | ⬜ Dropped (out of scope) |
+| Checker registry (`ComplianceRule`, `default_kodevibe_rules()`) | ✅ `crates/phenotype-compliance-scanner/src/lib.rs` |
+| KodeVibe rule set defaults (`KodeVibeRuleSet`, `KODEVIBE-001`/`002`) | ✅ same file |
+| Scoring weights/thresholds | ✅ This doc (`docs/research/mined-kodevibego-mcp-scoring.md`) |
+| MCP context types | ✅ This doc (reference only) |
+| Agent quick endpoints | ✅ [KodeVibe config schema](https://github.com/KooshaPari/KodeVibe/blob/borrow/kodevibego-schema/docs/kodevibe-config-schema.md) |
+| HTML report templates | Reference only (embedded templates in KodeVibeGo) |
+| VS Code extension | Dropped (out of scope) |
 
 ---
 
