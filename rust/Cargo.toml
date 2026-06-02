@@ -8,7 +8,7 @@ license = "MIT"
 [workspace]
 
 [dependencies]
-prost = "0.13"
+prost = "0.14"
 tonic = { version = "0.12", features = ["transport"] }
 
 [package.metadata.cargo-machete]
