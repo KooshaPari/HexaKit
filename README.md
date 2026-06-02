@@ -1,5 +1,5 @@
-> **Work state:** SCAFFOLD · **Progress:** `███░░░░░░░ 30%`
-> Canonical hexagonal-ports kit (errors/event-bus/adapters + phenotype-* crates) for org consumption; step7 crate tree landed on main · updated 2026-06-02
+> **Work state:** ACTIVE · **Progress:** `██████░░░░ 60%`
+> Canonical org hexagonal-ports kit — 46 workspace crates (errors/event-bus/ports-canonical/core/policy/telemetry/...); workspace resolves (cargo metadata ✓), consumed live by PhenoObservability via git dep · updated 2026-06-02
 
 > **Pinned references (Phenotype-org)**
 > - MSRV: see rust-toolchain.toml
