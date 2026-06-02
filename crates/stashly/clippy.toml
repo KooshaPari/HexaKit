@@ -1,0 +1,11 @@
+# Clippy configuration for Stashly
+avoid-breaking-exported-api = false
+allow-expect-in-tests = true
+allow-unwrap-in-tests = true
+allow-print-in-tests = true
+cognitive-complexity-threshold = 25
+too-many-arguments-threshold = 7
+type-complexity-threshold = 250
+too-many-lines-threshold = 100
+check-private-items = false
+suppress-restriction-lint-in-const = true

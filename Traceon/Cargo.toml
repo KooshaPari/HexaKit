@@ -1,0 +1,25 @@
+[package]
+name = "tracingkit"
+version = "0.1.0"
+edition = "2021"
+description = "Distributed tracing framework with OpenTelemetry support"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+async-trait = { workspace = true }
+parking_lot = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }
+
+[features]
+default = ["otlp"]
+otlp = []
+jaeger = []
+zipkin = []
