@@ -131,7 +131,7 @@ jobs:
       - name: Semver compatibility check
         run: cd rust && cargo semver-checks check-release || true
       - name: Typo check
-        uses: crate-ci/typos@bbaefadf97b0ec5fdc942684b647f1a6ab250274
+        uses: crate-ci/typos@37bb98842b0d8c4ffebdb75301a13db0267cef89
 
   # ─── Rust Coverage ────────────────────────────────────────────────
   rust-coverage:
