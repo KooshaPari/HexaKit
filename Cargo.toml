@@ -49,16 +49,16 @@ members = [
   "crates/phenotype-time",
   "crates/phenotype-validation",
   "crates/phenotype-casbin-wrapper",
-  "crates/phenotype-rate-limit",
   "crates/phenotype-bdd",
   "crates/phenotype-core",
   "crates/phenotype-event-bus",
   "crates/phenotype-infrastructure",
-  "crates/phenotype-mock",
   "crates/phenotype-project-registry",
   "crates/phenotype-security-aggregator",
   "crates/phenotype-test-fixtures",
-  "crates/phenotype-testing",
+  "crates/phenotype-test-infra",
+  "crates/phenotype-time",
+  "crates/phenotype-validation",
   "crates/phenotype-config-loader",
   "crates/phenotype-xdd-lib",
   "crates/settly",
@@ -128,7 +128,6 @@ phenotype-iter = { path = "crates/phenotype-iter" }
 phenotype-logging = { path = "crates/phenotype-logging" }
 phenotype-macros = { path = "crates/phenotype-macros" }
 phenotype-mcp = { path = "crates/phenotype-mcp" }
-phenotype-mock = { path = "crates/phenotype-mock" }
 phenotype-policy-engine = { path = "crates/phenotype-policy-engine" }
 phenotype-port-traits = { path = "crates/phenotype-port-traits" }
 phenotype-ports-canonical = { path = "crates/phenotype-ports-canonical" }
@@ -141,7 +140,6 @@ phenotype-string = { path = "crates/phenotype-string" }
 phenotype-telemetry = { path = "crates/phenotype-telemetry" }
 phenotype-test-fixtures = { path = "crates/phenotype-test-fixtures", default-features = false }
 phenotype-test-infra = { path = "crates/phenotype-test-infra" }
-phenotype-testing = { path = "crates/phenotype-testing" }
 phenotype-time = { path = "crates/phenotype-time" }
 phenotype-validation = { path = "crates/phenotype-validation" }
 phenotype-cipher = { path = "crates/cipher" }
