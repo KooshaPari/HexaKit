@@ -114,11 +114,6 @@ pub mod contracts {
     };
 }
 
-/// Retry re-exports
-pub mod retry {
-    pub use phenotype_retry::{Error as RetryError, Result as RetryResult};
-}
-
 /// Async traits re-exports
 pub mod async_traits {
     pub use phenotype_async_traits::{AsyncDropper, AsyncFuture, AsyncIterator};
