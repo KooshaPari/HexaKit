@@ -2762,7 +2762,6 @@ dependencies = [
  "phenotype-http-client-core",
  "phenotype-policy-engine",
  "phenotype-port-traits",
- "phenotype-retry",
  "phenotype-state-machine",
  "phenotype-string",
  "phenotype-telemetry",
@@ -3025,16 +3024,6 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.18",
-]
-
-[[package]]
-name = "phenotype-retry"
-version = "0.2.0"
-dependencies = [
- "rand 0.8.6",
- "serde",
- "thiserror 2.0.18",
- "tokio",
 ]
 
 [[package]]

@@ -40,7 +40,7 @@ members = [
   "crates/phenotype-port-traits",
   "crates/phenotype-ports-canonical",
   "crates/phenotype-process",
-  "crates/phenotype-retry",
+  "crates/phenotype-security-aggregator",
   "crates/phenotype-shared-config",
   "crates/phenotype-state-machine",
   "crates/phenotype-string",
@@ -134,7 +134,6 @@ phenotype-port-traits = { path = "crates/phenotype-port-traits" }
 phenotype-ports-canonical = { path = "crates/phenotype-ports-canonical" }
 phenotype-process = { path = "crates/phenotype-process" }
 phenotype-project-registry = { path = "crates/phenotype-project-registry" }
-phenotype-retry = { path = "crates/phenotype-retry" }
 phenotype-security-aggregator = { path = "crates/phenotype-security-aggregator" }
 phenotype-shared-config = { path = "crates/phenotype-shared-config" }
 phenotype-state-machine = { path = "crates/phenotype-state-machine" }
