@@ -4,9 +4,7 @@ use super::config::Config;
 use serde::{Deserialize, Serialize};
 
 /// Layer priority levels.
-#[derive(
-    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, Default,
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, Default)]
 #[repr(u8)]
 pub enum LayerPriority {
     /// Built-in defaults (lowest priority).
@@ -38,11 +36,7 @@ pub struct Layer {
 impl Layer {
     /// Create a new layer.
     pub fn new(name: impl Into<String>, priority: LayerPriority, config: Config) -> Self {
-        Self {
-            name: name.into(),
-            priority,
-            config,
-        }
+        Self { name: name.into(), priority, config }
     }
 
     /// Create a default layer.
@@ -100,10 +94,7 @@ impl LayerStack {
 
     /// Create with a merge strategy.
     pub fn with_strategy(strategy: MergeStrategy) -> Self {
-        Self {
-            layers: Vec::new(),
-            strategy,
-        }
+        Self { layers: Vec::new(), strategy }
     }
 
     /// Add a layer.

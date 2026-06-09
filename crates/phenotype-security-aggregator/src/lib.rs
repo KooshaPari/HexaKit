@@ -70,10 +70,7 @@ impl SecurityAggregator {
             .filter(|a| matches!(a.severity, Severity::Warning))
             .count();
 
-        let score = (100.0_f32
-            - critical as f32 * 25.0
-            - high as f32 * 10.0
-            - medium as f32 * 2.0)
+        let score = (100.0_f32 - critical as f32 * 25.0 - high as f32 * 10.0 - medium as f32 * 2.0)
             .max(0.0);
 
         let findings: Vec<Finding> = all_alerts
@@ -188,14 +185,8 @@ impl GitHubDependabotSource {
 
 #[async_trait]
 impl SecuritySource for GitHubDependabotSource {
-    async fn fetch_alerts(
-        &self,
-        owner: &str,
-        repo: &str,
-    ) -> anyhow::Result<Vec<SecurityAlert>> {
-        let url = format!(
-            "https://api.github.com/repos/{owner}/{repo}/dependabot/alerts"
-        );
+    async fn fetch_alerts(&self, owner: &str, repo: &str) -> anyhow::Result<Vec<SecurityAlert>> {
+        let url = format!("https://api.github.com/repos/{owner}/{repo}/dependabot/alerts");
 
         let _response = self
             .client

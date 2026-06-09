@@ -41,11 +41,7 @@ impl SubmissionService {
         dlq: Arc<dyn DeadLetterQueue>,
         max_retries: u32,
     ) -> Self {
-        Self {
-            store,
-            dlq,
-            max_retries,
-        }
+        Self { store, dlq, max_retries }
     }
 
     /// Submit work identified by `key`.
@@ -77,9 +73,8 @@ impl SubmissionService {
         for attempt in 0..=self.max_retries {
             match executor().await {
                 Ok(value) => {
-                    let payload = serde_json::to_value(&value).map_err(|e| {
-                        ConfigError::SerializationError(e.to_string())
-                    })?;
+                    let payload = serde_json::to_value(&value)
+                        .map_err(|e| ConfigError::SerializationError(e.to_string()))?;
                     let result = SubmissionResult::new(key.0.clone(), payload);
                     self.store.set(&key, result.clone()).await?;
                     return Ok(result);
@@ -98,11 +93,8 @@ impl SubmissionService {
         }
 
         // --- 3. Exhausted → DLQ ---
-        let entry = DeadLetterEntry::new(
-            key.0.clone(),
-            self.max_retries + 1,
-            last_error.to_string(),
-        );
+        let entry =
+            DeadLetterEntry::new(key.0.clone(), self.max_retries + 1, last_error.to_string());
         self.dlq.push(entry).await?;
         Err(last_error)
     }

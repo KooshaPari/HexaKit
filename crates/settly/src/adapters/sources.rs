@@ -1,11 +1,9 @@
 //! Configuration source adapters.
 
+use crate::domain::{errors::ConfigError, sources::Source, Config, ConfigValue};
 use async_trait::async_trait;
 use std::collections::HashMap;
 use std::path::Path;
-use crate::domain::{
-    Config, ConfigValue, errors::ConfigError, sources::Source,
-};
 
 /// File-based configuration source.
 pub struct FileSource {
@@ -14,9 +12,7 @@ pub struct FileSource {
 
 impl FileSource {
     pub fn new(path: impl Into<String>) -> Self {
-        Self {
-            path: path.into(),
-        }
+        Self { path: path.into() }
     }
 }
 
@@ -33,15 +29,16 @@ impl Source for FileSource {
     async fn load(&self) -> Result<Config, ConfigError> {
         let content = tokio::fs::read_to_string(&self.path).await?;
 
-        let extension = Path::new(&self.path)
-            .extension()
-            .and_then(|e| e.to_str())
-            .unwrap_or("");
+        let extension = Path::new(&self.path).extension().and_then(|e| e.to_str()).unwrap_or("");
 
         let values: serde_json::Value = match extension {
-            "toml" => toml::from_str(&content).map_err(|e| ConfigError::ParseError(e.to_string()))?,
-            "yaml" | "yml" => serde_yaml::from_str(&content).map_err(|e| ConfigError::ParseError(e.to_string()))?,
-            "json" => serde_json::from_str(&content).map_err(|e| ConfigError::ParseError(e.to_string()))?,
+            "toml" => {
+                toml::from_str(&content).map_err(|e| ConfigError::ParseError(e.to_string()))?
+            }
+            "yaml" | "yml" => serde_yaml::from_str(&content)
+                .map_err(|e| ConfigError::ParseError(e.to_string()))?,
+            "json" => serde_json::from_str(&content)
+                .map_err(|e| ConfigError::ParseError(e.to_string()))?,
             _ => return Err(ConfigError::ParseError(format!("Unknown extension: {extension}"))),
         };
 
@@ -151,11 +148,8 @@ fn flatten_json(value: serde_json::Value) -> HashMap<String, serde_json::Value> 
         match value {
             serde_json::Value::Object(map) => {
                 for (key, val) in map {
-                    let path = if prefix.is_empty() {
-                        key.clone()
-                    } else {
-                        format!("{prefix}.{key}")
-                    };
+                    let path =
+                        if prefix.is_empty() { key.clone() } else { format!("{prefix}.{key}") };
                     flatten_recursive(val, &path, result);
                 }
             }

@@ -32,7 +32,10 @@ mod tests {
     use serde::Deserialize;
 
     #[derive(Deserialize, Debug, PartialEq)]
-    struct TestConfig { name: String, value: i32 }
+    struct TestConfig {
+        name: String,
+        value: i32,
+    }
 
     #[test]
     fn test_load_json() {

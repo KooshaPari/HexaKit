@@ -17,18 +17,20 @@
 //! let config = ConfigBuilder::new().build().unwrap();
 //! ```
 
-pub mod domain;
-pub mod application;
 pub mod adapters;
+pub mod application;
+pub mod domain;
 pub mod infrastructure;
 
 // Re-exports
-pub use domain::{Config, ConfigValue, Layer, LayerPriority};
-pub use domain::errors::ConfigError;
-pub use domain::{IdempotencyKey, IdempotencyStore, SubmissionResult, DeadLetterEntry, DeadLetterQueue};
+pub use adapters::idempotency::{InMemoryDlq, InMemoryIdempotencyStore};
 pub use application::builder::ConfigBuilder;
 pub use application::submission::SubmissionService;
-pub use adapters::idempotency::{InMemoryIdempotencyStore, InMemoryDlq};
+pub use domain::errors::ConfigError;
+pub use domain::{Config, ConfigValue, Layer, LayerPriority};
+pub use domain::{
+    DeadLetterEntry, DeadLetterQueue, IdempotencyKey, IdempotencyStore, SubmissionResult,
+};
 pub use infrastructure::error::ConfigKitError;
 
 /// Framework version

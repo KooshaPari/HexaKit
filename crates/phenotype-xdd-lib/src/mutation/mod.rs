@@ -145,7 +145,9 @@ impl MutationTracker {
 
     /// Get all tracked files.
     pub fn files(&self) -> impl Iterator<Item = (&str, usize)> {
-        self.files.iter().map(|(k, v)| (k.as_str(), v.lines_executed))
+        self.files
+            .iter()
+            .map(|(k, v)| (k.as_str(), v.lines_executed))
     }
 }
 

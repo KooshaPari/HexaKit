@@ -1,7 +1,6 @@
 //! Comprehensive integration tests for phenotype-macros
 //! Traces to: FR-MACRO-001, FR-MACRO-002, FR-MACRO-003
 
-
 // Test 1: Builder macro with single field
 // Traces to: FR-PHENO-MACRO-001
 #[test]

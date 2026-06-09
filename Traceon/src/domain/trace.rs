@@ -1,7 +1,7 @@
 //! Trace - Domain Entity
 
-use uuid::Uuid;
 use chrono::{DateTime, Utc};
+use uuid::Uuid;
 
 use super::Span;
 

@@ -215,6 +215,9 @@ mod tests {
         assert!(result.is_ok());
 
         // Still half-open, need more successes
-        assert!(matches!(cb.state().await, CircuitState::HalfOpen | CircuitState::Closed));
+        assert!(matches!(
+            cb.state().await,
+            CircuitState::HalfOpen | CircuitState::Closed
+        ));
     }
 }

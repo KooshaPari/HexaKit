@@ -75,8 +75,7 @@ impl TokenBucket {
     fn refill(&self, inner: &mut TokenBucketInner) {
         let now = Instant::now();
         let elapsed = now.duration_since(inner.last_refill);
-        let tokens_to_add =
-            elapsed.as_secs_f64() * self.config.refill_rate as f64;
+        let tokens_to_add = elapsed.as_secs_f64() * self.config.refill_rate as f64;
 
         inner.tokens = (inner.tokens + tokens_to_add).min(self.config.capacity as f64);
         inner.last_refill = now;

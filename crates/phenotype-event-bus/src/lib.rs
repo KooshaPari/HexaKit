@@ -96,16 +96,9 @@ pub trait EventBus: Send + Sync + 'static {
     async fn publish(&self, event: EventEnvelope<Self::Event>) -> Result<(), EventBusError>;
 
     /// Subscribe to events matching a pattern
-    async fn subscribe<F>(
-        &self,
-        subject: &str,
-        handler: F,
-    ) -> Result<Subscription, EventBusError>
+    async fn subscribe<F>(&self, subject: &str, handler: F) -> Result<Subscription, EventBusError>
     where
-        F: Fn(EventEnvelope<Self::Event>) -> Result<(), EventBusError>
-            + Send
-            + Sync
-            + 'static;
+        F: Fn(EventEnvelope<Self::Event>) -> Result<(), EventBusError> + Send + Sync + 'static;
 
     /// Request-response pattern
     async fn request<T: Serialize + DeserializeOwned + Send + Sync + Clone + Debug + 'static>(

@@ -26,10 +26,7 @@ pub struct InMemoryIdempotencyStore {
 impl InMemoryIdempotencyStore {
     /// Create with an explicit TTL.
     pub fn new(ttl: Duration) -> Self {
-        Self {
-            inner: Arc::new(Mutex::new(HashMap::new())),
-            ttl,
-        }
+        Self { inner: Arc::new(Mutex::new(HashMap::new())), ttl }
     }
 
     /// Default TTL: 24 hours.
@@ -56,11 +53,7 @@ impl IdempotencyStore for InMemoryIdempotencyStore {
         Ok(None)
     }
 
-    async fn set(
-        &self,
-        key: &IdempotencyKey,
-        result: SubmissionResult,
-    ) -> Result<(), ConfigError> {
+    async fn set(&self, key: &IdempotencyKey, result: SubmissionResult) -> Result<(), ConfigError> {
         let mut store = self.inner.lock().map_err(|e| {
             ConfigError::ParseError(format!("idempotency store lock poisoned: {e}"))
         })?;
@@ -76,9 +69,7 @@ pub struct InMemoryDlq {
 
 impl InMemoryDlq {
     pub fn new() -> Self {
-        Self {
-            inner: Arc::new(Mutex::new(Vec::new())),
-        }
+        Self { inner: Arc::new(Mutex::new(Vec::new())) }
     }
 }
 

@@ -2,9 +2,9 @@
 //!
 //! Provides a swappable key→result store and DLQ hook for submission deduplication.
 
-use std::time::{Duration, Instant};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use std::time::{Duration, Instant};
 
 use super::errors::ConfigError;
 
@@ -37,11 +37,7 @@ pub struct SubmissionResult {
 
 impl SubmissionResult {
     pub fn new(key: impl Into<String>, payload: serde_json::Value) -> Self {
-        Self {
-            key: key.into(),
-            payload,
-            from_cache: false,
-        }
+        Self { key: key.into(), payload, from_cache: false }
     }
 
     pub fn cached(mut self) -> Self {
@@ -60,11 +56,7 @@ pub struct DeadLetterEntry {
 
 impl DeadLetterEntry {
     pub fn new(key: impl Into<String>, attempts: u32, last_error: impl Into<String>) -> Self {
-        Self {
-            key: key.into(),
-            attempts,
-            last_error: last_error.into(),
-        }
+        Self { key: key.into(), attempts, last_error: last_error.into() }
     }
 }
 
@@ -78,11 +70,7 @@ pub struct CacheEntry {
 
 impl CacheEntry {
     pub fn new(result: SubmissionResult, ttl: Duration) -> Self {
-        Self {
-            result,
-            inserted_at: Instant::now(),
-            ttl,
-        }
+        Self { result, inserted_at: Instant::now(), ttl }
     }
 
     pub fn is_expired(&self) -> bool {
@@ -97,11 +85,7 @@ pub trait IdempotencyStore: Send + Sync {
     async fn get(&self, key: &IdempotencyKey) -> Result<Option<SubmissionResult>, ConfigError>;
 
     /// Persist a result under the given key with the configured TTL.
-    async fn set(
-        &self,
-        key: &IdempotencyKey,
-        result: SubmissionResult,
-    ) -> Result<(), ConfigError>;
+    async fn set(&self, key: &IdempotencyKey, result: SubmissionResult) -> Result<(), ConfigError>;
 }
 
 /// Port: dead-letter sink (in-memory Vec, log line, DB table, …).

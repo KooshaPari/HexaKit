@@ -66,17 +66,13 @@ impl ConfigValue {
         match value {
             serde_json::Value::Null => ConfigValue::Null,
             serde_json::Value::Bool(b) => ConfigValue::Bool(*b),
-            serde_json::Value::Number(n) => {
-                ConfigValue::Number(n.as_f64().unwrap_or(0.0))
-            }
+            serde_json::Value::Number(n) => ConfigValue::Number(n.as_f64().unwrap_or(0.0)),
             serde_json::Value::String(s) => ConfigValue::String(s.clone()),
             serde_json::Value::Array(items) => {
                 ConfigValue::Array(items.iter().map(Self::from_json).collect())
             }
             serde_json::Value::Object(map) => ConfigValue::Object(
-                map.iter()
-                    .map(|(k, v)| (k.clone(), Self::from_json(v)))
-                    .collect(),
+                map.iter().map(|(k, v)| (k.clone(), Self::from_json(v))).collect(),
             ),
         }
     }
@@ -188,18 +184,12 @@ pub struct Config {
 impl Config {
     /// Create a new empty configuration.
     pub fn new() -> Self {
-        Self {
-            values: HashMap::new(),
-            source: None,
-        }
+        Self { values: HashMap::new(), source: None }
     }
 
     /// Create from a values map.
     pub fn from_values(values: HashMap<String, ConfigValue>) -> Self {
-        Self {
-            values,
-            source: None,
-        }
+        Self { values, source: None }
     }
 
     /// Create with a source name.
