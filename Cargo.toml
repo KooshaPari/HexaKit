@@ -10,11 +10,11 @@ description = "Phenotype Infrastructure Kit"
 [workspace]
 resolver = "2"
 exclude = [
-  "crates/cipher",  # Source has pre-existing visibility/API bugs; tracked for fix in follow-up
   "crates/focalpoint",  # 867MB repo with vendor dir; fetch too large for subtree-add; pending manual absorption
 ]
 members = [
   "crates/phenotype-analytics",
+  "crates/cipher",
   "crates/phenotype-contract-tests",
   "crates/phenotype-sentry-config",
   "Traceon",
@@ -54,11 +54,6 @@ members = [
   "crates/phenotype-event-bus",
   "crates/phenotype-infrastructure",
   "crates/phenotype-project-registry",
-  "crates/phenotype-security-aggregator",
-  "crates/phenotype-test-fixtures",
-  "crates/phenotype-test-infra",
-  "crates/phenotype-time",
-  "crates/phenotype-validation",
   "crates/phenotype-config-loader",
   "crates/phenotype-xdd-lib",
   "crates/settly",

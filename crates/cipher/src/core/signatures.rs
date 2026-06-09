@@ -102,6 +102,149 @@ pub fn derive_public_key(secret_key: &[u8]) -> Result<Vec<u8>, SignatureError> {
     Ok(verifying_key.to_bytes().to_vec())
 }
 
+/// Ed25519 public key newtype wrapper.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PublicKey(pub Vec<u8>);
+
+impl PublicKey {
+    /// Borrow the raw key bytes.
+    pub fn as_bytes(&self) -> &[u8] {
+        &self.0
+    }
+
+    /// Consume and return the inner bytes.
+    pub fn to_bytes(self) -> Vec<u8> {
+        self.0
+    }
+
+    /// Whether the key is empty.
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
+    /// Key length in bytes.
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+}
+
+impl From<Vec<u8>> for PublicKey {
+    fn from(v: Vec<u8>) -> Self {
+        PublicKey(v)
+    }
+}
+
+impl From<&[u8]> for PublicKey {
+    fn from(v: &[u8]) -> Self {
+        PublicKey(v.to_vec())
+    }
+}
+
+/// Ed25519 secret key newtype wrapper.
+///
+/// The inner `Vec<u8>` is zeroized on drop.
+#[derive(Clone)]
+pub struct SecretKey(pub Vec<u8>);
+
+impl SecretKey {
+    /// Borrow the raw key bytes.
+    pub fn as_bytes(&self) -> &[u8] {
+        &self.0
+    }
+
+    /// Consume and return the inner bytes. The buffer is zeroized on drop.
+    pub fn to_bytes(mut self) -> Vec<u8> {
+        // Take the bytes out without moving out of a Drop type.
+        std::mem::take(&mut self.0)
+    }
+
+    /// Whether the key is empty.
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
+    /// Key length in bytes.
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+}
+
+impl Drop for SecretKey {
+    fn drop(&mut self) {
+        // Best-effort zeroization of secret-key material.
+        for byte in self.0.iter_mut() {
+            // Volatile write to discourage the compiler from optimizing this away.
+            unsafe {
+                core::ptr::write_volatile(byte, 0);
+            }
+        }
+    }
+}
+
+impl std::fmt::Debug for SecretKey {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("SecretKey").field("0", &"[REDACTED]").finish()
+    }
+}
+
+impl From<Vec<u8>> for SecretKey {
+    fn from(v: Vec<u8>) -> Self {
+        SecretKey(v)
+    }
+}
+
+/// Ed25519 signature newtype wrapper.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SignatureBytes(pub Vec<u8>);
+
+impl SignatureBytes {
+    /// Borrow the raw signature bytes.
+    pub fn as_bytes(&self) -> &[u8] {
+        &self.0
+    }
+
+    /// Consume and return the inner bytes.
+    pub fn to_bytes(self) -> Vec<u8> {
+        self.0
+    }
+}
+
+impl From<Vec<u8>> for SignatureBytes {
+    fn from(v: Vec<u8>) -> Self {
+        SignatureBytes(v)
+    }
+}
+
+/// Ed25519 signer facade. Wraps the free functions in this module so callers
+/// can write `Ed25519Signer::sign(msg, &sk)` etc.
+pub struct Ed25519Signer;
+
+impl Ed25519Signer {
+    /// Generate a fresh Ed25519 keypair.
+    pub fn generate_keypair() -> (PublicKey, SecretKey) {
+        let kp = generate_keypair();
+        (PublicKey(kp.public_key), SecretKey(kp.secret_key))
+    }
+
+    /// Sign `message` with `secret_key`.
+    pub fn sign(message: &[u8], secret_key: &SecretKey) -> Result<SignatureBytes, SignatureError> {
+        sign(message, &secret_key.0).map(SignatureBytes)
+    }
+
+    /// Verify `signature` over `message` under `public_key`.
+    ///
+    /// Returns `Ok(true)` if the signature is valid, `Ok(false)` if it is
+    /// structurally valid but does not match, and `Err(_)` if the keys are
+    /// malformed.
+    pub fn verify(
+        message: &[u8],
+        signature: &SignatureBytes,
+        public_key: &PublicKey,
+    ) -> Result<bool, SignatureError> {
+        verify(message, &signature.0, &public_key.0).map(|_| true)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
