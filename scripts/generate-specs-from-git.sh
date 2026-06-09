@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 # Generate AgilePlus specs from git history
 
 REPO="$1"

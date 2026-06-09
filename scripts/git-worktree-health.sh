@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # Validate git worktree metadata: paths exist, gitdir targets resolve, optional orphan hints.
 # Repository root: Phenotype/repos (run from any directory inside the repo).
 #

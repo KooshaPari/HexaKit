@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # generate-evidence.sh — Generates an evidence bundle for a feature.
 # Usage: ./scripts/generate-evidence.sh <feature-id>
 # Outputs: .agileplus/evidence/<feature-id>/bundle.json

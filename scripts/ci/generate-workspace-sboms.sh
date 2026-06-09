@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # Generate CycloneDX JSON (spec 1.5) for every package in the repo root Cargo workspace.
 # Used by .github/workflows/sbom.yml and release.yml — single source of truth vs duplicating matrix YAML.
 #

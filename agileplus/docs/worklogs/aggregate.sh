@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 # Worklog aggregation script
 # Usage: ./worklogs/aggregate.sh [project|priority|category|all]
 
