@@ -1,8 +1,8 @@
-<<<<<<< HEAD
-#!/bin/sh
+#!/bin/bash
+set -euo pipefail
+
 # Stop and remove OrbStack containers for Dragonfly and PostgreSQL.
 # Uses docker CLI (OrbStack v2).
-set -e
 
 DRAGONFLY_NAME="agileplus-dragonfly"
 POSTGRES_NAME="agileplus-postgres"
@@ -18,10 +18,3 @@ for name in "${DRAGONFLY_NAME}" "${POSTGRES_NAME}"; do
 done
 
 echo "OrbStack containers cleaned up."
-=======
-#!/bin/bash
-# OrbStack container shutdown stubs
-# Containers are managed via Docker, not OrbStack
-
-echo "OrbStack shutdown (containers managed via Docker)"
->>>>>>> origin/main
