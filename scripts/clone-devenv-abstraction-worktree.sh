@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -euo pipefail
 # Clone KooshaPari/devenv-abstraction into the Phenotype worktree layout.
 # Run from your machine (not assumed to run in agent sandboxes).
 set -eu

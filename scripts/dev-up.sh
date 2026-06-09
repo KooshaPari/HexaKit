@@ -1,4 +1,5 @@
 #!/bin/sh
+set -euo pipefail
 # AgilePlus Development Stack Startup Script
 # Starts all services with proper port management:
 # - Docker containers (OrbStack): Dragonfly (6379), PostgreSQL (5432)

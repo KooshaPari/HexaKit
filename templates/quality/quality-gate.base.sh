@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # Quality Gate Base Template
 # Location: thegent/templates/quality/quality-gate.base.sh
 #

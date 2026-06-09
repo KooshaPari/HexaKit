@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # Run ripgrep with conservative excludes for Phenotype monorepo audits (agents / CI).
 # Avoids scanning build artifacts, nested worktree hubs, and large vendored trees.
 #

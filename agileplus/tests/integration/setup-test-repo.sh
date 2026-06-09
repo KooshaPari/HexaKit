@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # Set up a minimal git repository for integration tests.
 # Runs inside the test-runner or agileplus-core container.
 #
