@@ -1,3 +1,14 @@
+## Work State
+
+| Field | Value |
+|---|---|
+| Last commit | 2026-06-08 |
+| Open issues | 4 |
+| Open PRs | 2 |
+| Focus | hexagonal-ports kit (46 crates) — PhenoObservability consumer |
+
+Progress: ████████░░ 80%
+
 > **Work state:** ACTIVE · **Progress:** `██████░░░░ 60%`
 > Canonical org hexagonal-ports kit — 46 workspace crates (errors/event-bus/ports-canonical/core/policy/telemetry/...); workspace resolves (cargo metadata ✓), consumed live by PhenoObservability via git dep · updated 2026-06-02
 
