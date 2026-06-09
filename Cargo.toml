@@ -173,8 +173,14 @@ tracing-opentelemetry = "0.24"
 name = "hexakit"
 version = "0.1.0"
 edition = "2021"
+license = "MIT-or-Apache-2.0"
+license-file = "LICENSE"
+description = "HexaKit — Phenotype Infrastructure Kit: shared Rust crates powering the Phenotype platform (config, errors, logging, contracts, MCP, policy, compliance, analytics, etc.)"
+homepage = "https://github.com/KooshaPari/HexaKit"
+documentation = "https://docs.rs/hexakit"
+repository = "https://github.com/KooshaPari/HexaKit"
+readme = "README.md"
 publish = false
-
 [dependencies]
 sha2 = { workspace = true }
 blake3 = { workspace = true }
