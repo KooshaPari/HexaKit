@@ -214,3 +214,5 @@ PHENOTYPE_ERROR_CORE_EXTRACTION_REPORT.md
 
 # Rust build artifacts
 /target
+/worktrees/
+/*-wtrees/
