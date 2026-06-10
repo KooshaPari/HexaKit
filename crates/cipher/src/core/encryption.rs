@@ -58,6 +58,19 @@ impl std::fmt::Debug for AesGcmCipher {
 
 impl AesGcmCipher {
     /// Generate a fresh 32-byte AES-256 key.
+    ///
+    /// # Examples
+    ///
+    /// Round-trip with a freshly generated key:
+    ///
+    /// ```
+    /// use phenotype_cipher::AesGcmCipher;
+    ///
+    /// let key = AesGcmCipher::generate_key();
+    /// let cipher = AesGcmCipher::new(&key).unwrap();
+    /// let ct = cipher.encrypt(b"hello").unwrap();
+    /// assert_eq!(cipher.decrypt(&ct).unwrap(), b"hello");
+    /// ```
     pub fn generate_key() -> Vec<u8> {
         let mut key = vec![0u8; AES_KEY_LEN];
         OsRng.fill_bytes(&mut key);
@@ -65,6 +78,17 @@ impl AesGcmCipher {
     }
 
     /// Construct a cipher from a 32-byte key.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use phenotype_cipher::AesGcmCipher;
+    ///
+    /// let key = AesGcmCipher::generate_key();
+    /// let cipher = AesGcmCipher::new(&key).unwrap();
+    /// let ct = cipher.encrypt(b"hello").unwrap();
+    /// assert_eq!(cipher.decrypt(&ct).unwrap(), b"hello");
+    /// ```
     pub fn new(key: &[u8]) -> CipherResult<Self> {
         if key.len() != AES_KEY_LEN {
             return Err(CipherError::InvalidKey(format!(
@@ -77,6 +101,17 @@ impl AesGcmCipher {
     }
 
     /// Encrypt `plaintext` with a fresh random nonce.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use phenotype_cipher::AesGcmCipher;
+    ///
+    /// let key = AesGcmCipher::generate_key();
+    /// let cipher = AesGcmCipher::new(&key).unwrap();
+    /// let ct = cipher.encrypt(b"hello").unwrap();
+    /// assert_eq!(cipher.decrypt(&ct).unwrap(), b"hello");
+    /// ```
     pub fn encrypt(&self, plaintext: &[u8]) -> CipherResult<Ciphertext> {
         let mut nonce_bytes = [0u8; AES_NONCE_LEN];
         OsRng.fill_bytes(&mut nonce_bytes);
@@ -89,6 +124,17 @@ impl AesGcmCipher {
     }
 
     /// Decrypt a [`Ciphertext`] produced by [`Self::encrypt`].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use phenotype_cipher::AesGcmCipher;
+    ///
+    /// let key = AesGcmCipher::generate_key();
+    /// let cipher = AesGcmCipher::new(&key).unwrap();
+    /// let ct = cipher.encrypt(b"hello").unwrap();
+    /// assert_eq!(cipher.decrypt(&ct).unwrap(), b"hello");
+    /// ```
     pub fn decrypt(&self, ct: &Ciphertext) -> CipherResult<Vec<u8>> {
         if ct.nonce.len() != AES_NONCE_LEN {
             return Err(CipherError::InvalidNonce {
@@ -117,6 +163,19 @@ impl std::fmt::Debug for ChaChaCipher {
 
 impl ChaChaCipher {
     /// Generate a fresh 32-byte ChaCha20 key.
+    ///
+    /// # Examples
+    ///
+    /// Round-trip with a freshly generated key:
+    ///
+    /// ```
+    /// use phenotype_cipher::ChaChaCipher;
+    ///
+    /// let key = ChaChaCipher::generate_key();
+    /// let cipher = ChaChaCipher::new(&key).unwrap();
+    /// let ct = cipher.encrypt(b"hello").unwrap();
+    /// assert_eq!(cipher.decrypt(&ct).unwrap(), b"hello");
+    /// ```
     pub fn generate_key() -> Vec<u8> {
         let mut key = vec![0u8; CHACHA_KEY_LEN];
         OsRng.fill_bytes(&mut key);
@@ -124,6 +183,17 @@ impl ChaChaCipher {
     }
 
     /// Construct a cipher from a 32-byte key.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use phenotype_cipher::ChaChaCipher;
+    ///
+    /// let key = ChaChaCipher::generate_key();
+    /// let cipher = ChaChaCipher::new(&key).unwrap();
+    /// let ct = cipher.encrypt(b"hello").unwrap();
+    /// assert_eq!(cipher.decrypt(&ct).unwrap(), b"hello");
+    /// ```
     pub fn new(key: &[u8]) -> CipherResult<Self> {
         if key.len() != CHACHA_KEY_LEN {
             return Err(CipherError::InvalidKey(format!(
@@ -136,6 +206,17 @@ impl ChaChaCipher {
     }
 
     /// Encrypt `plaintext` with a fresh random nonce.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use phenotype_cipher::ChaChaCipher;
+    ///
+    /// let key = ChaChaCipher::generate_key();
+    /// let cipher = ChaChaCipher::new(&key).unwrap();
+    /// let ct = cipher.encrypt(b"hello").unwrap();
+    /// assert_eq!(cipher.decrypt(&ct).unwrap(), b"hello");
+    /// ```
     pub fn encrypt(&self, plaintext: &[u8]) -> CipherResult<Ciphertext> {
         let mut nonce_bytes = [0u8; CHACHA_NONCE_LEN];
         OsRng.fill_bytes(&mut nonce_bytes);
@@ -148,6 +229,17 @@ impl ChaChaCipher {
     }
 
     /// Decrypt a [`Ciphertext`] produced by [`Self::encrypt`].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use phenotype_cipher::ChaChaCipher;
+    ///
+    /// let key = ChaChaCipher::generate_key();
+    /// let cipher = ChaChaCipher::new(&key).unwrap();
+    /// let ct = cipher.encrypt(b"hello").unwrap();
+    /// assert_eq!(cipher.decrypt(&ct).unwrap(), b"hello");
+    /// ```
     pub fn decrypt(&self, ct: &Ciphertext) -> CipherResult<Vec<u8>> {
         if ct.nonce.len() != CHACHA_NONCE_LEN {
             return Err(CipherError::InvalidNonce {
