@@ -258,6 +258,54 @@ fn bench_chunked_roundtrip(c: &mut Criterion) {
     group.finish();
 }
 
+// ---------- (e) algorithm x payload-size round-trip -------------------------
+
+fn bench_algorithm_roundtrip(c: &mut Criterion) {
+    // Cross-product benchmark: every algorithm exposed by the crate x a small
+    // grid of payload sizes (1 KB, 10 KB, 100 KB). Each bench_function does a
+    // full encrypt+decrypt round-trip, so the measurement covers the cipher's
+    // cost on a representative single-shot payload (the only mode the API
+    // exposes today).
+    //
+    // NOTE: XChaCha20-Poly1305 is intentionally NOT included. The
+    // `phenotype-cipher` crate does not currently expose an XChaCha20-Poly1305
+    // type — the public API surface is limited to `AesGcmCipher`
+    // (AES-256-GCM) and `ChaChaCipher` (ChaCha20-Poly1305). Adding a third
+    // algorithm here would require extending the crate's public API, which
+    // is out of scope for this bench-only change.
+    let sizes: &[(usize, &str)] = &[
+        (KB, "1kb"),
+        (10 * KB, "10kb"),
+        (100 * KB, "100kb"),
+    ];
+
+    for (size, label) in sizes {
+        let payload = make_payload(*size);
+        let mut group = c.benchmark_group("cipher_algorithm_roundtrip");
+        group.throughput(Throughput::Bytes(*size as u64));
+
+        group.bench_function(BenchmarkId::new("aes_gcm", label), |b| {
+            let (_, cipher) = fresh_aes();
+            b.iter(|| {
+                let ct = cipher.encrypt(black_box(&payload)).unwrap();
+                let pt = cipher.decrypt(black_box(&ct)).unwrap();
+                assert_eq!(pt.len(), payload.len());
+            });
+        });
+
+        group.bench_function(BenchmarkId::new("chacha20_poly1305", label), |b| {
+            let (_, cipher) = fresh_chacha();
+            b.iter(|| {
+                let ct = cipher.encrypt(black_box(&payload)).unwrap();
+                let pt = cipher.decrypt(black_box(&ct)).unwrap();
+                assert_eq!(pt.len(), payload.len());
+            });
+        });
+
+        group.finish();
+    }
+}
+
 // ---------- entry points ----------------------------------------------------
 
 criterion_group!(
@@ -265,6 +313,7 @@ criterion_group!(
     bench_single_blob_roundtrip,
     bench_1mb_roundtrip,
     bench_key_sizes,
-    bench_chunked_roundtrip
+    bench_chunked_roundtrip,
+    bench_algorithm_roundtrip
 );
 criterion_main!(benches);
