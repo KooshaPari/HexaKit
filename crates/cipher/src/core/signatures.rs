@@ -113,6 +113,10 @@ impl PublicKey {
     }
 
     /// Consume and return the inner bytes.
+    // `to_bytes` intentionally takes `self` by value (not `&self`) so callers
+    // can move out of the wrapper. This is part of the stable public API and
+    // matches the convention used by the other newtypes in this module.
+    #[allow(clippy::wrong_self_convention)]
     pub fn to_bytes(self) -> Vec<u8> {
         self.0
     }
@@ -153,6 +157,11 @@ impl SecretKey {
     }
 
     /// Consume and return the inner bytes. The buffer is zeroized on drop.
+    // `to_bytes` intentionally takes `self` by value (not `&self`) so callers
+    // can move the inner `Vec<u8>` out and observe the zeroization-on-drop
+    // behavior of the secret-key wrapper. This is part of the stable public
+    // API and is the documented contract of this type.
+    #[allow(clippy::wrong_self_convention)]
     pub fn to_bytes(mut self) -> Vec<u8> {
         // Take the bytes out without moving out of a Drop type.
         std::mem::take(&mut self.0)
@@ -204,6 +213,10 @@ impl SignatureBytes {
     }
 
     /// Consume and return the inner bytes.
+    // `to_bytes` intentionally takes `self` by value (not `&self`) so callers
+    // can move out of the wrapper. This is part of the stable public API and
+    // matches the convention used by the other newtypes in this module.
+    #[allow(clippy::wrong_self_convention)]
     pub fn to_bytes(self) -> Vec<u8> {
         self.0
     }
