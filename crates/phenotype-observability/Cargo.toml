@@ -20,6 +20,11 @@ tracing = "0.1"
 tracing-subscriber = "0.3"
 tracing-opentelemetry = "0.24"
 
+# Used by OTelError derive (matches phenotype-logging's
+# thiserror = "2" pin at HexaKit/Cargo.toml:72). Pulled in
+# workspace-wide; the lift per plan §10 T3 will keep using it.
+thiserror = { workspace = true }
+
 # Temporary: this crate will eventually own the OTel init shape that
 # currently lives in phenotype-logging/src/otel.rs. The path dep here
 # is transitional — it lets us stand up the scaffold before the OTel
