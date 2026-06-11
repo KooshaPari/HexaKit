@@ -22,7 +22,7 @@ jobs:
   # ─── Build Release Binaries ───────────────────────────────────────────
   build-release:
     name: Build Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         include:
@@ -68,7 +68,7 @@ jobs:
   # ─── CycloneDX SBOMs (attached to GitHub Release with binaries) ───────
   cyclonedx-sboms:
     name: CycloneDX SBOMs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
@@ -93,7 +93,7 @@ jobs:
   # ─── Syft SPDX (complements CycloneDX per-crate JSON) ─────────────────
   syft-spdx:
     name: Syft SPDX (workspace)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
@@ -126,7 +126,7 @@ jobs:
   # ─── Create GitHub Release ────────────────────────────────────────────
   create-release:
     name: Create GitHub Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: startsWith(github.ref, 'refs/tags/v')
     needs:
       - build-release

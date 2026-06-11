@@ -19,12 +19,12 @@ impl AnalyticsEvent {
             timestamp: chrono::Utc::now().to_rfc3339(),
         }
     }
-    
+
     pub fn with_property(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
         self.properties.insert(key.into(), value.into());
         self
     }
-    
+
     pub fn with_user_id(mut self, user_id: impl Into<String>) -> Self {
         self.user_id = Some(user_id.into());
         self

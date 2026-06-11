@@ -76,7 +76,7 @@ pub mod error {
 
 /// Configuration re-exports
 pub mod config {
-    pub use phenotype_config_core::{ConfigLoader};
+    pub use phenotype_config_core::ConfigLoader;
 }
 
 /// Event bus re-exports
@@ -126,7 +126,7 @@ pub mod state_machine {
 
 /// Policy engine re-exports
 pub mod policy {
-    pub use phenotype_policy_engine::{PolicyEngine, PolicyResult, Policy, Rule};
+    pub use phenotype_policy_engine::{Policy, PolicyEngine, PolicyResult, Rule};
 }
 
 /// Cache re-exports
@@ -145,9 +145,7 @@ pub mod time {
 }
 
 /// HTTP client re-exports
-pub mod http {
-    
-}
+pub mod http {}
 
 /// External crate re-exports for convenience
 pub mod external {

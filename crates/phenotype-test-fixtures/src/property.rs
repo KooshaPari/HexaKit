@@ -100,7 +100,11 @@ where
 }
 
 /// Generate a random HashMap
-pub fn hash_map<K, V, Fk, Fv>(len: usize, key_gen: Fk, val_gen: Fv) -> std::collections::HashMap<K, V>
+pub fn hash_map<K, V, Fk, Fv>(
+    len: usize,
+    key_gen: Fk,
+    val_gen: Fv,
+) -> std::collections::HashMap<K, V>
 where
     K: std::cmp::Eq + std::hash::Hash,
     Fk: Fn() -> K,
@@ -141,7 +145,8 @@ impl PropertyTest {
     {
         for i in 0..self.iterations {
             test();
-            #[allow(clippy::manual_is_multiple_of)] // is_multiple_of stabilized in 1.87; MSRV is 1.86
+            #[allow(clippy::manual_is_multiple_of)]
+            // is_multiple_of stabilized in 1.87; MSRV is 1.86
             if i % 10 == 0 {
                 println!("  [{}] iteration {}/{}", self.name, i, self.iterations);
             }
@@ -196,11 +201,9 @@ mod tests {
     #[test]
     fn test_property_test() {
         let counter = std::cell::Cell::new(0);
-        PropertyTest::new("test")
-            .iterations(10)
-            .run(|| {
-                counter.set(counter.get() + 1);
-            });
+        PropertyTest::new("test").iterations(10).run(|| {
+            counter.set(counter.get() + 1);
+        });
         assert_eq!(counter.get(), 10);
     }
 }

@@ -1,9 +1,9 @@
 //! Adapters layer.
 
-pub mod sources;
 pub mod formats;
 pub mod idempotency;
+pub mod sources;
 
-pub use sources::{FileSource, EnvSource};
-pub use formats::{TomlFormat, YamlFormat, JsonFormat};
-pub use idempotency::{InMemoryIdempotencyStore, InMemoryDlq};
+pub use formats::{JsonFormat, TomlFormat, YamlFormat};
+pub use idempotency::{InMemoryDlq, InMemoryIdempotencyStore};
+pub use sources::{EnvSource, FileSource};

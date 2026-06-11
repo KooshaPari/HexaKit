@@ -2,7 +2,7 @@
 
 use async_trait::async_trait;
 
-use super::{SpanKind, SpanContext};
+use super::{SpanContext, SpanKind};
 
 /// Tracer trait - primary port
 #[async_trait]

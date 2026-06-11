@@ -66,7 +66,9 @@ impl Bulkhead {
         Ok(f().await)
     }
 
-    async fn acquire_execution_permit(&self) -> Result<SemaphorePermit<'_>, crate::InfrastructureError> {
+    async fn acquire_execution_permit(
+        &self,
+    ) -> Result<SemaphorePermit<'_>, crate::InfrastructureError> {
         // In a real implementation, we'd track concurrent vs queued separately
         // For now, we use a simple approach
         self.inner
@@ -129,16 +131,16 @@ mod tests {
 
         // First operation starts immediately
         let handle1 = tokio::spawn(async move {
-            bulkhead.execute(|| async {
-                tokio::time::sleep(Duration::from_millis(50)).await;
-                1
-            }).await
+            bulkhead
+                .execute(|| async {
+                    tokio::time::sleep(Duration::from_millis(50)).await;
+                    1
+                })
+                .await
         });
 
         // Second operation either queues or starts after first finishes
-        let handle2 = tokio::spawn(async move {
-            bulkhead2.execute(|| async { 2 }).await
-        });
+        let handle2 = tokio::spawn(async move { bulkhead2.execute(|| async { 2 }).await });
 
         let result1 = handle1.await.unwrap();
         let result2 = handle2.await.unwrap();

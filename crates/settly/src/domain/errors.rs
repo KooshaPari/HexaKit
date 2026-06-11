@@ -7,17 +7,10 @@ pub enum ConfigError {
     KeyNotFound(String),
 
     #[error("Type mismatch for {key}: expected {expected}, got {actual}")]
-    TypeMismatch {
-        key: String,
-        expected: String,
-        actual: String,
-    },
+    TypeMismatch { key: String, expected: String, actual: String },
 
     #[error("Validation failed: {validator}: {message}")]
-    ValidationFailed {
-        validator: String,
-        message: String,
-    },
+    ValidationFailed { validator: String, message: String },
 
     #[error("Parse error: {0}")]
     ParseError(String),

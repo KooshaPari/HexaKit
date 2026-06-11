@@ -64,7 +64,6 @@ struct MemoryStorage {
     data: HashMap<String, String>,
 }
 
-
 impl StoragePort for MemoryStorage {
     fn get(&self, key: &str) -> Option<String> {
         self.data.get(key).cloned()

@@ -86,11 +86,7 @@ mod tests {
                 .await
                 .unwrap();
 
-            assert_eq!(
-                counter.load(Ordering::SeqCst),
-                1,
-                "executor must NOT run on duplicate key"
-            );
+            assert_eq!(counter.load(Ordering::SeqCst), 1, "executor must NOT run on duplicate key");
             assert!(result.from_cache, "second result must be marked from_cache");
             // Payload is from the first run, not the second
             assert_eq!(result.payload, serde_json::json!({"v": 42}));
@@ -138,9 +134,7 @@ mod tests {
         let key = IdempotencyKey::new("T4");
         let result = svc
             .submit(key, || async {
-                Err::<serde_json::Value, ConfigError>(ConfigError::ParseError(
-                    "boom".to_string(),
-                ))
+                Err::<serde_json::Value, ConfigError>(ConfigError::ParseError("boom".to_string()))
             })
             .await;
 
@@ -150,10 +144,7 @@ mod tests {
         assert_eq!(entries.len(), 1, "one entry must be in the DLQ");
         assert_eq!(entries[0].key, "T4");
         assert_eq!(entries[0].attempts, 2, "2 total attempts (1 + 1 retry)");
-        assert!(
-            entries[0].last_error.contains("boom"),
-            "DLQ entry must capture the error message"
-        );
+        assert!(entries[0].last_error.contains("boom"), "DLQ entry must capture the error message");
     }
 
     // -------------------------------------------------------------------------
@@ -198,10 +189,6 @@ mod tests {
             .unwrap();
         }
 
-        assert_eq!(
-            counter.load(Ordering::SeqCst),
-            2,
-            "executor must re-run after TTL expiry"
-        );
+        assert_eq!(counter.load(Ordering::SeqCst), 2, "executor must re-run after TTL expiry");
     }
 }

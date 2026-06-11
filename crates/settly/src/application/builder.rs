@@ -1,8 +1,8 @@
 //! Configuration builder.
 
 use crate::domain::{
-    Config, ConfigError, ConfigValue, LayerPriority, LayerStack, MergeStrategy,
-    sources::Source, validation::Validator,
+    sources::Source, validation::Validator, Config, ConfigError, ConfigValue, LayerPriority,
+    LayerStack, MergeStrategy,
 };
 use std::collections::HashMap;
 
@@ -15,18 +15,12 @@ pub struct ConfigBuilder {
 impl ConfigBuilder {
     /// Create a new builder.
     pub fn new() -> Self {
-        Self {
-            stack: LayerStack::new(),
-            validators: Vec::new(),
-        }
+        Self { stack: LayerStack::new(), validators: Vec::new() }
     }
 
     /// Create with a merge strategy.
     pub fn with_strategy(strategy: MergeStrategy) -> Self {
-        Self {
-            stack: LayerStack::with_strategy(strategy),
-            validators: Vec::new(),
-        }
+        Self { stack: LayerStack::with_strategy(strategy), validators: Vec::new() }
     }
 
     /// Add a source with priority.

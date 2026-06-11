@@ -1,7 +1,7 @@
 //! Tracer Provider - Use Case
 
-use std::sync::Arc;
 use async_trait::async_trait;
+use std::sync::Arc;
 
 use crate::domain::*;
 
@@ -61,9 +61,7 @@ impl TracerProvider {
     }
 
     pub fn tracer(&self) -> TracerInstance<'_> {
-        TracerInstance {
-            provider: self,
-        }
+        TracerInstance { provider: self }
     }
 
     pub async fn shutdown(&self) -> TraceResult<()> {
@@ -88,7 +86,9 @@ impl<'a> Tracer for TracerInstance<'a> {
     }
 
     fn span_with_kind(&self, name: &str, kind: SpanKind) -> Box<dyn SpanHandle> {
-        Box::new(ActiveSpan::new(Span::new(name, uuid::Uuid::new_v4()).with_kind(kind)))
+        Box::new(ActiveSpan::new(
+            Span::new(name, uuid::Uuid::new_v4()).with_kind(kind),
+        ))
     }
 
     fn name(&self) -> &str {

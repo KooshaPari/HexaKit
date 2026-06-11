@@ -13,7 +13,7 @@ impl<B: AnalyticsBackend> AnalyticsClient<B> {
     pub fn new(backend: B) -> Self {
         Self { backend }
     }
-    
+
     /// Track an event
     pub async fn track(&self, event: AnalyticsEvent) -> Result<()> {
         self.backend.track(event).await

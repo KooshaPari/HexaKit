@@ -18,7 +18,7 @@ permissions:
 jobs:
   codeql:
     name: CodeQL Analysis
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
       matrix:
@@ -36,7 +36,7 @@ jobs:
 
   trivy-repo:
     name: Trivy Repository Scan
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - uses: aquasecurity/trivy-action@314ff8b43182423b84c50b1670b0e10f858f2d98
@@ -56,7 +56,7 @@ jobs:
 
   full-semgrep:
     name: Full Semgrep Analysis
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -79,7 +79,7 @@ jobs:
 
   full-secrets:
     name: Full Secret Scan
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:

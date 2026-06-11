@@ -4,9 +4,7 @@
 //!
 //! These tests verify the mutation tracking functionality.
 
-use phenotype_xdd_lib::mutation::{
-    MutationTracker, MutationKind, MutationStatus, CoverageReport,
-};
+use phenotype_xdd_lib::mutation::{CoverageReport, MutationKind, MutationStatus, MutationTracker};
 
 #[test]
 fn test_mutation_tracker_initialization() {
@@ -95,6 +93,12 @@ fn test_mutation_kind_variants() {
     assert_eq!(format!("{:?}", MutationKind::Arithmetic), "Arithmetic");
     assert_eq!(format!("{:?}", MutationKind::Comparison), "Comparison");
     assert_eq!(format!("{:?}", MutationKind::Boolean), "Boolean");
-    assert_eq!(format!("{:?}", MutationKind::ValueReplacement), "ValueReplacement");
-    assert_eq!(format!("{:?}", MutationKind::StatementRemoval), "StatementRemoval");
+    assert_eq!(
+        format!("{:?}", MutationKind::ValueReplacement),
+        "ValueReplacement"
+    );
+    assert_eq!(
+        format!("{:?}", MutationKind::StatementRemoval),
+        "StatementRemoval"
+    );
 }

@@ -30,7 +30,7 @@ impl Contract {
     pub fn new() -> Self {
         Self { tests: Vec::new() }
     }
-    
+
     pub fn add_test(&mut self, test: ContractTest) {
         self.tests.push(test);
     }

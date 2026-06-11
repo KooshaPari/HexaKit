@@ -8,10 +8,10 @@
 
 use thiserror::Error;
 
-pub mod pool;
-pub mod circuit;
-pub mod rate_limit;
 pub mod bulkhead;
+pub mod circuit;
+pub mod pool;
+pub mod rate_limit;
 
 /// Infrastructure errors
 #[derive(Error, Debug, Clone)]
@@ -30,10 +30,10 @@ pub enum InfrastructureError {
     Other(String),
 }
 
-pub use pool::{ConnectionPool, PooledConnection, PoolConfig};
-pub use circuit::{CircuitBreaker, CircuitConfig, CircuitState};
-pub use rate_limit::{RateLimiter, RateLimitConfig, TokenBucket};
 pub use bulkhead::{Bulkhead, BulkheadConfig};
+pub use circuit::{CircuitBreaker, CircuitConfig, CircuitState};
+pub use pool::{ConnectionPool, PoolConfig, PooledConnection};
+pub use rate_limit::{RateLimitConfig, RateLimiter, TokenBucket};
 
 #[cfg(test)]
 mod tests {

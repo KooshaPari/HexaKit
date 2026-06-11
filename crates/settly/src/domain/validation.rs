@@ -1,7 +1,7 @@
 //! Configuration validation.
 
-use super::errors::ConfigError;
 use super::config::{Config, ConfigValue};
+use super::errors::ConfigError;
 
 /// Validation rule.
 pub trait Validator: Send + Sync {
@@ -49,10 +49,7 @@ pub struct TypeValidator {
 
 impl TypeValidator {
     pub fn new(key: impl Into<String>, expected_type: &'static str) -> Self {
-        Self {
-            key: key.into(),
-            expected_type,
-        }
+        Self { key: key.into(), expected_type }
     }
 }
 
@@ -101,11 +98,7 @@ pub struct RangeValidator {
 
 impl RangeValidator {
     pub fn new(key: impl Into<String>) -> Self {
-        Self {
-            key: key.into(),
-            min: None,
-            max: None,
-        }
+        Self { key: key.into(), min: None, max: None }
     }
 
     pub fn with_min(mut self, min: f64) -> Self {
@@ -169,9 +162,7 @@ pub struct CompositeValidator {
 
 impl CompositeValidator {
     pub fn new() -> Self {
-        Self {
-            validators: Vec::new(),
-        }
+        Self { validators: Vec::new() }
     }
 
     pub fn push<V: Validator + 'static>(mut self, validator: V) -> Self {
@@ -218,9 +209,7 @@ mod tests {
 
     #[test]
     fn test_range_validator() {
-        let validator = RangeValidator::new("port")
-            .with_min(1.0)
-            .with_max(65535.0);
+        let validator = RangeValidator::new("port").with_min(1.0).with_max(65535.0);
 
         let mut config = Config::new();
         config.set("port", 8080);

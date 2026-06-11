@@ -41,7 +41,7 @@ permissions:
 jobs:
   snyk-test:
     name: Snyk Vulnerability Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       pull-requests: write
     strategy:
@@ -125,7 +125,7 @@ jobs:
 
   snyk-fix:
     name: Snyk Fix (Auto-patch)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: write
@@ -200,7 +200,7 @@ jobs:
 
   dependency-check:
     name: Snyk Dependency Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     steps:
@@ -233,7 +233,7 @@ jobs:
 
   summary:
     name: Security Summary
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: always()
     needs: [snyk-test]
     steps:

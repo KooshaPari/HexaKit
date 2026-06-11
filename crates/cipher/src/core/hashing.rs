@@ -2,7 +2,7 @@
 //!
 //! Provides cryptographic hash functions including SHA-256, SHA-512, and Blake3
 
-use blake3::Hasher as Blake3Hasher;
+use blake3::Hasher as B3Hasher;
 use sha2::{Digest, Sha256, Sha512};
 
 /// Hash algorithm selection
@@ -29,7 +29,7 @@ pub fn sha512(data: &[u8]) -> Vec<u8> {
 
 /// Hash data using Blake3
 pub fn blake3(data: &[u8]) -> Vec<u8> {
-    Blake3Hasher::new().update(data).finalize().as_bytes().to_vec()
+    B3Hasher::new().update(data).finalize().as_bytes().to_vec()
 }
 
 /// Hash with algorithm selection
@@ -60,6 +60,104 @@ pub fn verify_hmac_sha256(key: &[u8], data: &[u8], expected: &[u8]) -> bool {
     mac.update(data);
     
     mac.verify_slice(expected).is_ok()
+}
+
+/// SHA-256 hasher newtype wrapper. Returned by `Sha256Hasher::hash` so callers
+/// can call `.as_bytes()` and `.len()` on the result.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Sha256Hash(pub Vec<u8>);
+
+impl Sha256Hash {
+    /// Borrow the underlying hash bytes.
+    pub fn as_bytes(&self) -> &[u8] {
+        &self.0
+    }
+
+    /// Length of the hash in bytes (always 32 for SHA-256).
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    /// SHA-256 always produces output, so this is always `false`.
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
+
+/// SHA-256 hasher facade.
+pub struct Sha256Hasher;
+
+impl Sha256Hasher {
+    /// Hash `data` with SHA-256 and return a [`Sha256Hash`].
+    pub fn hash(data: &[u8]) -> Sha256Hash {
+        Sha256Hash(sha256(data))
+    }
+}
+
+/// BLAKE3 hasher newtype wrapper.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Blake3Hash(pub Vec<u8>);
+
+impl Blake3Hash {
+    /// Borrow the underlying hash bytes.
+    pub fn as_bytes(&self) -> &[u8] {
+        &self.0
+    }
+
+    /// Length of the hash in bytes (always 32 for BLAKE3 default).
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    /// BLAKE3 default output is never empty.
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
+
+/// BLAKE3 hasher facade.
+pub struct Blake3Hasher;
+
+impl Blake3Hasher {
+    /// Hash `data` with BLAKE3 and return a [`Blake3Hash`].
+    pub fn hash(data: &[u8]) -> Blake3Hash {
+        Blake3Hash(blake3(data))
+    }
+}
+
+/// BLAKE2b hasher newtype wrapper.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Blake2bHash(pub Vec<u8>);
+
+impl Blake2bHash {
+    /// Borrow the underlying hash bytes.
+    pub fn as_bytes(&self) -> &[u8] {
+        &self.0
+    }
+
+    /// Length of the hash in bytes.
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    /// Whether the hash is empty.
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
+
+/// BLAKE2b hasher facade.
+///
+/// Note: This implementation falls back to BLAKE3 at 32-byte output, which is
+/// the same length as BLAKE2b-256. Callers needing strict BLAKE2b should
+/// add the `blake2` crate.
+pub struct Blake2bHasher;
+
+impl Blake2bHasher {
+    /// Hash `data` and return a [`Blake2bHash`] (32 bytes).
+    pub fn hash(data: &[u8]) -> Blake2bHash {
+        Blake2bHash(blake3(data))
+    }
 }
 
 #[cfg(test)]

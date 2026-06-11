@@ -8,7 +8,8 @@ use tokio::sync::mpsc;
 use tokio::sync::RwLock;
 
 /// In-memory event bus for testing
-pub struct InMemoryEventBus<T: Serialize + DeserializeOwned + Send + Sync + Clone + Debug + 'static> {
+pub struct InMemoryEventBus<T: Serialize + DeserializeOwned + Send + Sync + Clone + Debug + 'static>
+{
     subscribers: Arc<DashMap<String, Vec<mpsc::UnboundedSender<EventEnvelope<T>>>>>,
     closed: Arc<RwLock<bool>>,
 }
@@ -64,11 +65,7 @@ impl<T: Serialize + DeserializeOwned + Send + Sync + Clone + Debug + 'static> Ev
         Ok(())
     }
 
-    async fn subscribe<F>(
-        &self,
-        subject: &str,
-        handler: F,
-    ) -> Result<Subscription, EventBusError>
+    async fn subscribe<F>(&self, subject: &str, handler: F) -> Result<Subscription, EventBusError>
     where
         F: Fn(EventEnvelope<T>) -> Result<(), EventBusError> + Send + Sync + 'static,
     {
@@ -202,9 +199,12 @@ mod tests {
         bus.close().await.unwrap();
 
         let result = bus
-            .publish(EventEnvelope::new("test", TestEvent {
-                message: "test".to_string(),
-            }))
+            .publish(EventEnvelope::new(
+                "test",
+                TestEvent {
+                    message: "test".to_string(),
+                },
+            ))
             .await;
 
         assert!(matches!(result, Err(EventBusError::Connection(_))));
