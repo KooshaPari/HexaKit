@@ -298,6 +298,12 @@ impl std::error::Error for Error {
     }
 }
 
+impl Default for Error {
+    fn default() -> Self {
+        Self::Other("default error".into())
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Serializable error envelope (for API responses / logging)
 // ---------------------------------------------------------------------------
@@ -622,5 +628,18 @@ mod tests {
         // Other variant has no source.
         let err = Error::Other("lonely".into());
         assert!(err.source().is_none());
+    }
+
+    #[test]
+    fn error_default_returns_other_catch_all() {
+        // `Default::default()` should yield the `Other` catch-all variant
+        // with the documented placeholder message, so callers can rely on
+        // `Error: Default` (e.g. `Result<T, Error>::unwrap_or_default`).
+        let err: Error = Error::default();
+        assert!(
+            matches!(err, Error::Other(ref msg) if msg == "default error"),
+            "default should be Error::Other(\"default error\"), got {err}"
+        );
+        assert_eq!(err.to_string(), "other: default error");
     }
 }
