@@ -241,6 +241,64 @@ pub enum StorageError {
 }
 
 // ---------------------------------------------------------------------------
+// Unified error enum
+// ---------------------------------------------------------------------------
+
+/// Unified error type that can represent a failure from any layer.
+///
+/// This is a convenience enum for callers (binaries, library APIs,
+/// adapters) that want a single error type rather than juggling the
+/// per-layer enums (`ApiError`, `DomainError`, `RepositoryError`,
+/// `ConfigError`, `StorageError`). The [`Display`] implementation is
+/// hand-written — not driven by `thiserror` — so every variant
+/// renders in a consistent `"<layer>: <message>"` shape regardless
+/// of the inner error's own `Display` format.
+///
+/// Use [`Error::source`] to recover the underlying per-layer error
+/// when you need to match on its specific variant.
+#[derive(Debug)]
+pub enum Error {
+    /// HTTP / transport-layer failure.
+    Api(ApiError),
+    /// Business-logic failure.
+    Domain(DomainError),
+    /// Persistence-layer failure.
+    Repository(RepositoryError),
+    /// Configuration loading / parsing failure.
+    Config(ConfigError),
+    /// Raw I/O / cache / network failure.
+    Storage(StorageError),
+    /// Catch-all for ad-hoc error strings that don't map to a layer.
+    Other(String),
+}
+
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Api(e) => write!(f, "api: {e}"),
+            Self::Domain(e) => write!(f, "domain: {e}"),
+            Self::Repository(e) => write!(f, "repository: {e}"),
+            Self::Config(e) => write!(f, "config: {e}"),
+            Self::Storage(e) => write!(f, "storage: {e}"),
+            Self::Other(msg) => write!(f, "other: {msg}"),
+        }
+    }
+}
+
+impl std::error::Error for Error {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::Api(e) => Some(e),
+            Self::Domain(e) => Some(e),
+            Self::Repository(e) => Some(e),
+            Self::Config(e) => Some(e),
+            Self::Storage(e) => Some(e),
+            Self::Other(_) => None,
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Serializable error envelope (for API responses / logging)
 // ---------------------------------------------------------------------------
 
@@ -286,6 +344,7 @@ impl<T, E: std::fmt::Display> ErrorContext<T, E> for Result<T, E> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::error::Error as _;
 
     #[test]
     fn api_error_status_codes() {
@@ -439,5 +498,129 @@ mod tests {
         let api_err = ApiError::Internal("crash".into());
         let anyhow_err: anyhow::Error = api_err.into();
         assert!(anyhow_err.to_string().contains("crash"));
+    }
+
+    // ---- Error enum Display tests (1 per variant) ----
+
+    #[test]
+    fn error_display_api_variant() {
+        let err = Error::Api(ApiError::BadRequest("bad input".into()));
+        let rendered = err.to_string();
+        assert!(
+            rendered.contains("api"),
+            "rendered should include layer label: {rendered}"
+        );
+        assert!(
+            rendered.contains("bad input"),
+            "rendered should include inner message: {rendered}"
+        );
+        assert!(
+            rendered.starts_with("api:"),
+            "rendered should start with `api:`: {rendered}"
+        );
+    }
+
+    #[test]
+    fn error_display_domain_variant() {
+        let err = Error::Domain(DomainError::Validation("name required".into()));
+        let rendered = err.to_string();
+        assert!(
+            rendered.contains("domain"),
+            "rendered should include layer label: {rendered}"
+        );
+        assert!(
+            rendered.contains("name required"),
+            "rendered should include inner message: {rendered}"
+        );
+        assert!(
+            rendered.starts_with("domain:"),
+            "rendered should start with `domain:`: {rendered}"
+        );
+    }
+
+    #[test]
+    fn error_display_repository_variant() {
+        let err = Error::Repository(RepositoryError::Connection("db down".into()));
+        let rendered = err.to_string();
+        assert!(
+            rendered.contains("repository"),
+            "rendered should include layer label: {rendered}"
+        );
+        assert!(
+            rendered.contains("db down"),
+            "rendered should include inner message: {rendered}"
+        );
+        assert!(
+            rendered.starts_with("repository:"),
+            "rendered should start with `repository:`: {rendered}"
+        );
+    }
+
+    #[test]
+    fn error_display_config_variant() {
+        let err = Error::Config(ConfigError::Other("bad cfg".into()));
+        let rendered = err.to_string();
+        assert!(
+            rendered.contains("config"),
+            "rendered should include layer label: {rendered}"
+        );
+        assert!(
+            rendered.contains("bad cfg"),
+            "rendered should include inner message: {rendered}"
+        );
+        assert!(
+            rendered.starts_with("config:"),
+            "rendered should start with `config:`: {rendered}"
+        );
+    }
+
+    #[test]
+    fn error_display_storage_variant() {
+        let err = Error::Storage(StorageError::NotFound("file.dat".into()));
+        let rendered = err.to_string();
+        assert!(
+            rendered.contains("storage"),
+            "rendered should include layer label: {rendered}"
+        );
+        assert!(
+            rendered.contains("file.dat"),
+            "rendered should include inner message: {rendered}"
+        );
+        assert!(
+            rendered.starts_with("storage:"),
+            "rendered should start with `storage:`: {rendered}"
+        );
+    }
+
+    #[test]
+    fn error_display_other_variant() {
+        let err = Error::Other("misc".into());
+        let rendered = err.to_string();
+        assert!(
+            rendered.contains("other"),
+            "rendered should include layer label: {rendered}"
+        );
+        assert!(
+            rendered.contains("misc"),
+            "rendered should include inner message: {rendered}"
+        );
+        assert!(
+            rendered.starts_with("other:"),
+            "rendered should start with `other:`: {rendered}"
+        );
+    }
+
+    #[test]
+    fn error_source_chains_to_inner() {
+        // Non-Other variants should expose the inner per-layer error
+        // through `Error::source`.
+        let inner = ApiError::Internal("boom".into());
+        let err = Error::Api(inner);
+        let src = err.source().expect("Api variant should have a source");
+        assert!(src.to_string().contains("boom"));
+
+        // Other variant has no source.
+        let err = Error::Other("lonely".into());
+        assert!(err.source().is_none());
     }
 }
