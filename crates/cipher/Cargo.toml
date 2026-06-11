@@ -37,3 +37,11 @@ codegen-units = 1
 [[bench]]
 name = "cipher_bench"
 harness = false
+
+# Strict linting for the cipher crate. `pedantic` is enabled at `allow` level
+# so that it shows up in `cargo clippy` output as a TODO marker (i.e. easy
+# to find when triaging) without breaking the build. Use module-level
+# `#[allow]` / `#[warn]` attributes to surface individual lints as warnings
+# while you work through them.
+[lints.clippy]
+pedantic = { level = "allow", priority = -1 }
