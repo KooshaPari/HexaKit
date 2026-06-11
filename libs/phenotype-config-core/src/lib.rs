@@ -6,12 +6,51 @@
 //! 1. System config (`/etc/phenotype/<name>.toml`)
 //! 2. User config (`~/.config/phenotype/<name>.toml`)
 //! 3. Project config (`./<name>.toml`)
-//! 4. Custom paths via `with_path()`
+//! 4. Custom paths via [`ConfigLoader::with_path`]
+//!
+//! ## Quick start
+//!
+//! ```
+//! use phenotype_config_core::ConfigLoader;
+//! use serde::Deserialize;
+//!
+//! #[derive(Deserialize, PartialEq, Debug)]
+//! struct AppConfig {
+//!     name: String,
+//!     port: u16,
+//! }
+//!
+//! // `load_from` reads a specific file (no env or path-cascade).
+//! let dir = tempfile::tempdir().unwrap();
+//! let path = dir.path().join("app.toml");
+//! std::fs::write(&path, "name = \"demo\"\nport = 9090\n").unwrap();
+//!
+//! let cfg: AppConfig = ConfigLoader::load_from(&path).unwrap();
+//! assert_eq!(cfg, AppConfig { name: "demo".to_string(), port: 9090 });
+//! ```
+//!
+//! [`ConfigLoader::with_path`]: ConfigLoader::with_path
 
 use serde::de::DeserializeOwned;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 
+/// Errors produced by the loader.
+///
+/// # Examples
+///
+/// ```
+/// use phenotype_config_core::ConfigError;
+///
+/// let not_found = ConfigError::NotFound;
+/// assert_eq!(not_found.to_string(), "config not found at any search path");
+///
+/// let io_err = ConfigError::Io(std::io::Error::new(
+///     std::io::ErrorKind::NotFound,
+///     "missing file",
+/// ));
+/// assert!(io_err.to_string().starts_with("io error: "));
+/// ```
 #[derive(Debug, Error)]
 pub enum ConfigError {
     #[error("io error: {0}")]
@@ -34,6 +73,24 @@ pub struct ConfigLoader {
 
 impl ConfigLoader {
     /// Create a new config loader for the given config name (e.g. "agileplus").
+    ///
+    /// The loader is seeded with three default search paths:
+    /// `<config_dir>/phenotype/<name>.toml` (when the host has a
+    /// `config_dir()`), `/etc/phenotype/<name>.toml`, and the project
+    /// cwd entry `<name>.toml`. Add more with
+    /// [`ConfigLoader::with_path`].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use phenotype_config_core::ConfigLoader;
+    ///
+    /// let loader = ConfigLoader::new("myapp");
+    ///
+    /// // Every search path ends in `<name>.toml`.
+    /// assert!(loader.search_paths().iter().all(|p| p.ends_with("myapp.toml")));
+    /// assert_eq!(loader.name(), "myapp");
+    /// ```
     pub fn new(name: impl Into<String>) -> Self {
         let name = name.into();
         let mut search_paths = Vec::new();
@@ -53,6 +110,25 @@ impl ConfigLoader {
     }
 
     /// Add a custom search path.
+    ///
+    /// The path is inserted just before the project-cwd entry, so it
+    /// takes precedence over `./<name>.toml` but is still beaten by
+    /// the system and user-cascade entries.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use phenotype_config_core::ConfigLoader;
+    ///
+    /// let dir = tempfile::tempdir().unwrap();
+    /// let custom = dir.path().join("my.toml");
+    ///
+    /// let loader = ConfigLoader::new("myapp").with_path(&custom);
+    /// let paths = loader.search_paths();
+    /// assert!(paths.iter().any(|p| p == &custom));
+    /// // The original cwd entry is still last.
+    /// assert_eq!(paths.last().unwrap(), &std::path::PathBuf::from("myapp.toml"));
+    /// ```
     pub fn with_path(mut self, path: impl Into<PathBuf>) -> Self {
         let pos = self.search_paths.len().saturating_sub(1);
         self.search_paths.insert(pos, path.into());
@@ -60,6 +136,26 @@ impl ConfigLoader {
     }
 
     /// Load and deserialize config from the first found file.
+    ///
+    /// Walks [`ConfigLoader::search_paths`] in order and parses the
+    /// first file that exists. Returns
+    /// [`ConfigError::NotFound`] when no entry in the cascade resolves
+    /// to a readable file.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use phenotype_config_core::{ConfigError, ConfigLoader};
+    /// use serde::Deserialize;
+    ///
+    /// #[derive(Deserialize)]
+    /// struct TestCfg;
+    ///
+    /// // A name with no on-disk entries yields `NotFound`.
+    /// let loader = ConfigLoader::new("nonexistent-phenotype-config-xyz");
+    /// let result: Result<TestCfg, _> = loader.load();
+    /// assert!(matches!(result, Err(ConfigError::NotFound)));
+    /// ```
     pub fn load<T: DeserializeOwned>(&self) -> Result<T> {
         for path in &self.search_paths {
             if path.exists() {
@@ -72,6 +168,41 @@ impl ConfigLoader {
     }
 
     /// Load from a specific file path.
+    ///
+    /// Use this when you already know the on-disk location of the
+    /// config file and want to bypass the
+    /// [`ConfigLoader::search_paths`](ConfigLoader::search_paths)
+    /// cascade.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use phenotype_config_core::ConfigLoader;
+    /// use serde::Deserialize;
+    ///
+    /// #[derive(Deserialize, PartialEq, Debug)]
+    /// struct DbConfig {
+    ///     url: String,
+    ///     max_conns: u16,
+    /// }
+    ///
+    /// let dir = tempfile::tempdir().unwrap();
+    /// let path = dir.path().join("db.toml");
+    /// std::fs::write(
+    ///     &path,
+    ///     "url = \"postgres://localhost/x\"\nmax_conns = 8\n",
+    /// )
+    /// .unwrap();
+    ///
+    /// let cfg: DbConfig = ConfigLoader::load_from(&path).unwrap();
+    /// assert_eq!(
+    ///     cfg,
+    ///     DbConfig {
+    ///         url: "postgres://localhost/x".to_string(),
+    ///         max_conns: 8,
+    ///     }
+    /// );
+    /// ```
     pub fn load_from<T: DeserializeOwned>(path: &Path) -> Result<T> {
         let content = std::fs::read_to_string(path)?;
         let config: T = toml::from_str(&content)?;
