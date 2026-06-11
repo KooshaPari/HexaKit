@@ -1,0 +1,30 @@
+[package]
+name = "phenotype-observability"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Canonical OpenTelemetry observability primitives for the Phenotype ecosystem"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+# OpenTelemetry (versions pinned to match HexaKit/Cargo.toml
+# [workspace.dependencies]:152-153,161)
+opentelemetry = "0.24"
+opentelemetry_sdk = { version = "0.24", features = ["trace"] }
+
+# Tracing (versions pinned to match HexaKit/Cargo.toml
+# [workspace.dependencies]:85-86)
+tracing = "0.1"
+tracing-subscriber = "0.3"
+tracing-opentelemetry = "0.24"
+
+# Temporary: this crate will eventually own the OTel init shape that
+# currently lives in phenotype-logging/src/otel.rs. The path dep here
+# is transitional — it lets us stand up the scaffold before the OTel
+# init is lifted out of phenotype-logging (see
+# plans/2026-06-09-hexakit-phenotype-observability-plan-v1.md §3.2,
+# §10 T3, §10 T6). Will be removed once phenotype-observability owns
+# the init and phenotype-logging drops its OTel dependencies.
+phenotype-logging = { path = "../phenotype-logging" }

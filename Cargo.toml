@@ -34,6 +34,7 @@ members = [
   "crates/phenotype-http-client-core",
   "crates/phenotype-iter",
   "crates/phenotype-logging",
+  "crates/phenotype-observability",
   "crates/phenotype-macros",
   "crates/phenotype-mcp",
   "crates/phenotype-policy-engine",
@@ -121,6 +122,7 @@ phenotype-http-client-core = { path = "crates/phenotype-http-client-core" }
 phenotype-infrastructure = { path = "crates/phenotype-infrastructure" }
 phenotype-iter = { path = "crates/phenotype-iter" }
 phenotype-logging = { path = "crates/phenotype-logging" }
+phenotype-observability = { path = "crates/phenotype-observability" }
 phenotype-macros = { path = "crates/phenotype-macros" }
 phenotype-mcp = { path = "crates/phenotype-mcp" }
 phenotype-policy-engine = { path = "crates/phenotype-policy-engine" }
