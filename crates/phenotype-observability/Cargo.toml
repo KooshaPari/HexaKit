@@ -15,9 +15,11 @@ opentelemetry = "0.24"
 opentelemetry_sdk = { version = "0.24", features = ["trace"] }
 
 # Tracing (versions pinned to match HexaKit/Cargo.toml
-# [workspace.dependencies]:85-86)
+# [workspace.dependencies]:85-86). The `env-filter` feature is
+# required for `EnvFilter` (used by the new `init_tracing` /
+# `init_count` API at `src/lib.rs`) and to honour `RUST_LOG`.
 tracing = "0.1"
-tracing-subscriber = "0.3"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-opentelemetry = "0.24"
 
 # Used by OTelError derive (matches phenotype-logging's
@@ -33,3 +35,13 @@ thiserror = { workspace = true }
 # §10 T3, §10 T6). Will be removed once phenotype-observability owns
 # the init and phenotype-logging drops its OTel dependencies.
 phenotype-logging = { path = "../phenotype-logging" }
+
+[dev-dependencies]
+# Criterion version pinned at workspace level (Cargo.toml:97); reusing the
+# existing workspace dep keeps `phenotype-observability` aligned with the
+# other bench-bearing crates (cipher, settly, stashly).
+criterion = { workspace = true }
+
+[[bench]]
+name = "init_tracing"
+harness = false
