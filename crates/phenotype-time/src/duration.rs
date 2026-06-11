@@ -1,4 +1,18 @@
 //! Duration extension traits and utilities.
+//!
+//! ## Example
+//!
+//! ```
+//! use std::time::Duration;
+//! use phenotype_time::DurationExt;
+//!
+//! let d = Duration::hours(2) + Duration::minutes(15) + Duration::seconds(7);
+//! assert_eq!(d.as_secs(), 2 * 3600 + 15 * 60 + 7);
+//! assert_eq!(d.format_human(), "2h 15m 7s");
+//!
+//! // Zero is rendered as "0s" rather than an empty string.
+//! assert_eq!(Duration::seconds(0).format_human(), "0s");
+//! ```
 
 use std::time::Duration;
 
@@ -20,6 +34,24 @@ pub trait DurationExt {
     fn millis(ms: u64) -> Duration;
 
     /// Format as human-readable string (e.g., "5m 30s").
+    ///
+    /// Renders a `Duration` as a space-separated list of `<n><unit>`
+    /// components (days, hours, minutes, seconds). Zero-valued components
+    /// are omitted, and a zero `Duration` is rendered as `"0s"`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::time::Duration;
+    /// use phenotype_time::DurationExt;
+    ///
+    /// assert_eq!(Duration::seconds(45).format_human(), "45s");
+    /// assert_eq!(
+    ///     (Duration::days(1) + Duration::hours(2) + Duration::minutes(3) + Duration::seconds(4))
+    ///         .format_human(),
+    ///     "1d 2h 3m 4s",
+    /// );
+    /// ```
     fn format_human(&self) -> String;
 }
 

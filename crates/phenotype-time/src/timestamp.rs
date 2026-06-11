@@ -1,4 +1,24 @@
 //! Timestamp utilities for working with chrono DateTime.
+//!
+//! ## Example
+//!
+//! ```
+//! use chrono::{DateTime, Utc};
+//! use phenotype_time::Timestamp;
+//!
+//! // Fixed reference instant (UTC) and ISO 8601 round-trip.
+//! let original: DateTime<Utc> = "2024-01-15T12:34:56Z".parse().unwrap();
+//! let iso = original.to_iso();
+//! let parsed = DateTime::<Utc>::parse(&iso).unwrap();
+//! assert_eq!(original, parsed);
+//!
+//! // to_utc on an already-UTC value is the identity.
+//! assert_eq!(original.to_utc(), original);
+//! ```
+//!
+//! `Timestamp::now` is non-deterministic and is therefore exercised by
+//! the regular `#[test]` suite rather than doctests; run
+//! `cargo test -p phenotype-time` to execute it.
 
 use chrono::{DateTime, Utc};
 
