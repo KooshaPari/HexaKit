@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   validate-specs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -137,7 +137,7 @@ jobs:
           PYTHON_EOF
 
   comment-validation:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: github.event_name == 'pull_request'
     needs: validate-specs
     steps:
