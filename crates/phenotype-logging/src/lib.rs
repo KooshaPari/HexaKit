@@ -1,5 +1,9 @@
 //! phenotype-logging
 
+mod context;
+
+pub use context::LogContext;
+
 use thiserror::Error;
 
 #[derive(Debug, Error)]
