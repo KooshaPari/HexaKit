@@ -164,7 +164,7 @@ impl Tracer for NoopTracer {
 // ---------------------------------------------------------------------------
 
 /// Log severity levels.
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum LogLevel {
     Trace,
@@ -441,5 +441,40 @@ mod tests {
     fn test_telemetry_error() {
         let err = TelemetryError::new("test error");
         assert!(err.to_string().contains("test error"));
+    }
+
+    #[test]
+    fn test_log_level_eq_hash_partialeq() {
+        use std::collections::{HashMap, HashSet};
+
+        // PartialEq + Eq: same variants compare equal, different variants do not.
+        assert_eq!(LogLevel::Info, LogLevel::Info);
+        assert_ne!(LogLevel::Info, LogLevel::Warn);
+        assert_eq!(LogLevel::Error, LogLevel::Error);
+
+        // Hash: equal variants must produce equal hashes, and LogLevel can be
+        // used as a HashMap/HashSet key.
+        use std::collections::hash_map::DefaultHasher;
+        use std::hash::{Hash, Hasher};
+        let mut h1 = DefaultHasher::new();
+        let mut h2 = DefaultHasher::new();
+        LogLevel::Debug.hash(&mut h1);
+        LogLevel::Debug.hash(&mut h2);
+        assert_eq!(h1.finish(), h2.finish());
+
+        let mut set: HashSet<LogLevel> = HashSet::new();
+        set.insert(LogLevel::Trace);
+        set.insert(LogLevel::Trace);
+        set.insert(LogLevel::Error);
+        assert_eq!(set.len(), 2);
+        assert!(set.contains(&LogLevel::Trace));
+        assert!(set.contains(&LogLevel::Error));
+
+        let mut map: HashMap<LogLevel, &'static str> = HashMap::new();
+        map.insert(LogLevel::Info, "informational");
+        map.insert(LogLevel::Warn, "warning");
+        assert_eq!(map.get(&LogLevel::Info), Some(&"informational"));
+        assert_eq!(map.get(&LogLevel::Warn), Some(&"warning"));
+        assert_eq!(map.get(&LogLevel::Error), None);
     }
 }
