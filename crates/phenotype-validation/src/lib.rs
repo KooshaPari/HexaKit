@@ -474,4 +474,22 @@ mod tests {
         assert!(ValidatorRegistry::contains("url"));
         assert!(!ValidatorRegistry::contains("nonexistent"));
     }
+
+    #[test]
+    fn test_username_validator_preset_and_registry_get() {
+        // Preset: alphanumeric + underscore, length 3..=32.
+        let validator = username_validator();
+        assert_eq!(validator.field_name(), "username");
+        assert!(validator.validate("alice_42").is_ok());
+        assert!(validator.validate("ab").is_err()); // too short
+        assert!(validator.validate("name with space").is_err()); // bad pattern
+        assert!(validator.validate("a".repeat(33).as_str()).is_err()); // too long
+
+        // Registry round-trip: the registered factory produces a working validator.
+        register_defaults();
+        let from_registry = ValidatorRegistry::get("username").expect("username registered");
+        assert_eq!(from_registry.field_name(), "username");
+        assert!(from_registry.validate("bob_99").is_ok());
+        assert!(from_registry.validate("!!").is_err());
+    }
 }
