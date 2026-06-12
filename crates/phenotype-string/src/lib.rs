@@ -6,7 +6,7 @@ pub mod compression;
 pub mod join;
 pub mod normalization;
 
-#[derive(Debug, Error)]
+#[derive(Debug, Clone, Error)]
 pub enum Error {
     #[error("{0}")]
     Invalid(String),
@@ -17,3 +17,15 @@ pub enum Error {
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn error_enum_implements_clone() {
+        let original = Error::Invalid("bad input".to_string());
+        let cloned = original.clone();
+        assert_eq!(format!("{original}"), format!("{cloned}"));
+    }
+}
