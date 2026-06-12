@@ -4,14 +4,16 @@
 //! (request ids, user ids, OpenTelemetry trace / span ids, free-form key/value
 //! pairs) that should be propagated through log output. It is intentionally
 //! `Serialize` + `Deserialize` so that contexts can be persisted, replayed,
-//! shipped over the wire, or reconstructed in test fixtures.
+//! shipped over the wire, or reconstructed in test fixtures, and `Hash` +
+//! `Eq` so it can be used as a key in hash-based collections (e.g.
+//! `HashMap<LogContext, V>`) for de-duplication, lookup, and grouping.
 
 use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
 
 /// Structured context that travels with a log event.
-#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct LogContext {
     /// Inbound request correlation id (e.g. HTTP `X-Request-Id`).
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -74,6 +76,8 @@ impl LogContext {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+
     use super::*;
 
     #[test]
@@ -96,5 +100,33 @@ mod tests {
         // directions without losing the optional fields or the tag map.
         assert!(json.contains("\"request_id\":\"req-12345\""));
         assert!(json.contains("\"tags\":{\"env\":\"prod\",\"tenant\":\"acme\"}"));
+    }
+
+    #[test]
+    fn log_context_usable_as_hashmap_key() {
+        let mut map: HashMap<LogContext, String> = HashMap::new();
+
+        let api = LogContext::new()
+            .with_request_id("req-1")
+            .with_user_id("user-a")
+            .with_tag("route", "/orders");
+        let worker = LogContext::new()
+            .with_request_id("job-9")
+            .with_trace_id("0af7651916cd43dd8448eb211c80319c");
+
+        map.insert(api.clone(), "api-handler".to_string());
+        map.insert(worker.clone(), "background-worker".to_string());
+
+        // Lookups by an equal key (constructed independently) must hit.
+        let api_lookup = LogContext::new()
+            .with_request_id("req-1")
+            .with_user_id("user-a")
+            .with_tag("route", "/orders");
+        assert_eq!(map.get(&api_lookup).map(String::as_str), Some("api-handler"));
+        assert_eq!(map.get(&worker).map(String::as_str), Some("background-worker"));
+
+        // Two equal contexts (regardless of construction order / tag insertion
+        // order) must hash the same and be treated as a single key.
+        assert_eq!(map.len(), 2);
     }
 }
