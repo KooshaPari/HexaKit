@@ -214,6 +214,15 @@ impl From<serde_json::Error> for ConfigError {
     }
 }
 
+impl From<std::num::ParseIntError> for ConfigError {
+    fn from(err: std::num::ParseIntError) -> Self {
+        Self::Parse {
+            format: "int".into(),
+            reason: err.to_string(),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Storage / raw I/O layer
 // ---------------------------------------------------------------------------
@@ -366,6 +375,13 @@ mod tests {
         let json_err = serde_json::from_str::<String>("bad").unwrap_err();
         let cfg_err = ConfigError::from(json_err);
         assert!(matches!(cfg_err, ConfigError::Parse { format, .. } if format == "json"));
+    }
+
+    #[test]
+    fn config_error_from_parse_int() {
+        let int_err = "not_a_number".parse::<i64>().unwrap_err();
+        let cfg_err = ConfigError::from(int_err);
+        assert!(matches!(cfg_err, ConfigError::Parse { format, .. } if format == "int"));
     }
 
     #[test]
