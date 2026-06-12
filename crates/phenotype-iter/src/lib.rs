@@ -46,6 +46,7 @@ where
 impl<I: Iterator> Window for I where I::Item: Clone {}
 
 /// An iterator adapter that yields sliding windows.
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct WindowIter<I: Iterator>
 where
     I::Item: Clone,
@@ -124,6 +125,7 @@ where
 impl<I: Iterator> Chunk for I where I::Item: Clone {}
 
 /// An iterator adapter that yields fixed-size chunks.
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct ChunkIter<I: Iterator>
 where
     I::Item: Clone,
@@ -185,6 +187,7 @@ pub trait Batch: Iterator + Sized {
 impl<I: Iterator> Batch for I {}
 
 /// An iterator adapter that yields predicate-based batches.
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct BatchIter<I: Iterator, F: Fn(&I::Item) -> bool> {
     iter: I,
     predicate: F,
@@ -371,5 +374,46 @@ mod tests {
         let data = vec![1, 2, 3, 4];
         let result: Vec<_> = data.into_iter().window(2).flatten().chunk(2).collect();
         assert!(!result.is_empty());
+    }
+
+    #[test]
+    fn test_eq_hash_derives() {
+        use std::collections::hash_map::DefaultHasher;
+        use std::hash::{Hash, Hasher};
+        use std::ops::Range;
+
+        fn hash_of<T: Hash>(t: &T) -> u64 {
+            let mut s = DefaultHasher::new();
+            t.hash(&mut s);
+            s.finish()
+        }
+
+        // Use Range<usize> as the inner iterator because it implements
+        // Eq/Hash/PartialEq, whereas consuming iterators (e.g. Vec::IntoIter)
+        // do not.
+        // WindowIter: equal under same range/window size, unequal otherwise.
+        let wa: WindowIter<Range<usize>> = (0..4).window(2);
+        let wb: WindowIter<Range<usize>> = (0..4).window(2);
+        let wc: WindowIter<Range<usize>> = (0..5).window(2);
+        assert_eq!(wa, wb);
+        assert_ne!(wa, wc);
+        assert_eq!(hash_of(&wa), hash_of(&wb));
+
+        // ChunkIter: equal under same range/chunk size.
+        let ca: ChunkIter<Range<usize>> = (0..4).chunk(2);
+        let cb: ChunkIter<Range<usize>> = (0..4).chunk(2);
+        assert_eq!(ca, cb);
+        assert_eq!(hash_of(&ca), hash_of(&cb));
+
+        // BatchIter: requires an `fn` pointer (function items and capturing
+        // closures do not implement Eq/Hash/PartialEq).
+        let gt_zero: fn(&usize) -> bool = |x| *x > 0;
+        let gt_five: fn(&usize) -> bool = |x| *x > 5;
+        let ba: BatchIter<Range<usize>, _> = (0..3).batch(gt_zero);
+        let bb: BatchIter<Range<usize>, _> = (0..3).batch(gt_zero);
+        let bc: BatchIter<Range<usize>, _> = (0..3).batch(gt_five);
+        assert_eq!(ba, bb);
+        assert_ne!(ba, bc);
+        assert_eq!(hash_of(&ba), hash_of(&bb));
     }
 }
