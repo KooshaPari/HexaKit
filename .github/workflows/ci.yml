@@ -301,3 +301,12 @@ jobs:
       - uses: wagoid/commitlint-github-action@b948419dd99f3fd78a6548d48f94e3df7f6bf3ed
         with:
           configFile: .commitlintrc.yml
+  check-cliff-template:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check cliff.toml adoption
+        run: ./scripts/check-cliff-template.sh
