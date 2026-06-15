@@ -1,8 +1,14 @@
 # HexaKit — Phenotype Repos Shelf Specification
 
-__Version:__ 1.0  
-__Status:__ Active  
-__Updated:__ 2026-04-04
+__Version:__ 1.1
+__Status:__ Active
+__Updated:__ 2026-06-14
+__Companion:__ [`AGENTS.md`](./AGENTS.md) — operative guide for contributors and AI agents
+
+> This document is the umbrella specification. The fast-moving operative guide
+> (build commands, branch policy, workflow catalog, workspace layout) lives in
+> [`AGENTS.md`](./AGENTS.md). Sections that overlap are SSOT-canonical in
+> `AGENTS.md`; this file is the deep reference.
 
 ---
 
