@@ -1,11 +1,11 @@
 [workspace.package]
 version = "0.2.0"
 edition = "2021"
-license = "MIT"
+license = "MIT OR Apache-2.0"
 rust-version = "1.75"
-authors = ["Phenotype Team"]
-repository = "https://github.com/KooshaPari/phenotype-infrakit"
+repository = "https://github.com/KooshaPari/HexaKit"
 description = "Phenotype Infrastructure Kit"
+authors = ["kooshapari"]
 
 [workspace]
 resolver = "2"
@@ -165,7 +165,7 @@ tracing-opentelemetry = "0.24"
 name = "hexakit"
 version = "0.1.0"
 edition = "2021"
-license = "MIT-or-Apache-2.0"
+license = "MIT OR Apache-2.0"
 license-file = "LICENSE"
 description = "HexaKit — Phenotype Infrastructure Kit: shared Rust crates powering the Phenotype platform (config, errors, logging, contracts, MCP, policy, compliance, analytics, etc.)"
 homepage = "https://github.com/KooshaPari/HexaKit"
@@ -173,8 +173,16 @@ documentation = "https://docs.rs/hexakit"
 repository = "https://github.com/KooshaPari/HexaKit"
 readme = "README.md"
 publish = false
+keywords = ["phenotype", "hexa"]
+categories = ["development-tools"]
+authors = ["kooshapari"]
 [dependencies]
 sha2 = { workspace = true }
 blake3 = { workspace = true }
 hex = { workspace = true }
 thiserror = { workspace = true }
+
+# Release profile (moved from crates/settly and crates/stashly)
+[profile.release]
+lto = true
+codegen-units = 1
