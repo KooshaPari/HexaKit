@@ -7,6 +7,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 use std::fmt::Write;
+use tracing::instrument;
 
 /// Project configuration detected during init/scan.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -32,6 +33,7 @@ impl RouterGenerator {
     }
 
     /// Generate CLAUDE.md content.
+    #[instrument(name = "triage::generate_claude_md", skip(self), fields(project_name = %self.config.name, language_count = self.config.languages.len(), framework_count = self.config.frameworks.len()))]
     pub fn generate_claude_md(&self) -> String {
         let mut out = String::new();
         writeln!(out, "# Project Governance — {}", self.config.name).unwrap();
@@ -150,6 +152,7 @@ impl RouterGenerator {
     }
 
     /// Generate AGENTS.md content.
+    #[instrument(name = "triage::generate_agents_md", skip(self), fields(project_name = %self.config.name))]
     pub fn generate_agents_md(&self) -> String {
         let mut out = String::new();
         writeln!(out, "# Agent Behavioral Rules — {}", self.config.name).unwrap();

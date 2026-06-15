@@ -1,5 +1,6 @@
 use crate::store::{GraphError, GraphStore};
 use serde_json::json;
+use tracing::instrument;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum GraphHealth {
@@ -16,6 +17,7 @@ impl<'a> GraphHealthChecker<'a> {
         GraphHealthChecker { store }
     }
 
+    #[instrument(name = "graph::health_checker::check", skip(self))]
     pub async fn check(&self) -> GraphHealth {
         match self.store.health_check().await {
             Ok(()) => GraphHealth::Healthy,
@@ -33,6 +35,7 @@ impl<'a> IndexManager<'a> {
         IndexManager { store }
     }
 
+    #[instrument(name = "graph::index_manager::create_indexes", skip(self))]
     pub async fn create_indexes(&self) -> Result<(), GraphError> {
         let indexes = [
             "CREATE INDEX feature_slug IF NOT EXISTS FOR (f:Feature) ON (f.slug)",
@@ -48,6 +51,7 @@ impl<'a> IndexManager<'a> {
         Ok(())
     }
 
+    #[instrument(name = "graph::index_manager::delete_indexes", skip(self))]
     pub async fn delete_indexes(&self) -> Result<(), GraphError> {
         let drops = [
             "DROP INDEX feature_slug IF EXISTS",

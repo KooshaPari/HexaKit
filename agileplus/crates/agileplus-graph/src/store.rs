@@ -1,6 +1,7 @@
 use crate::config::GraphConfig;
 use async_trait::async_trait;
 use serde_json::Value;
+use tracing::instrument;
 
 #[derive(Debug, thiserror::Error)]
 pub enum GraphError {
@@ -54,6 +55,7 @@ impl GraphStore {
     /// Initialize uniqueness constraints. With a real Neo4j backend this
     /// executes Cypher constraint statements. The in-memory backend treats
     /// this as a no-op.
+    #[instrument(name = "graph::init_constraints", skip(self))]
     pub async fn init_constraints(&self) -> Result<(), GraphError> {
         let constraints = [
             "CREATE CONSTRAINT feature_id IF NOT EXISTS FOR (f:Feature) REQUIRE f.id IS UNIQUE",
@@ -74,14 +76,17 @@ impl GraphStore {
         Ok(())
     }
 
+    #[instrument(name = "graph::health_check", skip(self))]
     pub async fn health_check(&self) -> Result<(), GraphError> {
         self.backend.health_check().await
     }
 
+    #[instrument(name = "graph::run_cypher", skip(self, params), fields(query = %query))]
     pub(crate) async fn run_cypher(&self, query: &str, params: &Value) -> Result<(), GraphError> {
         self.backend.run_cypher(query, params).await
     }
 
+    #[instrument(name = "graph::query_cypher", skip(self, params), fields(query = %query))]
     pub(crate) async fn query_cypher(
         &self,
         query: &str,

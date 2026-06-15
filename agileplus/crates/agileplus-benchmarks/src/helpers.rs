@@ -4,14 +4,18 @@
 //! from both Criterion bench closures and regular `#[test]` functions.
 
 use agileplus_domain::domain::{event::Event, feature::Feature, state_machine::FeatureState};
+#[cfg(feature = "sqlite-bench")]
 use agileplus_sqlite::SqliteStorageAdapter;
 use chrono::Utc;
+use tracing::instrument;
 
 // ---------------------------------------------------------------------------
 // SQLite adapter helpers
 // ---------------------------------------------------------------------------
 
 /// Open an in-memory SQLite adapter with WAL mode and all migrations applied.
+#[cfg(feature = "sqlite-bench")]
+#[instrument(name = "bench::make_in_memory_adapter", skip_all)]
 pub fn make_in_memory_adapter() -> SqliteStorageAdapter {
     SqliteStorageAdapter::in_memory().expect("in-memory adapter init failed")
 }
@@ -21,6 +25,11 @@ pub fn make_in_memory_adapter() -> SqliteStorageAdapter {
 // ---------------------------------------------------------------------------
 
 /// Build a domain `Event` for the given entity / sequence without a real hash.
+#[instrument(
+    name = "bench::make_event",
+    skip_all,
+    fields(entity_id, sequence, event_type = "StateTransitioned")
+)]
 pub fn make_event(entity_id: i64, sequence: i64) -> Event {
     Event {
         id: 0,
@@ -37,6 +46,7 @@ pub fn make_event(entity_id: i64, sequence: i64) -> Event {
 }
 
 /// Build N events for entity_id=1, sequences 1..=count.
+#[instrument(name = "bench::make_events", skip_all, fields(count))]
 pub fn make_events(count: i64) -> Vec<Event> {
     (1..=count).map(|seq| make_event(1, seq)).collect()
 }
@@ -44,6 +54,11 @@ pub fn make_events(count: i64) -> Vec<Event> {
 /// Build N events spread across `entity_count` entities.
 ///
 /// Entity IDs run 1..=entity_count, sequences restart per entity.
+#[instrument(
+    name = "bench::make_events_multi_entity",
+    skip_all,
+    fields(count, entity_count)
+)]
 pub fn make_events_multi_entity(count: i64, entity_count: i64) -> Vec<Event> {
     (0..count)
         .map(|i| {
@@ -59,6 +74,7 @@ pub fn make_events_multi_entity(count: i64, entity_count: i64) -> Vec<Event> {
 // ---------------------------------------------------------------------------
 
 /// Build a minimal `Feature` with the given numeric ID embedded in slug.
+#[instrument(name = "bench::make_feature", skip_all, fields(id))]
 pub fn make_feature(id: i64) -> Feature {
     let mut f = Feature::new(
         &format!("feature-{id}"),
@@ -71,6 +87,7 @@ pub fn make_feature(id: i64) -> Feature {
 }
 
 /// Build N features with IDs 1..=n.
+#[instrument(name = "bench::make_features", skip_all, fields(n))]
 pub fn make_features(n: i64) -> Vec<Feature> {
     (1..=n).map(make_feature).collect()
 }
@@ -117,6 +134,7 @@ impl agileplus_events::Aggregate for CountingAggregate {
 use agileplus_domain::domain::snapshot::Snapshot;
 
 /// Build a `Snapshot` representing the aggregate state at `seq`.
+#[instrument(name = "bench::make_snapshot", skip_all, fields(entity_id, seq))]
 pub fn make_snapshot(entity_id: i64, seq: i64) -> Snapshot {
     Snapshot {
         id: 0,
@@ -153,12 +171,14 @@ impl SyncPayload {
 }
 
 /// Build N sync payloads.
+#[instrument(name = "bench::make_sync_payloads", skip_all, fields(n))]
 pub fn make_sync_payloads(n: i64) -> Vec<SyncPayload> {
     (1..=n).map(SyncPayload::new).collect()
 }
 
 /// Simulate serialising and deserialising a sync payload (the core hot-path
 /// of push/pull without requiring a live Plane.so connection).
+#[instrument(name = "bench::simulate_sync_roundtrip", skip_all, fields(payload_id = payload.id))]
 pub fn simulate_sync_roundtrip(payload: &SyncPayload) -> SyncPayload {
     let json = serde_json::json!({
         "id":          payload.id,
@@ -222,6 +242,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "sqlite-bench")]
     fn make_in_memory_adapter_ok() {
         let _ = make_in_memory_adapter();
     }
@@ -231,5 +252,30 @@ mod tests {
         let snap = make_snapshot(1, 900);
         assert_eq!(snap.event_sequence, 900);
         assert_eq!(snap.entity_id, 1);
+    }
+
+    #[test]
+    fn simulate_roundtrip_serializes_desc() {
+        let p = SyncPayload::new(99);
+        let out = simulate_sync_roundtrip(&p);
+        // 256-byte description round-trips intact
+        assert_eq!(out.description.len(), p.description.len());
+        assert_eq!(out.description, p.description);
+    }
+
+    #[test]
+    fn counting_aggregate_default_zero() {
+        let agg = CountingAggregate::default();
+        assert_eq!(agg.version, 0);
+        assert_eq!(agg.events_applied, 0);
+        assert_eq!(agg.last_state, "");
+    }
+
+    #[test]
+    fn sync_payloads_have_distinct_slugs() {
+        let payloads = make_sync_payloads(5);
+        let slugs: std::collections::HashSet<_> =
+            payloads.iter().map(|p| p.slug.clone()).collect();
+        assert_eq!(slugs.len(), 5);
     }
 }

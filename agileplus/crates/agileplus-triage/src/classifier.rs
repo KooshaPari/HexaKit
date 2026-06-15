@@ -7,6 +7,7 @@
 
 pub use agileplus_domain::domain::backlog::Intent;
 use serde::{Deserialize, Serialize};
+use tracing::instrument;
 
 /// Result of classifying input text.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -125,6 +126,11 @@ impl TriageClassifier {
     }
 
     /// Classify input text into an intent.
+    #[instrument(
+        name = "triage::classify",
+        skip(self, input),
+        fields(input_len = input.len(), intent = tracing::field::Empty, confidence = tracing::field::Empty, matched_keyword_count = tracing::field::Empty)
+    )]
     pub fn classify(&self, input: &str) -> TriageResult {
         let lower = input.to_lowercase();
         let mut best_intent = Intent::Task;
@@ -163,6 +169,11 @@ impl TriageClassifier {
     }
 
     /// Classify with an explicit override intent.
+    #[instrument(
+        name = "triage::classify_with_override",
+        skip(self, input),
+        fields(input_len = input.len(), override_intent = ?override_intent)
+    )]
     pub fn classify_with_override(&self, input: &str, override_intent: Intent) -> TriageResult {
         TriageResult {
             intent: override_intent,

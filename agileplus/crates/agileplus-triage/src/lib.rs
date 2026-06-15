@@ -7,8 +7,10 @@
 
 pub mod backlog;
 pub mod classifier;
+pub mod error;
 pub mod router;
 
 pub use agileplus_domain::domain::backlog::{BacklogItem, BacklogPriority, BacklogStatus, Intent};
 pub use classifier::{TriageClassifier, TriageResult};
+pub use error::TriageError;
 pub use router::RouterGenerator;

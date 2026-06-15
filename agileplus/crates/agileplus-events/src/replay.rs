@@ -2,6 +2,7 @@
 
 use agileplus_domain::domain::event::Event;
 use async_trait::async_trait;
+use tracing::instrument;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ReplayError {
@@ -25,6 +26,11 @@ pub trait Aggregate: Send + Sync {
 }
 
 /// Replay a sequence of events onto an aggregate.
+#[instrument(
+    name = "events::replay_events",
+    skip(aggregate, events),
+    fields(event_count = events.len())
+)]
 pub async fn replay_events<A: Aggregate>(
     aggregate: &mut A,
     events: &[Event],
@@ -52,6 +58,14 @@ pub async fn replay_events<A: Aggregate>(
 }
 
 /// Replay only events after a snapshot sequence.
+#[instrument(
+    name = "events::replay_events_since",
+    skip(aggregate, events),
+    fields(
+        snapshot_sequence,
+        event_count = events.len()
+    )
+)]
 pub async fn replay_events_since<A: Aggregate>(
     aggregate: &mut A,
     snapshot_sequence: i64,

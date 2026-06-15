@@ -1,5 +1,6 @@
 use crate::store::{GraphError, GraphStore};
 use serde_json::json;
+use tracing::instrument;
 
 pub struct GraphQueries<'a> {
     store: &'a GraphStore,
@@ -11,6 +12,7 @@ impl<'a> GraphQueries<'a> {
     }
 
     /// Get all transitive dependencies of a feature.
+    #[instrument(name = "graph::get_dependency_chain", skip(self), fields(feature_id, result_count = tracing::field::Empty))]
     pub async fn get_dependency_chain(
         &self,
         feature_id: i64,
@@ -34,6 +36,7 @@ impl<'a> GraphQueries<'a> {
     }
 
     /// Get what blocks a work package (transitive).
+    #[instrument(name = "graph::get_blocking_path", skip(self), fields(wp_id, result_count = tracing::field::Empty))]
     pub async fn get_blocking_path(&self, wp_id: i64) -> Result<Vec<(i64, String)>, GraphError> {
         let rows = self
             .store
@@ -54,6 +57,7 @@ impl<'a> GraphQueries<'a> {
     }
 
     /// Get all features in a project.
+    #[instrument(name = "graph::get_project_features", skip(self), fields(project_slug = %project_slug, result_count = tracing::field::Empty))]
     pub async fn get_project_features(
         &self,
         project_slug: &str,
@@ -77,6 +81,7 @@ impl<'a> GraphQueries<'a> {
     }
 
     /// Get all assigned work packages for an agent.
+    #[instrument(name = "graph::get_agent_workload", skip(self), fields(agent_name = %agent_name, result_count = tracing::field::Empty))]
     pub async fn get_agent_workload(
         &self,
         agent_name: &str,
@@ -100,6 +105,7 @@ impl<'a> GraphQueries<'a> {
     }
 
     /// Get features by label.
+    #[instrument(name = "graph::get_features_by_label", skip(self), fields(label_name = %label_name, result_count = tracing::field::Empty))]
     pub async fn get_features_by_label(
         &self,
         label_name: &str,
