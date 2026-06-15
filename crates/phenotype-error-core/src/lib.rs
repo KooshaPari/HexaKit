@@ -89,6 +89,18 @@ impl ApiError {
     }
 }
 
+impl From<std::net::AddrParseError> for ApiError {
+    fn from(err: std::net::AddrParseError) -> Self {
+        Self::BadRequest(err.to_string())
+    }
+}
+
+impl From<std::str::Utf8Error> for ApiError {
+    fn from(err: std::str::Utf8Error) -> Self {
+        Self::BadRequest(err.to_string())
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Domain / business-logic layer
 // ---------------------------------------------------------------------------
@@ -231,7 +243,7 @@ impl From<std::num::ParseIntError> for ConfigError {
 #[derive(Error, Debug)]
 pub enum StorageError {
     #[error("I/O error: {0}")]
-    Io(#[from] std::io::Error),
+    Io(std::io::Error),
 
     #[error("not found: {0}")]
     NotFound(String),
@@ -247,6 +259,16 @@ pub enum StorageError {
 
     #[error("{0}")]
     Other(String),
+}
+
+impl From<std::io::Error> for StorageError {
+    fn from(err: std::io::Error) -> Self {
+        match err.kind() {
+            std::io::ErrorKind::NotFound => Self::NotFound(err.to_string()),
+            std::io::ErrorKind::PermissionDenied => Self::PermissionDenied(err.to_string()),
+            _ => Self::Io(err),
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -392,6 +414,13 @@ mod tests {
     }
 
     #[test]
+    fn storage_error_from_io_not_found() {
+        let io_err = std::io::Error::new(std::io::ErrorKind::NotFound, "missing");
+        let store_err = StorageError::from(io_err);
+        assert!(matches!(store_err, StorageError::NotFound(_)));
+    }
+
+    #[test]
     fn error_envelope_from_api_error() {
         let api_err = ApiError::NotFound {
             resource: "project".into(),
@@ -415,6 +444,23 @@ mod tests {
 
         let roundtrip: ErrorEnvelope = serde_json::from_str(&json).unwrap();
         assert_eq!(roundtrip.code, "ERR_500");
+    }
+
+    #[test]
+    fn api_error_from_addr_parse() {
+        let addr_err = "not-an-address".parse::<std::net::SocketAddr>().unwrap_err();
+        let api_err = ApiError::from(addr_err);
+        assert!(matches!(api_err, ApiError::BadRequest(_)));
+        assert_eq!(api_err.status_code(), 400);
+    }
+
+    #[test]
+    fn api_error_from_utf8() {
+        let bytes = b"\xff\xfe";
+        let utf8_err = std::str::from_utf8(bytes).unwrap_err();
+        let api_err = ApiError::from(utf8_err);
+        assert!(matches!(api_err, ApiError::BadRequest(_)));
+        assert_eq!(api_err.status_code(), 400);
     }
 
     #[test]

@@ -112,6 +112,11 @@ tasks:
     cmds:
       - cargo tarpaulin --workspace --out Html
 
+  coverage:
+    desc: Coverage report (SSOT for how to measure coverage)
+    cmds:
+      - cargo tarpaulin --workspace --out Html
+
   # === Lint & Format ===
   lint:
     desc: Run clippy linter

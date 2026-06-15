@@ -4,8 +4,7 @@ version = "0.1.0"
 edition = "2024"
 description = "Generated gRPC stubs for AgilePlus"
 license = "MIT"
-
-[workspace]
+publish = false
 
 [dependencies]
 prost = "0.13"
