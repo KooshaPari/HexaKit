@@ -62,6 +62,12 @@ members = [
   "forgecode-fork",
   "libs/nexus",
   "libs/phenotype-config-core",
+  "agileplus/crates/agileplus-benchmarks",
+  "agileplus/crates/agileplus-domain",
+  "agileplus/crates/agileplus-events",
+  "agileplus/crates/agileplus-graph",
+  "agileplus/crates/agileplus-sqlite",
+  "agileplus/crates/agileplus-triage",
 ]
 [workspace.dependencies]
 sentry = "0.34"
