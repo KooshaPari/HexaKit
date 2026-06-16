@@ -5,7 +5,7 @@ Traces to: FR-TYPES-003, FR-TYPES-004
 
 import pytest
 from datetime import datetime
-from phenotype_types import (
+from pheno_types import (
     ConfidenceScore,
     Citation,
     Evidence,

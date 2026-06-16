@@ -4,7 +4,7 @@ Traces to: FR-TYPES-005
 """
 
 import pytest
-from phenotype_types import (
+from pheno_types import (
     Skill,
     SkillManifest,
     SkillInput,

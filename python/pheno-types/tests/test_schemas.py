@@ -4,13 +4,13 @@ Traces to: FR-TYPES-006
 """
 
 import pytest
-from phenotype_types import (
+from pheno_types import (
     export,
     export_all,
     list_types,
     register_type,
 )
-from phenotype_types.research import ConfidenceScore, ResearchReport
+from pheno_types.research import ConfidenceScore, ResearchReport
 
 
 # ============================================================================

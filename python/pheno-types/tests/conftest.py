@@ -1,9 +1,9 @@
 """pytest configuration and fixtures."""
 
 import pytest
-from phenotype_types import register_type
-from phenotype_types.research import ConfidenceScore, Citation, Evidence, ResearchReport
-from phenotype_types.skill import SkillInput, SkillOutput, SkillManifest
+from pheno_types import register_type
+from pheno_types.research import ConfidenceScore, Citation, Evidence, ResearchReport
+from pheno_types.skill import SkillInput, SkillOutput, SkillManifest
 
 # Register Pydantic models for schema tests
 # This is done here to ensure types are registered before tests run

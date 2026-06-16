@@ -5,7 +5,7 @@ Traces to: FR-TYPES-001, FR-TYPES-002
 
 import pytest
 from uuid import UUID, uuid4
-from phenotype_types import (
+from pheno_types import (
     Task,
     TaskID,
     TaskState,
