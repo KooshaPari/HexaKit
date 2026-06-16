@@ -2,14 +2,14 @@
 name = "settly"
 version.workspace = true
 edition.workspace = true
-authors = ["Phenotype Team"]
 description = "Settings management with validation, versioning, and migration support"
-license.workspace = true
-repository = "https://github.com/phenotype-dev/settly"
+repository = "https://github.com/KooshaPari/HexaKit"
 documentation = "https://docs.rs/settly"
 keywords = ["settings", "config", "validation", "migration"]
 categories = ["config", "validation"]
 rust-version.workspace = true
+license = "MIT OR Apache-2.0"
+authors = ["kooshapari"]
 
 [dependencies]
 # Async runtime
@@ -44,9 +44,6 @@ tracing = { workspace = true }
 [dev-dependencies]
 tempfile = { workspace = true }
 criterion = { workspace = true }
-
-[profile.release]
-lto = true
 
 [[bench]]
 name = "perf"

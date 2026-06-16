@@ -1,5 +1,6 @@
 use crate::store::{GraphError, GraphStore};
 use serde_json::json;
+use tracing::instrument;
 
 pub struct RelationshipStore<'a> {
     store: &'a GraphStore,
@@ -11,6 +12,7 @@ impl<'a> RelationshipStore<'a> {
     }
 
     /// Feature -[:OWNS]-> WorkPackage
+    #[instrument(name = "graph::owns", skip(self), fields(feature_id, wp_id))]
     pub async fn owns(&self, feature_id: i64, wp_id: i64) -> Result<(), GraphError> {
         self.store
             .run_cypher(
@@ -21,6 +23,7 @@ impl<'a> RelationshipStore<'a> {
     }
 
     /// WorkPackage -[:ASSIGNED_TO]-> Agent
+    #[instrument(name = "graph::assign_to_agent", skip(self, agent_name), fields(wp_id, agent_name = %agent_name))]
     pub async fn assign_to_agent(&self, wp_id: i64, agent_name: String) -> Result<(), GraphError> {
         self.store
             .run_cypher(
@@ -31,6 +34,7 @@ impl<'a> RelationshipStore<'a> {
     }
 
     /// Feature -[:DEPENDS_ON]-> Feature
+    #[instrument(name = "graph::depends_on", skip(self), fields(from_feature_id, to_feature_id))]
     pub async fn depends_on(
         &self,
         from_feature_id: i64,
@@ -45,6 +49,7 @@ impl<'a> RelationshipStore<'a> {
     }
 
     /// WorkPackage -[:BLOCKS]-> WorkPackage
+    #[instrument(name = "graph::blocks", skip(self), fields(blocking_wp_id, blocked_wp_id))]
     pub async fn blocks(&self, blocking_wp_id: i64, blocked_wp_id: i64) -> Result<(), GraphError> {
         self.store
             .run_cypher(
@@ -55,6 +60,7 @@ impl<'a> RelationshipStore<'a> {
     }
 
     /// Feature -[:TAGGED]-> Label
+    #[instrument(name = "graph::tag_feature", skip(self, label_name), fields(feature_id, label_name = %label_name))]
     pub async fn tag_feature(&self, feature_id: i64, label_name: String) -> Result<(), GraphError> {
         self.store
             .run_cypher(
@@ -65,6 +71,7 @@ impl<'a> RelationshipStore<'a> {
     }
 
     /// Feature -[:IN_PROJECT]-> Project
+    #[instrument(name = "graph::feature_in_project", skip(self, project_slug), fields(feature_id, project_slug = %project_slug))]
     pub async fn feature_in_project(
         &self,
         feature_id: i64,
@@ -79,6 +86,7 @@ impl<'a> RelationshipStore<'a> {
     }
 
     /// WorkPackage -[:IN_PROJECT]-> Project
+    #[instrument(name = "graph::workpackage_in_project", skip(self, project_slug), fields(wp_id, project_slug = %project_slug))]
     pub async fn workpackage_in_project(
         &self,
         wp_id: i64,
@@ -93,6 +101,7 @@ impl<'a> RelationshipStore<'a> {
     }
 
     /// Delete a relationship between two nodes.
+    #[instrument(name = "graph::delete_relationship", skip(self, from_type, rel_type, to_type), fields(from_type = %from_type, from_id, rel_type = %rel_type, to_type = %to_type, to_id))]
     pub async fn delete_relationship(
         &self,
         from_type: &str,

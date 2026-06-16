@@ -1,5 +1,6 @@
 use crate::store::{GraphError, GraphStore};
 use serde_json::json;
+use tracing::instrument;
 
 pub struct NodeStore<'a> {
     store: &'a GraphStore,
@@ -12,6 +13,7 @@ impl<'a> NodeStore<'a> {
 
     // === Feature Node Operations ===
 
+    #[instrument(name = "graph::create_feature", skip(self, slug, state, friendly_name), fields(feature_id = id, slug = %slug))]
     pub async fn create_feature(
         &self,
         id: i64,
@@ -27,6 +29,7 @@ impl<'a> NodeStore<'a> {
             .await
     }
 
+    #[instrument(name = "graph::get_feature", skip(self), fields(feature_id))]
     pub async fn get_feature(
         &self,
         feature_id: i64,
@@ -41,6 +44,7 @@ impl<'a> NodeStore<'a> {
         Ok(rows.into_iter().next())
     }
 
+    #[instrument(name = "graph::update_feature_state", skip(self, new_state), fields(feature_id, new_state = %new_state))]
     pub async fn update_feature_state(
         &self,
         feature_id: i64,
@@ -54,6 +58,7 @@ impl<'a> NodeStore<'a> {
             .await
     }
 
+    #[instrument(name = "graph::delete_feature", skip(self), fields(feature_id))]
     pub async fn delete_feature(&self, feature_id: i64) -> Result<(), GraphError> {
         self.store
             .run_cypher(
@@ -65,6 +70,7 @@ impl<'a> NodeStore<'a> {
 
     // === WorkPackage Node Operations ===
 
+    #[instrument(name = "graph::create_workpackage", skip(self, title, state), fields(wp_id = id, title = %title))]
     pub async fn create_workpackage(
         &self,
         id: i64,
@@ -80,6 +86,7 @@ impl<'a> NodeStore<'a> {
             .await
     }
 
+    #[instrument(name = "graph::get_workpackage", skip(self), fields(wp_id))]
     pub async fn get_workpackage(
         &self,
         wp_id: i64,
@@ -94,6 +101,7 @@ impl<'a> NodeStore<'a> {
         Ok(rows.into_iter().next())
     }
 
+    #[instrument(name = "graph::delete_workpackage", skip(self), fields(wp_id))]
     pub async fn delete_workpackage(&self, wp_id: i64) -> Result<(), GraphError> {
         self.store
             .run_cypher(
@@ -105,6 +113,7 @@ impl<'a> NodeStore<'a> {
 
     // === Agent Node Operations ===
 
+    #[instrument(name = "graph::create_agent", skip(self, name, agent_type), fields(name = %name, agent_type = %agent_type))]
     pub async fn create_agent(&self, name: String, agent_type: String) -> Result<(), GraphError> {
         self.store
             .run_cypher(
@@ -114,6 +123,7 @@ impl<'a> NodeStore<'a> {
             .await
     }
 
+    #[instrument(name = "graph::get_agent", skip(self), fields(name = %name))]
     pub async fn get_agent(&self, name: &str) -> Result<Option<serde_json::Value>, GraphError> {
         let rows = self
             .store
@@ -127,6 +137,7 @@ impl<'a> NodeStore<'a> {
 
     // === Label Node Operations ===
 
+    #[instrument(name = "graph::create_label", skip(self, name, color), fields(name = %name, color = %color))]
     pub async fn create_label(&self, name: String, color: String) -> Result<(), GraphError> {
         self.store
             .run_cypher(
@@ -138,6 +149,7 @@ impl<'a> NodeStore<'a> {
 
     // === Project Node Operations ===
 
+    #[instrument(name = "graph::create_project", skip(self, name, slug), fields(name = %name, slug = %slug))]
     pub async fn create_project(&self, name: String, slug: String) -> Result<(), GraphError> {
         self.store
             .run_cypher(
@@ -147,6 +159,7 @@ impl<'a> NodeStore<'a> {
             .await
     }
 
+    #[instrument(name = "graph::get_project", skip(self), fields(slug = %slug))]
     pub async fn get_project(&self, slug: &str) -> Result<Option<serde_json::Value>, GraphError> {
         let rows = self
             .store

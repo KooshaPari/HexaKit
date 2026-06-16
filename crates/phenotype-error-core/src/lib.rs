@@ -231,7 +231,7 @@ impl From<std::num::ParseIntError> for ConfigError {
 #[derive(Error, Debug)]
 pub enum StorageError {
     #[error("I/O error: {0}")]
-    Io(#[from] std::io::Error),
+    Io(std::io::Error),
 
     #[error("not found: {0}")]
     NotFound(String),
@@ -247,6 +247,16 @@ pub enum StorageError {
 
     #[error("{0}")]
     Other(String),
+}
+
+impl From<std::io::Error> for StorageError {
+    fn from(err: std::io::Error) -> Self {
+        match err.kind() {
+            std::io::ErrorKind::NotFound => Self::NotFound(err.to_string()),
+            std::io::ErrorKind::PermissionDenied => Self::PermissionDenied(err.to_string()),
+            _ => Self::Io(err),
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -389,6 +399,13 @@ mod tests {
         let io_err = std::io::Error::new(std::io::ErrorKind::BrokenPipe, "pipe");
         let store_err = StorageError::from(io_err);
         assert!(matches!(store_err, StorageError::Io(_)));
+    }
+
+    #[test]
+    fn storage_error_from_io_permission_denied() {
+        let io_err = std::io::Error::new(std::io::ErrorKind::PermissionDenied, "locked");
+        let store_err = StorageError::from(io_err);
+        assert!(matches!(store_err, StorageError::PermissionDenied(ref msg) if msg == "locked"));
     }
 
     #[test]

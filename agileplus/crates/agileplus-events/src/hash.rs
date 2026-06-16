@@ -3,6 +3,7 @@
 use agileplus_domain::domain::event::Event;
 use chrono::{DateTime, Utc};
 use sha2::{Digest, Sha256};
+use tracing::instrument;
 
 #[derive(Debug, thiserror::Error)]
 pub enum HashError {
@@ -24,6 +25,16 @@ pub enum HashError {
 /// 5. timestamp (length-prefixed ISO 8601)
 /// 6. actor (length-prefixed UTF-8)
 /// 7. prev_hash (32 bytes)
+#[instrument(
+    name = "events::compute_hash",
+    skip(payload, prev_hash),
+    fields(
+        entity_id,
+        entity_type = %entity_type,
+        event_type = %event_type,
+        sequence_placeholder = tracing::field::Empty,
+    )
+)]
 pub fn compute_hash(
     entity_id: i64,
     entity_type: &str,
@@ -66,6 +77,7 @@ pub fn compute_hash(
 /// Verify the integrity of an event chain.
 ///
 /// Ensures each event's hash is correctly computed and chains to its predecessor.
+#[instrument(name = "events::verify_chain", skip(events), fields(event_count = events.len()))]
 pub fn verify_chain(events: &[Event]) -> Result<(), HashError> {
     if events.is_empty() {
         return Ok(());

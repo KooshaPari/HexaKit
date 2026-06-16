@@ -2,6 +2,7 @@
 
 use agileplus_domain::domain::event::Event;
 use chrono::{DateTime, Utc};
+use tracing::instrument;
 
 #[derive(Debug, thiserror::Error)]
 pub enum QueryError {
@@ -74,6 +75,11 @@ impl EventQuery {
     }
 
     /// Filter an in-memory event list using this query's criteria.
+    #[instrument(
+        name = "events::EventQuery::filter",
+        skip(self, events),
+        fields(input_count = events.len(), result_count = tracing::field::Empty)
+    )]
     pub fn filter(&self, events: &[Event]) -> Vec<Event> {
         events
             .iter()

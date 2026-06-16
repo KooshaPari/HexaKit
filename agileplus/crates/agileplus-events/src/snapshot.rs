@@ -4,6 +4,7 @@ use agileplus_domain::domain::event::Event;
 use agileplus_domain::domain::snapshot::Snapshot;
 use async_trait::async_trait;
 use chrono::{TimeDelta, Utc};
+use tracing::instrument;
 
 use crate::store::EventStore;
 
@@ -56,6 +57,14 @@ pub trait SnapshotStore: Send + Sync {
 }
 
 /// Determine whether a new snapshot should be created.
+#[instrument(
+    name = "events::should_snapshot",
+    skip(config, last_snapshot_time),
+    fields(
+        current_sequence,
+        last_snapshot_sequence,
+    )
+)]
 pub fn should_snapshot(
     config: &SnapshotConfig,
     current_sequence: i64,
@@ -82,6 +91,11 @@ pub struct LoadedState {
 
 impl LoadedState {
     /// Load the latest snapshot and any events since it.
+    #[instrument(
+        name = "snapshot::LoadedState::load",
+        skip(snapshot_store, event_store),
+        fields(entity_type = %entity_type, entity_id)
+    )]
     pub async fn load<SS: SnapshotStore, ES: EventStore>(
         snapshot_store: &SS,
         event_store: &ES,

@@ -6,6 +6,7 @@
 //! Traceability: WP17-T099
 
 use chrono::Utc;
+use tracing::instrument;
 
 pub use agileplus_domain::domain::backlog::{BacklogItem, BacklogPriority, BacklogStatus, Intent};
 
@@ -25,6 +26,12 @@ impl BacklogStore {
         }
     }
 
+    /// Add a new item to the backlog, assigning it the next sequential id.
+    #[instrument(
+        name = "triage::backlog::add",
+        skip(self, item),
+        fields(intent = ?item.intent, title = %item.title, assigned_id = tracing::field::Empty)
+    )]
     pub fn add(&mut self, mut item: BacklogItem) -> i64 {
         let id = self.next_id;
         self.next_id += 1;
@@ -33,6 +40,7 @@ impl BacklogStore {
         id
     }
 
+    #[instrument(name = "triage::backlog::get", skip(self), fields(id))]
     pub fn get(&self, id: i64) -> Option<&BacklogItem> {
         self.items.iter().find(|i| i.id == Some(id))
     }
@@ -41,18 +49,22 @@ impl BacklogStore {
         self.items.iter_mut().find(|i| i.id == Some(id))
     }
 
+    #[instrument(name = "triage::backlog::list", skip(self), fields(item_count = self.items.len()))]
     pub fn list(&self) -> &[BacklogItem] {
         &self.items
     }
 
+    #[instrument(name = "triage::backlog::list_by_status", skip(self), fields(status = ?status, result_count = tracing::field::Empty))]
     pub fn list_by_status(&self, status: BacklogStatus) -> Vec<&BacklogItem> {
         self.items.iter().filter(|i| i.status == status).collect()
     }
 
+    #[instrument(name = "triage::backlog::list_by_intent", skip(self), fields(intent = ?intent, result_count = tracing::field::Empty))]
     pub fn list_by_intent(&self, intent: Intent) -> Vec<&BacklogItem> {
         self.items.iter().filter(|i| i.intent == intent).collect()
     }
 
+    #[instrument(name = "triage::backlog::update_status", skip(self), fields(id, status = ?status, updated = tracing::field::Empty))]
     pub fn update_status(&mut self, id: i64, status: BacklogStatus) -> bool {
         if let Some(item) = self.get_mut(id) {
             item.status = status;
@@ -63,6 +75,7 @@ impl BacklogStore {
         }
     }
 
+    #[instrument(name = "triage::backlog::update_priority", skip(self), fields(id, priority = ?priority, updated = tracing::field::Empty))]
     pub fn update_priority(&mut self, id: i64, priority: BacklogPriority) -> bool {
         if let Some(item) = self.get_mut(id) {
             item.priority = priority;
@@ -74,6 +87,11 @@ impl BacklogStore {
     }
 
     /// Pop the next item: highest priority New item, oldest first.
+    #[instrument(
+        name = "triage::backlog::pop_next",
+        skip(self),
+        fields(remaining = self.items.len(), popped_id = tracing::field::Empty)
+    )]
     pub fn pop_next(&mut self) -> Option<&BacklogItem> {
         let priority_order = |p: &BacklogPriority| -> u8 {
             match p {
