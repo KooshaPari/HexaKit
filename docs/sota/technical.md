@@ -30,4 +30,5 @@ Layered template trees (`templates/rust`, `templates/python`, `templates/genesis
 ## Evolution triggers
 
 - Copier-style update flow needed → add `hexakit genesis upgrade`
-- rust-sdk split completes → slim HexaKit `crates/` surface
+- ~~rust-sdk split / domain evictions~~ → Waves 2–7 closed settly, Traceon, stashly, Metron, agileplus workspace paths
+- Remaining transitional `crates/*` → disposition index in phenotype-registry

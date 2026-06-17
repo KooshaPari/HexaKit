@@ -1,6 +1,6 @@
 # SOTA — HexaKit (genesis layer)
 
-> **Last researched:** 2026-06-16  
+> **Last researched:** 2026-06-17  
 > **Methods:** Internal archive audits, rationalization plans, agent-session requirements, comparative template tooling
 
 ## Executive summary
@@ -25,7 +25,8 @@ Separating **genesis** (HexaKit) from **domain SDKs** (`phenotype-*-sdk`) minimi
 
 ## Evolution triggers
 
-- `phenotype-rust-sdk` created → migrate transitional `crates/`
+- ~~Domain crate evictions (settly, Traceon, stashly, Metron)~~ → complete Waves 2–7
+- Remaining `crates/*` infra stubs → role owners per `phenotype-registry` disposition index
 - Backstage/Cortex adoption → re-evaluate OKF vs catalog UI
 
 ## Linkage
