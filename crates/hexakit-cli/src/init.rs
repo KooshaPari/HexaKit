@@ -1,4 +1,6 @@
 use crate::boundary;
+use crate::lang;
+use crate::manifest;
 use crate::registry::{validate_domain_flag, DomainRolesRegistry};
 use anyhow::{bail, Context, Result};
 use clap::Args;
@@ -16,6 +18,18 @@ pub struct InitArgs {
     /// Domain role id from bundled registry/domain-roles.json.
     #[arg(long)]
     pub domain: String,
+
+    /// Language tier for scaffold selection (default: rust).
+    #[arg(long, default_value = "rust")]
+    pub lang: String,
+
+    /// Required for edge-tier languages per STACK_POLICY.
+    #[arg(long)]
+    pub justify: Option<String>,
+
+    /// Comma-separated phenoSDK extras for phenosdk.manifest.toml.
+    #[arg(long, value_delimiter = ',')]
+    pub extras: Vec<String>,
 
     /// Skip TestingKit `.githooks/` placeholder stamp.
     #[arg(long)]
@@ -35,6 +49,8 @@ pub struct InitArgs {
 }
 
 pub fn run(args: InitArgs) -> Result<()> {
+    lang::validate_lang_gate(&args.lang, args.justify.as_deref())?;
+
     let registry = DomainRolesRegistry::bundled()?;
     validate_domain_flag(&args.domain, &registry)?;
     let domain = registry.find(&args.domain)?.clone();
@@ -48,8 +64,20 @@ pub fn run(args: InitArgs) -> Result<()> {
 
     planned.push((
         target.join("BOUNDARY.md"),
-        boundary::render_boundary(&domain, &registry),
+        boundary::render_boundary(
+            &domain,
+            &registry,
+            &args.lang,
+            args.justify.as_deref(),
+        ),
     ));
+
+    if !args.extras.is_empty() {
+        planned.push((
+            target.join("phenosdk.manifest.toml"),
+            manifest::render_phenosdk_manifest(&args.extras),
+        ));
+    }
 
     if !args.no_hooks {
         planned.extend(stamp_githooks(&target)?);
@@ -173,6 +201,9 @@ mod tests {
         run(InitArgs {
             path: dir.path().to_path_buf(),
             domain: "testing".into(),
+            lang: "rust".into(),
+            justify: None,
+            extras: vec![],
             no_hooks: false,
             no_ci: false,
             dry_run: false,
@@ -194,6 +225,9 @@ mod tests {
         let err = run(InitArgs {
             path: dir.path().to_path_buf(),
             domain: "unknown".into(),
+            lang: "rust".into(),
+            justify: None,
+            extras: vec![],
             no_hooks: true,
             no_ci: true,
             dry_run: true,
@@ -209,6 +243,9 @@ mod tests {
         let args = InitArgs {
             path: dir.path().to_path_buf(),
             domain: "testing".into(),
+            lang: "rust".into(),
+            justify: None,
+            extras: vec![],
             no_hooks: true,
             no_ci: true,
             dry_run: false,
@@ -216,5 +253,41 @@ mod tests {
         };
         run(args.clone()).unwrap();
         assert!(run(args).is_err());
+    }
+
+    #[test]
+    fn edge_lang_requires_justify_in_init() {
+        let dir = tempfile::tempdir().unwrap();
+        let err = run(InitArgs {
+            path: dir.path().to_path_buf(),
+            domain: "testing".into(),
+            lang: "go".into(),
+            justify: None,
+            extras: vec![],
+            no_hooks: true,
+            no_ci: true,
+            dry_run: true,
+            force: false,
+        })
+        .unwrap_err();
+        assert!(err.to_string().contains("--justify"));
+    }
+
+    #[test]
+    fn extras_writes_phenosdk_manifest() {
+        let dir = tempfile::tempdir().unwrap();
+        run(InitArgs {
+            path: dir.path().to_path_buf(),
+            domain: "testing".into(),
+            lang: "rust".into(),
+            justify: None,
+            extras: vec!["pheno-telemetry".into()],
+            no_hooks: true,
+            no_ci: true,
+            dry_run: false,
+            force: false,
+        })
+        .unwrap();
+        assert!(dir.path().join("phenosdk.manifest.toml").exists());
     }
 }

@@ -2,6 +2,9 @@
 
 mod boundary;
 mod init;
+mod lang;
+mod lint;
+mod manifest;
 mod registry;
 
 use anyhow::Result;
@@ -18,11 +21,24 @@ struct Cli {
 enum Commands {
     /// Bootstrap a new fleet repository (boundary, hooks, CI docs).
     Init(init::InitArgs),
+    /// Validate BOUNDARY.md structure for a fleet repo.
+    Boundary {
+        #[command(subcommand)]
+        command: BoundaryCommands,
+    },
+}
+
+#[derive(Subcommand)]
+enum BoundaryCommands {
+    Lint(lint::LintArgs),
 }
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
     match cli.command {
         Commands::Init(args) => init::run(args),
+        Commands::Boundary { command } => match command {
+            BoundaryCommands::Lint(args) => lint::run(args),
+        },
     }
 }

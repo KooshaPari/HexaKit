@@ -1,3 +1,4 @@
+use crate::lang::{is_core_lang, is_edge_lang, normalize_lang};
 use crate::registry::{
     adjacent_domains, domain_owns, domain_title, edge_lang_label, format_lang, repo_url,
     DomainRole, DomainRolesRegistry,
@@ -8,7 +9,12 @@ const STACK_POLICY_URL: &str =
 const DOMAIN_ROLES_URL: &str =
     "https://github.com/KooshaPari/phenotype-registry/blob/main/docs/rationalization/DOMAIN_ROLES.md";
 
-pub fn render_boundary(domain: &DomainRole, registry: &DomainRolesRegistry) -> String {
+pub fn render_boundary(
+    domain: &DomainRole,
+    registry: &DomainRolesRegistry,
+    lang: &str,
+    justify: Option<&str>,
+) -> String {
     let title = domain_title(&domain.id);
     let status_line = match domain.status.as_deref() {
         Some("archived") => {
@@ -45,15 +51,32 @@ pub fn render_boundary(domain: &DomainRole, registry: &DomainRolesRegistry) -> S
     }
 
     out.push_str("\n## Preferred core lang\n");
-    match domain.core_lang.as_deref() {
-        Some(lang) => {
-            out.push_str(&format!(
-                "- **{lang}** (Core tier per [STACK_POLICY]({STACK_POLICY_URL}))\n",
-                lang = format_lang(lang),
-            ));
+    let norm = normalize_lang(lang);
+    let selected = norm.as_str();
+    if is_core_lang(selected) {
+        out.push_str(&format!(
+            "- **{lang}** (Core tier per [STACK_POLICY]({STACK_POLICY_URL}))\n",
+            lang = format_lang(selected),
+        ));
+    } else if is_edge_lang(selected) {
+        out.push_str(&format!(
+            "- **{lang}** (Edge tier — justification required per [STACK_POLICY]({STACK_POLICY_URL}))\n",
+            lang = format_lang(selected),
+        ));
+        if let Some(text) = justify {
+            out.push_str(&crate::lang::render_edge_justification(selected, text));
         }
-        None => {
-            out.push_str("- N/A (manifest-only repo)\n");
+    } else {
+        match domain.core_lang.as_deref() {
+            Some(core) => {
+                out.push_str(&format!(
+                    "- **{lang}** (Core tier per [STACK_POLICY]({STACK_POLICY_URL}))\n",
+                    lang = format_lang(core),
+                ));
+            }
+            None => {
+                out.push_str("- N/A (manifest-only repo)\n");
+            }
         }
     }
 
@@ -101,7 +124,7 @@ mod tests {
     fn boundary_includes_status_and_stack_policy() {
         let reg = DomainRolesRegistry::bundled().unwrap();
         let domain = reg.find("testing").unwrap();
-        let md = render_boundary(domain, &reg);
+        let md = render_boundary(domain, &reg, "rust", None);
         assert!(md.contains("**Status:** ACTIVE"));
         assert!(md.contains("## Owns"));
         assert!(md.contains("## Does NOT own"));
@@ -113,7 +136,7 @@ mod tests {
     fn archived_domain_shows_successor() {
         let reg = DomainRolesRegistry::bundled().unwrap();
         let domain = reg.find("process-mgr").unwrap();
-        let md = render_boundary(domain, &reg);
+        let md = render_boundary(domain, &reg, "rust", None);
         assert!(md.contains("ARCHIVED"));
         assert!(md.contains("thegent control-plane"));
     }
