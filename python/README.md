@@ -6,6 +6,11 @@
 
 Phenotype Python provides shared utilities, SDK clients, and tools for Python-based services in the Phenotype ecosystem.
 
+**Types owner:** Shared runtime types live in the canonical
+**[phenotype-types](https://github.com/KooshaPari/phenotype-types)** repository.
+`python/pheno-types` in HexaKit is a deprecated pointer stub only (see
+[`pheno-types/MIGRATED.md`](./pheno-types/MIGRATED.md)).
+
 ## Features
 
 - **SDK Client**: HTTP client for Phenotype APIs
