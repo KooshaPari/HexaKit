@@ -29,6 +29,10 @@ exclude = [
   "crates/phenotype-time",
   "crates/phenotype-state-machine",
   "crates/phenotype-policy-engine",
+  # P3 wave 4 — security + macros + async-traits → phenoShared (contracts deferred: API diverge)
+  "crates/phenotype-security-aggregator",
+  "crates/phenotype-async-traits",
+  "crates/phenotype-macros",
 ]
 members = [
   "crates/hexakit-cli",
@@ -36,7 +40,6 @@ members = [
   "crates/cipher",
   "crates/phenotype-contract-tests",
   "crates/phenotype-sentry-config",
-  "crates/phenotype-async-traits",
   "crates/phenotype-cache-adapter",
   "crates/phenotype-contract",
   "crates/phenotype-contracts",
@@ -47,12 +50,10 @@ members = [
   "crates/phenotype-git-core",
   "crates/phenotype-health",
   "crates/phenotype-iter",
-  "crates/phenotype-macros",
   "crates/phenotype-mcp",
   "crates/phenotype-port-traits",
   "crates/phenotype-ports-canonical",
   "crates/phenotype-process",
-  "crates/phenotype-security-aggregator",
   "crates/phenotype-shared-config",
   "crates/phenotype-string",
   "crates/phenotype-telemetry",
@@ -105,7 +106,7 @@ ulid = { version = "1", features = ["serde"] }
 
 # Phenotype internal crates
 arc-swap = "1"
-# phenoShared canonical (P3 waves 1–3)
+# phenoShared canonical (P3 waves 1–4)
 phenotype-error-core = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-errors = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-event-bus = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
@@ -115,7 +116,9 @@ phenotype-logging = { git = "https://github.com/KooshaPari/phenoShared", branch 
 phenotype-time = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-state-machine = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-policy-engine = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
-phenotype-async-traits = { path = "crates/phenotype-async-traits" }
+phenotype-security-aggregator = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-async-traits = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-macros = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-cache-adapter = { path = "crates/phenotype-cache-adapter" }
 phenotype-compliance-scanner = { path = "crates/phenotype-compliance-scanner" }
 phenotype-config-core = { path = "libs/phenotype-config-core" }
@@ -129,13 +132,11 @@ phenotype-git-core = { path = "crates/phenotype-git-core" }
 phenotype-health = { path = "crates/phenotype-health" }
 phenotype-infrastructure = { path = "crates/phenotype-infrastructure" }
 phenotype-iter = { path = "crates/phenotype-iter" }
-phenotype-macros = { path = "crates/phenotype-macros" }
 phenotype-mcp = { path = "crates/phenotype-mcp" }
 phenotype-port-traits = { path = "crates/phenotype-port-traits" }
 phenotype-ports-canonical = { path = "crates/phenotype-ports-canonical" }
 phenotype-process = { path = "crates/phenotype-process" }
 phenotype-project-registry = { path = "crates/phenotype-project-registry" }
-phenotype-security-aggregator = { path = "crates/phenotype-security-aggregator" }
 phenotype-shared-config = { path = "crates/phenotype-shared-config" }
 phenotype-string = { path = "crates/phenotype-string" }
 phenotype-telemetry = { path = "crates/phenotype-telemetry" }
