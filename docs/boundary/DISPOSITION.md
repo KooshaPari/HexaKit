@@ -42,6 +42,11 @@ plus the `template-*` directories, `templates/` library, and the generated
 infra-generic config files. The 53-crate Rust workspace dissolves into
 ~10 domain SDK repos + the `phenoShared` dynamic-install monorepo.
 
+**Fleet bootstrap:** new repos enter the ecosystem via **`hexakit init`**, specified
+in [`docs/scaffolding/FLEET_INIT.md`](../scaffolding/FLEET_INIT.md). That command
+stamps TestingKit hooks, KooshaPari/.github workflow templates, and a
+`BOUNDARY.md` from the domain role picker — scaffolding only, no domain crate copies.
+
 ---
 
 ## 2. Method
@@ -237,5 +242,6 @@ either real code, planning artifacts, or stale placeholders.
 
 - **Charter:** [`phenotype-registry/docs/rationalization/boundary-shaping.md`](https://github.com/KooshaPari/phenotype-registry/blob/main/docs/rationalization/boundary-shaping.md) — Ecosystem Boundary-Shaping Charter, status *Active*, date 2026-06-16. Three dispositions: DECOMPOSE / ABSORB / DYNAMIC-KEEP. Doctrine: *no delete-on-sight*. Target topology: HexaKit = scaffolding, domain SDKs = McpKit / AuthKit / ResilienceKit / TestingKit / PhenoObservability / phenotype-gfx, umbrella = phenoSDK, too-small monorepo = phenoShared.
 - **HexaKit self-declaration:** `BOUNDARY.md` (status ACTIVE) — "HexaKit is **not** a lib collection holder." Domain SDKs listed as install-separately.
+- **Fleet scaffold generator:** [`docs/scaffolding/FLEET_INIT.md`](../scaffolding/FLEET_INIT.md) — `hexakit init` design (hooks, CI templates, BOUNDARY.md, STACK_POLICY lang gate, phenoSDK manifest extras).
 - **HexaKit Cargo workspace:** `Cargo.toml` lines 10–71 — 53 members.
 - **Related:** `phenotype-registry/docs/rationalization/block-c-consolidation.md` (charter §Execution); org memory `feedback_repo_boundary_shaping`.
