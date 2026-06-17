@@ -20,4 +20,4 @@
 ## For HexaKit maintainers
 
 - Wave A observability lane — do not relocate other observability crates in this PR.
-- Remove this stub directory once downstream references are cleared (follow-up PR).
+- **Wave 3 (2026-06-17):** `Traceon/` removed from workspace members; Pyron repointed to PhenoObservability `tracingkit` git dep.
