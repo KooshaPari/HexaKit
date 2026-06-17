@@ -1,20 +1,25 @@
-# Migration: stashly → ResilienceKit
+# Migration: stashly → resilience role
 
 **Date:** 2026-06-17  
-**Disposition step:** HexaKit DISPOSITION #46 — Wave D absorption stub  
-**Canonical repo:** https://github.com/KooshaPari/ResilienceKit
+**Disposition row:** HexaKit DISPOSITION #46 — `crates/stashly`  
+**ADR:** [ADR-ECO-001](https://github.com/KooshaPari/phenotype-registry/blob/main/docs/adrs/ADR-ECO-001.md)  
+**Canonical target:** `phenotype-resilience` Rust workspace (pending) · Py edge in phenotype-python-sdk
 
 ## What changed
 
-- Implementation ownership moves to **ResilienceKit**.
-- This HexaKit path is a **pointer stub** until downstream references are cleared.
-- Do not extend domain logic here; contribute to ResilienceKit instead.
+- Removed `crates/stashly` from HexaKit workspace members (Wave 3 excision).
+- **Source retained** as redirect stub until fleet repoint completes.
 
 ## For consumers
 
-1. Depend on stashly from ResilienceKit (path or git pin), not HexaKit.
-2. See DOMAIN_ROLES and disposition-index row id **46**.
+```toml
+# Transitional (until phenotype-resilience ships)
+stashly = { git = "https://github.com/KooshaPari/HexaKit", branch = "main", package = "stashly" }
+```
+
+Pyron repointed in lockstep — see [wave3-lockstep-repoint](https://github.com/KooshaPari/Pyron/blob/main/docs/migrations/wave3-lockstep-repoint-2026-06-17.md).
 
 ## For HexaKit maintainers
 
-- Remove this crate directory once workspace members and downstream refs are repointed.
+- Do not add new cache-domain code under `crates/stashly`.
+- Remove stub when zero external path deps remain.
