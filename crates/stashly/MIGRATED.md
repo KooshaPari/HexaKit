@@ -1,25 +1,28 @@
-# Migration: stashly → resilience role
+# Migration: stashly → phenoShared / phenotype-types
 
 **Date:** 2026-06-17  
 **Disposition row:** HexaKit DISPOSITION #46 — `crates/stashly`  
-**ADR:** [ADR-ECO-001](https://github.com/KooshaPari/phenotype-registry/blob/main/docs/adrs/ADR-ECO-001.md)  
-**Canonical target:** `phenotype-resilience` Rust workspace (pending) · Py edge in phenotype-python-sdk
+**Canonical repos:** https://github.com/KooshaPari/phenoShared (Rust cache infra) · https://github.com/KooshaPari/phenotype-types (shared types)  
+**Charter:** v2 boundary-shaping — cache role → phenoShared / phenotype-types
 
 ## What changed
 
-- Removed `crates/stashly` from HexaKit workspace members (Wave 3 excision).
-- **Source retained** as redirect stub until fleet repoint completes.
+- Removed `crates/stashly` from the HexaKit workspace members (P2 excision).
+- Canonical cache implementation lives in **phenoShared**; shared type bindings in **phenotype-types**.
+- **Source tree retained** here as a redirect stub until fleet repoint completes.
 
 ## For consumers
 
+1. Depend on `stashly` from **phenoShared**, not HexaKit `crates/stashly`.
+2. Git dependency (fleet default):
+
 ```toml
-# Transitional (until phenotype-resilience ships)
-stashly = { git = "https://github.com/KooshaPari/HexaKit", branch = "main", package = "stashly" }
+stashly = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 ```
 
-Pyron repointed in lockstep — see [wave3-lockstep-repoint](https://github.com/KooshaPari/Pyron/blob/main/docs/migrations/wave3-lockstep-repoint-2026-06-17.md).
+3. TypeScript/Python shared types → **phenotype-types** — see [phenotype-types](https://github.com/KooshaPari/phenotype-types).
 
 ## For HexaKit maintainers
 
 - Do not add new cache-domain code under `crates/stashly`.
-- Remove stub when zero external path deps remain.
+- Remove this stub directory once zero external path deps remain.

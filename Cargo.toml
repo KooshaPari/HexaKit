@@ -14,6 +14,7 @@ exclude = [
   "Metron",             # archived → PhenoObservability crates/metrickit (2026-06-17)
   "agileplus",          # canonical → KooshaPari/AgilePlus (2026-06-17)
   "Traceon",            # archived → PhenoObservability crates/tracingkit (2026-06-17)
+  "crates/stashly",     # canonical → phenoShared / phenotype-types per v2 charter
 ]
 members = [
   "crates/hexakit-cli",
