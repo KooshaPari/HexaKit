@@ -13,6 +13,7 @@ exclude = [
   "crates/focalpoint",  # 867MB repo with vendor dir; fetch too large for subtree-add; pending manual absorption
 ]
 members = [
+  "crates/hexakit-cli",
   "crates/phenotype-analytics",
   "crates/cipher",
   "crates/phenotype-contract-tests",
