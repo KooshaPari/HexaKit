@@ -9,7 +9,7 @@
 
 - This path received a **redirect stub** per [crate relocation runbook step 6](../../docs/operations/crate-relocation-runbook.md).
 - Canonical metrics ownership moves to **`PhenoObservability`** (`rust/phenotype-metrics`; HexaKit `metrickit` absorbed there).
-- **Source is retained** in HexaKit for this wave — removal follows downstream repoint (runbook steps 4–5, 7).
+- **Source removed** from HexaKit after PhenoObservability absorption (PR #157); only this redirect stub remains.
 
 ## For consumers
 

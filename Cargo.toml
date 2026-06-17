@@ -15,6 +15,7 @@ exclude = [
   "agileplus",          # canonical → KooshaPari/AgilePlus (2026-06-17)
   "Traceon",            # archived → PhenoObservability crates/tracingkit (2026-06-17)
   "crates/stashly",     # canonical → phenoShared / phenotype-types per v2 charter
+  "crates/phenotype-bdd", # canonical → TestingKit wave B (2026-06-17)
 ]
 members = [
   "crates/hexakit-cli",
