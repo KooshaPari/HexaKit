@@ -59,7 +59,6 @@ members = [
   "crates/phenotype-project-registry",
   "crates/phenotype-config-loader",
   "crates/phenotype-xdd-lib",
-  "crates/settly",
   "crates/stashly",
   "forgecode-fork",
   "libs/nexus",

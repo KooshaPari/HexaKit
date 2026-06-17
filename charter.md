@@ -25,7 +25,7 @@ Bootstrap Phenotype-org repositories with architectural templates, governance sh
 |----------|------------|
 | Python domain kits (auth, MCP, testing, observability) | `phenotype-python-sdk` |
 | Go platform modules (devhex, devenv) | `phenotype-go-sdk`, `phenotype-tooling` |
-| Rust domain crates (settly, tracing, cache) | `phenotype-rust-sdk` (planned) — **transitional** in `crates/` until migrated |
+| Rust domain crates (settly, tracing, cache) | **phenotype-config** (`settly`), **PhenoObservability** (`tracingkit`), role workspaces — **transitional** in `crates/` until migrated |
 | Static analysis runtime | `KodeVibe` |
 | LLM validation | `kwality` |
 | E2E journey harness | `phenotype-journeys` |
