@@ -25,12 +25,12 @@ Bootstrap Phenotype-org repositories with architectural templates, governance sh
 |----------|------------|
 | Python domain kits (auth, MCP, testing, observability) | `phenotype-python-sdk` |
 | Go platform modules (devhex, devenv) | `phenotype-go-sdk`, `phenotype-tooling` |
-| Rust domain crates (settly, tracing, cache) | **phenotype-config** (`settly`), **PhenoObservability** (`tracingkit`), role workspaces — **transitional** in `crates/` until migrated |
+| Rust domain crates (settly, tracing, metrics, logging, cache) | **phenotype-config** (`settly`), **PhenoObservability** (`tracingkit`, `metrickit`, `logkit`), **phenoShared** (`stashly`) — evicted from workspace `exclude` |
 | Static analysis runtime | `KodeVibe` |
 | LLM validation | `kwality` |
 | E2E journey harness | `phenotype-journeys` |
 
-> **Transitional note:** Existing `crates/*` workspace predates genesis-only charter. Migration to `phenotype-rust-sdk` is tracked in SOTA; new domain code must not land here.
+> **Transitional note (2026-06-17):** Waves 2–7 evicted settly, Traceon, stashly, Metron, agileplus from workspace members. Remaining `crates/*` are compliance-scanner + shared infra stubs only; new domain code must not land here.
 
 ## Governance artifacts
 
@@ -67,6 +67,7 @@ HexaKit is a **canonical genesis owner** — not a delete candidate. Domain abso
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-06-16 | Genesis charter v1; crates marked transitional | agent |
+| 2026-06-17 | Wave 7 genesis refresh — post-eviction canonical owners in out-of-scope table | agent |
 
 ## Attestation
 
