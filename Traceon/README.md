@@ -1,5 +1,10 @@
 # tracingkit - Distributed Tracing Framework
 
+> **MIGRATED (2026-06-17):** Canonical tracing implementation is
+> [`PhenoObservability/crates/tracingkit`](https://github.com/KooshaPari/PhenoObservability/tree/main/crates/tracingkit).
+> Source repo [`KooshaPari/Traceon`](https://github.com/KooshaPari/Traceon) is archived.
+> This tree is a retired audit copy — not a workspace member.
+
 Distributed tracing with OpenTelemetry support and zero-cost abstraction.
 
 ## Features
