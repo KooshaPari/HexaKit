@@ -1397,7 +1397,7 @@ dependencies = [
  "libc",
  "percent-encoding",
  "pin-project-lite",
- "socket2 0.6.4",
+ "socket2 0.5.10",
  "tokio",
  "tower-service",
  "tracing",
@@ -2241,7 +2241,12 @@ dependencies = [
 
 [[package]]
 name = "phenotype-cache-adapter"
-version = "0.2.0"
+version = "0.1.0"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
+dependencies = [
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "phenotype-casbin-wrapper"
@@ -2400,7 +2405,7 @@ dependencies = [
 [[package]]
 name = "phenotype-error-core"
 version = "0.2.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#afcd8fa231613fc63b17d61ce4dbae0be988fad7"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
 dependencies = [
  "anyhow",
  "serde",
@@ -2421,7 +2426,7 @@ dependencies = [
 [[package]]
 name = "phenotype-errors"
 version = "0.2.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#afcd8fa231613fc63b17d61ce4dbae0be988fad7"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
 dependencies = [
  "chrono",
  "phenotype-error-core 0.2.0 (git+https://github.com/KooshaPari/phenoShared?branch=main)",
@@ -2433,7 +2438,7 @@ dependencies = [
 [[package]]
 name = "phenotype-event-bus"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#afcd8fa231613fc63b17d61ce4dbae0be988fad7"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
 dependencies = [
  "async-trait",
  "dashmap 6.2.1",
@@ -2463,7 +2468,7 @@ dependencies = [
 [[package]]
 name = "phenotype-http-client-core"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#afcd8fa231613fc63b17d61ce4dbae0be988fad7"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
 dependencies = [
  "reqwest 0.13.4",
 ]
@@ -2619,7 +2624,8 @@ dependencies = [
 
 [[package]]
 name = "phenotype-state-machine"
-version = "0.2.0"
+version = "0.1.0"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
 dependencies = [
  "serde",
  "serde_json",
@@ -2666,12 +2672,11 @@ dependencies = [
 
 [[package]]
 name = "phenotype-time"
-version = "0.2.0"
+version = "0.1.0"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
 dependencies = [
  "chrono",
- "serde",
  "thiserror 2.0.18",
- "tokio",
 ]
 
 [[package]]
@@ -2865,7 +2870,7 @@ dependencies = [
  "quinn-udp",
  "rustc-hash",
  "rustls",
- "socket2 0.6.4",
+ "socket2 0.5.10",
  "thiserror 2.0.18",
  "tokio",
  "tracing",
@@ -2903,7 +2908,7 @@ dependencies = [
  "cfg_aliases",
  "libc",
  "once_cell",
- "socket2 0.6.4",
+ "socket2 0.5.10",
  "tracing",
  "windows-sys 0.60.2",
 ]
@@ -4513,7 +4518,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.48.0",
 ]
 
 [[package]]
