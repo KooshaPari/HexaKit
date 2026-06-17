@@ -2044,7 +2044,12 @@ dependencies = [
 
 [[package]]
 name = "phenotype-cache-adapter"
-version = "0.2.0"
+version = "0.1.0"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
+dependencies = [
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "phenotype-casbin-wrapper"
@@ -2255,10 +2260,10 @@ version = "0.2.0"
 [[package]]
 name = "phenotype-health"
 version = "0.2.0"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
 dependencies = [
  "chrono",
  "serde",
- "serde_json",
  "thiserror 2.0.18",
  "tokio",
 ]

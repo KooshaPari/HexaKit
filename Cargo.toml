@@ -33,6 +33,9 @@ exclude = [
   "crates/phenotype-security-aggregator",
   "crates/phenotype-async-traits",
   "crates/phenotype-macros",
+  # Wave 12 — health traits + cache adapter → phenoShared (PO retains runtime extensions)
+  "crates/phenotype-health",
+  "crates/phenotype-cache-adapter",
 ]
 members = [
   "crates/hexakit-cli",
@@ -40,7 +43,6 @@ members = [
   "crates/cipher",
   "crates/phenotype-contract-tests",
   "crates/phenotype-sentry-config",
-  "crates/phenotype-cache-adapter",
   "crates/phenotype-contract",
   "crates/phenotype-contracts",
   "crates/phenotype-compliance-scanner",
@@ -48,7 +50,6 @@ members = [
   "crates/phenotype-crypto",
   "crates/phenotype-error-macros",
   "crates/phenotype-git-core",
-  "crates/phenotype-health",
   "crates/phenotype-iter",
   "crates/phenotype-mcp",
   "crates/phenotype-port-traits",
@@ -106,7 +107,7 @@ ulid = { version = "1", features = ["serde"] }
 
 # Phenotype internal crates
 arc-swap = "1"
-# phenoShared canonical (P3 waves 1–4)
+# phenoShared canonical (P3 waves 1–4, wave 12 health/cache)
 phenotype-error-core = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-errors = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-event-bus = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
@@ -119,7 +120,8 @@ phenotype-policy-engine = { git = "https://github.com/KooshaPari/phenoShared", b
 phenotype-security-aggregator = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-async-traits = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-macros = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
-phenotype-cache-adapter = { path = "crates/phenotype-cache-adapter" }
+phenotype-health = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-cache-adapter = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-compliance-scanner = { path = "crates/phenotype-compliance-scanner" }
 phenotype-config-core = { path = "libs/phenotype-config-core" }
 phenotype-contract = { path = "crates/phenotype-contract" }
@@ -129,7 +131,6 @@ phenotype-cost-core = { path = "crates/phenotype-cost-core" }
 phenotype-crypto = { path = "crates/phenotype-crypto" }
 phenotype-error-macros = { path = "crates/phenotype-error-macros" }
 phenotype-git-core = { path = "crates/phenotype-git-core" }
-phenotype-health = { path = "crates/phenotype-health" }
 phenotype-infrastructure = { path = "crates/phenotype-infrastructure" }
 phenotype-iter = { path = "crates/phenotype-iter" }
 phenotype-mcp = { path = "crates/phenotype-mcp" }
