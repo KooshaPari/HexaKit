@@ -52,7 +52,6 @@ members = [
   "crates/phenotype-time",
   "crates/phenotype-validation",
   "crates/phenotype-casbin-wrapper",
-  "crates/phenotype-bdd",
   "crates/phenotype-core",
   "crates/phenotype-event-bus",
   "crates/phenotype-infrastructure",
@@ -102,7 +101,6 @@ ulid = { version = "1", features = ["serde"] }
 # Phenotype internal crates
 arc-swap = "1"
 phenotype-async-traits = { path = "crates/phenotype-async-traits" }
-phenotype-bdd = { path = "crates/phenotype-bdd" }
 phenotype-cache-adapter = { path = "crates/phenotype-cache-adapter" }
 phenotype-compliance-scanner = { path = "crates/phenotype-compliance-scanner" }
 phenotype-config-core = { path = "libs/phenotype-config-core" }
