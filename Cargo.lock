@@ -2106,17 +2106,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "phenotype-config-loader"
-version = "0.2.0"
-dependencies = [
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.18",
- "toml 0.8.23",
-]
-
-[[package]]
 name = "phenotype-contract"
 version = "0.2.0"
 dependencies = [
@@ -2299,14 +2288,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "phenotype-mcp"
-version = "0.2.0"
-dependencies = [
- "serde",
- "thiserror 2.0.18",
-]
-
-[[package]]
 name = "phenotype-policy-engine"
 version = "0.1.0"
 source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
@@ -2414,19 +2395,6 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
-]
-
-[[package]]
-name = "phenotype-test-infra"
-version = "0.2.0"
-dependencies = [
- "chrono",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.18",
- "tokio",
- "uuid",
 ]
 
 [[package]]
