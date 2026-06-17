@@ -11,6 +11,8 @@ authors = ["kooshapari"]
 resolver = "2"
 exclude = [
   "crates/focalpoint",  # 867MB repo with vendor dir; fetch too large for subtree-add; pending manual absorption
+  "Metron",             # archived → PhenoObservability crates/metrickit (2026-06-17)
+  "agileplus",          # canonical → KooshaPari/AgilePlus (2026-06-17)
 ]
 members = [
   "crates/hexakit-cli",
@@ -59,16 +61,9 @@ members = [
   "crates/phenotype-xdd-lib",
   "crates/settly",
   "crates/stashly",
-  "Metron",
   "forgecode-fork",
   "libs/nexus",
   "libs/phenotype-config-core",
-  "agileplus/crates/agileplus-benchmarks",
-  "agileplus/crates/agileplus-domain",
-  "agileplus/crates/agileplus-events",
-  "agileplus/crates/agileplus-graph",
-  "agileplus/crates/agileplus-sqlite",
-  "agileplus/crates/agileplus-triage",
 ]
 [workspace.dependencies]
 sentry = "0.34"

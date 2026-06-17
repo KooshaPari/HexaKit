@@ -7,6 +7,12 @@
 
 # Metron
 
+> **MIGRATED (2026-06-17):** Canonical metrics implementation is
+> [`PhenoObservability/crates/metrickit`](https://github.com/KooshaPari/PhenoObservability/tree/main/crates/metrickit).
+> Source repo [`KooshaPari/Metron`](https://github.com/KooshaPari/Metron) is archived.
+> This tree is a retired audit copy — not a workspace member. Scaffold mirror:
+> `templates/hexagon/rust/metrickit/`.
+
 **Status:** maintenance
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
