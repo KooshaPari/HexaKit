@@ -15,6 +15,7 @@ exclude = [
   "agileplus",          # canonical → KooshaPari/AgilePlus (2026-06-17)
   "Traceon",            # archived → PhenoObservability crates/tracingkit (2026-06-17)
   "crates/stashly",     # canonical → phenoShared / phenotype-types per v2 charter
+  "crates/settly",      # canonical → phenotype-config (Wave 8 stub prune)
   "crates/phenotype-bdd", # canonical → TestingKit wave B (2026-06-17)
   # P3 wave 1 — error crates canonical in phenoShared (API-compatible)
   "crates/phenotype-error-core",
