@@ -9,7 +9,7 @@
 
 - Removed `crates/stashly` from the HexaKit workspace members (P2 excision).
 - Canonical cache implementation lives in **phenoShared**; shared type bindings in **phenotype-types**.
-- **Source tree retained** here as a redirect stub until fleet repoint completes.
+- **Source tree removed** from HexaKit; only this redirect stub remains until fleet repoint completes.
 
 ## For consumers
 
