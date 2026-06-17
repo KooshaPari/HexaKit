@@ -1,24 +1,31 @@
-# pheno-types
+# pheno-types (deprecated stub)
 
-Shared Python type definitions for the Phenotype SDK, absorbed from the archived
-[KooshaPari/phenoTypes](https://github.com/KooshaPari/phenoTypes) repository.
+**This package has moved.** Canonical types live in the
+**[KooshaPari/phenotype-types](https://github.com/KooshaPari/phenotype-types)** repository.
 
-## Modules
+HexaKit retains this directory only as a transitional pointer during the
+`python/pheno-*` disposition. Do not add or extend types here.
 
-| Module | Description |
-|--------|-------------|
-| `task` | Task IDs, states, and result types |
-| `skill` | Skill manifest and input/output models |
-| `research` | Research reports, evidence, citations, confidence scores |
-| `schemas` | JSON Schema export registry |
-| `legacy` | Legacy TypedDict state types (RFQ, Order, Shipping) |
-
-## Install
+## Install from canonical repo
 
 ```bash
-pip install -e pheno-types
+pip install git+https://github.com/KooshaPari/phenotype-types.git
 ```
 
-## Migration note
+Or add to your project dependencies (package name remains `pheno-types`, import `pheno_types`):
 
-See [docs/history/phenoTypes.md](../docs/history/phenoTypes.md) for archive absorption details.
+```toml
+dependencies = [
+  "pheno-types @ git+https://github.com/KooshaPari/phenotype-types.git",
+]
+```
+
+## Stack note
+
+HexaKit's Python layer targets **Python 3.14+ with uv** as the edge binding surface.
+Long-term canonical schemas for core types are expected to land in **Rust/Zig** in
+`phenotype-types`; the Python package is the interim typed binding layer.
+
+## Migration
+
+See [MIGRATED.md](./MIGRATED.md) and [../docs/history/phenoTypes-relocation.md](../docs/history/phenoTypes-relocation.md).

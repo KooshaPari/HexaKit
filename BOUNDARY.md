@@ -20,5 +20,10 @@
 Legacy interim packages under `python/` are **being relocated** to domain SDK repos.
 Do not add new domain libraries here — use HexaKit templates to wire imports.
 
+| Package | Status |
+|---------|--------|
+| `python/pheno-types` | **Migrated** — stub pointer to [phenotype-types](https://github.com/KooshaPari/phenotype-types) |
+| Other `python/pheno-*` | Pending disposition (separate lanes) |
+
 ## Future: phenoSDK hub (hypothetical)
 Loose-coupled dynamic install surface for small domain modules that are not worth standalone repo governance — HexaKit scaffolds the import, SDK hub resolves versions.
