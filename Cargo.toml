@@ -20,6 +20,10 @@ exclude = [
   # P3 wave 1 — error crates canonical in phenoShared (API-compatible)
   "crates/phenotype-error-core",
   "crates/phenotype-errors",
+  # P3 wave 2 — event + http-client crates canonical in phenoShared
+  "crates/phenotype-event-bus",
+  "crates/phenotype-event-sourcing",
+  "crates/phenotype-http-client-core",
 ]
 members = [
   "crates/hexakit-cli",
@@ -35,10 +39,8 @@ members = [
   "crates/phenotype-cost-core",
   "crates/phenotype-crypto",
   "crates/phenotype-error-macros",
-  "crates/phenotype-event-sourcing",
   "crates/phenotype-git-core",
   "crates/phenotype-health",
-  "crates/phenotype-http-client-core",
   "crates/phenotype-iter",
   "crates/phenotype-logging",
   "crates/phenotype-macros",
@@ -57,7 +59,6 @@ members = [
   "crates/phenotype-validation",
   "crates/phenotype-casbin-wrapper",
   "crates/phenotype-core",
-  "crates/phenotype-event-bus",
   "crates/phenotype-infrastructure",
   "crates/phenotype-project-registry",
   "crates/phenotype-config-loader",
@@ -103,9 +104,12 @@ ulid = { version = "1", features = ["serde"] }
 
 # Phenotype internal crates
 arc-swap = "1"
-# phenoShared canonical (P3 wave 1 — error crates only)
+# phenoShared canonical (P3 wave 1 — error crates; wave 2 — event + http-client)
 phenotype-error-core = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-errors = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-event-bus = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-event-sourcing = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-http-client-core = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-async-traits = { path = "crates/phenotype-async-traits" }
 phenotype-cache-adapter = { path = "crates/phenotype-cache-adapter" }
 phenotype-compliance-scanner = { path = "crates/phenotype-compliance-scanner" }
@@ -116,11 +120,8 @@ phenotype-core = { path = "crates/phenotype-core" }
 phenotype-cost-core = { path = "crates/phenotype-cost-core" }
 phenotype-crypto = { path = "crates/phenotype-crypto" }
 phenotype-error-macros = { path = "crates/phenotype-error-macros" }
-phenotype-event-bus = { path = "crates/phenotype-event-bus" }
-phenotype-event-sourcing = { path = "crates/phenotype-event-sourcing" }
 phenotype-git-core = { path = "crates/phenotype-git-core" }
 phenotype-health = { path = "crates/phenotype-health" }
-phenotype-http-client-core = { path = "crates/phenotype-http-client-core" }
 phenotype-infrastructure = { path = "crates/phenotype-infrastructure" }
 phenotype-iter = { path = "crates/phenotype-iter" }
 phenotype-logging = { path = "crates/phenotype-logging" }
