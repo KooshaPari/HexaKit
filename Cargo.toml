@@ -119,7 +119,7 @@ phenotype-policy-engine = { git = "https://github.com/KooshaPari/phenoShared", b
 phenotype-security-aggregator = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-async-traits = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-macros = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
-phenotype-cache-adapter = { path = "crates/phenotype-cache-adapter" }
+phenotype-cache-adapter = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-compliance-scanner = { path = "crates/phenotype-compliance-scanner" }
 phenotype-config-core = { path = "libs/phenotype-config-core" }
 phenotype-contract = { path = "crates/phenotype-contract" }
