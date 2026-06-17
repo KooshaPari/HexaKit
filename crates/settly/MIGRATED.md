@@ -9,7 +9,7 @@
 
 - Removed `crates/settly` from the HexaKit workspace members (Wave 2 excision).
 - Canonical `config` role ownership is **`phenotype-config`** (`crates/settly`).
-- **Source tree retained** here as a redirect stub until fleet repoint completes (runbook step 7).
+- **Source tree removed** from HexaKit; only this redirect stub remains until archive-delete boundary.
 
 ## For consumers
 
