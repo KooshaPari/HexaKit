@@ -2126,7 +2126,7 @@ version = "0.2.0"
 dependencies = [
  "async-trait",
  "chrono",
- "phenotype-error-core 0.2.0",
+ "phenotype-error-core",
  "serde",
  "serde_json",
  "thiserror 2.0.18",
@@ -2143,7 +2143,7 @@ dependencies = [
  "phenotype-cache-adapter",
  "phenotype-config-core",
  "phenotype-contracts",
- "phenotype-error-core 0.2.0 (git+https://github.com/KooshaPari/phenoShared?branch=main)",
+ "phenotype-error-core",
  "phenotype-errors",
  "phenotype-event-bus",
  "phenotype-health",
@@ -2187,16 +2187,6 @@ dependencies = [
 [[package]]
 name = "phenotype-error-core"
 version = "0.2.0"
-dependencies = [
- "anyhow",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
-]
-
-[[package]]
-name = "phenotype-error-core"
-version = "0.2.0"
 source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
 dependencies = [
  "anyhow",
@@ -2221,7 +2211,7 @@ version = "0.2.0"
 source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
 dependencies = [
  "chrono",
- "phenotype-error-core 0.2.0 (git+https://github.com/KooshaPari/phenoShared?branch=main)",
+ "phenotype-error-core",
  "serde",
  "serde_json",
  "thiserror 2.0.18",
@@ -2234,7 +2224,7 @@ source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b1
 dependencies = [
  "async-trait",
  "dashmap 6.2.1",
- "phenotype-error-core 0.2.0 (git+https://github.com/KooshaPari/phenoShared?branch=main)",
+ "phenotype-error-core",
  "serde",
  "serde_json",
  "thiserror 2.0.18",

@@ -12,6 +12,6 @@ thiserror = "2"
 async-trait = "0.1"
 chrono = { version = "0.4", features = ["serde"] }
 uuid = { version = "1", features = ["v4", "serde"] }
-phenotype-error-core = { path = "../phenotype-error-core" }
+phenotype-error-core = { workspace = true }
 [dev-dependencies]
 tokio = { version = "1", features = ["full"] }
