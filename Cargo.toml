@@ -13,6 +13,7 @@ exclude = [
   "crates/focalpoint",  # 867MB repo with vendor dir; fetch too large for subtree-add; pending manual absorption
   "Metron",             # archived → PhenoObservability crates/metrickit (2026-06-17)
   "agileplus",          # canonical → KooshaPari/AgilePlus (2026-06-17)
+  "Traceon",            # archived → PhenoObservability crates/tracingkit (2026-06-17)
 ]
 members = [
   "crates/hexakit-cli",
@@ -20,7 +21,6 @@ members = [
   "crates/cipher",
   "crates/phenotype-contract-tests",
   "crates/phenotype-sentry-config",
-  "Traceon",
   "crates/phenotype-async-traits",
   "crates/phenotype-cache-adapter",
   "crates/phenotype-contract",
