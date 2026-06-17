@@ -5,6 +5,7 @@ use std::collections::HashMap;
 const DOMAIN_ROLES_JSON: &str = include_str!("../assets/domain-roles.json");
 
 #[derive(Debug, Clone, Deserialize)]
+#[allow(dead_code)]
 pub struct DomainRolesRegistry {
     pub version: String,
     pub updated: String,
@@ -168,6 +169,7 @@ pub fn repo_url(repo: &str) -> String {
     format!("https://github.com/KooshaPari/{repo}")
 }
 
+#[allow(dead_code)]
 pub fn domain_index(registry: &DomainRolesRegistry) -> HashMap<&str, &DomainRole> {
     registry.domains.iter().map(|d| (d.id.as_str(), d)).collect()
 }
