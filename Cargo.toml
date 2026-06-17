@@ -16,6 +16,9 @@ exclude = [
   "Traceon",            # archived → PhenoObservability crates/tracingkit (2026-06-17)
   "crates/stashly",     # canonical → phenoShared / phenotype-types per v2 charter
   "crates/phenotype-bdd", # canonical → TestingKit wave B (2026-06-17)
+  # P3 wave 1 — error crates canonical in phenoShared (API-compatible)
+  "crates/phenotype-error-core",
+  "crates/phenotype-errors",
 ]
 members = [
   "crates/hexakit-cli",
@@ -30,9 +33,7 @@ members = [
   "crates/phenotype-compliance-scanner",
   "crates/phenotype-cost-core",
   "crates/phenotype-crypto",
-  "crates/phenotype-error-core",
   "crates/phenotype-error-macros",
-  "crates/phenotype-errors",
   "crates/phenotype-event-sourcing",
   "crates/phenotype-git-core",
   "crates/phenotype-health",
@@ -101,6 +102,9 @@ ulid = { version = "1", features = ["serde"] }
 
 # Phenotype internal crates
 arc-swap = "1"
+# phenoShared canonical (P3 wave 1 — error crates only)
+phenotype-error-core = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-errors = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-async-traits = { path = "crates/phenotype-async-traits" }
 phenotype-cache-adapter = { path = "crates/phenotype-cache-adapter" }
 phenotype-compliance-scanner = { path = "crates/phenotype-compliance-scanner" }
@@ -110,9 +114,7 @@ phenotype-contracts = { path = "crates/phenotype-contracts" }
 phenotype-core = { path = "crates/phenotype-core" }
 phenotype-cost-core = { path = "crates/phenotype-cost-core" }
 phenotype-crypto = { path = "crates/phenotype-crypto" }
-phenotype-error-core = { path = "crates/phenotype-error-core" }
 phenotype-error-macros = { path = "crates/phenotype-error-macros" }
-phenotype-errors = { path = "crates/phenotype-errors" }
 phenotype-event-bus = { path = "crates/phenotype-event-bus" }
 phenotype-event-sourcing = { path = "crates/phenotype-event-sourcing" }
 phenotype-git-core = { path = "crates/phenotype-git-core" }
