@@ -33,6 +33,10 @@ exclude = [
   "crates/phenotype-security-aggregator",
   "crates/phenotype-async-traits",
   "crates/phenotype-macros",
+  # eco-consolidate wave E/D/B — config-loader, mcp, test-infra
+  "crates/phenotype-config-loader",
+  "crates/phenotype-mcp",
+  "crates/phenotype-test-infra",
 ]
 members = [
   "crates/hexakit-cli",
@@ -50,20 +54,17 @@ members = [
   "crates/phenotype-git-core",
   "crates/phenotype-health",
   "crates/phenotype-iter",
-  "crates/phenotype-mcp",
   "crates/phenotype-port-traits",
   "crates/phenotype-ports-canonical",
   "crates/phenotype-process",
   "crates/phenotype-shared-config",
   "crates/phenotype-string",
   "crates/phenotype-telemetry",
-  "crates/phenotype-test-infra",
   "crates/phenotype-validation",
   "crates/phenotype-casbin-wrapper",
   "crates/phenotype-core",
   "crates/phenotype-infrastructure",
   "crates/phenotype-project-registry",
-  "crates/phenotype-config-loader",
   "crates/phenotype-xdd-lib",
   "forgecode-fork",
   "libs/nexus",
@@ -119,6 +120,8 @@ phenotype-policy-engine = { git = "https://github.com/KooshaPari/phenoShared", b
 phenotype-security-aggregator = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-async-traits = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-macros = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-config-loader = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-mcp = { git = "https://github.com/KooshaPari/substrate", branch = "main" }
 phenotype-cache-adapter = { path = "crates/phenotype-cache-adapter" }
 phenotype-compliance-scanner = { path = "crates/phenotype-compliance-scanner" }
 phenotype-config-core = { path = "libs/phenotype-config-core" }
@@ -132,7 +135,6 @@ phenotype-git-core = { path = "crates/phenotype-git-core" }
 phenotype-health = { path = "crates/phenotype-health" }
 phenotype-infrastructure = { path = "crates/phenotype-infrastructure" }
 phenotype-iter = { path = "crates/phenotype-iter" }
-phenotype-mcp = { path = "crates/phenotype-mcp" }
 phenotype-port-traits = { path = "crates/phenotype-port-traits" }
 phenotype-ports-canonical = { path = "crates/phenotype-ports-canonical" }
 phenotype-process = { path = "crates/phenotype-process" }
@@ -141,7 +143,6 @@ phenotype-shared-config = { path = "crates/phenotype-shared-config" }
 phenotype-string = { path = "crates/phenotype-string" }
 phenotype-telemetry = { path = "crates/phenotype-telemetry" }
 phenotype-test-fixtures = { path = "crates/phenotype-test-fixtures", default-features = false }
-phenotype-test-infra = { path = "crates/phenotype-test-infra" }
 phenotype-validation = { path = "crates/phenotype-validation" }
 phenotype-cipher = { path = "crates/cipher" }
 
