@@ -105,11 +105,11 @@ Dispositions map to the **[charter]** target topology:
 | 19 | `crates/phenotype-event-bus` | Event bus abstractions | **DECOMPOSE** | new `phenotype-events` repo | Domain event primitives; "Eventra" README already declares migration to PhenoEvents. |
 | 20 | `crates/phenotype-event-sourcing` | Event sourcing | **DECOMPOSE** | new `phenotype-events` repo | Sibling of #19; both belong in the events SDK. |
 | 21 | `crates/phenotype-git-core` | Git utilities | **DYNAMIC-KEEP** | `phenoShared` | Cross-cutting CLI/dev tool; no standalone-repo governance justified. |
-| 22 | `crates/phenotype-health` | Health-check primitives | **ABSORB** | `PhenoObservability` | Health checks are observability-adjacent (same family as metrics/logging/tracing). |
+| 22 | `crates/phenotype-health` | Health-check primitives | **ABSORB** | `PhenoObservability` | Health checks are observability-adjacent (same family as metrics/logging/tracing). **Wave A (2026-06-17):** `MIGRATED.md` stub added (runbook step 6); source retained pending repoint. |
 | 23 | `crates/phenotype-http-client-core` | HTTP client core | **ABSORB** | `ResilienceKit` | Charter §Decomposition map explicit: "http-client-core → ResilienceKit". |
 | 24 | `crates/phenotype-infrastructure` | Infra umbrella crate | **DYNAMIC-KEEP** | `phenoShared` | Umbrella of cross-cutting infra; charter: too-small-bits → phenoShared. |
 | 25 | `crates/phenotype-iter` | Iterator utilities | **DYNAMIC-KEEP** | `phenoShared` | Tiny; no standalone-repo governance justified. |
-| 26 | `crates/phenotype-logging` | Logging facade | **ABSORB** | `PhenoObservability` | Charter target: observability owns logging. |
+| 26 | `crates/phenotype-logging` | Logging facade | **ABSORB** | `PhenoObservability` | Charter target: observability owns logging. **Wave A (2026-06-17):** `MIGRATED.md` stub added (runbook step 6); source retained pending repoint. |
 | 27 | `crates/phenotype-macros` | Proc-macros (general) | **DYNAMIC-KEEP** | `phenoShared` | Cross-cutting proc-macro crate; too small. |
 | 28 | `crates/phenotype-mcp` | MCP primitives | **ABSORB** | `McpKit` (or `PhenoMCP`) | Charter target: McpKit owns MCP domain. |
 | 29 | `crates/phenotype-policy-engine` | Policy engine | **DECOMPOSE** | new `phenotype-policy` repo | Single coherent domain; absorbs casbin-wrapper (#6). |
@@ -118,11 +118,11 @@ Dispositions map to the **[charter]** target topology:
 | 32 | `crates/phenotype-process` | Process spawning utilities | **DYNAMIC-KEEP** | `phenoShared` | Cross-cutting runtime helper; too small. |
 | 33 | `crates/phenotype-project-registry` | Project registry types | **DYNAMIC-KEEP** | `phenoShared` | Cross-cutting; too small. |
 | 34 | `crates/phenotype-security-aggregator` | Security aggregation | **ABSORB** | `Authvault` (AuthKit) | Security is auth's neighbor domain; charter: secret/security → AuthKit. |
-| 35 | `crates/phenotype-sentry-config` | Sentry config helper | **ABSORB** | `PhenoObservability` | Sentry is an observability backend; belongs with the observability SDK. |
+| 35 | `crates/phenotype-sentry-config` | Sentry config helper | **ABSORB** | `PhenoObservability` | Sentry is an observability backend; belongs with the observability SDK. **Wave A (2026-06-17):** `MIGRATED.md` stub added (runbook step 6); source retained pending repoint. |
 | 36 | `crates/phenotype-shared-config` | Shared config types | **DYNAMIC-KEEP** | `phenoShared` | Cross-cutting config; too small. |
 | 37 | `crates/phenotype-state-machine` | State machine primitives | **DECOMPOSE** | new `phenotype-state-machine` repo | Single coherent domain primitive. |
 | 38 | `crates/phenotype-string` | String utilities | **DYNAMIC-KEEP** | `phenoShared` | Tiny; too small. |
-| 39 | `crates/phenotype-telemetry` | Telemetry facade | **ABSORB** | `PhenoObservability` | Charter target: observability owns telemetry (logging/tracing/metrics/health). |
+| 39 | `crates/phenotype-telemetry` | Telemetry facade | **ABSORB** | `PhenoObservability` | Charter target: observability owns telemetry (logging/tracing/metrics/health). **Wave A (2026-06-17):** `MIGRATED.md` stub added (runbook step 6); source retained pending repoint. |
 | 40 | `crates/phenotype-test-infra` | Test infra utilities | **ABSORB** | `TestingKit` | Charter target: TestingKit. |
 | 41 | `crates/phenotype-test-fixtures` | Test fixtures | **ABSORB** | `TestingKit` | Sibling of #40; relocate with test-infra. |
 | 42 | `crates/phenotype-time` | Time utilities | **DYNAMIC-KEEP** | `phenoShared` | Tiny; too small. |
@@ -131,8 +131,8 @@ Dispositions map to the **[charter]** target topology:
 | 45 | `crates/settly` | Settings management (validation, versioning, migration, postgres, redis) | **DECOMPOSE** | new `phenotype-settings` repo | Substantial single-domain crate (postgres + redis deps); not config-core. |
 | 46 | `crates/stashly` | Universal caching (TTL, multi-tier, singleflight) | **DECOMPOSE** | new `phenotype-cache` repo (or **ABSORB** → `ResilienceKit`) | Charter mentions rate-limit; cache is adjacent. Promoting to dedicated repo is cleaner given crate size; second choice: ResilienceKit. |
 | 47 | `crates/focalpoint` | Excluded from workspace (867 MB vendor; "pending manual absorption" per `[workspace] exclude`) | **DECOMPOSE** | new `phenotype-focalpoint` repo | Not present in shallow clone; workspace self-documents pending relocation. |
-| 48 | `Metron/` (workspace member) | Metrics collection (Prometheus, StatsD, JSON exporters) | **ABSORB** | `PhenoObservability` | README: "Metron is the observability backbone for all Phenotype services". |
-| 49 | `Traceon/` (workspace member) | Distributed tracing (OpenTelemetry, OTLP, Jaeger, Zipkin) | **ABSORB** | `PhenoObservability` | Charter + HexaKit BOUNDARY.md: "Telemetry → PhenoObservability / Tracely". |
+| 48 | `Metron/` (workspace member) | Metrics collection (Prometheus, StatsD, JSON exporters) | **ABSORB** | `PhenoObservability` | README: "Metron is the observability backbone for all Phenotype services". **Wave A (2026-06-17):** `MIGRATED.md` stub added (runbook step 6); source retained pending repoint. |
+| 49 | `Traceon/` (workspace member) | Distributed tracing (OpenTelemetry, OTLP, Jaeger, Zipkin) | **ABSORB** | `PhenoObservability` | Charter + HexaKit BOUNDARY.md: "Telemetry → PhenoObservability / Tracely". **Wave A (2026-06-17):** `MIGRATED.md` stub added (runbook step 6); source retained pending repoint. |
 | 50 | `forgecode-fork/` (workspace member) | Fork of `forgecode` code generator (Phenotype-specific transforms) | **ABSORB** | `HexaKit` (scaffolding-gen) | It's a code generator; scaffolding is the natural home (or stay as a separate fork repo if upstream sync matters). |
 | 51 | `libs/nexus` (workspace member) | Service registry + discovery | **DECOMPOSE** | new `nexus` repo (README already points at `KooshaPari/nexus`) | The crate's own README documents it as a standalone repo. |
 | 52–56 | `agileplus/crates/agileplus-benchmarks`, `agileplus-domain`, `agileplus-events`, `agileplus-graph`, `agileplus-sqlite`, `agileplus-triage` | AgilePlus platform sub-crates | **DECOMPOSE** | `agileplus` repo (its own platform) | The `agileplus/` umbrella is already a separate platform concern; sub-crates stay together as one platform repo. |
