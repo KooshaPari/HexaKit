@@ -200,3 +200,11 @@ thiserror = { workspace = true }
 [profile.release]
 lto = true
 codegen-units = 1
+
+# Local validation patch (wave14 owner PRs not yet on main)
+[patch."https://github.com/KooshaPari/phenotype-types"]
+phenotype-error-core = { path = "../phenotype-types/crates/phenotype-error-core" }
+phenotype-errors = { path = "../phenotype-types/crates/phenotype-errors" }
+
+[patch."https://github.com/KooshaPari/phenotype-config"]
+phenotype-config-loader = { path = "../phenotype-config/crates/phenotype-config-loader" }
