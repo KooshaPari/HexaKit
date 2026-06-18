@@ -32,7 +32,7 @@
 //! use phenotype_core::health::{HealthStatus, HealthChecker};
 //!
 //! // Telemetry
-//! use phenotype_core::telemetry::{MetricsRecorder, SpanContext};
+//! use phenotype_core::telemetry::{Metric, MetricsCollector, SpanContext};
 //!
 //! // Ports
 //! use phenotype_core::ports::{Repository, CachePort};
@@ -97,9 +97,12 @@ pub mod health {
     };
 }
 
-/// Telemetry re-exports
+/// Telemetry re-exports (canonical: PhenoObservability `rust/phenotype-telemetry`)
 pub mod telemetry {
-    pub use phenotype_telemetry::{MetricsRecorder, SpanContext, Telemetry, TelemetryError};
+    pub use phenotype_telemetry::{
+        Metric, MetricValue, MetricsCollector, Span, SpanContext, TelemetryConfig,
+        TelemetryExporter, Tracer,
+    };
 }
 
 /// Port traits re-exports
