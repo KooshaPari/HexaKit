@@ -30,7 +30,6 @@ exclude = [
   "crates/phenotype-state-machine",
   "crates/phenotype-policy-engine",
   # P3 wave 4 — security + macros + async-traits → phenoShared (contracts deferred: API diverge)
-  "crates/phenotype-security-aggregator",
   "crates/phenotype-async-traits",
   "crates/phenotype-macros",
   # Wave 12 — health traits + cache adapter → phenoShared (PO retains runtime extensions)
@@ -77,6 +76,7 @@ members = [
   "crates/phenotype-core",
   "crates/phenotype-infrastructure",
   "crates/phenotype-project-registry",
+  "crates/phenotype-security-aggregator",
   "crates/phenotype-xdd-lib",
   "forgecode-fork",
   "libs/phenotype-config-core",
@@ -128,7 +128,7 @@ phenotype-logging = { git = "https://github.com/KooshaPari/PhenoObservability", 
 phenotype-time = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-state-machine = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-policy-engine = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
-phenotype-security-aggregator = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-security-aggregator = { path = "crates/phenotype-security-aggregator" }
 phenotype-async-traits = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-macros = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-config-loader = { git = "https://github.com/KooshaPari/phenotype-config", branch = "main" }
