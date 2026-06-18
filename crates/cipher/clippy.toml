@@ -1,4 +1,0 @@
-# Clippy configuration for phenotype-cipher
-# Strict linting for cryptographic library
-
-avoid-breaking-exported-api = false
