@@ -59,6 +59,9 @@ pub enum ApiError {
     #[error("internal: {0}")]
     Internal(String),
 
+    #[error("HTTP transport error: {0}")]
+    Http(#[from] reqwest::Error),
+
     #[error(transparent)]
     Domain(#[from] DomainError),
 
@@ -78,6 +81,7 @@ impl ApiError {
             Self::RateLimited => 429,
             Self::Timeout => 504,
             Self::Internal(_) => 500,
+            Self::Http(_) => 502,
             Self::Domain(_) => 422,
             Self::Repository(_) => 500,
         }
@@ -85,7 +89,10 @@ impl ApiError {
 
     /// Whether the caller should retry.
     pub fn is_retryable(&self) -> bool {
-        matches!(self, Self::RateLimited | Self::Timeout | Self::Internal(_))
+        matches!(
+            self,
+            Self::RateLimited | Self::Timeout | Self::Internal(_) | Self::Http(_)
+        )
     }
 }
 
@@ -414,6 +421,20 @@ mod tests {
         let repo_err = RepositoryError::Connection("db down".into());
         let api_err = ApiError::from(repo_err);
         assert_eq!(api_err.status_code(), 500);
+    }
+
+    #[test]
+    fn api_error_from_reqwest() {
+        // Build a request with a malformed URL to produce a `reqwest::Error`
+        // without needing network access or an async runtime.
+        let reqwest_err = reqwest::Client::new()
+            .get("not a valid url")
+            .build()
+            .expect_err("malformed URL should fail to build a request");
+        let api_err: ApiError = reqwest_err.into();
+        assert!(matches!(api_err, ApiError::Http(_)));
+        assert_eq!(api_err.status_code(), 502);
+        assert!(api_err.is_retryable());
     }
 
     #[test]
