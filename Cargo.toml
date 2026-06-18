@@ -52,10 +52,12 @@ exclude = [
   "crates/phenotype-iter",
   "crates/phenotype-string",
   "crates/phenotype-validation",
+  # Wave H — analytics + nexus decompose
+  "crates/phenotype-analytics",
+  "libs/nexus",
 ]
 members = [
   "crates/hexakit-cli",
-  "crates/phenotype-analytics",
   "crates/phenotype-contract-adapters",
   "crates/phenotype-contract-tests",
   "crates/phenotype-sentry-config",
@@ -74,7 +76,6 @@ members = [
   "crates/phenotype-project-registry",
   "crates/phenotype-xdd-lib",
   "forgecode-fork",
-  "libs/nexus",
   "libs/phenotype-config-core",
 ]
 [workspace.dependencies]
