@@ -66,6 +66,12 @@ pub enum ApiError {
     Repository(#[from] RepositoryError),
 }
 
+impl From<serde_json::Error> for ApiError {
+    fn from(err: serde_json::Error) -> Self {
+        Self::BadRequest(err.to_string())
+    }
+}
+
 impl ApiError {
     /// HTTP status code for this error.
     pub fn status_code(&self) -> u16 {

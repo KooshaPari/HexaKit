@@ -34,4 +34,12 @@ mod tests {
         let err = DomainError::Validation("invalid".into());
         assert!(err.to_string().contains("validation failed"));
     }
+
+    #[test]
+    fn test_error_from_serde_json() {
+        let json_err = serde_json::from_str::<i32>("not-a-number").unwrap_err();
+        let err: Error = json_err.into();
+        assert_eq!(err.status_code(), 400);
+        assert!(matches!(err, ApiError::BadRequest(_)));
+    }
 }
