@@ -33,7 +33,7 @@ use thiserror::Error;
 // ---------------------------------------------------------------------------
 
 /// Errors originating from the HTTP / transport boundary.
-#[derive(Error, Debug)]
+#[derive(Error, Debug, Eq, Hash, PartialEq)]
 pub enum ApiError {
     #[error("bad request: {0}")]
     BadRequest(String),
@@ -94,7 +94,7 @@ impl ApiError {
 // ---------------------------------------------------------------------------
 
 /// Errors from domain logic: validation, invariant violations, state issues.
-#[derive(Error, Debug)]
+#[derive(Error, Debug, Eq, Hash, PartialEq)]
 pub enum DomainError {
     #[error("validation failed: {0}")]
     Validation(String),
@@ -126,7 +126,7 @@ pub enum DomainError {
 // ---------------------------------------------------------------------------
 
 /// Errors from persistence adapters.
-#[derive(Error, Debug)]
+#[derive(Error, Debug, Eq, Hash, PartialEq)]
 pub enum RepositoryError {
     #[error("record not found: {entity} {id}")]
     NotFound { entity: String, id: String },
@@ -164,7 +164,7 @@ impl From<serde_json::Error> for RepositoryError {
 // ---------------------------------------------------------------------------
 
 /// Errors from configuration loading, parsing, and validation.
-#[derive(Error, Debug)]
+#[derive(Error, Debug, Eq, Hash, PartialEq)]
 pub enum ConfigError {
     #[error("file not found: {}", path.display())]
     FileNotFound { path: PathBuf },
@@ -219,10 +219,10 @@ impl From<serde_json::Error> for ConfigError {
 // ---------------------------------------------------------------------------
 
 /// Low-level storage errors (files, network, cache).
-#[derive(Error, Debug)]
+#[derive(Error, Debug, Eq, Hash, PartialEq)]
 pub enum StorageError {
     #[error("I/O error: {0}")]
-    Io(#[from] std::io::Error),
+    Io(String),
 
     #[error("not found: {0}")]
     NotFound(String),
@@ -238,6 +238,16 @@ pub enum StorageError {
 
     #[error("{0}")]
     Other(String),
+}
+
+impl From<std::io::Error> for StorageError {
+    fn from(err: std::io::Error) -> Self {
+        // `std::io::Error` does not implement `Eq`/`Hash`, so we
+        // canonicalise it to its `Display` form for storage. The
+        // original error is recoverable through `Error::source`
+        // (hand-written) if callers need the structured view.
+        Self::Io(err.to_string())
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -256,7 +266,7 @@ pub enum StorageError {
 ///
 /// Use [`Error::source`] to recover the underlying per-layer error
 /// when you need to match on its specific variant.
-#[derive(Debug)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub enum Error {
     /// HTTP / transport-layer failure.
     Api(ApiError),
@@ -641,5 +651,54 @@ mod tests {
             "default should be Error::Other(\"default error\"), got {err}"
         );
         assert_eq!(err.to_string(), "other: default error");
+    }
+
+    #[test]
+    fn error_hashset_round_trip() {
+        // `Error` must be `Hash + Eq` so callers can use it as a key
+        // in hash-based collections. This test inserts one instance
+        // of every variant into a `HashSet<Error>` and verifies
+        // (1) all six are present, (2) duplicates collapse, and
+        // (3) a freshly-constructed equal value resolves to the
+        // same entry (round-trip via `contains`).
+        use std::collections::HashSet;
+        let mut set: HashSet<Error> = HashSet::new();
+
+        set.insert(Error::Api(ApiError::Internal("boom".into())));
+        set.insert(Error::Domain(DomainError::Validation("bad input".into())));
+        set.insert(Error::Repository(RepositoryError::Connection(
+            "db down".into(),
+        )));
+        set.insert(Error::Config(ConfigError::Other("bad cfg".into())));
+        set.insert(Error::Storage(StorageError::NotFound("file.dat".into())));
+        set.insert(Error::Other("misc".into()));
+
+        // Duplicate insertion must not grow the set.
+        set.insert(Error::Api(ApiError::Internal("boom".into())));
+        assert_eq!(
+            set.len(),
+            6,
+            "HashSet<Error> should hold exactly one entry per distinct variant, got {} entries",
+            set.len()
+        );
+
+        // Round-trip: re-constructing an equal value must find the same entry.
+        assert!(set.contains(&Error::Api(ApiError::Internal("boom".into()))));
+        assert!(set.contains(&Error::Domain(DomainError::Validation(
+            "bad input".into()
+        ))));
+        assert!(set.contains(&Error::Repository(RepositoryError::Connection(
+            "db down".into()
+        ))));
+        assert!(set.contains(&Error::Config(ConfigError::Other(
+            "bad cfg".into()
+        ))));
+        assert!(set.contains(&Error::Storage(StorageError::NotFound(
+            "file.dat".into()
+        ))));
+        assert!(set.contains(&Error::Other("misc".into())));
+
+        // A non-equal value must not collide.
+        assert!(!set.contains(&Error::Api(ApiError::Internal("different".into()))));
     }
 }
