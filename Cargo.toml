@@ -45,6 +45,9 @@ exclude = [
   "crates/phenotype-contracts",
   # Wave 13 lane D — cipher → Authvault
   "crates/cipher",
+  # Wave C tail — crypto + casbin → Authvault
+  "crates/phenotype-crypto",
+  "crates/phenotype-casbin-wrapper",
 ]
 members = [
   "crates/hexakit-cli",
@@ -55,7 +58,6 @@ members = [
   "crates/phenotype-contract",
   "crates/phenotype-compliance-scanner",
   "crates/phenotype-cost-core",
-  "crates/phenotype-crypto",
   "crates/phenotype-error-macros",
   "crates/phenotype-git-core",
   "crates/phenotype-iter",
@@ -66,7 +68,6 @@ members = [
   "crates/phenotype-string",
   "crates/phenotype-telemetry",
   "crates/phenotype-validation",
-  "crates/phenotype-casbin-wrapper",
   "crates/phenotype-core",
   "crates/phenotype-infrastructure",
   "crates/phenotype-project-registry",
@@ -133,12 +134,13 @@ phenotype-contract-adapters = { path = "crates/phenotype-contract-adapters" }
 phenotype-contracts = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-test-infra = { git = "https://github.com/KooshaPari/TestingKit", branch = "main" }
 phenotype-cipher = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-cipher" }
+phenotype-crypto = { git = "https://github.com/KooshaPari/Authvault", branch = "feat/wave-c-crypto-casbin-reloc", package = "phenotype-crypto" }
+phenotype-casbin-wrapper = { git = "https://github.com/KooshaPari/Authvault", branch = "feat/wave-c-crypto-casbin-reloc", package = "phenotype-casbin-wrapper" }
 phenotype-compliance-scanner = { path = "crates/phenotype-compliance-scanner" }
 phenotype-config-core = { path = "libs/phenotype-config-core" }
 phenotype-contract = { path = "crates/phenotype-contract" }
 phenotype-core = { path = "crates/phenotype-core" }
 phenotype-cost-core = { path = "crates/phenotype-cost-core" }
-phenotype-crypto = { path = "crates/phenotype-crypto" }
 phenotype-error-macros = { path = "crates/phenotype-error-macros" }
 phenotype-git-core = { path = "crates/phenotype-git-core" }
 phenotype-infrastructure = { path = "crates/phenotype-infrastructure" }
