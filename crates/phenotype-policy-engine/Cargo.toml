@@ -16,6 +16,10 @@ regex = "1"
 toml = "0.8"
 phenotype-error-core = { path = "../phenotype-error-core" }
 phenotype-casbin-wrapper = { path = "../phenotype-casbin-wrapper", optional = true }
+# Cross-workspace path dep: ResilienceKit is a sibling repo under the
+# repos/ monorepo root, so we go up three levels from
+# crates/phenotype-policy-engine to reach it.
+phenotype-resilience = { path = "../../../ResilienceKit/rust/phenotype-resilience" }
 async-trait = "0.1"
 tokio = { version = "1", features = ["full"] }
 

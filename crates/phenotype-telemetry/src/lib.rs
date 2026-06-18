@@ -16,6 +16,21 @@
 //! }
 //! ```
 
+// ---------------------------------------------------------------------------
+// Re-exports
+// ---------------------------------------------------------------------------
+
+/// Re-export of the canonical OTel init helper from `phenotype-observability`.
+///
+/// `phenotype-telemetry` is the trait-only sibling in the telemetry stack;
+/// it deliberately does not own the OTel bootstrap. Consumers that need
+/// the OTel init can depend on `phenotype-telemetry` and call this
+/// re-export, or import `phenotype_observability::init_with_otel`
+/// directly. See `phenotype-observability`'s `otel` module for the
+/// full contract (currently a stub that returns `OTelError::NotWired`,
+/// per the documented gap in that crate).
+pub use phenotype_observability::init_with_otel;
+
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
