@@ -2024,24 +2024,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "phenotype-contract-adapters"
+version = "0.2.0"
+dependencies = [
+ "phenotype-error-core",
+ "serde",
+]
+
+[[package]]
 name = "phenotype-contract-tests"
 version = "0.2.0"
 dependencies = [
  "chrono",
-]
-
-[[package]]
-name = "phenotype-contracts"
-version = "0.2.0"
-dependencies = [
- "async-trait",
- "chrono",
- "phenotype-error-core",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "uuid",
 ]
 
 [[package]]
@@ -2052,7 +2046,7 @@ dependencies = [
  "phenotype-async-traits",
  "phenotype-cache-adapter",
  "phenotype-config-core",
- "phenotype-contracts",
+ "phenotype-contract-adapters",
  "phenotype-error-core",
  "phenotype-errors",
  "phenotype-event-bus",
