@@ -113,7 +113,7 @@ ulid = { version = "1", features = ["serde"] }
 # Phenotype internal crates
 arc-swap = "1"
 # phenoShared canonical (P3 waves 1–4, wave 12 health/cache)
-phenotype-error-core = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-error-core = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main" }
 phenotype-errors = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main" }
 phenotype-event-bus = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-event-sourcing = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
