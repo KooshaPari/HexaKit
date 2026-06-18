@@ -40,11 +40,12 @@ exclude = [
   "crates/phenotype-config-loader",
   "crates/phenotype-mcp",
   "crates/phenotype-test-infra",
+  # Wave C — cipher → Authvault
+  "crates/cipher",
 ]
 members = [
   "crates/hexakit-cli",
   "crates/phenotype-analytics",
-  "crates/cipher",
   "crates/phenotype-contract-tests",
   "crates/phenotype-sentry-config",
   "crates/phenotype-contract",
@@ -123,6 +124,7 @@ phenotype-async-traits = { git = "https://github.com/KooshaPari/phenoShared", br
 phenotype-macros = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-config-loader = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-mcp = { git = "https://github.com/KooshaPari/substrate", branch = "main" }
+phenotype-cipher = { git = "https://github.com/KooshaPari/Authvault", branch = "main" }
 phenotype-health = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-cache-adapter = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-compliance-scanner = { path = "crates/phenotype-compliance-scanner" }
@@ -145,7 +147,6 @@ phenotype-string = { path = "crates/phenotype-string" }
 phenotype-telemetry = { path = "crates/phenotype-telemetry" }
 phenotype-test-fixtures = { path = "crates/phenotype-test-fixtures", default-features = false }
 phenotype-validation = { path = "crates/phenotype-validation" }
-phenotype-cipher = { path = "crates/cipher" }
 
 # External utilities
 axum = "0.7"
