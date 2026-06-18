@@ -8,6 +8,7 @@
 |-------|--------|-------------|
 | `phenotype-sentry-config` | PhenoObservability | 35 |
 | `phenotype-telemetry` | PhenoObservability | 39 |
+| `phenotype-logging` | PhenoObservability | 26 |
 | `phenotype-contract` | TestingKit | 10 |
 | `phenotype-test-fixtures` | TestingKit | 41 |
 
