@@ -3077,6 +3077,7 @@ dependencies = [
  "dashmap 5.5.3",
  "phenotype-casbin-wrapper",
  "phenotype-error-core",
+ "phenotype-resilience",
  "regex",
  "serde",
  "serde_json",
@@ -3125,6 +3126,17 @@ dependencies = [
  "serde_json",
  "tempfile",
  "thiserror 2.0.18",
+ "tokio",
+]
+
+[[package]]
+name = "phenotype-resilience"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "parking_lot",
+ "serde",
+ "thiserror 1.0.69",
  "tokio",
 ]
 
@@ -3190,6 +3202,7 @@ name = "phenotype-telemetry"
 version = "0.2.0"
 dependencies = [
  "chrono",
+ "phenotype-observability",
  "serde",
  "serde_json",
  "thiserror 2.0.18",
