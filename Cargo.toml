@@ -52,6 +52,12 @@ exclude = [
   "crates/phenotype-iter",
   "crates/phenotype-string",
   "crates/phenotype-validation",
+  # Phase 3 Wave A — observability → PhenoObservability
+  "crates/phenotype-sentry-config",
+  "crates/phenotype-telemetry",
+  # Phase 3 Wave B — testing → TestingKit
+  "crates/phenotype-contract",
+  "crates/phenotype-test-fixtures",
   # Wave H — analytics + nexus decompose
   "crates/phenotype-analytics",
   "libs/nexus",
@@ -60,8 +66,6 @@ members = [
   "crates/hexakit-cli",
   "crates/phenotype-contract-adapters",
   "crates/phenotype-contract-tests",
-  "crates/phenotype-sentry-config",
-  "crates/phenotype-contract",
   "crates/phenotype-compliance-scanner",
   "crates/phenotype-cost-core",
   "crates/phenotype-error-macros",
@@ -70,7 +74,6 @@ members = [
   "crates/phenotype-ports-canonical",
   "crates/phenotype-process",
   "crates/phenotype-shared-config",
-  "crates/phenotype-telemetry",
   "crates/phenotype-core",
   "crates/phenotype-infrastructure",
   "crates/phenotype-project-registry",
@@ -138,12 +141,15 @@ phenotype-test-infra = { git = "https://github.com/KooshaPari/TestingKit", branc
 phenotype-cipher = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-cipher" }
 phenotype-crypto = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-crypto" }
 phenotype-casbin-wrapper = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-casbin-wrapper" }
-phenotype-iter = { git = "https://github.com/KooshaPari/phenoShared", branch = "feat/wave-e2a-utils-reloc", package = "phenotype-iter" }
-phenotype-string = { git = "https://github.com/KooshaPari/phenoShared", branch = "feat/wave-e2a-utils-reloc", package = "phenotype-string" }
-phenotype-validation = { git = "https://github.com/KooshaPari/phenoShared", branch = "feat/wave-e2a-utils-reloc", package = "phenotype-validation" }
+phenotype-iter = { git = "https://github.com/KooshaPari/phenoShared", branch = "main", package = "phenotype-iter" }
+phenotype-string = { git = "https://github.com/KooshaPari/phenoShared", branch = "main", package = "phenotype-string" }
+phenotype-validation = { git = "https://github.com/KooshaPari/phenoShared", branch = "main", package = "phenotype-validation" }
+phenotype-sentry-config = { git = "https://github.com/KooshaPari/PhenoObservability", branch = "main", package = "phenotype-sentry-config" }
+phenotype-telemetry = { git = "https://github.com/KooshaPari/PhenoObservability", branch = "main", package = "phenotype-telemetry" }
+phenotype-contract = { git = "https://github.com/KooshaPari/TestingKit", branch = "main", package = "phenotype-contract" }
+phenotype-test-fixtures = { git = "https://github.com/KooshaPari/TestingKit", branch = "main", package = "phenotype-test-fixtures", default-features = false }
 phenotype-compliance-scanner = { path = "crates/phenotype-compliance-scanner" }
 phenotype-config-core = { path = "libs/phenotype-config-core" }
-phenotype-contract = { path = "crates/phenotype-contract" }
 phenotype-core = { path = "crates/phenotype-core" }
 phenotype-cost-core = { path = "crates/phenotype-cost-core" }
 phenotype-error-macros = { path = "crates/phenotype-error-macros" }
@@ -154,8 +160,6 @@ phenotype-ports-canonical = { path = "crates/phenotype-ports-canonical" }
 phenotype-process = { path = "crates/phenotype-process" }
 phenotype-project-registry = { path = "crates/phenotype-project-registry" }
 phenotype-shared-config = { path = "crates/phenotype-shared-config" }
-phenotype-telemetry = { path = "crates/phenotype-telemetry" }
-phenotype-test-fixtures = { path = "crates/phenotype-test-fixtures", default-features = false }
 
 # External utilities
 axum = "0.7"
