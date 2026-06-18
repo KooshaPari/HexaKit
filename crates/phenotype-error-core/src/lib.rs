@@ -214,6 +214,12 @@ impl From<serde_json::Error> for ConfigError {
     }
 }
 
+impl From<std::env::VarError> for ConfigError {
+    fn from(err: std::env::VarError) -> Self {
+        Self::Environment(err.to_string())
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Storage / raw I/O layer
 // ---------------------------------------------------------------------------
@@ -366,6 +372,14 @@ mod tests {
         let json_err = serde_json::from_str::<String>("bad").unwrap_err();
         let cfg_err = ConfigError::from(json_err);
         assert!(matches!(cfg_err, ConfigError::Parse { format, .. } if format == "json"));
+    }
+
+    #[test]
+    fn config_error_from_env_var_error() {
+        let var_err = std::env::var("PHENOTYPE_NONEXISTENT_VAR_FOR_TEST_20260611").unwrap_err();
+        let cfg_err = ConfigError::from(var_err);
+        assert!(matches!(cfg_err, ConfigError::Environment(_)));
+        assert!(!cfg_err.to_string().is_empty());
     }
 
     #[test]
