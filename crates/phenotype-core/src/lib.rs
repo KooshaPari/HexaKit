@@ -109,7 +109,7 @@ pub mod ports {
 
 /// Contracts re-exports
 pub mod contracts {
-    pub use phenotype_contracts::{
+    pub use phenotype_contract_adapters::{
         InMemoryCache, InMemoryEventBus, InMemoryRepository, InMemorySecretManager,
     };
 }

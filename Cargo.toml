@@ -36,20 +36,23 @@ exclude = [
   # Wave 12 — health traits + cache adapter → phenoShared (PO retains runtime extensions)
   "crates/phenotype-health",
   "crates/phenotype-cache-adapter",
-  # eco-consolidate wave E/D/B — config-loader, mcp, test-infra
+  # eco-consolidate — config-loader, mcp
   "crates/phenotype-config-loader",
   "crates/phenotype-mcp",
+  # Wave 13 lane B — test infra → TestingKit
   "crates/phenotype-test-infra",
-  # Wave C — cipher → Authvault
+  # Wave 13 lane C — contracts traits → phenoShared; adapters stay scaffold-local
+  "crates/phenotype-contracts",
+  # Wave 13 lane D — cipher → Authvault
   "crates/cipher",
 ]
 members = [
   "crates/hexakit-cli",
   "crates/phenotype-analytics",
+  "crates/phenotype-contract-adapters",
   "crates/phenotype-contract-tests",
   "crates/phenotype-sentry-config",
   "crates/phenotype-contract",
-  "crates/phenotype-contracts",
   "crates/phenotype-compliance-scanner",
   "crates/phenotype-cost-core",
   "crates/phenotype-crypto",
@@ -124,13 +127,15 @@ phenotype-async-traits = { git = "https://github.com/KooshaPari/phenoShared", br
 phenotype-macros = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-config-loader = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-mcp = { git = "https://github.com/KooshaPari/substrate", branch = "main" }
-phenotype-cipher = { git = "https://github.com/KooshaPari/Authvault", branch = "main" }
 phenotype-health = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-cache-adapter = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-contract-adapters = { path = "crates/phenotype-contract-adapters" }
+phenotype-contracts = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-test-infra = { git = "https://github.com/KooshaPari/TestingKit", branch = "main" }
+phenotype-cipher = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-cipher" }
 phenotype-compliance-scanner = { path = "crates/phenotype-compliance-scanner" }
 phenotype-config-core = { path = "libs/phenotype-config-core" }
 phenotype-contract = { path = "crates/phenotype-contract" }
-phenotype-contracts = { path = "crates/phenotype-contracts" }
 phenotype-core = { path = "crates/phenotype-core" }
 phenotype-cost-core = { path = "crates/phenotype-cost-core" }
 phenotype-crypto = { path = "crates/phenotype-crypto" }
