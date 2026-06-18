@@ -214,6 +214,15 @@ impl From<serde_json::Error> for ConfigError {
     }
 }
 
+impl From<toml::de::Error> for ConfigError {
+    fn from(err: toml::de::Error) -> Self {
+        Self::Parse {
+            format: "toml".into(),
+            reason: err.to_string(),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Storage / raw I/O layer
 // ---------------------------------------------------------------------------
@@ -366,6 +375,13 @@ mod tests {
         let json_err = serde_json::from_str::<String>("bad").unwrap_err();
         let cfg_err = ConfigError::from(json_err);
         assert!(matches!(cfg_err, ConfigError::Parse { format, .. } if format == "json"));
+    }
+
+    #[test]
+    fn config_error_from_toml_de() {
+        let toml_err = toml::from_str::<String>("this = is not valid toml =").unwrap_err();
+        let cfg_err = ConfigError::from(toml_err);
+        assert!(matches!(cfg_err, ConfigError::Parse { format, .. } if format == "toml"));
     }
 
     #[test]
