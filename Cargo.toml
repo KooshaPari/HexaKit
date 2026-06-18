@@ -124,7 +124,7 @@ phenotype-errors = { git = "https://github.com/KooshaPari/phenotype-types", bran
 phenotype-event-bus = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-event-sourcing = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-http-client-core = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
-phenotype-logging = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-logging = { git = "https://github.com/KooshaPari/PhenoObservability", branch = "main", package = "phenotype-logging" }
 phenotype-time = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-state-machine = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-policy-engine = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }

@@ -245,9 +245,9 @@ checksum = "72f5acc6cb2ba439de613abc23857ec3d78374d8ed5ac84e9d11336e87da8649"
 
 [[package]]
 name = "bytes"
-version = "1.11.1"
+version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e748733b7cbc798e1434b6ac524f0c1ff2ab456fe201501e6497c8417a4fc33"
+checksum = "8ae3f5d315924270530207e2a68396c3cc547f6dca3fbdca317cfb1a51edb593"
 
 [[package]]
 name = "cc"
@@ -806,6 +806,7 @@ dependencies = [
  "tokio",
  "tokio-rustls",
  "tower-service",
+ "webpki-roots",
 ]
 
 [[package]]
@@ -1196,7 +1197,7 @@ checksum = "9b4f627cb1b25917193a259e49bdad08f671f8d9708acfd5fe0a8c1455d87220"
 [[package]]
 name = "phenotype-async-traits"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
 dependencies = [
  "pin-project",
 ]
@@ -1204,7 +1205,7 @@ dependencies = [
 [[package]]
 name = "phenotype-cache-adapter"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
 dependencies = [
  "serde",
  "serde_json",
@@ -1233,7 +1234,7 @@ dependencies = [
 name = "phenotype-contract-adapters"
 version = "0.2.0"
 dependencies = [
- "phenotype-error-core",
+ "phenotype-error-core 0.2.0 (git+https://github.com/KooshaPari/phenotype-types?branch=main)",
  "serde",
 ]
 
@@ -1253,7 +1254,7 @@ dependencies = [
  "phenotype-cache-adapter",
  "phenotype-config-core",
  "phenotype-contract-adapters",
- "phenotype-error-core",
+ "phenotype-error-core 0.2.0 (git+https://github.com/KooshaPari/phenotype-types?branch=main)",
  "phenotype-errors",
  "phenotype-event-bus",
  "phenotype-health",
@@ -1281,12 +1282,31 @@ dependencies = [
 [[package]]
 name = "phenotype-error-core"
 version = "0.2.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
 dependencies = [
  "anyhow",
+ "chrono",
+ "reqwest 0.13.4",
  "serde",
  "serde_json",
  "thiserror 2.0.18",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "phenotype-error-core"
+version = "0.2.0"
+source = "git+https://github.com/KooshaPari/phenotype-types?branch=main#dd14f735c373e66b1907b7d5d66d3e175abe1df2"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "reqwest 0.12.28",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "url",
 ]
 
 [[package]]
@@ -1302,10 +1322,10 @@ dependencies = [
 [[package]]
 name = "phenotype-errors"
 version = "0.2.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
+source = "git+https://github.com/KooshaPari/phenotype-types?branch=main#dd14f735c373e66b1907b7d5d66d3e175abe1df2"
 dependencies = [
  "chrono",
- "phenotype-error-core",
+ "phenotype-error-core 0.2.0 (git+https://github.com/KooshaPari/phenotype-types?branch=main)",
  "serde",
  "serde_json",
  "thiserror 2.0.18",
@@ -1314,11 +1334,11 @@ dependencies = [
 [[package]]
 name = "phenotype-event-bus"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
 dependencies = [
  "async-trait",
  "dashmap 6.2.1",
- "phenotype-error-core",
+ "phenotype-error-core 0.2.0 (git+https://github.com/KooshaPari/phenoShared?branch=main)",
  "serde",
  "serde_json",
  "thiserror 2.0.18",
@@ -1333,7 +1353,7 @@ version = "0.2.0"
 [[package]]
 name = "phenotype-health"
 version = "0.2.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
 dependencies = [
  "chrono",
  "serde",
@@ -1344,9 +1364,9 @@ dependencies = [
 [[package]]
 name = "phenotype-http-client-core"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
 dependencies = [
- "reqwest",
+ "reqwest 0.13.4",
 ]
 
 [[package]]
@@ -1363,7 +1383,7 @@ dependencies = [
 [[package]]
 name = "phenotype-policy-engine"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
 dependencies = [
  "dashmap 6.2.1",
  "regex",
@@ -1431,7 +1451,7 @@ dependencies = [
 [[package]]
 name = "phenotype-state-machine"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
 dependencies = [
  "serde",
  "serde_json",
@@ -1453,7 +1473,7 @@ dependencies = [
 [[package]]
 name = "phenotype-telemetry"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/PhenoObservability?branch=main#42cb5adbc2be325f635209049a66f7bf4b3d087a"
+source = "git+https://github.com/KooshaPari/PhenoObservability?branch=main#a3cdb85b1644765390f729fdc94294a61bcde095"
 dependencies = [
  "chrono",
  "uuid",
@@ -1462,7 +1482,7 @@ dependencies = [
 [[package]]
 name = "phenotype-time"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
 dependencies = [
  "chrono",
  "thiserror 2.0.18",
@@ -1774,6 +1794,45 @@ checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
 
 [[package]]
 name = "reqwest"
+version = "0.12.28"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eddd3ca559203180a307f12d114c268abf583f59b03cb906fd0b3ff8646c1147"
+dependencies = [
+ "base64",
+ "bytes",
+ "futures-core",
+ "h2",
+ "http",
+ "http-body",
+ "http-body-util",
+ "hyper",
+ "hyper-rustls",
+ "hyper-util",
+ "js-sys",
+ "log",
+ "percent-encoding",
+ "pin-project-lite",
+ "quinn",
+ "rustls",
+ "rustls-pki-types",
+ "serde",
+ "serde_json",
+ "serde_urlencoded",
+ "sync_wrapper",
+ "tokio",
+ "tokio-rustls",
+ "tower",
+ "tower-http",
+ "tower-service",
+ "url",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+ "webpki-roots",
+]
+
+[[package]]
+name = "reqwest"
 version = "0.13.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "219c5811de6525e5416c7d5d53bb656d3afdbc6c5af816e0802bcfa42dbdc1c3"
@@ -1858,6 +1917,7 @@ checksum = "ef86cd5876211988985292b91c96a8f2d298df24e75989a43a3c73f2d4d8168b"
 dependencies = [
  "aws-lc-rs",
  "once_cell",
+ "ring",
  "rustls-pki-types",
  "rustls-webpki",
  "subtle",
@@ -2061,6 +2121,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6662b5879511e06e8999a8a235d848113e942c9124f211511b16466ee2995f26"
 dependencies = [
  "serde_core",
+]
+
+[[package]]
+name = "serde_urlencoded"
+version = "0.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d3491c14715ca2294c4d6a88f15e84739788c1d030eed8c110436aafdaa2f3fd"
+dependencies = [
+ "form_urlencoded",
+ "itoa",
+ "ryu",
+ "serde",
 ]
 
 [[package]]
@@ -2730,6 +2802,15 @@ name = "webpki-root-certs"
 version = "1.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0d46a5a140e6f7afeccd8eae97eff335163939eac8b929834875168b29b3d267"
+dependencies = [
+ "rustls-pki-types",
+]
+
+[[package]]
+name = "webpki-roots"
+version = "1.0.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bf85cb06032201fa7c6f829d7db5a7e5aa45bcc0655327713065f6f0576731bf"
 dependencies = [
  "rustls-pki-types",
 ]
