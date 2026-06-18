@@ -668,21 +668,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "42703706b716c37f96a77aea830392ad231f44c9e9a67872fa5548707e11b11c"
 
 [[package]]
-name = "futures"
-version = "0.3.32"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b147ee9d1f6d097cef9ce628cd2ee62288d963e16fb287bd9286455b241382d"
-dependencies = [
- "futures-channel",
- "futures-core",
- "futures-executor",
- "futures-io",
- "futures-sink",
- "futures-task",
- "futures-util",
-]
-
-[[package]]
 name = "futures-channel"
 version = "0.3.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -699,32 +684,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7e3450815272ef58cec6d564423f6e755e25379b217b0bc688e295ba24df6b1d"
 
 [[package]]
-name = "futures-executor"
-version = "0.3.32"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "baf29c38818342a3b26b5b923639e7b1f4a61fc5e76102d4b1981c6dc7a7579d"
-dependencies = [
- "futures-core",
- "futures-task",
- "futures-util",
-]
-
-[[package]]
 name = "futures-io"
 version = "0.3.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cecba35d7ad927e23624b22ad55235f2239cfa44fd10428eecbeba6d6a717718"
-
-[[package]]
-name = "futures-macro"
-version = "0.3.32"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e835b70203e41293343137df5c0664546da5745f82ec9b84d40be8336958447b"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
 
 [[package]]
 name = "futures-sink"
@@ -744,10 +707,8 @@ version = "0.3.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "389ca41296e6190b48053de0321d02a77f32f8a5d2461dd38762c0593805c6d6"
 dependencies = [
- "futures-channel",
  "futures-core",
  "futures-io",
- "futures-macro",
  "futures-sink",
  "futures-task",
  "memchr",
@@ -1833,17 +1794,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "phenotype-iter"
-version = "0.2.0"
-dependencies = [
- "async-trait",
- "futures",
- "serde",
- "thiserror 2.0.18",
- "tokio",
-]
-
-[[package]]
 name = "phenotype-policy-engine"
 version = "0.1.0"
 source = "git+https://github.com/KooshaPari/phenoShared?branch=main#6e05527d44b15cdbef7e5cda7869661900be9ea7"
@@ -1931,11 +1881,11 @@ dependencies = [
 [[package]]
 name = "phenotype-string"
 version = "0.2.0"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=feat/wave-e2a-utils-reloc#a603d2b4a20de95251de2534ae8d2e833d7f39fd"
 dependencies = [
  "regex",
  "serde",
  "thiserror 2.0.18",
- "tokio",
  "unicode-normalization",
  "zstd",
 ]
@@ -1964,14 +1914,14 @@ dependencies = [
 
 [[package]]
 name = "phenotype-validation"
-version = "0.2.0"
+version = "0.1.0"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=feat/wave-e2a-utils-reloc#a603d2b4a20de95251de2534ae8d2e833d7f39fd"
 dependencies = [
  "parking_lot",
  "regex",
  "serde",
  "serde_json",
  "thiserror 2.0.18",
- "tokio",
 ]
 
 [[package]]
