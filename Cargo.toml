@@ -114,7 +114,7 @@ ulid = { version = "1", features = ["serde"] }
 arc-swap = "1"
 # phenoShared canonical (P3 waves 1–4, wave 12 health/cache)
 phenotype-error-core = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
-phenotype-errors = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-errors = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main" }
 phenotype-event-bus = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-event-sourcing = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-http-client-core = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
@@ -125,7 +125,7 @@ phenotype-policy-engine = { git = "https://github.com/KooshaPari/phenoShared", b
 phenotype-security-aggregator = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-async-traits = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-macros = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
-phenotype-config-loader = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-config-loader = { git = "https://github.com/KooshaPari/phenotype-config", branch = "main" }
 phenotype-mcp = { git = "https://github.com/KooshaPari/substrate", branch = "main" }
 phenotype-health = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-cache-adapter = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
