@@ -26,7 +26,7 @@ mod tests {
     #[test]
     fn error_debug() {
         let err = Error::Invalid("x".into());
-        let debug = format!("{:?}", err);
+        let debug = format!("{err:?}");
         assert!(debug.contains("Invalid"));
         assert!(debug.contains("x"));
     }
@@ -34,7 +34,10 @@ mod tests {
     #[test]
     fn result_ok() {
         let val: Result<i32> = Ok(42);
-        assert_eq!(val.unwrap(), 42);
+        match val {
+            Ok(n) => assert_eq!(n, 42),
+            Err(_) => panic!("expected Ok"),
+        }
     }
 
     #[test]

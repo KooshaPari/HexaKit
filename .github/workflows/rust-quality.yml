@@ -42,41 +42,43 @@ jobs:
     name: Quality Checks
     runs-on: ubuntu-24.04
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-env
         with:
-          rust-version: ${{ inputs.rust-version }}
+          rust-version: ${{ inputs.rust-version || 'stable' }}
           rust-components: rustfmt,clippy
-          setup-protoc: ${{ inputs.setup-protoc }}
-          workspace: ${{ inputs.workspace }}
+          setup-protoc: ${{ inputs.setup-protoc || false }}
+          workspace: ${{ inputs.workspace || '.' }}
 
       - uses: ./.github/actions/run-tests
         with:
-          test-command: ${{ inputs.test-command }}
+          test-command: ${{ inputs.test-command || 'cargo test --workspace' }}
           lint-command: cargo clippy --workspace -- -D warnings
           format-check: 'true'
-          working-directory: ${{ inputs.workspace }}
+          working-directory: ${{ inputs.workspace || '.' }}
 
   coverage:
     name: Coverage
     runs-on: ubuntu-24.04
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-env
         with:
           rust-version: nightly
-          setup-protoc: ${{ inputs.setup-protoc }}
-          workspace: ${{ inputs.workspace }}
+          setup-protoc: ${{ inputs.setup-protoc || false }}
+          workspace: ${{ inputs.workspace || '.' }}
 
       - name: Install tarpaulin
         run: cargo install cargo-tarpaulin
 
       - name: Generate coverage
-        working-directory: ${{ inputs.workspace }}
+        working-directory: ${{ inputs.workspace || '.' }}
         run: cargo tarpaulin --workspace --out xml --output-dir coverage
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f
         with:
-          files: ${{ inputs.workspace }}/coverage/cobertura.xml
+          files: ${{ inputs.workspace || '.' }}/coverage/cobertura.xml
           flags: rust
           fail_ci_if_error: false
 
@@ -87,10 +89,11 @@ jobs:
       contents: read
       checks: write
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-env
         with:
           rust-version: stable
-          workspace: ${{ inputs.workspace }}
+          workspace: ${{ inputs.workspace || '.' }}
 
       - uses: ./.github/actions/security-checks
         with:
@@ -98,4 +101,4 @@ jobs:
           cargo-deny: 'true'
           gitleaks: 'false'
           python-bandit: 'false'
-          working-directory: ${{ inputs.workspace }}
+          working-directory: ${{ inputs.workspace || '.' }}

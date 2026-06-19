@@ -1,22 +1,18 @@
 # Migration: phenotype-telemetry → PhenoObservability
 
-**Date:** 2026-06-17  
-**Disposition row:** HexaKit DISPOSITION #39 — `crates/phenotype-telemetry`  
+**Date:** 2026-06-18  
+**Disposition row:** HexaKit DISPOSITION #39 — Wave A  
 **Canonical repo:** https://github.com/KooshaPari/PhenoObservability  
-**Absorption map:** [wave-a-absorption.md](https://github.com/KooshaPari/PhenoObservability/blob/main/docs/disposition/wave-a-absorption.md)
+**Git pin:** `PhenoObservability` branch `main`
 
 ## What changed
 
-- This path received a **redirect stub** per [crate relocation runbook step 6](../../docs/operations/crate-relocation-runbook.md).
-- Canonical telemetry facade ownership moves to **`PhenoObservability`** (`rust/phenotype-telemetry`).
-- **Source is retained** in HexaKit for this wave — removal follows downstream repoint (runbook steps 4–5, 7).
+- Local source **pruned** Phase 3 — this directory is a redirect stub only.
+- Canonical implementation at `PhenoObservability/rust/phenotype-telemetry`.
+- `phenotype-core::telemetry` re-exports PO API (`MetricsCollector`, `Metric`, `SpanContext`, …).
 
 ## For consumers
 
-1. Depend on `phenotype-telemetry` from **PhenoObservability**, not HexaKit path deps.
-2. Do not add new workspace or path dependencies on `HexaKit/crates/phenotype-telemetry`.
-
-## For HexaKit maintainers
-
-- Wave A observability lane — do not relocate other observability crates in this PR.
-- Remove this stub directory once downstream references are cleared (follow-up PR).
+```toml
+phenotype-telemetry = { git = "https://github.com/KooshaPari/PhenoObservability", branch = "main", package = "phenotype-telemetry" }
+```

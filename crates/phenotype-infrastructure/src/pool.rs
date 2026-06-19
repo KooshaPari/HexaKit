@@ -1,12 +1,14 @@
 //! Generic connection pooling
 
-use crate::InfrastructureError;
-use async_trait::async_trait;
-use dashmap::DashMap;
 use std::fmt::Debug;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
+
+use async_trait::async_trait;
+use dashmap::DashMap;
 use tokio::sync::{Mutex, Semaphore};
+
+use crate::InfrastructureError;
 
 /// Connection pool configuration
 #[derive(Debug, Clone)]
@@ -152,7 +154,12 @@ impl<C: Send + 'static> ConnectionPool<C> {
     }
 
     pub fn size(&self) -> usize {
-        self.inner.connections.blocking_lock().len() + self.inner.in_use.len()
+        self.inner
+            .connections
+            .try_lock()
+            .map(|connections| connections.len())
+            .unwrap_or(0)
+            + self.inner.in_use.len()
     }
 
     pub fn available(&self) -> usize {

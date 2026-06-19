@@ -1,11 +1,11 @@
-use crate::boundary;
-use crate::lang;
-use crate::manifest;
-use crate::registry::{validate_domain_flag, DomainRolesRegistry};
-use anyhow::{bail, Context, Result};
-use clap::Args;
 use std::fs;
 use std::path::{Path, PathBuf};
+
+use anyhow::{bail, Context, Result};
+use clap::Args;
+
+use crate::registry::{validate_domain_flag, DomainRolesRegistry};
+use crate::{boundary, lang, manifest};
 
 const GITHUB_ORG_REPO: &str = "KooshaPari/.github";
 
@@ -64,12 +64,7 @@ pub fn run(args: InitArgs) -> Result<()> {
 
     planned.push((
         target.join("BOUNDARY.md"),
-        boundary::render_boundary(
-            &domain,
-            &registry,
-            &args.lang,
-            args.justify.as_deref(),
-        ),
+        boundary::render_boundary(&domain, &registry, &args.lang, args.justify.as_deref()),
     ));
 
     if !args.extras.is_empty() {
@@ -143,35 +138,32 @@ Canonical hook bundles are published from [TestingKit](https://github.com/Koosha
 
 ## CI workflows
 
-Do **not** copy org workflows wholesale. Reference reusable workflows and workflow templates from [{org}](https://github.com/{org}):
+Do **not** copy org workflows wholesale. Reference reusable workflows and workflow templates from [{GITHUB_ORG_REPO}](https://github.com/{GITHUB_ORG_REPO}):
 
-| Purpose | SSOT path in `{org}` |
+| Purpose | SSOT path in `{GITHUB_ORG_REPO}` |
 | --- | --- |
-| Rust CI (reusable) | [`.github/workflows/ci-rust.yml`](https://github.com/{org}/blob/main/.github/workflows/ci-rust.yml) |
-| Go CI (reusable) | [`.github/workflows/ci-go.yml`](https://github.com/{org}/blob/main/.github/workflows/ci-go.yml) |
-| Python CI (reusable) | [`.github/workflows/ci-python.yml`](https://github.com/{org}/blob/main/.github/workflows/ci-python.yml) |
-| TypeScript CI (reusable) | [`.github/workflows/ci-typescript.yml`](https://github.com/{org}/blob/main/.github/workflows/ci-typescript.yml) |
-| Generic CI entry | [`.github/workflows/ci.yml`](https://github.com/{org}/blob/main/.github/workflows/ci.yml) |
-| Release | [`.github/workflows/release.yml`](https://github.com/{org}/blob/main/.github/workflows/release.yml) |
-| Security scan | [`.github/workflows/security.yml`](https://github.com/{org}/blob/main/.github/workflows/security.yml) |
-| Publish pipeline | [`.github/workflows/publish.yml`](https://github.com/{org}/blob/main/.github/workflows/publish.yml) |
+| Rust CI (reusable) | [`.github/workflows/ci-rust.yml`](https://github.com/{GITHUB_ORG_REPO}/blob/main/.github/workflows/ci-rust.yml) |
+| Go CI (reusable) | [`.github/workflows/ci-go.yml`](https://github.com/{GITHUB_ORG_REPO}/blob/main/.github/workflows/ci-go.yml) |
+| Python CI (reusable) | [`.github/workflows/ci-python.yml`](https://github.com/{GITHUB_ORG_REPO}/blob/main/.github/workflows/ci-python.yml) |
+| TypeScript CI (reusable) | [`.github/workflows/ci-typescript.yml`](https://github.com/{GITHUB_ORG_REPO}/blob/main/.github/workflows/ci-typescript.yml) |
+| Generic CI entry | [`.github/workflows/ci.yml`](https://github.com/{GITHUB_ORG_REPO}/blob/main/.github/workflows/ci.yml) |
+| Release | [`.github/workflows/release.yml`](https://github.com/{GITHUB_ORG_REPO}/blob/main/.github/workflows/release.yml) |
+| Security scan | [`.github/workflows/security.yml`](https://github.com/{GITHUB_ORG_REPO}/blob/main/.github/workflows/security.yml) |
+| Publish pipeline | [`.github/workflows/publish.yml`](https://github.com/{GITHUB_ORG_REPO}/blob/main/.github/workflows/publish.yml) |
 
 ### Workflow templates (repo creation / starter)
 
-Use GitHub workflow templates from [`workflow-templates/`](https://github.com/{org}/tree/main/workflow-templates):
+Use GitHub workflow templates from [`workflow-templates/`](https://github.com/{GITHUB_ORG_REPO}/tree/main/workflow-templates):
 
-- [`workflow-templates/rust-ci.yml`](https://github.com/{org}/blob/main/workflow-templates/rust-ci.yml)
-- [`workflow-templates/go-ci.yml`](https://github.com/{org}/blob/main/workflow-templates/go-ci.yml)
-- [`workflow-templates/python-ci.yml`](https://github.com/{org}/blob/main/workflow-templates/python-ci.yml)
-- [`workflow-templates/typescript-ci.yml`](https://github.com/{org}/blob/main/workflow-templates/typescript-ci.yml)
-- [`workflow-templates/security-scan.yml`](https://github.com/{org}/blob/main/workflow-templates/security-scan.yml)
-- [`workflow-templates/release-pipeline.yml`](https://github.com/{org}/blob/main/workflow-templates/release-pipeline.yml)
+- [`workflow-templates/rust-ci.yml`](https://github.com/{GITHUB_ORG_REPO}/blob/main/workflow-templates/rust-ci.yml)
+- [`workflow-templates/go-ci.yml`](https://github.com/{GITHUB_ORG_REPO}/blob/main/workflow-templates/go-ci.yml)
+- [`workflow-templates/python-ci.yml`](https://github.com/{GITHUB_ORG_REPO}/blob/main/workflow-templates/python-ci.yml)
+- [`workflow-templates/typescript-ci.yml`](https://github.com/{GITHUB_ORG_REPO}/blob/main/workflow-templates/typescript-ci.yml)
+- [`workflow-templates/security-scan.yml`](https://github.com/{GITHUB_ORG_REPO}/blob/main/workflow-templates/security-scan.yml)
+- [`workflow-templates/release-pipeline.yml`](https://github.com/{GITHUB_ORG_REPO}/blob/main/workflow-templates/release-pipeline.yml)
 
 Add thin caller workflows under `.github/workflows/` in this repo that `uses:` the reusable workflows above.
-"#,
-        repo_name = repo_name,
-        domain_id = domain_id,
-        org = GITHUB_ORG_REPO,
+"#
     )
 }
 
@@ -192,8 +184,9 @@ fn write_file(path: &Path, content: &str, force: bool) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use tempfile::tempdir;
+
+    use super::*;
 
     #[test]
     fn init_writes_boundary_hooks_and_readme() {

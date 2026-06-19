@@ -1,11 +1,12 @@
 //! Configuration format detection and serialization.
 
-use crate::{ConfigError, Result};
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
 
+use crate::{ConfigError, Result};
+
 /// Supported configuration formats.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum ConfigFormat {
     /// JSON format.
@@ -15,13 +16,8 @@ pub enum ConfigFormat {
     /// YAML format.
     Yaml,
     /// Format to be auto-detected.
+    #[default]
     Auto,
-}
-
-impl Default for ConfigFormat {
-    fn default() -> Self {
-        Self::Auto
-    }
 }
 
 /// Format detection strategy.
