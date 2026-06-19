@@ -116,13 +116,19 @@ pub struct SecurityAggregator {
 /// Trait for security alert sources
 pub trait SecuritySource: Send + Sync {
     /// Fetch alerts from this source
-    fn fetch_alerts(&self, owner: &str, repo: &str) -> impl std::future::Future<Output = anyhow::Result<Vec<SecurityAlert>>> + Send;
+    fn fetch_alerts(
+        &self,
+        owner: &str,
+        repo: &str,
+    ) -> impl std::future::Future<Output = anyhow::Result<Vec<SecurityAlert>>> + Send;
 }
 
 impl SecurityAggregator {
     /// Create a new aggregator
     pub fn new() -> Self {
-        Self { sources: Vec::new() }
+        Self {
+            sources: Vec::new(),
+        }
     }
 
     /// Add a security source
@@ -255,6 +261,9 @@ mod tests {
         assert_eq!(AlertSource::CargoAudit.short_name(), "CARGO");
         assert_eq!(AlertSource::Dependabot.short_name(), "DEPND");
         assert_eq!(AlertSource::Trivy.short_name(), "TRIVY");
-        assert_eq!(AlertSource::Custom("Custom".to_string()).short_name(), "Custom");
+        assert_eq!(
+            AlertSource::Custom("Custom".to_string()).short_name(),
+            "Custom"
+        );
     }
 }
