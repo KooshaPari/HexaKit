@@ -2237,6 +2237,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "phenotype-security-aggregator"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+]
+
+[[package]]
 name = "phenotype-sentry-config"
 version = "0.2.0"
 dependencies = [
