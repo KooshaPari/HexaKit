@@ -154,7 +154,12 @@ impl<C: Send + 'static> ConnectionPool<C> {
     }
 
     pub fn size(&self) -> usize {
-        self.inner.connections.blocking_lock().len() + self.inner.in_use.len()
+        self.inner
+            .connections
+            .try_lock()
+            .map(|connections| connections.len())
+            .unwrap_or(0)
+            + self.inner.in_use.len()
     }
 
     pub fn available(&self) -> usize {
