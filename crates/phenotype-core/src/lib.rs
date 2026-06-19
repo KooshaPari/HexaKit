@@ -152,15 +152,12 @@ pub mod http {}
 
 /// External crate re-exports for convenience
 pub mod external {
-    /// Serde for serialization
-    pub use serde::{de::DeserializeOwned, Deserialize, Serialize};
-
-    /// Thiserror for error derives
-    pub use thiserror::Error;
-
     /// Async-trait for async trait methods
     pub use async_trait::async_trait;
-
+    /// Serde for serialization
+    pub use serde::{de::DeserializeOwned, Deserialize, Serialize};
+    /// Thiserror for error derives
+    pub use thiserror::Error;
     /// Tokio for async runtime
     pub use tokio;
 }
@@ -175,8 +172,10 @@ pub mod prelude {
 
 /// Convenience type aliases
 pub mod types {
-    use serde::{de::DeserializeOwned, Serialize};
     use std::fmt::Debug;
+
+    use serde::de::DeserializeOwned;
+    use serde::Serialize;
 
     /// Type alias for common result with DomainError
     pub type DomainResult<T> = std::result::Result<T, super::error::DomainError>;

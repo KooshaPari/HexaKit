@@ -7,6 +7,4 @@ pub mod adapters;
 pub mod error;
 pub mod outbound;
 
-pub use adapters::{
-    InMemoryCache, InMemoryEventBus, InMemoryRepository, InMemorySecretManager,
-};
+pub use adapters::{InMemoryCache, InMemoryEventBus, InMemoryRepository, InMemorySecretManager};

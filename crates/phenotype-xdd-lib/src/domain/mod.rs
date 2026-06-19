@@ -7,8 +7,9 @@
 //! 2. Context is attached for debugging
 //! 3. Errors are categorized by domain concept
 
-use serde::{Deserialize, Serialize};
 use std::fmt;
+
+use serde::{Deserialize, Serialize};
 
 /// Domain-level result type for consistent error handling.
 pub type XddResult<T> = Result<T, XddError>;

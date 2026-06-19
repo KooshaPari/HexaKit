@@ -2,10 +2,11 @@
 //!
 //! Discovers and manages projects across the repos shelf for health tracking.
 
-use phenotype_health::LanguageStack;
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
+
+use phenotype_health::LanguageStack;
+use serde::{Deserialize, Serialize};
 
 /// Metadata about a discovered project
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -226,8 +227,9 @@ impl ProjectRegistry {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use tempfile::TempDir;
+
+    use super::*;
 
     #[tokio::test]
     async fn test_detect_language_rust() {

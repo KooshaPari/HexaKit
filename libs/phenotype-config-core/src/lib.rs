@@ -31,8 +31,9 @@
 //!
 //! [`ConfigLoader::with_path`]: ConfigLoader::with_path
 
-use serde::de::DeserializeOwned;
 use std::path::{Path, PathBuf};
+
+use serde::de::DeserializeOwned;
 use thiserror::Error;
 
 /// Errors produced by the loader.
@@ -222,9 +223,11 @@ impl ConfigLoader {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use serde::Deserialize;
     use std::io::Write;
+
+    use serde::Deserialize;
+
+    use super::*;
 
     #[derive(Debug, Deserialize, PartialEq)]
     struct TestConfig {

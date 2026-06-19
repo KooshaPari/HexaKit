@@ -5,8 +5,9 @@
 //! These tests verify that adapters correctly implement ports
 //! by testing against the contract specification.
 
-use phenotype_xdd_lib::contract::{Contract, ContractVerifier};
 use std::collections::HashMap;
+
+use phenotype_xdd_lib::contract::{Contract, ContractVerifier};
 
 // ============================================================================
 // Example Contract: Key-Value Storage Port

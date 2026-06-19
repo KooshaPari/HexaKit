@@ -11,7 +11,11 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
-#[command(name = "hexakit", version, about = "HexaKit — Phenotype fleet scaffolding")]
+#[command(
+    name = "hexakit",
+    version,
+    about = "HexaKit — Phenotype fleet scaffolding"
+)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,

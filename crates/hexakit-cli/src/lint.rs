@@ -1,7 +1,8 @@
-use anyhow::{bail, Context, Result};
-use clap::Args;
 use std::fs;
 use std::path::PathBuf;
+
+use anyhow::{bail, Context, Result};
+use clap::Args;
 
 #[derive(Args, Debug, Clone)]
 pub struct LintArgs {
@@ -13,15 +14,10 @@ pub struct LintArgs {
 pub fn run(args: LintArgs) -> Result<()> {
     let root = args.path.canonicalize().unwrap_or(args.path);
     let boundary = root.join("BOUNDARY.md");
-    let content = fs::read_to_string(&boundary)
-        .with_context(|| format!("read {}", boundary.display()))?;
+    let content =
+        fs::read_to_string(&boundary).with_context(|| format!("read {}", boundary.display()))?;
 
-    let required = [
-        "## Owns",
-        "## Does NOT own",
-        "STACK_POLICY",
-        "DOMAIN_ROLES",
-    ];
+    let required = ["## Owns", "## Does NOT own", "STACK_POLICY", "DOMAIN_ROLES"];
     for needle in required {
         if !content.contains(needle) {
             bail!("BOUNDARY.md missing required section or link: {needle}");
@@ -34,9 +30,11 @@ pub fn run(args: LintArgs) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::io::Write;
+
     use tempfile::tempdir;
+
+    use super::*;
 
     #[test]
     fn lint_passes_valid_boundary() {

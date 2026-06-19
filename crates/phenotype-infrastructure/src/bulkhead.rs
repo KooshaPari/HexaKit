@@ -1,6 +1,7 @@
 //! Bulkhead pattern for resource isolation
 
 use std::sync::Arc;
+
 use tokio::sync::{Semaphore, SemaphorePermit};
 
 /// Bulkhead configuration
@@ -104,8 +105,9 @@ impl BulkheadMetrics {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::time::Duration;
+
+    use super::*;
 
     #[tokio::test]
     async fn fr_bulkhead_001_execute_within_limit() {

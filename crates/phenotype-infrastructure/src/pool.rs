@@ -1,12 +1,14 @@
 //! Generic connection pooling
 
-use crate::InfrastructureError;
-use async_trait::async_trait;
-use dashmap::DashMap;
 use std::fmt::Debug;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
+
+use async_trait::async_trait;
+use dashmap::DashMap;
 use tokio::sync::{Mutex, Semaphore};
+
+use crate::InfrastructureError;
 
 /// Connection pool configuration
 #[derive(Debug, Clone)]
