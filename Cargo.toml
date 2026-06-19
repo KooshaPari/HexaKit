@@ -60,6 +60,8 @@ exclude = [
   # Wave H — analytics + nexus decompose
   "crates/phenotype-analytics",
   "libs/nexus",
+  # P2 infrakit drain — incomplete stub; excluded until deps + dyn trait fixed
+  "crates/phenotype-security-aggregator",
 ]
 members = [
   "crates/hexakit-cli",
@@ -76,7 +78,6 @@ members = [
   "crates/phenotype-core",
   "crates/phenotype-infrastructure",
   "crates/phenotype-project-registry",
-  "crates/phenotype-security-aggregator",
   "crates/phenotype-xdd-lib",
   "forgecode-fork",
   "libs/phenotype-config-core",
@@ -128,7 +129,6 @@ phenotype-logging = { git = "https://github.com/KooshaPari/PhenoObservability", 
 phenotype-time = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-state-machine = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-policy-engine = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
-phenotype-security-aggregator = { path = "crates/phenotype-security-aggregator" }
 phenotype-async-traits = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-macros = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-config-loader = { git = "https://github.com/KooshaPari/phenotype-config", branch = "main" }
