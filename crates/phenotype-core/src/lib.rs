@@ -74,7 +74,7 @@ pub mod error {
     };
 }
 
-/// Configuration re-exports (canonical: phenoShared `phenotype-config-core` trait surface)
+/// Configuration re-exports (canonical: phenotype-config `phenotype-config-core`)
 pub mod config {
     pub use phenotype_config_core::{
         ConfigLoader, ConfigSource, ConfigValidationError, Priority, ValidateConfig,
