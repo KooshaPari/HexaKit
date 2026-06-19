@@ -20,11 +20,11 @@ exclude = [
   # P3 wave 1 — error crates canonical in phenoShared (API-compatible)
   "crates/phenotype-error-core",
   "crates/phenotype-errors",
-  # P3 wave 2 — event + http-client crates canonical in phenoShared
+  # P3 wave 2 — event crates interim phenoShared (Eventra absorb pending); http-client → ResilienceKit
   "crates/phenotype-event-bus",
   "crates/phenotype-event-sourcing",
   "crates/phenotype-http-client-core",
-  # P3 wave 3 — infra primitives canonical in phenoShared
+  # P3 wave 3 — logging → PO; time interim phenoShared; state-machine + policy → ResilienceKit
   "crates/phenotype-logging",
   "crates/phenotype-time",
   "crates/phenotype-state-machine",
@@ -32,7 +32,7 @@ exclude = [
   # P3 wave 4 — security + macros + async-traits → phenoShared (contracts deferred: API diverge)
   "crates/phenotype-async-traits",
   "crates/phenotype-macros",
-  # Wave 12 — health traits + cache adapter → phenoShared (PO retains runtime extensions)
+  # Wave 12 — health traits interim phenoShared (PO runtime differs); cache adapter stub interim
   "crates/phenotype-health",
   "crates/phenotype-cache-adapter",
   # eco-consolidate — config-loader, mcp
@@ -40,7 +40,7 @@ exclude = [
   "crates/phenotype-mcp",
   # Wave 13 lane B — test infra → TestingKit
   "crates/phenotype-test-infra",
-  # Wave 13 lane C — contracts traits → phenoShared; adapters stay scaffold-local
+  # Wave 13 lane C — generic Contract trait interim phenoShared; slice crates → role owners
   "crates/phenotype-contracts",
   # Wave 13 lane D — cipher → Authvault
   "crates/cipher",
@@ -120,24 +120,34 @@ ulid = { version = "1", features = ["serde"] }
 
 # Phenotype internal crates
 arc-swap = "1"
-# phenoShared canonical (P3 waves 1–4, wave 12 health/cache)
+# phenoShared interim pins (ADR-ECO-014) — drain to DOMAIN_ROLES owners per wave 5+
 phenotype-error-core = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main" }
 phenotype-errors = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main" }
+# Eventra absorb pending — event-bus/sourcing remain phenoShared until landed on Eventra main
 phenotype-event-bus = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-event-sourcing = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
-phenotype-http-client-core = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+# ResilienceKit = phenotype-resilience DOMAIN_ROLES owner
+phenotype-http-client-core = { git = "https://github.com/KooshaPari/ResilienceKit", branch = "main" }
+phenotype-state-machine = { git = "https://github.com/KooshaPari/ResilienceKit", branch = "main" }
+phenotype-policy-engine = { git = "https://github.com/KooshaPari/ResilienceKit", branch = "main" }
 phenotype-logging = { git = "https://github.com/KooshaPari/PhenoObservability", branch = "main", package = "phenotype-logging" }
 phenotype-time = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
-phenotype-state-machine = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
-phenotype-policy-engine = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+# phenotype-rust-sdk repo not created — interim phenoShared per ADR-ECO-014
 phenotype-async-traits = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-macros = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-config-loader = { git = "https://github.com/KooshaPari/phenotype-config", branch = "main" }
 phenotype-mcp = { git = "https://github.com/KooshaPari/substrate", branch = "main" }
+# PO canonical runtime differs (HealthCheck vs HealthChecker) — traits interim phenoShared
 phenotype-health = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+# archive-if-unused stub — retain phenoShared pin until absorbed or HexaKit inline stub
 phenotype-cache-adapter = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
 phenotype-contract-adapters = { path = "crates/phenotype-contract-adapters" }
+# Contracts decompose: slice crates on role owners; generic Contract trait interim phenoShared
+phenotype-auth-contracts = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-auth-contracts" }
+phenotype-event-contracts = { git = "https://github.com/KooshaPari/Eventra", branch = "main", package = "phenotype-event-contracts" }
+phenotype-agent-contracts = { git = "https://github.com/KooshaPari/Agentora", branch = "main", package = "phenotype-agent-contracts" }
 phenotype-contracts = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+phenotype-security-aggregator = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-security-aggregator" }
 phenotype-test-infra = { git = "https://github.com/KooshaPari/TestingKit", branch = "main" }
 phenotype-cipher = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-cipher" }
 phenotype-crypto = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-crypto" }
