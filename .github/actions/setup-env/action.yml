@@ -32,8 +32,9 @@ runs:
         fetch-depth: ${{ inputs.checkout-depth }}
 
     - name: Setup Rust toolchain
-      uses: dtolnay/rust-toolchain@${{ inputs.rust-version }}
+      uses: dtolnay/rust-toolchain@stable
       with:
+        toolchain: ${{ inputs.rust-version }}
         components: ${{ inputs.rust-components }}
 
     - name: Cache Rust dependencies

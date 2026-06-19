@@ -1,6 +1,7 @@
+use std::collections::HashMap;
+
 use anyhow::{bail, Context, Result};
 use serde::Deserialize;
-use std::collections::HashMap;
 
 const DOMAIN_ROLES_JSON: &str = include_str!("../assets/domain-roles.json");
 
@@ -148,7 +149,10 @@ pub fn edge_lang_label(code: &str) -> String {
 
 pub fn validate_domain_flag(domain: &str, registry: &DomainRolesRegistry) -> Result<()> {
     if domain.is_empty() {
-        bail!("--domain is required (available: {})", registry.list_ids().join(", "));
+        bail!(
+            "--domain is required (available: {})",
+            registry.list_ids().join(", ")
+        );
     }
     registry.find(domain)?;
     Ok(())
@@ -171,7 +175,11 @@ pub fn repo_url(repo: &str) -> String {
 
 #[allow(dead_code)]
 pub fn domain_index(registry: &DomainRolesRegistry) -> HashMap<&str, &DomainRole> {
-    registry.domains.iter().map(|d| (d.id.as_str(), d)).collect()
+    registry
+        .domains
+        .iter()
+        .map(|d| (d.id.as_str(), d))
+        .collect()
 }
 
 #[cfg(test)]

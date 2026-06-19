@@ -19,8 +19,9 @@
 //! let score = tracker.mutation_score();
 //! ```
 
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+
+use serde::{Deserialize, Serialize};
 
 /// Mutation coverage tracker.
 #[derive(Debug, Default, Clone)]

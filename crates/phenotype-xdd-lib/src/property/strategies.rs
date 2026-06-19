@@ -13,9 +13,10 @@
 //! - Collection strategies (non-empty, bounded size)
 //! - Composite strategies (valid entities)
 
-use crate::domain::{XddError, XddResult};
 use proptest::prop_oneof;
 use proptest::strategy::Strategy;
+
+use crate::domain::{XddError, XddResult};
 
 /// Result type for strategy validation.
 pub type StrategyResult<T> = Result<T, XddError>;

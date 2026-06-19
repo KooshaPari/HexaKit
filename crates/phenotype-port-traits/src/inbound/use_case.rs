@@ -66,7 +66,7 @@ mod tests {
     #[test]
     fn use_case_error_debug() {
         let err = UseCaseError::Validation("x".into());
-        let debug = format!("{:?}", err);
+        let debug = format!("{err:?}");
         assert!(debug.contains("Validation"));
     }
 }
