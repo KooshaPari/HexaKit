@@ -53,7 +53,7 @@
 //! use phenotype_core::policy::{PolicyEngine, PolicyResult};
 //!
 //! // Cache
-//! use phenotype_core::cache::TwoTierCache;
+//! use phenotype_core::cache::CacheAdapter;
 //!
 //! // String
 //! use phenotype_core::string::StringExt;
@@ -74,9 +74,11 @@ pub mod error {
     };
 }
 
-/// Configuration re-exports
+/// Configuration re-exports (canonical: phenoShared `phenotype-config-core` trait surface)
 pub mod config {
-    pub use phenotype_config_core::ConfigLoader;
+    pub use phenotype_config_core::{
+        ConfigLoader, ConfigSource, ConfigValidationError, Priority, ValidateConfig,
+    };
 }
 
 /// Event bus re-exports
