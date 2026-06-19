@@ -42,6 +42,7 @@ jobs:
     name: Quality Checks
     runs-on: ubuntu-24.04
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-env
         with:
           rust-version: ${{ inputs.rust-version }}
@@ -60,6 +61,7 @@ jobs:
     name: Coverage
     runs-on: ubuntu-24.04
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-env
         with:
           rust-version: nightly
@@ -87,6 +89,7 @@ jobs:
       contents: read
       checks: write
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-env
         with:
           rust-version: stable

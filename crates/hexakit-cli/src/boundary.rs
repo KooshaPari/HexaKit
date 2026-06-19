@@ -18,10 +18,7 @@ pub fn render_boundary(
     let title = domain_title(&domain.id);
     let status_line = match domain.status.as_deref() {
         Some("archived") => {
-            let successor = domain
-                .successor
-                .as_deref()
-                .unwrap_or("see DOMAIN_ROLES.md");
+            let successor = domain.successor.as_deref().unwrap_or("see DOMAIN_ROLES.md");
             format!("**Status:** ARCHIVED — successor: {successor}")
         }
         _ => "**Status:** ACTIVE".to_string(),
