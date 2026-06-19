@@ -80,6 +80,7 @@ members = [
   "crates/phenotype-core",
   "crates/phenotype-infrastructure",
   "crates/phenotype-project-registry",
+  "crates/phenotype-security-aggregator",
   "crates/phenotype-xdd-lib",
   "forgecode-fork",
 ]
