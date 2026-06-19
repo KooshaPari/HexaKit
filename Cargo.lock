@@ -1073,6 +1073,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "libyaml-rs"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2e126dda6f34391ab7b444f9922055facc83c07a910da3eb16f1e4d9c45dc777"
+
+[[package]]
 name = "linux-raw-sys"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1197,7 +1203,7 @@ checksum = "9b4f627cb1b25917193a259e49bdad08f671f8d9708acfd5fe0a8c1455d87220"
 [[package]]
 name = "phenotype-async-traits"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#5c3021bc7fd1073561e1bd128235763f44e9da66"
 dependencies = [
  "pin-project",
 ]
@@ -1205,7 +1211,7 @@ dependencies = [
 [[package]]
 name = "phenotype-cache-adapter"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#5c3021bc7fd1073561e1bd128235763f44e9da66"
 dependencies = [
  "serde",
  "serde_json",
@@ -1222,12 +1228,13 @@ dependencies = [
 [[package]]
 name = "phenotype-config-core"
 version = "0.2.0"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#5c3021bc7fd1073561e1bd128235763f44e9da66"
 dependencies = [
- "dirs",
  "serde",
- "tempfile",
+ "serde_json",
  "thiserror 2.0.18",
- "toml 0.8.23",
+ "toml 1.1.2+spec-1.1.0",
+ "yaml_serde",
 ]
 
 [[package]]
@@ -1282,7 +1289,7 @@ dependencies = [
 [[package]]
 name = "phenotype-error-core"
 version = "0.2.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#5c3021bc7fd1073561e1bd128235763f44e9da66"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1334,7 +1341,7 @@ dependencies = [
 [[package]]
 name = "phenotype-event-bus"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#5c3021bc7fd1073561e1bd128235763f44e9da66"
 dependencies = [
  "async-trait",
  "dashmap 6.2.1",
@@ -1353,7 +1360,7 @@ version = "0.2.0"
 [[package]]
 name = "phenotype-health"
 version = "0.2.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#5c3021bc7fd1073561e1bd128235763f44e9da66"
 dependencies = [
  "chrono",
  "serde",
@@ -1364,7 +1371,7 @@ dependencies = [
 [[package]]
 name = "phenotype-http-client-core"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#5c3021bc7fd1073561e1bd128235763f44e9da66"
 dependencies = [
  "reqwest 0.13.4",
 ]
@@ -1383,7 +1390,7 @@ dependencies = [
 [[package]]
 name = "phenotype-policy-engine"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#5c3021bc7fd1073561e1bd128235763f44e9da66"
 dependencies = [
  "dashmap 6.2.1",
  "regex",
@@ -1451,7 +1458,7 @@ dependencies = [
 [[package]]
 name = "phenotype-state-machine"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#5c3021bc7fd1073561e1bd128235763f44e9da66"
 dependencies = [
  "serde",
  "serde_json",
@@ -1461,7 +1468,7 @@ dependencies = [
 [[package]]
 name = "phenotype-string"
 version = "0.2.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#5c3021bc7fd1073561e1bd128235763f44e9da66"
 dependencies = [
  "regex",
  "serde",
@@ -1482,7 +1489,7 @@ dependencies = [
 [[package]]
 name = "phenotype-time"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#5c3021bc7fd1073561e1bd128235763f44e9da66"
 dependencies = [
  "chrono",
  "thiserror 2.0.18",
@@ -1491,7 +1498,7 @@ dependencies = [
 [[package]]
 name = "phenotype-validation"
 version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#95d74795c77f7c554be2b5e42e8e3378cdab77bf"
+source = "git+https://github.com/KooshaPari/phenoShared?branch=main#5c3021bc7fd1073561e1bd128235763f44e9da66"
 dependencies = [
  "parking_lot",
  "regex",
@@ -2821,7 +2828,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.48.0",
 ]
 
 [[package]]
@@ -3131,6 +3138,19 @@ name = "writeable"
 version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1ffae5123b2d3fc086436f8834ae3ab053a283cfac8fe0a0b8eaae044768a4c4"
+
+[[package]]
+name = "yaml_serde"
+version = "0.10.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "08c7c1b1a6a7c8a6b2741a6c21a4f8918e51899b111cfa08d1288202656e3975"
+dependencies = [
+ "indexmap",
+ "itoa",
+ "libyaml-rs",
+ "ryu",
+ "serde",
+]
 
 [[package]]
 name = "yoke"
