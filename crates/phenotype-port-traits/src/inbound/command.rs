@@ -75,7 +75,7 @@ mod tests {
     #[test]
     fn command_result_debug() {
         let result = CommandResult::with_id("abc");
-        let debug = format!("{:?}", result);
+        let debug = format!("{result:?}");
         assert!(debug.contains("abc"));
     }
 

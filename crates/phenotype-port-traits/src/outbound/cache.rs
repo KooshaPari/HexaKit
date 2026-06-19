@@ -144,7 +144,7 @@ mod tests {
     #[test]
     fn cache_error_debug() {
         let err = CacheError::Timeout;
-        let debug = format!("{:?}", err);
+        let debug = format!("{err:?}");
         assert!(debug.contains("Timeout"));
     }
 }

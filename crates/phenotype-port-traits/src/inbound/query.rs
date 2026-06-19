@@ -50,7 +50,7 @@ mod tests {
     #[test]
     fn query_error_debug() {
         let err = QueryError::NotFound;
-        let debug = format!("{:?}", err);
+        let debug = format!("{err:?}");
         assert!(debug.contains("NotFound"));
     }
 }

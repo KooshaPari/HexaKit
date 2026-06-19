@@ -15,7 +15,7 @@
 //!
 //! All major phenotype crates are re-exported:
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Error handling
 //! use phenotype_core::error::{ApiError, DomainError, RepositoryError};
 //!

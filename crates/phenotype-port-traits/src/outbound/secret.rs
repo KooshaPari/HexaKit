@@ -103,7 +103,7 @@ mod tests {
     #[test]
     fn secret_error_debug() {
         let err = SecretError::NotFound("key".into());
-        let debug = format!("{:?}", err);
+        let debug = format!("{err:?}");
         assert!(debug.contains("NotFound"));
         assert!(debug.contains("key"));
     }

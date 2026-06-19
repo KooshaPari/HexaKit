@@ -200,7 +200,7 @@ mod tests {
     #[test]
     fn test_cost_display() {
         let cost = Cost::from_tokens(42);
-        assert_eq!(format!("{}", cost), "42 tokens");
+        assert_eq!(format!("{cost}"), "42 tokens");
     }
 
     #[test]
