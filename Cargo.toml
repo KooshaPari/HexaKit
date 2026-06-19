@@ -32,9 +32,9 @@ exclude = [
   # P3 wave 4 — security + macros + async-traits → phenoShared (contracts deferred: API diverge)
   "crates/phenotype-async-traits",
   "crates/phenotype-macros",
-  # Wave 12 — health traits interim phenoShared (PO runtime differs); cache adapter stub interim
+  # Wave 12 — health traits interim phenoShared (PO runtime differs)
   "crates/phenotype-health",
-  "crates/phenotype-cache-adapter",
+  # phenotype-cache-adapter → inline stub at crates/phenotype-cache-adapter-stub (ADR-ECO-014)
   # eco-consolidate — config-loader, mcp
   "crates/phenotype-config-loader",
   "crates/phenotype-mcp",
@@ -140,8 +140,8 @@ phenotype-config-loader = { git = "https://github.com/KooshaPari/phenotype-confi
 phenotype-mcp = { git = "https://github.com/KooshaPari/substrate", branch = "main" }
 # ResilienceKit traits crate (HealthChecker API — PO runtime differs)
 phenotype-health = { git = "https://github.com/KooshaPari/ResilienceKit", branch = "main", package = "phenotype-health" }
-# archive-if-unused stub — retain phenoShared pin until absorbed (wave5b #278 regression fix)
-phenotype-cache-adapter = { git = "https://github.com/KooshaPari/phenoShared", branch = "main" }
+# archive-if-unused stub — inline HexaKit shim; zero phenoShared git deps fleet-wide (ADR-ECO-014)
+phenotype-cache-adapter = { path = "crates/phenotype-cache-adapter-stub" }
 phenotype-contract-adapters = { path = "crates/phenotype-contract-adapters" }
 # Contracts decompose: slice crates on role owners; generic Contract → phenotype-rust-sdk
 phenotype-auth-contracts = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-auth-contracts" }

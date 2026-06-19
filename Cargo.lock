@@ -1241,12 +1241,7 @@ dependencies = [
 
 [[package]]
 name = "phenotype-cache-adapter"
-version = "0.1.0"
-source = "git+https://github.com/KooshaPari/phenoShared?branch=main#b45ca51dd57ddca5f6aeea138ea7c48cffd69034"
-dependencies = [
- "serde",
- "serde_json",
-]
+version = "0.2.0"
 
 [[package]]
 name = "phenotype-compliance-scanner"

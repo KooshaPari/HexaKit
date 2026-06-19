@@ -25,9 +25,15 @@
 | `phenotype-time` | Not on `phenotype-types` or `phenotype-config` `main` |
 | `phenotype-async-traits`, `phenotype-macros` | `phenotype-rust-sdk` repo does not exist |
 | `phenotype-health` | PO `rust/phenotype-health` API diverges (`HealthCheck` vs `HealthChecker`) |
-| `phenotype-cache-adapter` | archive-if-unused stub verdict — retain phenoShared until absorb |
+| `phenotype-cache-adapter` | **Drained** — inline HexaKit stub `crates/phenotype-cache-adapter-stub` (2026-06-19) |
 | `phenotype-contracts` | Generic `Contract` trait — interim until rust-sdk facade |
 | `phenotype-iter`, `phenotype-string`, `phenotype-validation` | Still only on phenoShared `main` |
+
+## Drained (2026-06-19)
+
+| Pin | Replacement |
+|-----|-------------|
+| `phenotype-cache-adapter` | HexaKit path stub `crates/phenotype-cache-adapter-stub` — **zero phenoShared git deps in HexaKit** |
 
 ## Verification
 
