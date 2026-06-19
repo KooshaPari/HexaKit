@@ -17,6 +17,7 @@ tokio = { workspace = true }
 tokio-stream = { workspace = true }
 tonic = { workspace = true }
 tonic-health = { workspace = true }
+tonic-prost = { workspace = true }
 prost = { workspace = true }
 async-trait = { workspace = true }
 tracing = { workspace = true }
@@ -24,4 +25,4 @@ tracing-subscriber = { workspace = true }
 uuid = { workspace = true }
 
 [build-dependencies]
-tonic-build = { workspace = true }
+tonic-prost-build = { workspace = true }
