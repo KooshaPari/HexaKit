@@ -1,0 +1,29 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 9 * * 1"
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security:
+    uses: KooshaPari/phenoShared/.github/workflows/reusable/security-scan.yml@5e6c1f05d696d056b24df431401b4632b01be0d3
+    with:
+      cargo-audit: "true"
+      cargo-deny: "true"
+      gitleaks: "true"
+    permissions:
+      contents: read
+      security-events: write

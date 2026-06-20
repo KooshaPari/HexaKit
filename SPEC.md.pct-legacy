@@ -1,0 +1,44 @@
+# SPEC — pheno-cargo-template
+
+## Purpose
+Canonical Rust crate template for the Phenotype monorepo. Consumed by:
+- `cargo-generate` (manual): `cargo generate --git https://github.com/KooshaPari/pheno-cargo-template`
+- `pheno-scaffold-kit` (programmatic): generates a new crate from this template
+
+## Public API
+
+### `crate_name`
+```rust
+pub fn crate_name() -> &'static str { "pheno-cargo-template" }
+```
+Returns the canonical name of the template crate itself. Used by `pheno-scaffold-kit` to verify a generated crate came from this template.
+
+## What gets generated
+
+When a consumer runs `cargo generate`, the following files are produced:
+
+| File | Source | Notes |
+|---|---|---|
+| `Cargo.toml` | `Cargo.toml` | Standalone crate with empty `[workspace]` table (per ADR-023) |
+| `src/lib.rs` | `src/lib.rs` | This file (rename to consumer crate) |
+| `tests/lib_test.rs` | (generated) | Single integration test verifying `crate_name()` returns the expected name |
+| `README.md` | (generated) | Tier 0 template |
+| `AGENTS.md` | (generated) | Tier 0 template |
+| `llms.txt` | (generated) | Tier 0 template |
+| `WORKLOG.md` | (generated) | Tier 0 template |
+| `CHANGELOG.md` | (generated) | Tier 0 template |
+| `LICENSE-MIT` | (generated) | Standard MIT |
+| `LICENSE-APACHE` | (generated) | Standard Apache-2.0 |
+| `deny.toml` | (generated) | ADR-023 Rule 3.1 cargo-deny config |
+| `.github/workflows/ci.yml` | (generated) | test + audit + deny + coverage |
+
+## Design decisions
+- **No async runtime** — pure synchronous template
+- **Empty `[workspace]` table** — keeps the generated crate standalone (not part of the root monorepo workspace; per ADR-023)
+- **`#![deny(missing_docs)]` is OFF in template** — generated code may want to remove it
+- **MIT OR Apache-2.0** — dual license, same as the rest of the fleet
+- **Tier 0** — every generated crate is Tier 0 with required meta-bundle
+
+## Versioning
+- `0.1.0` — initial release (2026-06-18)
+- Backward-compatible; new template variables may be added but defaults preserve behavior

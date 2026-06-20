@@ -1,3 +1,5 @@
+# Migrated from KooshaPari/Apisync (archived 2026-06-19) — original commit d981353
+
 [licenses]
 version = 2
 allow = [
@@ -24,12 +26,6 @@ allow = [
 
 [sources]
 unknown-git = "deny"
-
-[bans]
-multiple-versions = "warn"
-wildcards = "warn"
-highlight = "all"
-workspace-default-features = "warn"
 
 [advisories]
 ignore = [
