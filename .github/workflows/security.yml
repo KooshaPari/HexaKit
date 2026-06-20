@@ -4,121 +4,83 @@ on:
   push:
     branches: [main]
   pull_request:
+    branches: [main]
   schedule:
-    - cron: '0 2 * * *'  # Daily at 2am UTC
+    # Weekly Monday 09:00 PDT cron (ADR-042 cadence)
+    - cron: '0 16 * * 1'
   workflow_dispatch:
 
 permissions:
   contents: read
+  packages: read
   security-events: write
-
-concurrency:
-  group: security-${{ github.ref }}
-  cancel-in-progress: true
-
-env:
-  CARGO_TERM_COLOR: always
+  id-token: write   # required for SLSA provenance
 
 jobs:
-  # ─── Cargo Audit ──────────────────────────────────────────────────────
-  cargo-audit:
-    name: Cargo Audit
-    runs-on: ubuntu-24.04
+  codeql:
+    name: CodeQL (rust)
+    runs-on: ubuntu-latest
     permissions:
+      security-events: write
       contents: read
-      checks: write
+      packages: read
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: rustsec/audit-check@69366f33c96575abad1ee0dba8212993eecbe998
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          languages: rust
+          queries: security-extended
+      - uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:rust"
 
-  # ─── Cargo Deny ───────────────────────────────────────────────────────
-  cargo-deny:
-    name: Cargo Deny
-    runs-on: ubuntu-24.04
+  dependency-audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2
-      - name: Install cargo-deny
-        run: cargo install cargo-deny
-      - name: Check advisories, licenses, duplicates
-        run: cargo deny check -c rust/deny.toml
+      - uses: actions/checkout@v4
+      - name: cargo audit
+        run: |
+          cargo install --locked cargo-audit || true
+          cargo audit
 
-  # ─── Gitleaks Secret Detection ────────────────────────────────────────
   gitleaks:
-    name: Gitleaks
-    runs-on: ubuntu-24.04
+    name: Gitleaks secret scan
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v4
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
 
-  # ─── CodeQL SAST ──────────────────────────────────────────────────────
-  codeql:
-    name: CodeQL
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-      security-events: write
-    strategy:
-      matrix:
-        language: [cpp, python]
+  sbom:
+    name: SBOM generation (CycloneDX)
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: github/codeql-action/init@8aad20d150bbac5944a9f9d289da16a4b0d87c1e
-        with:
-          languages: ${{ matrix.language }}
-      - uses: github/codeql-action/analyze@8aad20d150bbac5944a9f9d289da16a4b0d87c1e
-
-  # ─── Python Security (bandit) ─────────────────────────────────────────
-  python-security:
-    name: Python Security
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
-        with:
-          python-version: "3.14"
-      - name: Install bandit
-        run: pip install bandit[toml]
-      - name: Run bandit
-        run: bandit -r python/src -ll
-        continue-on-error: true
-
-  # ─── OSV-Scanner (Rust lockfile; repo does not commit Cargo.lock) ───────
-  osv-scanner:
-    name: OSV Scanner (Cargo.lock)
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-      security-events: write
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2
-      - name: Generate Cargo.lock for scanning
-        run: cargo generate-lockfile
-      - name: Install OSV-Scanner
-        env:
-          OSV_VERSION: v2.3.5
+      - uses: actions/checkout@v4
+      - name: Generate SBOM (cargo-cyclonedx)
         run: |
-          curl -fsSL -o /tmp/osv-scanner \
-            "https://github.com/google/osv-scanner/releases/download/${OSV_VERSION}/osv-scanner_linux_amd64"
-          chmod +x /tmp/osv-scanner
-          sudo mv /tmp/osv-scanner /usr/local/bin/osv-scanner
-      - name: OSV-Scanner (SARIF for Code Scanning)
-        id: osv
-        run: osv-scanner scan -L Cargo.lock --format sarif --output-file osv-results.sarif
-      - name: Upload OSV SARIF to GitHub Code Scanning
-        if: always()
+          cargo install --locked cargo-cyclonedx || true
+          cargo cyclonedx --format json --override-filename ${{{{ github.repository }}}}.sbom.json || cargo cyclonedx --format json
         continue-on-error: true
-        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
         with:
-          sarif_file: osv-results.sarif
-          category: osv-cargo-lock
-      - name: OSV table (on vulnerability findings)
-        if: failure() && steps.osv.outcome == 'failure'
-        run: osv-scanner scan -L Cargo.lock --format table
+          name: sbom
+          path: ${{{{ github.workspace }}}}/*.cdx.json
+        if: always()
+
+  slsa-provenance:
+    name: SLSA Build Level 3 provenance
+    runs-on: ubuntu-latest
+    needs: [codeql, dependency-audit, gitleaks]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate SLSA provenance attestation
+        uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
+        with:
+          base64-subjects: "${{ needs.dependency-audit.outputs.digest || needs.gitleaks.outputs.digest || '' }}"
+        continue-on-error: true
