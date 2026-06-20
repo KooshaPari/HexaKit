@@ -1,0 +1,49 @@
+# pheno-cargo-template
+
+> Cargo.toml scaffold template for new pheno-* Rust crates. Canonical fleet crate layout (empty `[workspace]`, dual MIT/Apache-2.0, `rust-version = '1.78'`, tracing feature flag pattern per ADR-036).
+
+## Quickstart
+
+```bash
+# Use as a cargo-generate template (or copy the tree)
+cargo generate --git https://github.com/KooshaPari/pheno-cargo-template
+```
+
+## Public API
+
+```rust
+pheno_cargo_template::crate_name() -> &'static str
+```
+
+## Files
+
+- `Cargo.toml`
+- `README.md`
+- `src/lib.rs`
+- `template/`
+- `AGENTS.md`
+- `llms.txt`
+- `WORKLOG.md`
+- `CHANGELOG.md`
+- `LICENSE-MIT`
+- `LICENSE-APACHE`
+- `.github/workflows/ci.yml`
+
+## Conventions
+
+- Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`).
+- rustfmt + clippy (`-D warnings`); `#![warn(missing_docs)]` on the
+  public API.
+- 80% lib coverage gate (ADR-023 Rule 3.1); see `coverage` job in
+  `.github/workflows/ci.yml`.
+- Standalone crate (empty `[workspace]` table in `Cargo.toml`); not
+  a member of the root monorepo workspace.
+- WORKLOG.md is the change history (v2.1 schema, 7 cols + `device`).
+
+## See also
+
+- `AGENTS.md` — agent context.
+- `WORKLOG.md` — change history (v2.1 schema).
+- `CHANGELOG.md` — release notes.
+- `LICENSE-MIT` / `LICENSE-APACHE` — dual license.
+- Sibling: every other pheno-* Rust crate (this is the template they fork from).
