@@ -1,47 +1,51 @@
+name: Audit
+
 on:
   push:
     branches: [main, master, develop]
   pull_request:
     branches: [main, master, develop]
-
-concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
-    cancel-in-progress: true
-
-name: Audit Workspace
-
-
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'  # weekly Monday 06:00 UTC
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  audit:
+  # ─── cargo-audit (RustSec advisory DB) ──────────────────────────────
+  cargo-audit:
+    name: cargo-audit
     runs-on: ubuntu-24.04
-    env:
-      REPOS_DIR: ${{ inputs.repos_dir }}
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-
-      - name: Setup mise
-        uses: jdx/mise-action@dba19683ed58901619b14f395a24841710cb4925
-
-      - name: Install pheno-cli
-        run: mise run install || go install ./pheno-cli/... 2>/dev/null || true
-
-      - name: Run pheno audit
-        run: |
-          pheno audit --repos-dir "$REPOS_DIR" --format json > audit-results.json || true
-
-      - name: Upload audit results
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: rustsec/audit-check@69366f33c96575abad1ee0dba8212993eecbe998 # v2
         with:
-          name: audit-results
-          path: audit-results.json
-          if-no-files-found: warn
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Audit summary
-        run: |
-          echo "✓ Audit completed for $REPOS_DIR"
-          if [ -f audit-results.json ]; then
-            echo "Results saved to audit-results.json"
-          fi
+  # ─── cargo-deny (licenses, advisories, bans, sources) ───────────────
+  cargo-deny:
+    name: cargo-deny
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: EmbarkStudios/cargo-deny-action@91bf2b620e09e18d6eb78b92e7861937469acedb # v2
+        with:
+          rust-version: stable
+
+  # ─── cargo-machete (unused dependency detection) ────────────────────
+  cargo-machete:
+    name: cargo-machete
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db7802 # stable
+      - name: Install cargo-machete
+        run: cargo install cargo-machete --locked
+      - name: Detect unused deps
+        run: cargo machete

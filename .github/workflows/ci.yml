@@ -18,82 +18,41 @@ env:
   RUSTFLAGS: "-D warnings"
 
 jobs:
-  # ─── Proto Lint & Breaking ─────────────────────────────────────────
-  buf:
-    permissions:
-      contents: read
-      pull-requests: write
-    name: Buf Lint & Breaking
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-        with:
-          fetch-depth: 0
-      - uses: bufbuild/buf-action@fd21066df7214747548607aaa45548ba2b9bc1ff
-        with:
-          lint: true
-          format: true
-          breaking: false
-          pr_comment: false
-
-  # ─── Rust Quality ──────────────────────────────────────────────────
+  # ─── Rust Quality (fmt + clippy + build + test) ─────────────────────
   rust-check:
     name: Rust Quality
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db7802 # stable
         with:
           components: rustfmt, clippy
-      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
         with:
           workspaces: rust
-      - uses: arduino/setup-protoc@c65c819552d16ad3c9b72d9dfd5ba5237b9c906b
-        with:
-          version: "28.x"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Format check
-        run: cd rust && cargo fmt --check
+        run: cargo fmt --all -- --check
       - name: Clippy (warnings = errors)
-        run: cd rust && cargo clippy --all-targets -- -D warnings
+        run: cargo clippy --workspace --all-targets -- -D warnings
       - name: Build
-        run: cd rust && cargo build
+        run: cargo build --workspace
       - name: Test
-        run: cd rust && cargo test
+        run: cargo test --workspace
 
-  rust-build:
-    name: Rust Build
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2
-      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32
-        with:
-          workspaces: rust
-      - uses: arduino/setup-protoc@c65c819552d16ad3c9b72d9dfd5ba5237b9c906b
-        with:
-          version: "28.x"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build
-        run: cd rust && cargo build --all
-
+  # ─── Rust MSRV check (stable) ───────────────────────────────────────
   rust-msrv:
-    name: Rust MSRV (stable)
+    name: Rust MSRV
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2
-      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db7802 # stable
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
         with:
           workspaces: rust
-      - uses: arduino/setup-protoc@c65c819552d16ad3c9b72d9dfd5ba5237b9c906b
-        with:
-          version: "28.x"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Check MSRV compatibility
-        run: cd rust && cargo check
+        run: cargo check --workspace
 
-  # ─── Rust Security & Dep Audit ─────────────────────────────────────
+  # ─── Rust Security Audit (RustSec + cargo-deny) ────────────────────
   rust-audit:
     name: Rust Security Audit
     runs-on: ubuntu-24.04
@@ -101,212 +60,24 @@ jobs:
       contents: read
       checks: write
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: rustsec/audit-check@69366f33c96575abad1ee0dba8212993eecbe998
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: rustsec/audit-check@69366f33c96575abad1ee0dba8212993eecbe998 # v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install cargo-deny
-        run: cargo install cargo-deny
-      - name: Check licenses, advisories, duplicates
-        run: cargo deny check -c rust/deny.toml
+        run: cargo install cargo-deny --locked
+      - name: cargo-deny check
+        run: cargo deny check
 
-  rust-extras:
-    name: Rust Extras (machete, semver, typos)
-    runs-on: ubuntu-24.04
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2
-      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32
-        with:
-          workspaces: rust
-      - uses: arduino/setup-protoc@c65c819552d16ad3c9b72d9dfd5ba5237b9c906b
-        with:
-          version: "28.x"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Install extras
-        run: cargo install cargo-machete cargo-semver-checks
-      - name: Detect unused deps
-        run: cd rust && cargo machete
-      - name: Semver compatibility check
-        run: cd rust && cargo semver-checks check-release || true
-      - name: Typo check
-        uses: crate-ci/typos@37bb98842b0d8c4ffebdb75301a13db0267cef89
-
-  # ─── Rust Coverage ────────────────────────────────────────────────
-  rust-coverage:
-    name: Rust Coverage
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2
-      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32
-        with:
-          workspaces: rust
-      - uses: arduino/setup-protoc@c65c819552d16ad3c9b72d9dfd5ba5237b9c906b
-        with:
-          version: "28.x"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Install tarpaulin
-        run: cargo install cargo-tarpaulin
-      - name: Generate coverage
-        run: cargo tarpaulin --workspace --out xml --output-dir coverage
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f
-        with:
-          files: ./coverage/cobertura.xml
-          flags: rust
-          fail_ci_if_error: false
-          verbose: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-  # ─── Core Workspace ───────────────────────────────────────────────
-  core-check:
-    name: Core Workspace Quality
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2
-        with:
-          components: rustfmt, clippy
-      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32
-      - uses: arduino/setup-protoc@c65c819552d16ad3c9b72d9dfd5ba5237b9c906b
-        with:
-          version: "28.x"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Format check
-        run: cargo fmt --all -- --check
-      - name: Clippy (warnings = errors)
-        run: cargo clippy --workspace -- -D warnings
-      - name: Build
-        run: cargo build --workspace
-      - name: Test
-        run: cargo test --workspace
-
-  core-build:
-    name: Core Build
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2
-      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32
-      - uses: arduino/setup-protoc@c65c819552d16ad3c9b72d9dfd5ba5237b9c906b
-        with:
-          version: "28.x"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build
-        run: cargo build --workspace
-
-  core-msrv:
-    name: Core MSRV (1.86)
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2
-      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32
-      - uses: arduino/setup-protoc@c65c819552d16ad3c9b72d9dfd5ba5237b9c906b
-        with:
-          version: "28.x"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Check MSRV compatibility
-        run: cargo check --workspace
-
-  core-docs:
-    name: Core Documentation
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2
-      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32
-      - uses: arduino/setup-protoc@c65c819552d16ad3c9b72d9dfd5ba5237b9c906b
-        with:
-          version: "28.x"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build docs
-        run: cargo doc --no-deps --workspace
-
-  domain-deps-lint:
-    name: Domain Zero-Dep Lint
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - name: Validate domain crate dependencies
-        run: |
-          ALLOWED="serde serde_json chrono sha2 thiserror toml dirs-next zeroize keyring agileplus-plugin-core"
-          DEPS=$(sed -n '/^\[dependencies\]/,/^\[/{/^\[/d;p}' crates/agileplus-domain/Cargo.toml | grep -E '^\w' | cut -d'.' -f1 | cut -d' ' -f1)
-          for dep in $DEPS; do
-            if ! echo "$ALLOWED" | grep -qw "$dep"; then
-              echo "ERROR: disallowed dependency '$dep' in agileplus-domain"
-              exit 1
-            fi
-          done
-          echo "Domain dependency check passed"
-
-  # ─── Python Quality ────────────────────────────────────────────────
-  python-check:
-    name: Python Quality
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
-        with:
-          python-version: "3.14"
-      - name: Install uv
-        run: pip install uv
-      - name: Install package
-        run: cd python && uv sync
-      - name: Ruff format check
-        run: cd python && uvx ruff format --check .
-      - name: Ruff lint
-        run: cd python && uvx ruff check .
-      - name: pip-audit
-        run: cd python && uvx pip-audit --ignore-vuln CVE-2026-4539  # ReDoS in pygments lexer; no fix released; local-access only
-
-  python-install:
-    name: Python Install
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
-        with:
-          python-version: "3.14"
-      - name: Install uv
-        run: pip install uv
-      - name: Install package
-        run: cd python && uv sync
-
-  # ─── Config Lint ───────────────────────────────────────────────────
-  config-lint:
-    name: Config Lint
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - name: Install taplo
-        run: cargo install taplo-cli
-      - name: TOML format check
-        run: taplo format --check Cargo.toml rust/Cargo.toml python/pyproject.toml
-      - name: actionlint
-        uses: reviewdog/action-actionlint@6fb7acc99f4a1008869fa8a0f09cfca740837d9d
-
-  # ─── Commit Lint ───────────────────────────────────────────────────
+  # ─── Conventional Commits lint ─────────────────────────────────────
   commit-lint:
     name: Conventional Commits
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           fetch-depth: 0
-      - uses: wagoid/commitlint-github-action@b948419dd99f3fd78a6548d48f94e3df7f6bf3ed
+      - uses: wagoid/commitlint-github-action@b948419dd99f3fd78a6548d48f94e3df7f6bf3ed # v6
         with:
           configFile: .commitlintrc.yml
-  check-cliff-template:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: read
-    steps:
-      - uses: actions/checkout@v6
-      - name: Check cliff.toml adoption
-        run: ./scripts/check-cliff-template.sh

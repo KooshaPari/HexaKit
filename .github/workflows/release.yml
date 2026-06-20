@@ -1,12 +1,10 @@
-on:
-  push:
-    branches: [main, master, develop]
-  pull_request:
-    branches: [main, master, develop]
-
 name: Release
 
-
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -19,11 +17,12 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  # ─── Build Release Binaries ───────────────────────────────────────────
+  # ─── Build release binaries (multi-target matrix) ──────────────────
   build-release:
-    name: Build Release
+    name: Build Release (${{ matrix.target }})
     runs-on: ubuntu-24.04
     strategy:
+      fail-fast: false
       matrix:
         include:
           - target: x86_64-unknown-linux-gnu
@@ -36,16 +35,12 @@ jobs:
             os: ubuntu-latest
             use_cross: true
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2
-      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32
-      - uses: arduino/setup-protoc@c65c819552d16ad3c9b72d9dfd5ba5237b9c906b
-        with:
-          version: "28.x"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db7802 # stable
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - name: Install cross
         if: matrix.use_cross
-        run: cargo install cross
+        run: cargo install cross --locked
       - name: Build release binary
         run: |
           if [ "${{ matrix.use_cross }}" = "true" ]; then
@@ -53,93 +48,27 @@ jobs:
           else
             cargo build --release --target ${{ matrix.target }}
           fi
-      - name: Strip binary
-        run: |
-          if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
-            strip target/${{ matrix.target }}/release/agileplus || true
-          fi
       - name: Upload artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4
         with:
-          name: agileplus-${{ matrix.target }}
-          path: target/${{ matrix.target }}/release/agileplus
+          name: hexakit-${{ matrix.target }}
+          path: target/${{ matrix.target }}/release/hexakit
+          if-no-files-found: warn
           retention-days: 5
 
-  # ─── CycloneDX SBOMs (attached to GitHub Release with binaries) ───────
-  cyclonedx-sboms:
-    name: CycloneDX SBOMs
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-
-      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2
-
-      - name: Install cargo-cyclonedx
-        uses: taiki-e/install-action@b8cecb83565409bcc297b2df6e77f030b2a468d5
-        with:
-          tool: cargo-cyclonedx@0.5.9
-
-      - name: Generate workspace SBOMs
-        run: bash scripts/ci/generate-workspace-sboms.sh . sbom-out
-
-      - name: Upload SBOM bundle
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: cyclonedx-sbom-workspace
-          path: sbom-out/cyclonedx-sbom-*.json
-          if-no-files-found: error
-          retention-days: 5
-
-  # ─── Syft SPDX (complements CycloneDX per-crate JSON) ─────────────────
-  syft-spdx:
-    name: Syft SPDX (workspace)
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-
-      - name: Install Syft
-        env:
-          SYFT_SEMVER: 1.42.3
-        run: |
-          curl -fsSL "https://github.com/anchore/syft/releases/download/v${SYFT_SEMVER}/syft_${SYFT_SEMVER}_linux_amd64.tar.gz" | tar xz
-          sudo install -m 0755 syft /usr/local/bin/syft
-
-      - name: Generate SPDX JSON (repo tree)
-        run: |
-          mkdir -p sbom-out
-          syft . \
-            -o spdx-json=sbom-out/syft-spdx-workspace.json \
-            --exclude './target/**' \
-            --exclude './docs/**' \
-            --exclude './**/.venv/**' \
-            --exclude './**/node_modules/**' \
-            --exclude './.git/**'
-
-      - name: Upload SPDX artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: syft-spdx-workspace
-          path: sbom-out/syft-spdx-workspace.json
-          if-no-files-found: error
-          retention-days: 5
-
-  # ─── Create GitHub Release ────────────────────────────────────────────
+  # ─── Create GitHub Release ──────────────────────────────────────────
   create-release:
     name: Create GitHub Release
     runs-on: ubuntu-24.04
     if: startsWith(github.ref, 'refs/tags/v')
     needs:
       - build-release
-      - cyclonedx-sboms
-      - syft-spdx
-    permissions:
-      contents: write
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           fetch-depth: 0
       - name: Download artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v4
         with:
           path: ./binaries
       - name: Prepare release assets
@@ -147,27 +76,13 @@ jobs:
           mkdir -p ./release-assets
           for target_dir in ./binaries/*/; do
             target_name=$(basename "$target_dir")
-            binary_path="$target_dir/agileplus"
+            binary_path="$target_dir/hexakit"
             if [ -f "$binary_path" ]; then
-              cp "$binary_path" "./release-assets/agileplus-${target_name}"
+              cp "$binary_path" "./release-assets/hexakit-${target_name}"
             fi
           done
-          sbom_dir="./binaries/cyclonedx-sbom-workspace"
-          if [ -d "$sbom_dir" ]; then
-            shopt -s nullglob
-            for f in "$sbom_dir"/cyclonedx-sbom-*.json; do
-              cp "$f" ./release-assets/
-            done
-            shopt -u nullglob
-          fi
-          syft_dir="./binaries/syft-spdx-workspace"
-          if [ -d "$syft_dir" ]; then
-            for f in "$syft_dir"/*.json; do
-              [ -f "$f" ] && cp "$f" ./release-assets/
-            done
-          fi
       - name: Create Release
-        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd
+        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd # v1
         with:
           artifacts: "./release-assets/*"
           token: ${{ secrets.GITHUB_TOKEN }}

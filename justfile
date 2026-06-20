@@ -1,38 +1,48 @@
-# Phenotype-org standard justfile
+# HexaKit standard justfile
+# Canonical tier-0 task runner (orch-v12-s1-009)
 
+set shell := ["bash", "-uc"]
+set dotenv-load
+
+# Show available recipes
 default:
     @just --list
 
-# Build workspace
+# ─── Build ────────────────────────────────────────────────────────────────────
 build:
     cargo build --workspace
 
-# Run tests
+build-release:
+    cargo build --workspace --release
+
+# ─── Test ─────────────────────────────────────────────────────────────────────
 test:
     cargo test --workspace
 
-# Lint (clippy + fmt --check)
+test-doc:
+    cargo test --doc --workspace
+
+# ─── Lint ─────────────────────────────────────────────────────────────────────
 lint:
-    cargo clippy --workspace -- -D warnings
-    cargo fmt --check
+    cargo clippy --workspace --all-targets -- -D warnings
+    cargo fmt --all -- --check
 
-# Format code
+# ─── Format ───────────────────────────────────────────────────────────────────
 fmt:
-    cargo fmt
+    cargo fmt --all
 
-# Security audits (cargo-deny + cargo-audit)
+fmt-check:
+    cargo fmt --all -- --check
+
+# ─── Audit (cargo-audit / RustSec) ────────────────────────────────────────────
 audit:
     cargo audit
 
-# License + advisory + ban + source checks (cargo-deny)
+# ─── Deny (licenses, advisories, bans, sources) ───────────────────────────────
 deny:
     cargo deny check
 
-# Find unused dependencies
-unused:
-    cargo machete
-
-# Fleet-wide grading gate (uses vendored or central grade.sh)
+# ─── Grading (vendored or central grade.sh) ───────────────────────────────────
 grade:
     @if [ -f grade.sh ]; then ./grade.sh; \
     elif [ -f ../grade.sh ]; then bash ../grade.sh; \
@@ -45,9 +55,23 @@ grade-fast:
     else echo "no grade.sh found"; exit 1; \
     fi
 
-# Full local CI sweep
-ci: lint test audit deny unused
+# ─── Unused dep detection ─────────────────────────────────────────────────────
+unused:
+    cargo machete
 
-# Generate docs
+# ─── Documentation ────────────────────────────────────────────────────────────
 docs:
     cargo doc --no-deps --workspace
+
+# ─── Full local CI sweep ──────────────────────────────────────────────────────
+ci: lint test audit deny unused
+
+# ─── Workspace hygiene ────────────────────────────────────────────────────────
+clean:
+    cargo clean
+
+update:
+    cargo update --workspace
+
+verify: ci
+    @echo "✓ Full verification passed"
