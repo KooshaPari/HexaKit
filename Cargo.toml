@@ -82,6 +82,7 @@ members = [
   "crates/phenotype-project-registry",
   "crates/phenotype-security-aggregator",
   "crates/phenotype-xdd-lib",
+  "crates/pheno-context",
   "forgecode-fork",
 ]
 [workspace.dependencies]
@@ -161,6 +162,7 @@ phenotype-sentry-config = { git = "https://github.com/KooshaPari/PhenoObservabil
 phenotype-telemetry = { git = "https://github.com/KooshaPari/PhenoObservability", branch = "main", package = "phenotype-telemetry" }
 phenotype-contract = { git = "https://github.com/KooshaPari/TestingKit", branch = "main", package = "phenotype-contract" }
 phenotype-test-fixtures = { git = "https://github.com/KooshaPari/TestingKit", branch = "main", package = "phenotype-test-fixtures", default-features = false }
+phenotype-context = { path = "crates/pheno-context" }
 phenotype-compliance-scanner = { path = "crates/phenotype-compliance-scanner" }
 phenotype-config-core = { git = "https://github.com/KooshaPari/phenotype-config", branch = "main", package = "phenotype-config-core" }
 phenotype-core = { path = "crates/phenotype-core" }
@@ -192,6 +194,7 @@ tokio-test = "0.4"
 tokio-util = "0.7"
 tower = "0.4"
 tower-http = { version = "0.5", features = ["trace"] }
+http = "1.1"
 tracing-actix-web = "4"
 tracing-opentelemetry = "0.24"
 

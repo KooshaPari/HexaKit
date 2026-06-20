@@ -1232,6 +1232,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b4f627cb1b25917193a259e49bdad08f671f8d9708acfd5fe0a8c1455d87220"
 
 [[package]]
+name = "pheno-context"
+version = "0.1.0"
+dependencies = [
+ "http",
+ "thiserror 2.0.18",
+]
+
+[[package]]
 name = "phenotype-async-traits"
 version = "0.2.0"
 source = "git+https://github.com/KooshaPari/phenotype-rust-sdk?branch=main#cbf1ccf4077dd631f388ea9e02b7beed2a515f5f"
