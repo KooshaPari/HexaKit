@@ -66,6 +66,7 @@ exclude = [
   "libs/phenotype-config-core",
 ]
 members = [
+  "crates/phenotype-router",
   "crates/hexakit-cli",
   "crates/phenotype-contract-adapters",
   "crates/phenotype-contract-tests",

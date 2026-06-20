@@ -1,0 +1,21 @@
+[package]
+name = "phenotype-router"
+version = "0.1.0"
+edition = "2021"
+description = "HTTP router plane — OpenAI-compatible delegate to cliproxy (H11 absorption)"
+license = "Apache-2.0"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "phenotype-router"
+path = "src/bin/phenotype-router.rs"
+
+[dependencies]
+tokio = { workspace = true }
+axum = { workspace = true }
+anyhow = { workspace = true }
+
+[dev-dependencies]
