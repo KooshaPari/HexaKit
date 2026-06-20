@@ -1,0 +1,11 @@
+# HexaKit templates/hexagon/rust rust-toolchain pin.
+#
+# Pinned to nightly to match the absorbed Apisync overlay (commit d981353),
+# which relied on nightly-only formatter behaviour for the Hexacore 11-kit
+# workspace. Override locally if you have a strong reason to drop nightly.
+#
+# Absorbed 2026-06-20 from KooshaPari/Apisync (templates/hexagonal/rust-toolchain.toml).
+
+[toolchain]
+channel = "nightly"
+components = ["rustfmt", "clippy", "rust-docs"]

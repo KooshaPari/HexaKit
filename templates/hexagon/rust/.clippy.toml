@@ -1,0 +1,20 @@
+# HexaKit templates/hexagon/rust .clippy.toml — absorbed 2026-06-20 from
+# KooshaPari/Apisync (templates/hexagonal/.clippy.toml, commit d981353).
+#
+# Richer than the existing root `clippy.toml` (which only sets
+# `avoid-breaking-exported-api = false`). Both files load when both are
+# present in the workspace root; cargo uses the dotted file for the
+# cognitive-complexity / max-params thresholds below.
+
+avoid-breaking-exported-api = false
+allow-expect-in-tests = true
+allow-unwrap-in-tests = true
+allow-print-in-tests = true
+cognitive-complexity-threshold = 25
+max-fn-params-bools = 3
+too-many-arguments-threshold = 7
+type-complexity-threshold = 250
+too-many-lines-threshold = 100
+large-error-threshold = 1024
+check-private-items = false
+suppress-restriction-lint-in-const = true

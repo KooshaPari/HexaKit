@@ -1,0 +1,46 @@
+# HexaKit Configuration
+# Copy this file to ./hexakit.toml or point HEXAKIT_CONFIG at it.
+
+[bulkhead]
+max_concurrent = 10
+max_queue = 20
+queue_timeout_ms = 1000
+
+[circuit]
+failure_threshold = 5
+success_threshold = 3
+open_duration_secs = 30
+window_size_secs = 60
+
+[rate_limit]
+capacity = 100
+refill_rate = 10
+refill_interval_ms = 1000
+
+[pool]
+max_size = 10
+min_idle = 1
+max_lifetime_secs = 1800
+idle_timeout_secs = 600
+connection_timeout_secs = 30
+
+[paths]
+system_config_path = "/etc/{app_name}"
+config_dir_env_var = "CONFIG_DIR"
+default_config_dir = "./config"
+
+[security]
+github_api_base_url = "https://api.github.com"
+critical_deduction = 25.0
+high_deduction = 10.0
+medium_deduction = 2.0
+max_score = 100.0
+
+[ttl]
+one_minute_secs = 60
+five_minutes_secs = 300
+fifteen_minutes_secs = 900
+thirty_minutes_secs = 1800
+one_hour_secs = 3600
+one_day_secs = 86400
+one_week_secs = 604800

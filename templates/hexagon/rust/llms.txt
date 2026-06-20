@@ -1,0 +1,64 @@
+# hexagon/rust (HexaKit cargo-generate target)
+
+> Hexagonal Rust workspace template — Hexacore 11-kit scaffold + v8 governance pre-fill + Apisync Sentry starter. Absorbed 2026-06-20 from `KooshaPari/pheno-cargo-template` (root + `template/` partials) and `KooshaPari/Apisync` (`templates/hexagonal/` overlay, commit `d981353`).
+
+## Quickstart
+
+```bash
+# Use as a cargo-generate target
+cargo generate --git https://github.com/KooshaPari/HexaKit --subfolder templates/hexagon/rust
+
+# Or copy the tree
+git clone --depth=1 https://github.com/KooshaPari/HexaKit
+cp -R HexaKit/templates/hexagon/rust my-crate
+cd my-crate
+```
+
+Edit `Cargo.toml` package metadata, then run:
+
+```bash
+task ci
+```
+
+## Public API
+
+```rust
+hexagon_rust_template::crate_name() -> &'static str          // "hexagon-rust-template"
+hexagon_rust_template::template_source() -> &'static str     // HexaKit github URL
+hexagon_rust_template::absorbed_from() -> &'static str        // provenance string
+```
+
+## Files
+
+- `Cargo.toml` — root crate manifest (dual MIT/Apache-2.0, `rust-version = '1.78'`)
+- `src/lib.rs` — public API (cargo-template + Apisync origins merged)
+- `src/sentry_config.rs` — Apisync Sentry starter (FR-APISYNC-SENTRY-001)
+- `README.md`, `SPEC.md`, `CLAUDE.md`, `AGENTS.md` — meta-bundle
+- `llms.txt`, `WORKLOG.md`, `CHANGELOG.md` — v2.1 worklog + curated README
+- `LICENSE-MIT`, `LICENSE-APACHE` — dual license
+- `Taskfile.yml`, `justfile` — runner recipes (mirror; both kept in lockstep)
+- `Cargo.toml`, `Cargo.toml`, `Cargo.toml` — n/a (see Taskfile + mise)
+- `mise.toml`, `nextest.toml`, `_typos.toml` — quality tool config
+- `clippy.toml`, `.clippy.toml` — clippy config (two files, both load; the dotted one is from Apisync overlay)
+- `rust-toolchain.toml`, `rustfmt.toml` — formatter + toolchain pins
+- `deny.toml` — cargo-deny license allowlist
+- `cliff.toml` — git-cliff changelog generator
+- `.github/workflows/ci.yml` — CI gate (test + fmt + clippy + audit + deny + coverage)
+- `_partials/` — cargo-generate liquid fragments (pre-fill files copied into generated crates)
+- `.clippy.toml` — clippy cognitive-complexity + lint relaxations (Apisync overlay; richer than root `clippy.toml`)
+
+## Conventions
+
+- Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`).
+- rustfmt + clippy (`-D warnings`); `#![warn(missing_docs)]` on the public API.
+- 80% lib coverage gate (ADR-023 Rule 3.1); see `coverage` job in `.github/workflows/ci.yml`.
+- Workspace crate (`[workspace]` table in `Cargo.toml`); 11 kits as workspace members.
+- WORKLOG.md is the change history (v2.1 schema, 7 cols + `device`).
+
+## See also
+
+- `AGENTS.md` — agent constitution (Claude AI Agent Guide, full).
+- `WORKLOG.md` — change history (v2.1 schema).
+- `CHANGELOG.md` — release notes.
+- `LICENSE-MIT` / `LICENSE-APACHE` — dual license.
+- `templates/hexagon/rust/_partials/` — cargo-generate pre-fill fragments (PREDICTIVE.md, PROMOTION.md, AGENTS.md.additions, .predict.yaml, .drift-detector.yaml, .framework-lint.yaml, .github/workflows/predictive-dry-check.yml, CONTRIBUTING.md).

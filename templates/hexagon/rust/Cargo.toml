@@ -1,0 +1,43 @@
+[package]
+name = "hexagon-rust-template"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.78"
+license = "MIT OR Apache-2.0"
+description = "HexaKit hexagon/rust cargo-generate target — absorbed from KooshaPari/pheno-cargo-template (2026-06-20) and KooshaPari/Apisync (2026-06-19, d981353). Hexagonal Rust workspace template with v8 governance pre-fill, predictive-DRY lint, Apisync Sentry starter, and 11-kit Hexacore workspace scaffold."
+repository = "https://github.com/KooshaPari/HexaKit"
+readme = "README.md"
+keywords = ["phenotype", "template", "rust", "hexagonal", "v8-governance"]
+categories = ["development-tools"]
+publish = false
+
+[lib]
+name = "hexagon_rust_template"
+path = "src/lib.rs"
+
+[dependencies]
+# Optional Sentry integration (per Apisync FR-APISYNC-SENTRY-001, absorbed via Apisync overlay).
+# Generated crates may keep or remove this; it's a starting point.
+sentry = { version = "0.34", optional = true }
+
+[dev-dependencies]
+# The template includes a tracing feature flag pattern (per ADR-036).
+# Generated crates may keep or remove this block; it's a starting point.
+tracing = { version = "0.1", optional = true }
+
+[features]
+default = []
+tracing = ["dep:tracing"]
+sentry = ["dep:sentry"]
+
+[package.metadata.phenotype]
+# Tier declaration mirrored from .framework-lint.yaml.
+# Update both files together when promoting (per ADR-042).
+tier = "pheno-*-lib"
+# Governance ADRs that apply to this template (pre-filled per template).
+governance = ["ADR-041", "ADR-042", "ADR-043", "ADR-044", "ADR-045"]
+# Absorption provenance
+absorbed_from = [
+  { repo = "KooshaPari/pheno-cargo-template", date = "2026-06-20", layer = "L0" },
+  { repo = "KooshaPari/Apisync", date = "2026-06-19", commit = "d981353", layer = "L0" },
+]
