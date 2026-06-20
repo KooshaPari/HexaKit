@@ -42,6 +42,24 @@ Progress: ████████░░ 80%
 
 # phenotype-infrakit — Phenotype Infrastructure Kit
 
+## Quickstart
+
+> Phenotype-org hexagonal architecture toolkit
+
+```bash
+# Clone, build, test
+git clone https://github.com/KooshaPari/HexaKit.git
+cd HexaKit
+```
+
+```rust
+// Add to Cargo.toml:
+// hexakit = "<version>"
+```
+
+See [SPEC.md](SPEC.md) for the full specification and [llms.txt](llms.txt) for machine-readable metadata.
+
+
 **HexaKit** is the GitHub repository name for **phenotype-infrakit**, the Phenotype Infrastructure Kit.
 
 This is a **Rust workspace** containing 16+ specialized infrastructure libraries for building scalable, maintainable systems. It includes cross-cutting concerns like error handling, caching patterns, contract-based design, health checks, policy evaluation, and hexagonal architecture port/adapter patterns — not multi-language template scaffolding.
