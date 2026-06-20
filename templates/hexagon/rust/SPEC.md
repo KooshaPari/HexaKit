@@ -117,3 +117,51 @@ Hexacore/
 - `cargo fmt --check` — formatted
 - All public types implement `Debug` + `Clone`
 - Domain layer has zero external dependencies
+
+---
+
+## Absorb addendum — 2026-06-20
+
+The cargo-generate target at this subfolder was assembled on 2026-06-20
+by absorbing two upstream sources per the `DOMAIN_ROLES.md`
+designation of HexaKit as the canonical scaffolding/templates owner:
+
+| Source | Layer | Files contributed |
+|--------|-------|-------------------|
+| `KooshaPari/pheno-cargo-template` | L0 | `Cargo.toml`, `src/lib.rs`, `Taskfile.yml`, `justfile`, `LICENSE-{MIT,APACHE}`, `.github/workflows/ci.yml`, `README.md`, `SPEC.md`, `llms.txt`, `AGENTS.md`, `WORKLOG.md`, `CHANGELOG.md`; and cargo-generate liquid fragments `template/Cargo.toml`, `template/src/lib.rs`, `template/AGENTS.md.additions`, `template/PREDICTIVE.md`, `template/PROMOTION.md`, `template/CONTRIBUTING.md`, `template/.predict.yaml`, `template/.drift-detector.yaml`, `template/.framework-lint.yaml`, `template/.github/workflows/predictive-dry-check.yml` (now under `_partials/`). |
+| `KooshaPari/Apisync` (commit `d981353`) | L0 | `templates/hexagonal/src/sentry_config.rs`, `.clippy.toml`, `rust-toolchain.toml`; plus the v8 governance pre-fill (Apisync-only `clippy.toml` rules; FR-APISYNC-SENTRY-001 starter). |
+
+After this absorb:
+
+- The single cargo-generate target is `KooshaPari/HexaKit/templates/hexagon/rust/`.
+- `KooshaPari/pheno-cargo-template` is deprecated and replaced with a
+  redirect README pointing here.
+- All absorbed files preserve the dual MIT/Apache-2.0 license.
+
+References: `DOMAIN_ROLES.md` (HexaKit = canonical scaffolding owner),
+audit commit of 2026-06-19 (`Apisync d981353`).
+
+---
+
+## Absorbed: pheno-cargo-template (2026-06-20)
+
+This spec gains the following absorbed capabilities from `KooshaPari/pheno-cargo-template`:
+
+- `sentry_config.rs` module — Sentry initialization with feature-gated `sentry` flag
+- `tracing` integration with feature flag
+- Liquid-fragment cargo-generate partials (preserved under `_partials/`)
+- Predictive dry-check workflow (`.github/workflows/predictive-dry-check.yml`)
+- Drift-detector & framework-lint configurations
+- AgilePlus 001-core-setup spec preserved under `_partials/.agileplus/specs/001-core-setup/`
+
+### Source lineage
+
+- `pheno-cargo-template/Cargo.toml` (root) → `Cargo.toml` (sentry/tracing feature flags retained)
+- `pheno-cargo-template/src/lib.rs` → `src/lib.rs` (sentr_ accessors preserved)
+- `pheno-cargo-template/templates/hexagonal/src/sentry_config.rs` → `src/sentry_config.rs`
+- `pheno-cargo-template/template/*` → `_partials/*` (cargo-generate liquid fragments)
+- `pheno-cargo-template/templates/hexagonal/.agileplus/*` → `_partials/.agileplus/*`
+
+### Status
+
+Source repo `KooshaPari/pheno-cargo-template` is preserved on GitHub as a redirect (deprecation window).

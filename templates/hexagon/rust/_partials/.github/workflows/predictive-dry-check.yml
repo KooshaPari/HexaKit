@@ -1,0 +1,22 @@
+name: predictive-dry-check
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  predict:
+    name: predictive-dry lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo install --locked cargo-predict
+      - run: cargo predict --manifest-path . --config .predict.yaml
+      - run: cargo predict --manifest-path . --config .predict.yaml -- --report
+        if: always()

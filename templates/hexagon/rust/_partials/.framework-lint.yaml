@@ -1,0 +1,33 @@
+# Framework-lint config — absorbed 2026-06-20 from
+# KooshaPari/pheno-cargo-template/template/.framework-lint.yaml.
+#
+# Single source of truth for the crate's tier. Mirrors
+# `[package.metadata.phenotype].tier` in Cargo.toml — both must agree.
+
+version: 1
+
+tier: "pheno-*-lib"
+
+# Mirror policy: keep `.tier` here in sync with
+# `[package.metadata.phenotype].tier` in Cargo.toml.
+mirror:
+  cargo_toml: "[package.metadata.phenotype].tier"
+
+governance_adrs:
+  - ADR-041
+  - ADR-042
+  - ADR-043
+  - ADR-044
+  - ADR-045
+
+# Promote the tier per PROMOTION.md.
+promotion:
+  ladder:
+    - "pheno-scaffold"
+    - "pheno-*-lib"
+    - "pheno-incubating"
+    - "pheno-stable"
+    - "pheno-core"
+
+ci:
+  fail_on_mismatch: true

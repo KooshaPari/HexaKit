@@ -1,43 +1,88 @@
 version: '3'
 
+# HexaKit templates/hexagon/rust Taskfile — chore(merge): append recipes
+# absorbed 2026-06-20 from KooshaPari/pheno-cargo-template/Taskfile.yml
+# (timeout / build / hygiene / release / coverage / fmt-fix / deny).
+#
+# Both `Taskfile.yml` and `justfile` are kept in lockstep per the
+# absorbed convention; see justfile for the bash-pipefail-aware mirror.
+
+vars:
+  LONG_TIMEOUT: "10m"
+
 tasks:
   build:
-    desc: "Build all packages"
+    desc: "Build all packages (with explicit timeout — absorbed from pheno-cargo-template)"
     cmds:
-      - cargo build --workspace
+      - timeout {{.LONG_TIMEOUT}} cargo build --workspace
 
   test:
-    desc: "Run all tests"
+    desc: "Run all tests (with explicit timeout — absorbed from pheno-cargo-template)"
     cmds:
-      - cargo test --workspace
+      - timeout {{.LONG_TIMEOUT}} cargo test --workspace
 
   lint:
-    desc: "Run clippy linter"
+    desc: "Run clippy linter (all-targets, all-features, -D warnings)"
     cmds:
-      - cargo clippy --workspace -- -D warnings
+      - cargo clippy --workspace --all-targets --all-features -- -D warnings
 
   format:
-    desc: "Format code"
+    desc: "Format code (apply formatting)"
     cmds:
       - cargo fmt --all
 
   format-check:
-    desc: "Check code formatting"
+    desc: "Check code formatting (idempotent; used by ci)"
     cmds:
       - cargo fmt --all -- --check
 
+  fmt-fix:
+    desc: "Apply cargo fmt (alias for format; absorbed from pheno-cargo-template)"
+    cmds:
+      - cargo fmt --all
+
   security:
-    desc: "Run security audits"
+    desc: "Run security audit (RustSec)"
     cmds:
       - cargo audit
 
-  ci:
-    desc: "Run full CI pipeline"
+  deny:
+    desc: "Run cargo-deny (advisories + bans + licenses + sources)"
+    cmds:
+      - cargo deny check
+
+  hygiene:
+    desc: "Code-hygiene sweep: format-check + lint + deny + audit"
+    cmds:
+      - task: format-check
+      - task: lint
+      - task: deny
+      - task: security
+
+  release:
+    desc: "Dry-run release prep: format-check + lint + test + build + deny + audit"
     cmds:
       - task: format-check
       - task: lint
       - task: test
+      - task: build
+      - task: deny
       - task: security
+
+  ci:
+    desc: "Run full CI pipeline (format-check + lint + test + build + deny + security)"
+    cmds:
+      - task: format-check
+      - task: lint
+      - task: test
+      - task: build
+      - task: deny
+      - task: security
+
+  coverage:
+    desc: "Measure code coverage (SSOT — see grade.sh for the canonical command)"
+    cmds:
+      - cargo llvm-cov --workspace --fail-under-lines 85
 
   clean:
     desc: "Clean build artifacts"

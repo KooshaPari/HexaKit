@@ -3639,3 +3639,30 @@ result = await workflow.execute({"source_url": "https://api.example.com/data"})
 ---
 
 This guide should be updated as the project evolves and new patterns are established.
+
+---
+
+## 25. Absorbed: pheno-cargo-template (2026-06-20)
+
+This template at `templates/hexagon/rust/` is the canonical cargo-generate target. It absorbs:
+
+- `KooshaPari/pheno-cargo-template` root scaffold (`Cargo.toml`, `src/lib.rs`, `Taskfile.yml`, `justfile`, `LICENSE-{MIT,APACHE}`, `.github/workflows/ci.yml`, `README.md`, `SPEC.md`, `llms.txt`, `WORKLOG.md`, `CHANGELOG.md`, `AGENTS.md`)
+- `pheno-cargo-template/template/` — cargo-generate liquid fragments (preserved under `_partials/`)
+- `pheno-cargo-template/templates/hexagonal/` — Apisync-derived overlay (sentry_config.rs, _typos.toml, .clippy.toml, cliff.toml, deny.toml, mise.toml, nextest.toml, rust-toolchain.toml, rustfmt.toml, .agileplus/, .github/workflows/predictive-dry-check.yml)
+
+### Pointers
+
+- **Cargo manifest**: `Cargo.toml` (feature flags: `sentry`, `tracing`)
+- **Library entrypoint**: `src/lib.rs`
+- **Sentry integration**: `src/sentry_config.rs`
+- **cargo-generate partials**: `_partials/`
+- **Predictive dry-check CI**: `.github/workflows/predictive-dry-check.yml`
+- **AgilePlus spec**: `_partials/.agileplus/specs/001-core-setup/`
+- **Original sources** (preserved for diff/audit): see commit history of `KooshaPari/pheno-cargo-template` prior to 2026-06-20
+
+### Migration rules
+
+- Do NOT remove `_partials/` — it contains liquid-fragments referenced by `cargo generate --template`.
+- Do NOT re-import content from `pheno-cargo-template`; the source repo is now a redirect.
+- Future additions to this template go directly here.
+

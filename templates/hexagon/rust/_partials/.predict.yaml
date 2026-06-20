@@ -1,0 +1,40 @@
+# Predictive-DRY lint config — absorbed 2026-06-20 from
+# KooshaPari/pheno-cargo-template/template/.predict.yaml.
+#
+# Lint rule source-of-truth: any violation of the canonical patterns
+# (logging, errors, async, config, tests, schema) fails CI.
+#
+# Mirror this file with `.drift-detector.yaml` and `.framework-lint.yaml`.
+
+version: 1
+
+patterns:
+  logging:
+    forbid: ["println!", "eprintln!", "dbg!"]
+    require: ["tracing::", "log::"]
+    path_allowlist: ["src/bin/", "tests/"]
+
+  errors:
+    forbid_lib: ["anyhow::"]
+    forbid_bin: ["thiserror::"]
+    require_lib: ["thiserror::"]
+    require_bin: ["anyhow::"]
+
+  async:
+    forbid: ["smol::", "async-std::"]
+    require: ["tokio::", "futures::"]
+
+  config:
+    forbid: ["config_rs"]
+    require: ["figment"]
+
+  tests:
+    forbid: ["mockito::"]  # prefer wiremock
+    require: ["wiremock::"]
+
+  schema:
+    require_on_public_types: ["schemars::JsonSchema"]
+
+ci:
+  fail_on_violation: true
+  report_only_paths: []  # empty = whole crate

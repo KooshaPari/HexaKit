@@ -1,0 +1,27 @@
+# Drift-detector config — absorbed 2026-06-20 from
+# KooshaPari/pheno-cargo-template/template/.drift-detector.yaml.
+#
+# Compares a scaffolded crate against the canonical patterns in
+# .predict.yaml and flags drift on every release.
+
+version: 1
+
+canonical_repo: "https://github.com/KooshaPari/HexaKit"
+canonical_subpath: "templates/hexagon/rust/_partials"
+canonical_branch: "main"
+
+# Drift threshold — at or above this percentage, an auto-PR is
+# opened to reconcile. Below this, drift is reported but not blocked.
+drift_threshold_pct: 5
+
+# What to compare
+compare:
+  files: [".predict.yaml", ".framework-lint.yaml", "AGENTS.md.additions",
+          "PREDICTIVE.md", "PROMOTION.md"]
+  manifest_keys: ["dependencies", "features"]
+
+# Notification
+notify:
+  channel: "github-pr"
+  label: "drift-detector"
+  draft: true

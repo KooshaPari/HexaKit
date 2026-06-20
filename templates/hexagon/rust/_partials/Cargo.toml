@@ -1,0 +1,33 @@
+{{~ /* Cargo template manifest — absorbed 2026-06-20 from pheno-cargo-template. */ ~}}
+[package]
+name = "{{crate_name}}"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.78"
+license = "MIT OR Apache-2.0"
+description = "{{description}}"
+repository = "{{repository}}"
+homepage = "{{repository}}"
+readme = "README.md"
+categories = ["development-tools"]
+keywords = ["phenotype", "template", "rust", "hexagonal"]
+publish = false
+
+[lib]
+name = "{{crate_name | snake_case}}"
+path = "src/lib.rs"
+
+[dependencies]
+# Empty by default — generated crates add deps here.
+
+[dev-dependencies]
+
+[features]
+default = []
+tracing = []
+sentry = []
+
+[package.metadata.phenotype]
+tier = "pheno-*-lib"
+governance = ["ADR-041", "ADR-042", "ADR-043", "ADR-044", "ADR-045"]
+scaffolded_from = "KooshaPari/HexaKit/templates/hexagon/rust"

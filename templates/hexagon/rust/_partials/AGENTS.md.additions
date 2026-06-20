@@ -1,0 +1,36 @@
+# AGENTS.md additions — absorbed 2026-06-20 from
+# KooshaPari/pheno-cargo-template/template/AGENTS.md.additions.
+#
+# This fragment is appended to a generated crate's AGENTS.md by the
+# `pheno-scaffold-kit` post-generate hook. It codifies the agent
+# conventions that apply to every scaffolded crate.
+
+## HexaKit `hexagon/rust` crate conventions (auto-appended by scaffold-kit)
+
+### File layout
+
+- `src/lib.rs` — public surface (the only file scaffolded).
+- `src/<module>/` — private modules; each `<= 350` lines (target) and
+  `<= 500` lines (hard limit). Decompose proactively.
+- `tests/` — `unit/`, `integration/`, `e2e/` (no `_v2`, `_final`, `_new`).
+- `docs/sessions/` — session-based work artifacts; never at repo root.
+
+### Quality gates (cargo workspace)
+
+- `cargo fmt --all -- --check` — idempotent format check.
+- `cargo clippy --all-targets --all-features -- -D warnings`.
+- `cargo test --workspace`.
+- `cargo deny check` — advisories + bans + licenses + sources.
+- 80% lib coverage gate (ADR-023 Rule 3.1).
+
+### Conventional Commits
+
+- `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `test:`, `perf:`,
+  `build:`, `ci:`, `style:`, `revert:`.
+- Every commit references a task ID (`T-…`) when one is assigned.
+
+### Absorb anchor
+
+- Keep `crate_name()`, `template_source()`, and `absorbed_from()`
+  exported from `src/lib.rs` unless the absorb anchor is intentionally
+  rewritten during a fork.
