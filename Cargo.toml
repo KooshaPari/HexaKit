@@ -22,11 +22,9 @@ exclude = [
   "crates/phenotype-errors",
   # P3 wave 2 — event crates interim phenoShared (Eventra absorb pending); http-client → ResilienceKit
   "crates/phenotype-event-bus",
-  "crates/phenotype-event-sourcing",
   "crates/phenotype-http-client-core",
-  # P3 wave 3 — logging → PO; time interim phenoShared; state-machine + policy → ResilienceKit
+  # P3 wave 3 — logging → PO; time now local in HexaKit; state-machine + policy → ResilienceKit
   "crates/phenotype-logging",
-  "crates/phenotype-time",
   "crates/phenotype-state-machine",
   "crates/phenotype-policy-engine",
   # P3 wave 4 — security + macros + async-traits → phenoShared (contracts deferred: API diverge)
@@ -34,7 +32,7 @@ exclude = [
   "crates/phenotype-macros",
   # Wave 12 — health traits interim phenoShared (PO runtime differs)
   "crates/phenotype-health",
-  # phenotype-cache-adapter → inline stub at crates/phenotype-cache-adapter-stub (ADR-ECO-014)
+  # now local crates/phenotype-cache-adapter (absorbed from pheno monorepo)
   # eco-consolidate — config-loader, mcp
   "crates/phenotype-config-loader",
   "crates/phenotype-mcp",
@@ -84,6 +82,11 @@ members = [
   "crates/phenotype-security-aggregator",
   "crates/phenotype-xdd-lib",
   "forgecode-fork",
+  "crates/phenotype-cache-adapter",
+  "crates/phenotype-event-sourcing",
+  "crates/phenotype-rate-limit",
+  "crates/phenotype-retry",
+  "crates/phenotype-time",
 ]
 [workspace.dependencies]
 sentry = "0.34"
@@ -99,7 +102,7 @@ uuid = { version = "1", features = ["v4", "serde"] }
 tokio = { version = "1", features = ["full"] }
 dashmap = "5"
 parking_lot = "0.12"
-lru = "0.12"
+lru = "0.16"
 toml = "0.8"
 regex = "1"
 tempfile = "3"
@@ -114,6 +117,7 @@ hex = "0.4"
 zstd = "0.13"
 unicode-normalization = "0.1"
 rand = "0.8"
+moka = { version = "0.12", features = ["sync"] }
 derive_builder = "0.20"
 criterion = "0.5"
 mockall = "0.12"
@@ -127,13 +131,15 @@ phenotype-error-core = { git = "https://github.com/KooshaPari/phenotype-types", 
 phenotype-errors = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main" }
 # Eventra terminal owner (wave 5b)
 phenotype-event-bus = { git = "https://github.com/KooshaPari/Eventra", branch = "main", package = "phenotype-event-bus" }
-phenotype-event-sourcing = { git = "https://github.com/KooshaPari/Eventra", branch = "main", package = "phenotype-event-sourcing" }
+phenotype-event-sourcing = { path = "crates/phenotype-event-sourcing" }
 # ResilienceKit = phenotype-resilience DOMAIN_ROLES owner
 phenotype-http-client-core = { git = "https://github.com/KooshaPari/ResilienceKit", branch = "main" }
 phenotype-state-machine = { git = "https://github.com/KooshaPari/ResilienceKit", branch = "main" }
 phenotype-policy-engine = { git = "https://github.com/KooshaPari/ResilienceKit", branch = "main" }
 phenotype-logging = { git = "https://github.com/KooshaPari/PhenoObservability", branch = "main", package = "phenotype-logging" }
-phenotype-time = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main", package = "phenotype-time" }
+phenotype-time = { path = "crates/phenotype-time" }
+phenotype-rate-limit = { path = "crates/phenotype-rate-limit" }
+phenotype-retry = { path = "crates/phenotype-retry" }
 # phenotype-rust-sdk thin facade (ADR-ECO-014)
 phenotype-async-traits = { git = "https://github.com/KooshaPari/phenotype-rust-sdk", branch = "main" }
 phenotype-macros = { git = "https://github.com/KooshaPari/phenotype-rust-sdk", branch = "main" }
@@ -142,7 +148,7 @@ phenotype-mcp = { git = "https://github.com/KooshaPari/substrate", branch = "mai
 # ResilienceKit traits crate (HealthChecker API — PO runtime differs)
 phenotype-health = { git = "https://github.com/KooshaPari/ResilienceKit", branch = "main", package = "phenotype-health" }
 # archive-if-unused stub — inline HexaKit shim; zero phenoShared git deps fleet-wide (ADR-ECO-014)
-phenotype-cache-adapter = { path = "crates/phenotype-cache-adapter-stub" }
+phenotype-cache-adapter = { path = "crates/phenotype-cache-adapter" }
 phenotype-contract-adapters = { path = "crates/phenotype-contract-adapters" }
 # Contracts decompose: slice crates on role owners; generic Contract → phenotype-rust-sdk
 phenotype-auth-contracts = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-auth-contracts" }
