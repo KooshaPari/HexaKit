@@ -25,7 +25,6 @@ phenotype-contract-adapters = { workspace = true }
 phenotype-async-traits = { workspace = true }
 phenotype-state-machine = { workspace = true }
 phenotype-policy-engine = { workspace = true }
-phenotype-cache-adapter = { workspace = true }
 phenotype-string = { workspace = true }
 phenotype-time = { workspace = true }
 phenotype-http-client-core = { workspace = true }

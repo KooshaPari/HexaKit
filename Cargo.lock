@@ -1240,10 +1240,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "phenotype-cache-adapter"
-version = "0.2.0"
-
-[[package]]
 name = "phenotype-compliance-scanner"
 version = "0.2.0"
 dependencies = [
@@ -1284,7 +1280,6 @@ version = "0.2.0"
 dependencies = [
  "async-trait",
  "phenotype-async-traits",
- "phenotype-cache-adapter",
  "phenotype-config-core",
  "phenotype-contract-adapters",
  "phenotype-error-core 0.2.0 (git+https://github.com/KooshaPari/phenotype-types?branch=main)",

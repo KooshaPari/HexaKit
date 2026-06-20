@@ -52,8 +52,8 @@
 //! // Policy engine
 //! use phenotype_core::policy::{PolicyEngine, PolicyResult};
 //!
-//! // Cache
-//! use phenotype_core::cache::CacheAdapter;
+//! // Cache port (canonical: phenotype-port-traits CachePort)
+//! use phenotype_core::ports::CachePort;
 //!
 //! // String
 //! use phenotype_core::string::StringExt;
@@ -132,11 +132,6 @@ pub mod state_machine {
 /// Policy engine re-exports
 pub mod policy {
     pub use phenotype_policy_engine::{Policy, PolicyEngine, PolicyResult, Rule};
-}
-
-/// Cache re-exports
-pub mod cache {
-    pub use phenotype_cache_adapter::CacheAdapter;
 }
 
 /// String utilities re-exports
