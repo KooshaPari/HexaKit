@@ -9,6 +9,13 @@ publish = false
 [lib]
 path = "src/lib.rs"
 
+[[bin]]
+name = "phenotype-router"
+path = "src/bin/phenotype-router.rs"
+
 [dependencies]
+tokio = { workspace = true }
+axum = { workspace = true }
+anyhow = { workspace = true }
 
 [dev-dependencies]
