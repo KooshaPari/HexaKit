@@ -11,63 +11,78 @@ authors = ["kooshapari"]
 resolver = "2"
 exclude = [
   "crates/focalpoint",  # 867MB repo with vendor dir; fetch too large for subtree-add; pending manual absorption
+  "Metron",             # archived → PhenoObservability crates/metrickit (2026-06-17)
+  "agileplus",          # canonical → KooshaPari/AgilePlus (2026-06-17)
+  "Traceon",            # archived → PhenoObservability crates/tracingkit (2026-06-17)
+  "crates/stashly",     # canonical → phenoShared / phenotype-types per v2 charter
+  "crates/settly",      # canonical → phenotype-config (Wave 8 stub prune)
+  "crates/phenotype-bdd", # canonical → TestingKit wave B (2026-06-17)
+  # P3 wave 1 — error crates canonical in phenoShared (API-compatible)
+  "crates/phenotype-error-core",
+  "crates/phenotype-errors",
+  # P3 wave 2 — event crates interim phenoShared (Eventra absorb pending); http-client → ResilienceKit
+  "crates/phenotype-event-bus",
+  "crates/phenotype-event-sourcing",
+  "crates/phenotype-http-client-core",
+  # P3 wave 3 — logging → PO; time interim phenoShared; state-machine + policy → ResilienceKit
+  "crates/phenotype-logging",
+  "crates/phenotype-time",
+  "crates/phenotype-state-machine",
+  "crates/phenotype-policy-engine",
+  # P3 wave 4 — security + macros + async-traits → phenoShared (contracts deferred: API diverge)
+  "crates/phenotype-async-traits",
+  "crates/phenotype-macros",
+  # Wave 12 — health traits interim phenoShared (PO runtime differs)
+  "crates/phenotype-health",
+  # phenotype-cache-adapter → inline stub at crates/phenotype-cache-adapter-stub (ADR-ECO-014)
+  # eco-consolidate — config-loader, mcp
+  "crates/phenotype-config-loader",
+  "crates/phenotype-mcp",
+  # Wave 13 lane B — test infra → TestingKit
+  "crates/phenotype-test-infra",
+  # Wave 13 lane C — generic Contract trait interim phenoShared; slice crates → role owners
+  "crates/phenotype-contracts",
+  # Wave 13 lane D — cipher → Authvault
+  "crates/cipher",
+  # Wave C tail — crypto + casbin → Authvault
+  "crates/phenotype-crypto",
+  "crates/phenotype-casbin-wrapper",
+  # Phase 2 E2a — utils → phenoShared
+  "crates/phenotype-iter",
+  "crates/phenotype-string",
+  "crates/phenotype-validation",
+  # Phase 3 Wave A — observability → PhenoObservability
+  "crates/phenotype-sentry-config",
+  "crates/phenotype-telemetry",
+  # Phase 3 Wave B — testing → TestingKit
+  "crates/phenotype-contract",
+  "crates/phenotype-test-fixtures",
+  # Wave H — analytics + nexus decompose
+  "crates/phenotype-analytics",
+  "libs/nexus",
+  # P2 infrakit drain — incomplete stub; excluded until deps + dyn trait fixed
+  "crates/phenotype-security-aggregator",
+  # Phase 4 wave 5 — config core → phenoShared (H14 interim; terminal → phenotype-config)
+  "libs/phenotype-config-core",
 ]
 members = [
-  "crates/phenotype-analytics",
-  "crates/cipher",
+  "crates/hexakit-cli",
+  "crates/phenotype-contract-adapters",
   "crates/phenotype-contract-tests",
-  "crates/phenotype-sentry-config",
-  "Traceon",
-  "crates/phenotype-async-traits",
-  "crates/phenotype-cache-adapter",
-  "crates/phenotype-contract",
-  "crates/phenotype-contracts",
   "crates/phenotype-compliance-scanner",
   "crates/phenotype-cost-core",
-  "crates/phenotype-crypto",
-  "crates/phenotype-error-core",
   "crates/phenotype-error-macros",
-  "crates/phenotype-errors",
-  "crates/phenotype-event-sourcing",
   "crates/phenotype-git-core",
-  "crates/phenotype-health",
-  "crates/phenotype-http-client-core",
-  "crates/phenotype-iter",
-  "crates/phenotype-logging",
-  "crates/phenotype-macros",
-  "crates/phenotype-mcp",
-  "crates/phenotype-policy-engine",
   "crates/phenotype-port-traits",
   "crates/phenotype-ports-canonical",
   "crates/phenotype-process",
-  "crates/phenotype-security-aggregator",
   "crates/phenotype-shared-config",
-  "crates/phenotype-state-machine",
-  "crates/phenotype-string",
-  "crates/phenotype-telemetry",
-  "crates/phenotype-test-infra",
-  "crates/phenotype-time",
-  "crates/phenotype-validation",
-  "crates/phenotype-casbin-wrapper",
-  "crates/phenotype-bdd",
   "crates/phenotype-core",
-  "crates/phenotype-event-bus",
   "crates/phenotype-infrastructure",
   "crates/phenotype-project-registry",
-  "crates/phenotype-config-loader",
+  "crates/phenotype-security-aggregator",
   "crates/phenotype-xdd-lib",
-  "crates/settly",
-  "crates/stashly",
-  "Metron",
   "forgecode-fork",
-  "libs/nexus",
-  "libs/phenotype-config-core",
-  "agileplus/crates/agileplus-benchmarks",
-  "agileplus/crates/agileplus-domain",
-  "agileplus/crates/agileplus-events",
-  "agileplus/crates/agileplus-graph",
-  "agileplus/crates/agileplus-sqlite",
-  "agileplus/crates/agileplus-triage",
 ]
 [workspace.dependencies]
 sentry = "0.34"
@@ -106,44 +121,57 @@ ulid = { version = "1", features = ["serde"] }
 
 # Phenotype internal crates
 arc-swap = "1"
-phenotype-async-traits = { path = "crates/phenotype-async-traits" }
-phenotype-bdd = { path = "crates/phenotype-bdd" }
-phenotype-cache-adapter = { path = "crates/phenotype-cache-adapter" }
+# phenoShared interim pins drained wave 5b (ADR-ECO-014) — terminal DOMAIN_ROLES owners
+phenotype-error-core = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main" }
+phenotype-errors = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main" }
+# Eventra terminal owner (wave 5b)
+phenotype-event-bus = { git = "https://github.com/KooshaPari/Eventra", branch = "main", package = "phenotype-event-bus" }
+phenotype-event-sourcing = { git = "https://github.com/KooshaPari/Eventra", branch = "main", package = "phenotype-event-sourcing" }
+# ResilienceKit = phenotype-resilience DOMAIN_ROLES owner
+phenotype-http-client-core = { git = "https://github.com/KooshaPari/ResilienceKit", branch = "main" }
+phenotype-state-machine = { git = "https://github.com/KooshaPari/ResilienceKit", branch = "main" }
+phenotype-policy-engine = { git = "https://github.com/KooshaPari/ResilienceKit", branch = "main" }
+phenotype-logging = { git = "https://github.com/KooshaPari/PhenoObservability", branch = "main", package = "phenotype-logging" }
+phenotype-time = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main", package = "phenotype-time" }
+# phenotype-rust-sdk thin facade (ADR-ECO-014)
+phenotype-async-traits = { git = "https://github.com/KooshaPari/phenotype-rust-sdk", branch = "main" }
+phenotype-macros = { git = "https://github.com/KooshaPari/phenotype-rust-sdk", branch = "main" }
+phenotype-config-loader = { git = "https://github.com/KooshaPari/phenotype-config", branch = "main" }
+phenotype-mcp = { git = "https://github.com/KooshaPari/substrate", branch = "main" }
+# ResilienceKit traits crate (HealthChecker API — PO runtime differs)
+phenotype-health = { git = "https://github.com/KooshaPari/ResilienceKit", branch = "main", package = "phenotype-health" }
+# archive-if-unused stub — inline HexaKit shim; zero phenoShared git deps fleet-wide (ADR-ECO-014)
+phenotype-cache-adapter = { path = "crates/phenotype-cache-adapter-stub" }
+phenotype-contract-adapters = { path = "crates/phenotype-contract-adapters" }
+# Contracts decompose: slice crates on role owners; generic Contract → phenotype-rust-sdk
+phenotype-auth-contracts = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-auth-contracts" }
+phenotype-event-contracts = { git = "https://github.com/KooshaPari/Eventra", branch = "main", package = "phenotype-event-contracts" }
+phenotype-agent-contracts = { git = "https://github.com/KooshaPari/Agentora", branch = "main", package = "phenotype-agent-contracts" }
+phenotype-contracts = { git = "https://github.com/KooshaPari/phenotype-rust-sdk", branch = "main" }
+phenotype-security-aggregator = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-security-aggregator" }
+phenotype-test-infra = { git = "https://github.com/KooshaPari/TestingKit", branch = "main" }
+phenotype-cipher = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-cipher" }
+phenotype-crypto = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-crypto" }
+phenotype-casbin-wrapper = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-casbin-wrapper" }
+phenotype-iter = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main", package = "phenotype-iter" }
+phenotype-string = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main", package = "phenotype-string" }
+phenotype-validation = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main", package = "phenotype-validation" }
+phenotype-sentry-config = { git = "https://github.com/KooshaPari/PhenoObservability", branch = "main", package = "phenotype-sentry-config" }
+phenotype-telemetry = { git = "https://github.com/KooshaPari/PhenoObservability", branch = "main", package = "phenotype-telemetry" }
+phenotype-contract = { git = "https://github.com/KooshaPari/TestingKit", branch = "main", package = "phenotype-contract" }
+phenotype-test-fixtures = { git = "https://github.com/KooshaPari/TestingKit", branch = "main", package = "phenotype-test-fixtures", default-features = false }
 phenotype-compliance-scanner = { path = "crates/phenotype-compliance-scanner" }
-phenotype-config-core = { path = "libs/phenotype-config-core" }
-phenotype-contract = { path = "crates/phenotype-contract" }
-phenotype-contracts = { path = "crates/phenotype-contracts" }
+phenotype-config-core = { git = "https://github.com/KooshaPari/phenotype-config", branch = "main", package = "phenotype-config-core" }
 phenotype-core = { path = "crates/phenotype-core" }
 phenotype-cost-core = { path = "crates/phenotype-cost-core" }
-phenotype-crypto = { path = "crates/phenotype-crypto" }
-phenotype-error-core = { path = "crates/phenotype-error-core" }
 phenotype-error-macros = { path = "crates/phenotype-error-macros" }
-phenotype-errors = { path = "crates/phenotype-errors" }
-phenotype-event-bus = { path = "crates/phenotype-event-bus" }
-phenotype-event-sourcing = { path = "crates/phenotype-event-sourcing" }
 phenotype-git-core = { path = "crates/phenotype-git-core" }
-phenotype-health = { path = "crates/phenotype-health" }
-phenotype-http-client-core = { path = "crates/phenotype-http-client-core" }
 phenotype-infrastructure = { path = "crates/phenotype-infrastructure" }
-phenotype-iter = { path = "crates/phenotype-iter" }
-phenotype-logging = { path = "crates/phenotype-logging" }
-phenotype-macros = { path = "crates/phenotype-macros" }
-phenotype-mcp = { path = "crates/phenotype-mcp" }
-phenotype-policy-engine = { path = "crates/phenotype-policy-engine" }
 phenotype-port-traits = { path = "crates/phenotype-port-traits" }
 phenotype-ports-canonical = { path = "crates/phenotype-ports-canonical" }
 phenotype-process = { path = "crates/phenotype-process" }
 phenotype-project-registry = { path = "crates/phenotype-project-registry" }
-phenotype-security-aggregator = { path = "crates/phenotype-security-aggregator" }
 phenotype-shared-config = { path = "crates/phenotype-shared-config" }
-phenotype-state-machine = { path = "crates/phenotype-state-machine" }
-phenotype-string = { path = "crates/phenotype-string" }
-phenotype-telemetry = { path = "crates/phenotype-telemetry" }
-phenotype-test-fixtures = { path = "crates/phenotype-test-fixtures", default-features = false }
-phenotype-test-infra = { path = "crates/phenotype-test-infra" }
-phenotype-time = { path = "crates/phenotype-time" }
-phenotype-validation = { path = "crates/phenotype-validation" }
-phenotype-cipher = { path = "crates/cipher" }
 
 # External utilities
 axum = "0.7"

@@ -156,7 +156,7 @@ mod tests {
     fn event_envelope_debug() {
         let event = TestEvent { id: "agg-1".into() };
         let envelope = EventEnvelope::new(event);
-        let debug = format!("{:?}", envelope);
+        let debug = format!("{envelope:?}");
         assert!(debug.contains("test.event"));
         assert!(debug.contains("agg-1"));
     }

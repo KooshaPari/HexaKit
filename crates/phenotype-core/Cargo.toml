@@ -21,7 +21,7 @@ phenotype-validation = { workspace = true }
 phenotype-health = { workspace = true }
 phenotype-telemetry = { workspace = true }
 phenotype-port-traits = { workspace = true }
-phenotype-contracts = { workspace = true }
+phenotype-contract-adapters = { workspace = true }
 phenotype-async-traits = { workspace = true }
 phenotype-state-machine = { workspace = true }
 phenotype-policy-engine = { workspace = true }

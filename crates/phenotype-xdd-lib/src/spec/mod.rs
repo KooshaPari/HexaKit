@@ -30,11 +30,11 @@
 //! assert_eq!(spec.spec.name, "My Spec");
 //! ```
 
-use crate::domain::{XddError, XddResult};
-use serde::{Deserialize, Serialize};
-
 pub use parser::SpecParser;
+use serde::{Deserialize, Serialize};
 pub use validator::SpecValidator;
+
+use crate::domain::{XddError, XddResult};
 
 /// Specification root.
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -142,7 +142,9 @@ tooling/
 tools/
 worktrees/
 thegent/
-scripts/
+scripts/*
+!scripts/extract-intent-prompts.py
+!scripts/README-extract-intent.md
 colab/
 archive/
 trace/

@@ -46,9 +46,10 @@ pub use types::{Complexity, CostUnit};
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::cmp::Ordering;
     use std::ops::{Add, Div};
+
+    use super::*;
 
     #[test]
     fn test_cost_creation() {
@@ -199,7 +200,7 @@ mod tests {
     #[test]
     fn test_cost_display() {
         let cost = Cost::from_tokens(42);
-        assert_eq!(format!("{}", cost), "42 tokens");
+        assert_eq!(format!("{cost}"), "42 tokens");
     }
 
     #[test]

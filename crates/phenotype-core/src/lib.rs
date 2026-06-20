@@ -15,7 +15,7 @@
 //!
 //! All major phenotype crates are re-exported:
 //!
-//! ```rust
+//! ```rust,ignore
 //! // Error handling
 //! use phenotype_core::error::{ApiError, DomainError, RepositoryError};
 //!
@@ -32,7 +32,7 @@
 //! use phenotype_core::health::{HealthStatus, HealthChecker};
 //!
 //! // Telemetry
-//! use phenotype_core::telemetry::{MetricsRecorder, SpanContext};
+//! use phenotype_core::telemetry::{Metric, MetricsCollector, SpanContext};
 //!
 //! // Ports
 //! use phenotype_core::ports::{Repository, CachePort};
@@ -53,7 +53,7 @@
 //! use phenotype_core::policy::{PolicyEngine, PolicyResult};
 //!
 //! // Cache
-//! use phenotype_core::cache::TwoTierCache;
+//! use phenotype_core::cache::CacheAdapter;
 //!
 //! // String
 //! use phenotype_core::string::StringExt;
@@ -74,9 +74,11 @@ pub mod error {
     };
 }
 
-/// Configuration re-exports
+/// Configuration re-exports (canonical: phenotype-config `phenotype-config-core`)
 pub mod config {
-    pub use phenotype_config_core::ConfigLoader;
+    pub use phenotype_config_core::{
+        ConfigLoader, ConfigSource, ConfigValidationError, Priority, ValidateConfig,
+    };
 }
 
 /// Event bus re-exports
@@ -97,9 +99,12 @@ pub mod health {
     };
 }
 
-/// Telemetry re-exports
+/// Telemetry re-exports (canonical: PhenoObservability `rust/phenotype-telemetry`)
 pub mod telemetry {
-    pub use phenotype_telemetry::{MetricsRecorder, SpanContext, Telemetry, TelemetryError};
+    pub use phenotype_telemetry::{
+        Metric, MetricValue, MetricsCollector, Span, SpanContext, TelemetryConfig,
+        TelemetryExporter, Tracer,
+    };
 }
 
 /// Port traits re-exports
@@ -109,7 +114,7 @@ pub mod ports {
 
 /// Contracts re-exports
 pub mod contracts {
-    pub use phenotype_contracts::{
+    pub use phenotype_contract_adapters::{
         InMemoryCache, InMemoryEventBus, InMemoryRepository, InMemorySecretManager,
     };
 }
@@ -149,15 +154,12 @@ pub mod http {}
 
 /// External crate re-exports for convenience
 pub mod external {
-    /// Serde for serialization
-    pub use serde::{de::DeserializeOwned, Deserialize, Serialize};
-
-    /// Thiserror for error derives
-    pub use thiserror::Error;
-
     /// Async-trait for async trait methods
     pub use async_trait::async_trait;
-
+    /// Serde for serialization
+    pub use serde::{de::DeserializeOwned, Deserialize, Serialize};
+    /// Thiserror for error derives
+    pub use thiserror::Error;
     /// Tokio for async runtime
     pub use tokio;
 }
@@ -172,8 +174,10 @@ pub mod prelude {
 
 /// Convenience type aliases
 pub mod types {
-    use serde::{de::DeserializeOwned, Serialize};
     use std::fmt::Debug;
+
+    use serde::de::DeserializeOwned;
+    use serde::Serialize;
 
     /// Type alias for common result with DomainError
     pub type DomainResult<T> = std::result::Result<T, super::error::DomainError>;

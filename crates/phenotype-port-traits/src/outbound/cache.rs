@@ -1,7 +1,8 @@
 //! Cache port for caching operations.
 
-use async_trait::async_trait;
 use std::time::Duration;
+
+use async_trait::async_trait;
 
 /// Cache port for key-value caching operations.
 #[async_trait]
@@ -143,7 +144,7 @@ mod tests {
     #[test]
     fn cache_error_debug() {
         let err = CacheError::Timeout;
-        let debug = format!("{:?}", err);
+        let debug = format!("{err:?}");
         assert!(debug.contains("Timeout"));
     }
 }
