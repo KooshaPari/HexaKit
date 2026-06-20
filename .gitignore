@@ -145,6 +145,13 @@ thegent/
 scripts/*
 !scripts/extract-intent-prompts.py
 !scripts/README-extract-intent.md
+!scripts/audit
+!scripts/audit-tools/
+!scripts/audit-tools/**
+!scripts/audit-tools/tests/**
+!scripts/doc-sync/
+!scripts/doc-sync/**
+!scripts/doc-sync/tests/**
 colab/
 archive/
 trace/

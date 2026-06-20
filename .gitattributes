@@ -1,5 +1,5 @@
 # Auto-detect text files and normalize line endings to LF
-* text=auto
+* text=auto eol=lf
 
 # ============================================================================
 # Language-specific settings with diff drivers
@@ -46,7 +46,6 @@ go.sum text -diff merge=binary
 # YAML & Config files
 *.yml text eol=lf
 *.yaml text eol=lf
-*.toml text eol=lf
 *.ini text eol=lf
 *.cfg text eol=lf
 .env* text eol=lf
@@ -128,9 +127,6 @@ htmlcov/** -diff
 
 # Go
 vendor/** -diff
-
-# Rust
-target/** -diff
 
 # IDE
 .idea/** -diff
