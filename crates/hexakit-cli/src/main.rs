@@ -1,6 +1,7 @@
 //! HexaKit CLI — fleet repo bootstrap.
 
 mod boundary;
+mod gateway;
 mod init;
 mod lang;
 mod lint;
@@ -30,6 +31,8 @@ enum Commands {
         #[command(subcommand)]
         command: BoundaryCommands,
     },
+    /// Manage the phenotype-router HTTP delegate (replaces H10 gateway surface).
+    Gateway(gateway::GatewayArgs),
 }
 
 #[derive(Subcommand)]
@@ -44,5 +47,6 @@ fn main() -> Result<()> {
         Commands::Boundary { command } => match command {
             BoundaryCommands::Lint(args) => lint::run(args),
         },
+        Commands::Gateway(args) => gateway::run(args),
     }
 }
