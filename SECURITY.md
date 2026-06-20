@@ -1,63 +1,73 @@
-# Security Policy
+# Security Policy - HexaKit
 
-## Supported Versions
+## 1. Supported Versions
 
 | Version | Supported          |
-|---------|--------------------|
+| ------- | ------------------ |
 | latest  | :white_check_mark: |
-| <latest | :x:                |
+| < latest| :x:                |
 
-The HexaKit project provides security updates for the latest release only.
-Please upgrade before reporting a vulnerability against an older version.
+Only the latest tagged release receives security updates. Older versions are not patched; please upgrade.
 
-## Reporting a Vulnerability
+## 2. Reporting a Vulnerability
 
-If you discover a security vulnerability, please report it **privately** so we
-can investigate and ship a fix before public disclosure:
+If you discover a security vulnerability in `HexaKit`, please report it privately:
 
-1. **Do not** open a public GitHub issue for the vulnerability.
-2. Open a private [GitHub Security Advisory][adv] for this repository
-   (`KooshaPari/HexaKit`).
-3. Or, if you cannot use GitHub Advisories, email the maintainers at the
-   address in the repository's `CODEOWNERS` / `package.json` / Cargo manifest.
-4. Allow up to **90 days** for assessment and remediation before any public
-   disclosure. We will coordinate disclosure timing with you.
+- **Email:** kooshapari@kooshapari.com
+- **GitHub:** Open a private security advisory via the Security tab on this repository
+- **DO NOT** open a public issue, PR, or discussion for security vulnerabilities
+- **DO NOT** disclose the vulnerability publicly until we have issued a fix and an advisory
 
-Please include:
+We aim to acknowledge new reports within **3 business days** and to issue a fix or mitigation within **30 days** for critical issues.
 
-- A clear description of the vulnerability and its impact.
-- Reproduction steps or a minimal proof-of-concept.
-- Affected version(s) and commit(s).
-- Your name / handle (for credit in the advisory, if desired).
+## 3. Vulnerability Disclosure Process
 
-[adv]: https://github.com/KooshaPari/HexaKit/security/advisories/new
+1. **Report received** - maintainer acknowledges and assigns a CVE-style tracking ID.
+2. **Triage** - severity assessed (Critical / High / Medium / Low) using CVSS 3.1.
+3. **Patch development** - fix authored in a private fork; CI validates the fix.
+4. **Coordinated disclosure** - embargo window negotiated (default 90 days from report).
+5. **Public advisory** - GitHub Security Advisory + CVE assignment + release notes.
 
-## Response Process
+## 4. Security Update Cadence
 
-1. **Acknowledgement** within 72 hours of report.
-2. **Triage** and severity assessment (CVSS) within 7 days.
-3. **Patch** shipped for `latest`; backport considered for `latest-1` if
-   severity is High or Critical.
-4. **Public advisory** published with credit, severity, fix version, and
-   mitigation guidance.
+- **Critical / High:** patch release within 7 days; GHSA published simultaneously
+- **Medium:** patch release within 30 days
+- **Low:** bundled into next regular release
 
-## Severity Tiers
+Cadence is codified in ADR-042 (security audit cadence, monthly sweep via `scripts/audit.sh`).
 
-| Severity    | Response SLA | Disclosure Window |
-|-------------|--------------|-------------------|
-| Critical    | 24 hours     | 7 days            |
-| High        | 72 hours     | 30 days           |
-| Medium      | 7 days       | 90 days           |
-| Low         | 30 days      | 90 days           |
+## 5. Scope
 
-## Scope
+In scope:
+- The `HexaKit` source tree on the default branch
+- Tagged releases on the default branch
+- Pre-built artifacts published from CI (crates.io / PyPI / npm / Go modules)
 
-In scope: code in this repository, GitHub Actions workflows, and release
-artifacts. Out of scope: third-party dependencies (please report upstream).
+Out of scope:
+- Issues in transitive dependencies (report upstream)
+- Issues requiring physical access to the user's machine
+- Denial-of-service via resource exhaustion in user-supplied inputs (best-effort mitigation only)
 
-## Recognition
+## 6. Security Tooling
 
-We follow a [hall of fame][hof] approach — reporters who follow responsible
-disclosure are credited in release notes unless they prefer anonymity.
+This repository runs the following security tooling on every push and weekly cron:
 
-[hof]: https://github.com/KooshaPari/HexaKit/security/policy
+- `cargo audit` / `pip-audit` / `npm audit` / `govulncheck` - dependency CVE scanning
+- `gitleaks` - secret detection (`.gitleaks.toml` allowlists known false positives)
+- `trivy` - image and filesystem vulnerability scanning
+- `cargo-cyclonedx` / `syft` - SBOM generation (CycloneDX format)
+- `slsa-github-generator` - SLSA Build Level 3 provenance attestation
+- CodeQL - static analysis for the primary language
+
+See `.github/workflows/security.yml` and `scripts/audit.sh` for full configuration.
+
+## 7. Dependencies and Supply Chain
+
+- All dependencies pinned via lockfile (Cargo.lock / poetry.lock / package-lock.json / go.sum)
+- `dependabot.yml` configured for security-only updates (see `.github/dependabot.yml`)
+- Renovate is not used
+- SBOMs are generated on every release and attached to the GitHub release
+
+## 8. Acknowledgements
+
+We thank the security researchers and contributors who report vulnerabilities responsibly.
