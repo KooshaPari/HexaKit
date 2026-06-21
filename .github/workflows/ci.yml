@@ -81,3 +81,18 @@ jobs:
       - uses: wagoid/commitlint-github-action@b948419dd99f3fd78a6548d48f94e3df7f6bf3ed # v6
         with:
           configFile: .commitlintrc.yml
+
+  # ─── Rust Module Graph (cargo-modules --deny cyclic/dead-code/unreachable) ──
+  module-graph:
+    name: Rust Module Graph
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db7802 # stable
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        with:
+          workspaces: rust
+      - name: Install cargo-modules
+        run: cargo install cargo-modules --locked
+      - name: Module graph (cargo-modules)
+        run: cargo m-check

@@ -8,3 +8,6 @@ incremental = true
 [profile.test]
 # Incremental compilation helps with test iteration
 incremental = true
+
+[alias]
+m-check = "modules check --deny cyclic --deny dead-code --deny unreachable"
