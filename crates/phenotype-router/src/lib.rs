@@ -4,6 +4,7 @@
 //! `ComboVariant` routing for the six auto-combo variants; `/v1/*` HTTP
 //! delegate to cliproxy++ (Go plane). Combo scoring stays in Rust.
 
+pub mod alias;
 pub mod delegate;
 pub mod sse;
 
