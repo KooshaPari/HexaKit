@@ -12,6 +12,7 @@ path = "src/lib.rs"
 rand = "0.8"
 serde = { version = "1", features = ["derive"] }
 thiserror = "2"
+pheno-otel = { workspace = true }
 
 [dev-dependencies]
 tokio = { version = "1", features = ["full"] }
