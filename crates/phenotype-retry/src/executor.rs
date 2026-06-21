@@ -83,6 +83,10 @@ where
         if policy.is_timeout_exceeded(start.elapsed()) {
             let error_msg = last_error.unwrap_or_else(|| "timeout exceeded".to_string());
             tracing_error!("Retry timeout exceeded after {} attempts", attempt);
+            pheno_otel::metrics::record_error(
+                "phenotype_retry.execute_with_retry",
+                "timeout_exceeded",
+            );
             return Err(RetryError {
                 attempts: attempt,
                 last_error: error_msg,
@@ -117,6 +121,10 @@ where
                 // Check if we've exhausted our retry attempts
                 if !policy.should_retry(attempt) {
                     tracing_error!("Retry exhausted after {} attempts: {}", attempt, error_msg);
+                    pheno_otel::metrics::record_error(
+                        "phenotype_retry.execute_with_retry",
+                        "attempts_exhausted",
+                    );
                     return Err(RetryError {
                         attempts: attempt + 1,
                         last_error: error_msg,

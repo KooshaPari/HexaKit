@@ -181,6 +181,9 @@ phenotype-process = { path = "crates/phenotype-process" }
 phenotype-project-registry = { path = "crates/phenotype-project-registry" }
 phenotype-shared-config = { path = "crates/phenotype-shared-config" }
 
+# pheno-otel L62 metrics substrate (v14 cycle-4 T7)
+pheno-otel = { path = "../pheno-otel" }
+
 # External utilities
 axum = "0.7"
 axum-extra = "0.9"
