@@ -5,6 +5,7 @@
 //! delegate to cliproxy++ (Go plane). Combo scoring stays in Rust.
 
 pub mod delegate;
+pub mod fallback;
 pub mod sse;
 
 use std::fmt;
