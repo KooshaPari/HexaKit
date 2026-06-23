@@ -10,6 +10,7 @@ mod registry;
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
+use clap_ext::prelude::*;
 
 #[derive(Parser)]
 #[command(
@@ -18,6 +19,12 @@ use clap::{Parser, Subcommand};
     about = "HexaKit — Phenotype fleet scaffolding"
 )]
 struct Cli {
+    /// Shared `--config/-c` flag (clap-ext `ConfigArg`)
+    #[command(flatten)]
+    config: ConfigArg,
+    /// Shared `-v/-q` verbosity flags (clap-ext `Verbosity`)
+    #[command(flatten)]
+    verbosity: Verbosity,
     #[command(subcommand)]
     command: Commands,
 }
@@ -42,6 +49,8 @@ enum BoundaryCommands {
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
+    // Initialize tracing via clap-ext (handles RUST_LOG + -v/-q mapping).
+    setup_tracing(cli.verbosity.to_filter());
     match cli.command {
         Commands::Init(args) => init::run(args),
         Commands::Boundary { command } => match command {

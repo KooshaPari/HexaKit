@@ -188,6 +188,7 @@ pheno-otel = { path = "../pheno-otel" }
 axum = "0.7"
 axum-extra = "0.9"
 clap = { version = "4", features = ["derive"] }
+clap-ext = "0.1"
 figment = "0.10"
 futures-util = "0.3"
 http-body-util = "0.1"
