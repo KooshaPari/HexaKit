@@ -26,7 +26,7 @@ jobs:
         uses: dtolnay/rust-toolchain@5b842231ba77f5c045dba54ac5560fed2db780e2
 
       - name: Install cargo-cyclonedx
-        uses: taiki-e/install-action@8b3c737da4b541bf0fb5a3e0488ff20535badac9
+        uses: taiki-e/install-action@9e1e5806d4a4822de933115878265be9aaa786d9
         with:
           tool: cargo-cyclonedx@0.5.9
 

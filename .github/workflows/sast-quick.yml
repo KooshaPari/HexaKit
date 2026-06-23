@@ -48,7 +48,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: trufflesecurity/trufflehog@9b6b5326bfe25dbd856eccc8a8275eb5dea7bd52
+      - uses: trufflesecurity/trufflehog@092db2aa9d836cdc0bb2c9fcc93435d026e14d0c
         with:
           path: ./
           extra_args: --only-verified --fail
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af
+      - uses: ruby/setup-ruby@9eb537ca036ebaed86729dcb9309076e4c5c3b74
         with:
           ruby-version: "3.3"
       - name: Run LicenseFinder
