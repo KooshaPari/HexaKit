@@ -24,3 +24,4 @@ Templates are managed via Cookiecutter. Each template includes:
 - `cookiecutter.json` - Template variables
 - `{{cookiecutter.project_name}}/` - Template files
 - `hooks/` - Pre/post generation hooks
+- `appgen/` - AppGen React Native template
