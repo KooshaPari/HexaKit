@@ -1,3 +1,18 @@
+**Work state:** ACTIVE · **Progress:** `████████░░` 8/10
+
+HexaKit is a Rust workspace for reusable infrastructure primitives and hexagonal-architecture building blocks. It packages focused libraries for error handling, contracts, policy, telemetry, health, and adapter/port patterns so downstream systems can compose a consistent, maintainable infrastructure layer instead of duplicating foundation code.
+
+## Usage / Quickstart
+
+```bash
+git clone https://github.com/KooshaPari/HexaKit.git
+cd HexaKit
+cargo metadata --format-version 1
+cargo test
+```
+
+To consume a crate from this workspace, add the relevant package to your Rust project and depend on it from `Cargo.toml`.
+
 <!-- AI-DD-META:START -->
 <!-- This repository is planned, maintained, and managed by AI Agents only. -->
 <!-- Slop issues are expected and intentionally present as part of an HITL-less -->
