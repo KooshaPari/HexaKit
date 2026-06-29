@@ -5,6 +5,8 @@ use std::time::{Duration, Instant};
 
 use tokio::sync::RwLock;
 
+use crate::InfrastructureError;
+
 /// Circuit breaker states
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CircuitState {
@@ -68,22 +70,18 @@ impl CircuitBreaker {
         }
     }
 
-    pub async fn call<F, Fut, T, E>(&self, f: F) -> Result<T, E>
+    pub async fn call<F, Fut, T>(&self, f: F) -> Result<T, InfrastructureError>
     where
         F: FnOnce() -> Fut,
-        Fut: std::future::Future<Output = Result<T, E>>,
-        E: std::fmt::Debug,
+        Fut: std::future::Future<Output = Result<T, InfrastructureError>>,
     {
         self.check_state().await;
 
-        let inner = self.inner.read().await;
-        if inner.state == CircuitState::Open {
-            // We need to return an error, but we can't create E here easily
-            // Let the caller handle this by returning a generic error
-            drop(inner);
-            panic!("Circuit breaker is open - should be checked before calling");
+        if self.is_open().await {
+            return Err(InfrastructureError::CircuitOpen(
+                "circuit breaker is open; requests are failing fast".to_string(),
+            ));
         }
-        drop(inner);
 
         let result = f().await;
 
@@ -185,11 +183,39 @@ mod tests {
         let cb = CircuitBreaker::new(config);
 
         for _ in 0..3 {
-            let result: Result<(), ()> = cb.call(|| async { Err(()) }).await;
+            let result: Result<(), InfrastructureError> = cb
+                .call(|| async { Err(InfrastructureError::Other("fail".to_string())) })
+                .await;
             assert!(result.is_err());
         }
 
         assert_eq!(cb.state().await, CircuitState::Open);
+    }
+
+    #[tokio::test]
+    async fn fr_circuit_004_rejects_when_open() {
+        let config = CircuitConfig {
+            failure_threshold: 2,
+            open_duration: Duration::from_secs(3600), // long enough to stay open
+            ..Default::default()
+        };
+        let cb = CircuitBreaker::new(config);
+
+        // Open the circuit
+        for _ in 0..2 {
+            let _ = cb
+                .call(|| async { Err::<(), _>(InfrastructureError::Other("fail".to_string())) })
+                .await;
+        }
+        assert_eq!(cb.state().await, CircuitState::Open);
+
+        // Should now get CircuitOpen error instead of panicking
+        let result: Result<(), InfrastructureError> = cb.call(|| async { Ok(()) }).await;
+        assert!(result.is_err());
+        assert!(matches!(
+            result.unwrap_err(),
+            InfrastructureError::CircuitOpen(_)
+        ));
     }
 
     #[tokio::test]
@@ -204,7 +230,9 @@ mod tests {
 
         // Open the circuit
         for _ in 0..2 {
-            let _: Result<(), ()> = cb.call(|| async { Err(()) }).await;
+            let _: Result<(), InfrastructureError> = cb
+                .call(|| async { Err(InfrastructureError::Other("fail".to_string())) })
+                .await;
         }
         assert_eq!(cb.state().await, CircuitState::Open);
 
@@ -212,7 +240,7 @@ mod tests {
         tokio::time::sleep(Duration::from_millis(10)).await;
 
         // Trigger half-open check and succeed
-        let result: Result<(), ()> = cb.call(|| async { Ok(()) }).await;
+        let result: Result<(), InfrastructureError> = cb.call(|| async { Ok(()) }).await;
         assert!(result.is_ok());
 
         // Still half-open, need more successes
