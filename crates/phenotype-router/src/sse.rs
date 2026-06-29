@@ -185,10 +185,7 @@ mod tests {
 
     #[test]
     fn parse_multiline_data_joins_with_newline() {
-        let lines = vec![
-            "data: line1".to_string(),
-            "data: line2".to_string(),
-        ];
+        let lines = vec!["data: line1".to_string(), "data: line2".to_string()];
         let ev = parse_event_block(&lines).expect("event");
         assert_eq!(ev.data, "line1\nline2");
     }

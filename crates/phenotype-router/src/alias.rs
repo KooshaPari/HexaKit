@@ -174,7 +174,10 @@ mod tests {
         let r = sample();
         assert_eq!(r.resolve("FAST").unwrap().target, "gpt-4o-mini");
         assert_eq!(r.resolve("Fast").unwrap().target, "gpt-4o-mini");
-        assert_eq!(r.resolve("fAsT").unwrap().provider.as_deref(), Some("openai"));
+        assert_eq!(
+            r.resolve("fAsT").unwrap().provider.as_deref(),
+            Some("openai")
+        );
     }
 
     #[test]
@@ -191,14 +194,8 @@ mod tests {
         r.add("fast", "gpt-4o-mini", Some("openai".into()));
 
         // Wildcard falls through to suffix match.
-        assert_eq!(
-            r.resolve("gpt-3.5-mini").unwrap().target,
-            "gpt-4o-mini"
-        );
-        assert_eq!(
-            r.resolve("anything-mini").unwrap().target,
-            "gpt-4o-mini"
-        );
+        assert_eq!(r.resolve("gpt-3.5-mini").unwrap().target, "gpt-4o-mini");
+        assert_eq!(r.resolve("anything-mini").unwrap().target, "gpt-4o-mini");
     }
 
     #[test]

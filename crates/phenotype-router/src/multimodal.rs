@@ -114,7 +114,10 @@ pub struct MultipartMessage {
 impl MultipartMessage {
     /// Convenience constructor.
     pub fn new(role: impl Into<String>, parts: Vec<ContentPart>) -> Self {
-        Self { role: role.into(), parts }
+        Self {
+            role: role.into(),
+            parts,
+        }
     }
 
     /// Convenience: build a text-only message.
@@ -157,12 +160,22 @@ pub struct RouteCapabilities {
 impl RouteCapabilities {
     /// All modalities supported.
     pub fn all() -> Self {
-        Self { text: true, vision: true, audio: true, tool: true }
+        Self {
+            text: true,
+            vision: true,
+            audio: true,
+            tool: true,
+        }
     }
 
     /// Text-only route.
     pub fn text_only() -> Self {
-        Self { text: true, vision: false, audio: false, tool: false }
+        Self {
+            text: true,
+            vision: false,
+            audio: false,
+            tool: false,
+        }
     }
 
     /// True if `self` can serve `modality`.
@@ -198,7 +211,11 @@ pub struct RouteHint {
 impl RouteHint {
     /// Convenience constructor.
     pub fn new(target: impl Into<String>, capabilities: RouteCapabilities) -> Self {
-        Self { target: target.into(), capabilities, priority: 0 }
+        Self {
+            target: target.into(),
+            capabilities,
+            priority: 0,
+        }
     }
 }
 
@@ -319,7 +336,9 @@ mod tests {
         let msg = MultipartMessage::new(
             "user",
             vec![
-                ContentPart::Text { text: "what is this?".to_string() },
+                ContentPart::Text {
+                    text: "what is this?".to_string(),
+                },
                 img(),
             ],
         );
@@ -337,7 +356,9 @@ mod tests {
         let msg = MultipartMessage::new(
             "assistant",
             vec![
-                ContentPart::Text { text: "calling tool".to_string() },
+                ContentPart::Text {
+                    text: "calling tool".to_string(),
+                },
                 tool(),
                 img(),
             ],
@@ -349,7 +370,9 @@ mod tests {
     #[test]
     fn tool_call_passthrough_does_not_mutate_parts() {
         let original = vec![
-            ContentPart::Text { text: "use weather".to_string() },
+            ContentPart::Text {
+                text: "use weather".to_string(),
+            },
             tool(),
         ];
         let msg = MultipartMessage::new("assistant", original.clone());
@@ -376,12 +399,24 @@ mod tests {
         let msg = MultipartMessage::new("user", vec![img()]);
         let table = vec![
             RouteHint::new("text-a", RouteCapabilities::text_only()),
-            RouteHint::new("vision", RouteCapabilities {
-                text: true, vision: true, audio: false, tool: false,
-            }),
-            RouteHint::new("vision-b", RouteCapabilities {
-                text: true, vision: true, audio: false, tool: false,
-            }),
+            RouteHint::new(
+                "vision",
+                RouteCapabilities {
+                    text: true,
+                    vision: true,
+                    audio: false,
+                    tool: false,
+                },
+            ),
+            RouteHint::new(
+                "vision-b",
+                RouteCapabilities {
+                    text: true,
+                    vision: true,
+                    audio: false,
+                    tool: false,
+                },
+            ),
         ];
         let picked = route_by_modality(&msg, &table).unwrap();
         assert_eq!(picked.target, "vision");
@@ -392,12 +427,24 @@ mod tests {
         let msg = MultipartMessage::new("user", vec![aud()]);
         let table = vec![
             RouteHint::new("text", RouteCapabilities::text_only()),
-            RouteHint::new("vision", RouteCapabilities {
-                text: true, vision: true, audio: false, tool: false,
-            }),
-            RouteHint::new("audio", RouteCapabilities {
-                text: true, vision: false, audio: true, tool: false,
-            }),
+            RouteHint::new(
+                "vision",
+                RouteCapabilities {
+                    text: true,
+                    vision: true,
+                    audio: false,
+                    tool: false,
+                },
+            ),
+            RouteHint::new(
+                "audio",
+                RouteCapabilities {
+                    text: true,
+                    vision: false,
+                    audio: true,
+                    tool: false,
+                },
+            ),
         ];
         let picked = route_by_modality(&msg, &table).unwrap();
         assert_eq!(picked.target, "audio");
@@ -408,12 +455,24 @@ mod tests {
         let msg = MultipartMessage::new("assistant", vec![tool()]);
         let table = vec![
             RouteHint::new("text", RouteCapabilities::text_only()),
-            RouteHint::new("vision", RouteCapabilities {
-                text: true, vision: true, audio: false, tool: false,
-            }),
-            RouteHint::new("tools", RouteCapabilities {
-                text: true, vision: false, audio: false, tool: true,
-            }),
+            RouteHint::new(
+                "vision",
+                RouteCapabilities {
+                    text: true,
+                    vision: true,
+                    audio: false,
+                    tool: false,
+                },
+            ),
+            RouteHint::new(
+                "tools",
+                RouteCapabilities {
+                    text: true,
+                    vision: false,
+                    audio: false,
+                    tool: true,
+                },
+            ),
         ];
         let picked = route_by_modality(&msg, &table).unwrap();
         assert_eq!(picked.target, "tools");
@@ -437,8 +496,16 @@ mod tests {
     fn priority_breaks_ties_in_route_selection() {
         let msg = MultipartMessage::text("user", "hi");
         let table = vec![
-            RouteHint { target: "low".into(), capabilities: RouteCapabilities::all(), priority: 0 },
-            RouteHint { target: "high".into(), capabilities: RouteCapabilities::all(), priority: 10 },
+            RouteHint {
+                target: "low".into(),
+                capabilities: RouteCapabilities::all(),
+                priority: 0,
+            },
+            RouteHint {
+                target: "high".into(),
+                capabilities: RouteCapabilities::all(),
+                priority: 10,
+            },
         ];
         let picked = route_by_modality(&msg, &table).unwrap();
         assert_eq!(picked.target, "high");
@@ -470,7 +537,10 @@ mod tests {
                 },
             },
             ContentPart::InputAudio {
-                input_audio: AudioRef { data: "AAAA".into(), format: "wav".into() },
+                input_audio: AudioRef {
+                    data: "AAAA".into(),
+                    format: "wav".into(),
+                },
             },
             ContentPart::ToolCall {
                 tool_call: ToolCallRef {
@@ -494,7 +564,9 @@ mod tests {
         let msg = MultipartMessage::new(
             "user",
             vec![
-                ContentPart::Text { text: "what?".into() },
+                ContentPart::Text {
+                    text: "what?".into(),
+                },
                 img(),
             ],
         );

@@ -13,10 +13,7 @@ pub struct DelegateRequest {
 }
 
 /// Build a `DelegateRequest` from a cliproxy base URL + a combo model id.
-pub fn build_delegate_request(
-    cliproxy_base: &str,
-    model_id: &str,
-) -> Option<DelegateRequest> {
+pub fn build_delegate_request(cliproxy_base: &str, model_id: &str) -> Option<DelegateRequest> {
     let variant = crate::ComboVariant::parse(model_id)?;
     let _profile = variant.delegate_target();
     let base = cliproxy_base.trim_end_matches('/');
@@ -53,7 +50,10 @@ mod tests {
 
     #[test]
     fn scoring_profiles_map() {
-        assert_eq!(scoring_profile("cliproxy-delegate-latency"), Some("latency"));
+        assert_eq!(
+            scoring_profile("cliproxy-delegate-latency"),
+            Some("latency")
+        );
         assert_eq!(scoring_profile("unknown"), None);
     }
 }

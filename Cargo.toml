@@ -108,6 +108,7 @@ toml = "0.8"
 regex = "1"
 tempfile = "3"
 sha2 = "0.10"
+hmac = "0.12"
 tracing = "0.1"
 tracing-subscriber = "0.3"
 futures = "0.3"
@@ -227,6 +228,7 @@ sha2 = { workspace = true }
 blake3 = { workspace = true }
 hex = { workspace = true }
 thiserror = { workspace = true }
+hmac = { workspace = true }
 
 # Release profile (moved from crates/settly and crates/stashly)
 [profile.release]

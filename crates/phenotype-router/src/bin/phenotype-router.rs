@@ -19,8 +19,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .ok()
         .and_then(|s| s.parse().ok())
         .unwrap_or(8080);
-    let cliproxy_url = env::var("CLIPROXY_URL")
-        .unwrap_or_else(|_| "http://localhost:9090".to_string());
+    let cliproxy_url =
+        env::var("CLIPROXY_URL").unwrap_or_else(|_| "http://localhost:9090".to_string());
 
     let app = axum::Router::new()
         .route(MODELS_PATH, axum::routing::get(models_handler))
