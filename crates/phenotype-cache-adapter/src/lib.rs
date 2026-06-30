@@ -93,3 +93,155 @@ where
         self.l2.insert(key, CacheEntry { value });
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    /// Test metrics hook that counts hits and misses atomically.
+    #[derive(Debug, Default)]
+    struct TestMetrics {
+        hits: AtomicUsize,
+        misses: AtomicUsize,
+    }
+
+    impl MetricsHook for TestMetrics {
+        fn record_hit(&self, _tier: &str) {
+            self.hits.fetch_add(1, Ordering::SeqCst);
+        }
+        fn record_miss(&self, _tier: &str) {
+            self.misses.fetch_add(1, Ordering::SeqCst);
+        }
+    }
+
+    #[test]
+    fn test_new_cache_returns_none() {
+        let cache: TwoTierCache<String, String> = TwoTierCache::new(10, 100);
+        assert!(cache.get(&"nonexistent".to_string()).is_none());
+    }
+
+    #[test]
+    fn test_put_get_roundtrip() {
+        let cache: TwoTierCache<String, String> = TwoTierCache::new(10, 100);
+        cache.put("key1".to_string(), "value1".to_string());
+        assert_eq!(
+            cache.get(&"key1".to_string()),
+            Some("value1".to_string())
+        );
+    }
+
+    #[test]
+    fn test_get_missing_key() {
+        let cache: TwoTierCache<String, String> = TwoTierCache::new(10, 100);
+        cache.put("key1".to_string(), "value1".to_string());
+        assert!(cache.get(&"missing".to_string()).is_none());
+    }
+
+    #[test]
+    fn test_overwrite_value() {
+        let cache: TwoTierCache<String, String> = TwoTierCache::new(10, 100);
+        cache.put("key1".to_string(), "value1".to_string());
+        cache.put("key1".to_string(), "value2".to_string());
+        assert_eq!(
+            cache.get(&"key1".to_string()),
+            Some("value2".to_string())
+        );
+    }
+
+    #[test]
+    fn test_multiple_keys() {
+        let cache: TwoTierCache<String, i32> = TwoTierCache::new(10, 100);
+        cache.put("a".to_string(), 1);
+        cache.put("b".to_string(), 2);
+        cache.put("c".to_string(), 3);
+        assert_eq!(cache.get(&"a".to_string()), Some(1));
+        assert_eq!(cache.get(&"b".to_string()), Some(2));
+        assert_eq!(cache.get(&"c".to_string()), Some(3));
+    }
+
+    #[test]
+    fn test_l1_eviction_falls_back_to_l2() {
+        // L1 capacity of 1 means only 1 entry stays in L1 at a time.
+        let cache: TwoTierCache<String, String> = TwoTierCache::new(1, 100);
+
+        // Put two entries; only the latest fits in L1.
+        cache.put("a".to_string(), "alpha".to_string());
+        cache.put("b".to_string(), "beta".to_string());
+
+        // 'a' is evicted from L1 but should still be reachable from L2.
+        assert_eq!(
+            cache.get(&"a".to_string()),
+            Some("alpha".to_string())
+        );
+        // 'b' should be in L1 (most recent put).
+        assert_eq!(
+            cache.get(&"b".to_string()),
+            Some("beta".to_string())
+        );
+    }
+
+    #[test]
+    fn test_integer_key_type() {
+        let cache: TwoTierCache<u64, String> = TwoTierCache::new(10, 100);
+        cache.put(42, "meaning of life".to_string());
+        assert_eq!(cache.get(&42), Some("meaning of life".to_string()));
+    }
+
+    #[test]
+    fn test_large_value() {
+        let cache: TwoTierCache<i32, Vec<u8>> = TwoTierCache::new(10, 100);
+        let large_val = vec![42u8; 4096];
+        cache.put(1, large_val.clone());
+        assert_eq!(cache.get(&1), Some(large_val));
+    }
+
+    #[test]
+    fn test_zero_l1_capacity_defaults_to_100() {
+        // When l1_cap is 0, NonZeroUsize fails and the code defaults to 100.
+        let cache: TwoTierCache<String, String> = TwoTierCache::new(0, 100);
+        // Insert 50 entries — all should fit in L1 (capacity defaults to 100).
+        for i in 0..50 {
+            cache.put(format!("key{i}"), format!("val{i}"));
+        }
+        for i in 0..50 {
+            assert_eq!(
+                cache.get(&format!("key{i}")),
+                Some(format!("val{i}"))
+            );
+        }
+    }
+
+    #[test]
+    fn test_metrics_hook_trait_object() {
+        // Verify MetricsHook is usable as a trait object (object-safe).
+        let hook: Box<dyn MetricsHook> = Box::new(TestMetrics::default());
+        hook.record_hit("l1");
+        hook.record_miss("l2");
+        // If this compiles and runs without panicking, the trait is object-safe.
+    }
+
+    #[test]
+    fn test_concurrent_access() {
+        use std::sync::Arc;
+        use std::thread;
+
+        let cache = Arc::new(TwoTierCache::<i32, i32>::new(100, 1000));
+        let mut handles = vec![];
+
+        for i in 0..20 {
+            let cache = Arc::clone(&cache);
+            handles.push(thread::spawn(move || {
+                cache.put(i, i * 2);
+            }));
+        }
+
+        for handle in handles {
+            handle.join().expect("thread panicked");
+        }
+
+        for i in 0..20 {
+            assert_eq!(cache.get(&i), Some(i * 2));
+        }
+    }
+}
