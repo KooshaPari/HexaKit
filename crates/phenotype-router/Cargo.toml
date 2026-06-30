@@ -11,6 +11,7 @@ path = "src/lib.rs"
 
 [dependencies]
 phenotype-port-traits = { workspace = true }
+phenotype-rate-limit = { workspace = true }
 async-stream = { workspace = true }
 axum = { workspace = true }
 bytes = { workspace = true }

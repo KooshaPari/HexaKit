@@ -1,11 +1,28 @@
 //! phenotype-cache-adapter
 //!
-//! Two-tier cache with L1 (LRU) and L2 (Moka).
+//! Two-tier cache with L1 (LRU) and L2 (Moka), plus the `CacheAdapter` trait
+//! that consuming crates (e.g. `phenotype-core`) re-export.
 
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+
+/// Generic cache port trait.  Implement this on any backing store that should
+/// be swappable without changing callsite code.
+pub trait CacheAdapter: Send + Sync {
+    type Key: Clone + Eq + std::hash::Hash + Send + Sync + Debug + 'static;
+    type Value: Clone + Send + Sync + Debug + 'static;
+
+    /// Retrieve a value by key.  Returns `None` on a miss.
+    fn get(&self, key: &Self::Key) -> Option<Self::Value>;
+
+    /// Insert or replace a value.
+    fn put(&self, key: Self::Key, value: Self::Value);
+
+    /// Remove a key, returning the previous value if it existed.
+    fn remove(&self, key: &Self::Key) -> Option<Self::Value>;
+}
 
 /// Metrics hook for observability.
 pub trait MetricsHook: Send + Sync + Debug {
