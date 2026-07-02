@@ -125,10 +125,7 @@ mod tests {
     fn test_put_get_roundtrip() {
         let cache: TwoTierCache<String, String> = TwoTierCache::new(10, 100);
         cache.put("key1".to_string(), "value1".to_string());
-        assert_eq!(
-            cache.get(&"key1".to_string()),
-            Some("value1".to_string())
-        );
+        assert_eq!(cache.get(&"key1".to_string()), Some("value1".to_string()));
     }
 
     #[test]
@@ -143,10 +140,7 @@ mod tests {
         let cache: TwoTierCache<String, String> = TwoTierCache::new(10, 100);
         cache.put("key1".to_string(), "value1".to_string());
         cache.put("key1".to_string(), "value2".to_string());
-        assert_eq!(
-            cache.get(&"key1".to_string()),
-            Some("value2".to_string())
-        );
+        assert_eq!(cache.get(&"key1".to_string()), Some("value2".to_string()));
     }
 
     #[test]
@@ -170,15 +164,9 @@ mod tests {
         cache.put("b".to_string(), "beta".to_string());
 
         // 'a' is evicted from L1 but should still be reachable from L2.
-        assert_eq!(
-            cache.get(&"a".to_string()),
-            Some("alpha".to_string())
-        );
+        assert_eq!(cache.get(&"a".to_string()), Some("alpha".to_string()));
         // 'b' should be in L1 (most recent put).
-        assert_eq!(
-            cache.get(&"b".to_string()),
-            Some("beta".to_string())
-        );
+        assert_eq!(cache.get(&"b".to_string()), Some("beta".to_string()));
     }
 
     #[test]
@@ -205,10 +193,7 @@ mod tests {
             cache.put(format!("key{i}"), format!("val{i}"));
         }
         for i in 0..50 {
-            assert_eq!(
-                cache.get(&format!("key{i}")),
-                Some(format!("val{i}"))
-            );
+            assert_eq!(cache.get(&format!("key{i}")), Some(format!("val{i}")));
         }
     }
 
