@@ -13,10 +13,7 @@ use thiserror::Error;
 pub enum Error {
     /// All attempts exhausted; carries the last underlying error message.
     #[error("all {attempts} retry attempts exhausted: {last_error}")]
-    Exhausted {
-        attempts: u32,
-        last_error: String,
-    },
+    Exhausted { attempts: u32, last_error: String },
     /// Policy configuration is invalid (e.g. zero attempts).
     #[error("invalid retry policy: {0}")]
     InvalidPolicy(String),
