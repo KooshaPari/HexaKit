@@ -2,7 +2,7 @@
 version = "0.2.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
-rust-version = "1.75"
+rust-version = "1.94"
 repository = "https://github.com/KooshaPari/HexaKit"
 description = "Phenotype Infrastructure Kit"
 authors = ["kooshapari"]
@@ -20,8 +20,7 @@ exclude = [
   # P3 wave 1 — error crates canonical in phenoShared (API-compatible)
   "crates/phenotype-error-core",
   "crates/phenotype-errors",
-  # P3 wave 2 — event crates interim phenoShared (Eventra absorb pending); http-client → ResilienceKit
-  "crates/phenotype-event-bus",
+  # P3 wave 2 — http-client → ResilienceKit
   "crates/phenotype-http-client-core",
   # P3 wave 3 — logging → PO; time now local in HexaKit; state-machine + policy → ResilienceKit
   "crates/phenotype-logging",
@@ -131,8 +130,8 @@ arc-swap = "1"
 # phenoShared interim pins drained wave 5b (ADR-ECO-014) — terminal DOMAIN_ROLES owners
 phenotype-error-core = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main" }
 phenotype-errors = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main" }
-# Eventra terminal owner (wave 5b)
-phenotype-event-bus = { git = "https://github.com/KooshaPari/Eventra", branch = "main", package = "phenotype-event-bus" }
+# Canonical event runtime; Eventra was archived after this migration.
+pheno-events = { git = "https://github.com/KooshaPari/phenoEvents", tag = "v0.1.0" }
 phenotype-event-sourcing = { path = "crates/phenotype-event-sourcing" }
 # ResilienceKit = phenotype-resilience DOMAIN_ROLES owner
 phenotype-http-client-core = { git = "https://github.com/KooshaPari/ResilienceKit", branch = "main" }
@@ -154,7 +153,6 @@ phenotype-cache-adapter = { path = "crates/phenotype-cache-adapter" }
 phenotype-contract-adapters = { path = "crates/phenotype-contract-adapters" }
 # Contracts decompose: slice crates on role owners; generic Contract → phenotype-rust-sdk
 phenotype-auth-contracts = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-auth-contracts" }
-phenotype-event-contracts = { git = "https://github.com/KooshaPari/Eventra", branch = "main", package = "phenotype-event-contracts" }
 phenotype-agent-contracts = { git = "https://github.com/KooshaPari/Agentora", branch = "main", package = "phenotype-agent-contracts" }
 phenotype-contracts = { git = "https://github.com/KooshaPari/phenotype-rust-sdk", branch = "main" }
 phenotype-security-aggregator = { git = "https://github.com/KooshaPari/Authvault", branch = "main", package = "phenotype-security-aggregator" }

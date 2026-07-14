@@ -24,9 +24,9 @@ phenotype-core = { workspace = true }
 - `phenotype_config_core::Priority`
 
 ### Event Bus
-- `phenotype_event_bus::EventBus`
-- `phenotype_event_bus::EventEnvelope`
-- `phenotype_event_bus::EventId` (ULID-based)
+- `pheno_events::bus::Bus` (re-exported as `phenotype_core::event_bus::EventBus`)
+- `pheno_events::core::EventEnvelope`
+- `phenotype_core::event_bus::EventId` (UUIDv7)
 
 ### Validation
 - `phenotype_validation::ValidationRule`
