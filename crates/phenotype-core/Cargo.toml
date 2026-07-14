@@ -16,7 +16,8 @@ tokio = { workspace = true }
 phenotype-error-core = { workspace = true }
 phenotype-errors = { workspace = true }
 phenotype-config-core = { workspace = true }
-phenotype-event-bus = { workspace = true }
+pheno-events = { workspace = true }
+uuid = { workspace = true }
 phenotype-validation = { workspace = true }
 phenotype-health = { workspace = true }
 phenotype-telemetry = { workspace = true }

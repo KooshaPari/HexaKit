@@ -81,9 +81,18 @@ pub mod config {
     };
 }
 
-/// Event bus re-exports
+/// Event bus re-exports from the canonical phenoEvents runtime.
 pub mod event_bus {
-    pub use phenotype_event_bus::{EventBus, EventBusError, EventEnvelope, EventId, Subscription};
+    pub use pheno_events::{
+        bus::{Ack, Bus, Handler, HandlerError, PublishError, SubscribeError, Subscription},
+        core::{EnvelopeError, EventEnvelope},
+    };
+
+    /// Backward-compatible name for the canonical [`Bus`] trait.
+    pub use Bus as EventBus;
+
+    /// Stable event identifier used by phenoEvents envelopes.
+    pub type EventId = uuid::Uuid;
 }
 
 /// Validation re-exports
