@@ -83,11 +83,10 @@ pub mod config {
 
 /// Event bus re-exports from the canonical phenoEvents runtime.
 pub mod event_bus {
-    pub use pheno_events::{
-        bus::{Ack, Bus, Handler, HandlerError, PublishError, SubscribeError, Subscription},
-        core::{EnvelopeError, EventEnvelope},
+    pub use pheno_events::bus::{
+        Ack, Bus, Handler, HandlerError, PublishError, SubscribeError, Subscription,
     };
-
+    pub use pheno_events::core::{EnvelopeError, EventEnvelope};
     /// Backward-compatible name for the canonical [`Bus`] trait.
     pub use Bus as EventBus;
 
