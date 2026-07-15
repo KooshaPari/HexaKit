@@ -128,9 +128,9 @@ ulid = { version = "1", features = ["serde"] }
 # Phenotype internal crates
 arc-swap = "1"
 # phenoShared interim pins drained wave 5b (ADR-ECO-014) — terminal DOMAIN_ROLES owners
+# Canonical event runtime; Eventra was archived after this migration.
 phenotype-error-core = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main" }
 phenotype-errors = { git = "https://github.com/KooshaPari/phenotype-types", branch = "main" }
-# Canonical event runtime; Eventra was archived after this migration.
 pheno-events = { git = "https://github.com/KooshaPari/phenoEvents", tag = "v0.1.0" }
 phenotype-event-sourcing = { path = "crates/phenotype-event-sourcing" }
 # ResilienceKit = phenotype-resilience DOMAIN_ROLES owner
