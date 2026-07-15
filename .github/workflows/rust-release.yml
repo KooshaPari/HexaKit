@@ -53,9 +53,10 @@ jobs:
             os: macos-latest
             use-cross: false
     steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/setup-env
         with:
-          rust-version: ${{ inputs.rust-version }}
+          rust-version: ${{ inputs.rust-version || 'stable' }}
           setup-protoc: ${{ inputs.setup-protoc }}
           workspace: ${{ inputs.workspace }}
 
