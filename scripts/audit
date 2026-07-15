@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+"""audit: HexaKit governance tool dispatcher (L72/L73/L74 closed loop).
+
+Wraps the 3 absorbed pheno-* governance tools and dispatches to the right one.
+
+Usage:
+    ./scripts/audit framework-lint check <repo> [--format json|text]
+    ./scripts/audit drift-detector scan <root> [--format json|md|gh-issues]
+    ./scripts/audit predict scan <repo> [--format json|csv|md]
+    ./scripts/audit help
+
+ADR provenance: ADR-047 + ADR-048 + ADR-049.
+"""
+from __future__ import annotations
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+TOOLS = {
+    "framework-lint": "pheno_framework_lint.py",
+    "drift-detector": "pheno_drift_detector.py",
+    "predict": "pheno_predict.py",
+}
+
+HERE = Path(__file__).resolve().parent
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) < 2 or argv[1] in ("-h", "--help", "help"):
+        print("HexaKit audit-tools dispatcher")
+        print(f"Available tools: {', '.join(sorted(TOOLS))}")
+        print(f"Usage: {argv[0]} <tool> <subcommand> [args...]")
+        return 0
+
+    tool, *rest = argv[1:]
+    if tool not in TOOLS:
+        print(f"Unknown tool: {tool!r}", file=sys.stderr)
+        print(f"Available: {', '.join(sorted(TOOLS))}", file=sys.stderr)
+        return 2
+
+    script = HERE / TOOLS[tool]
+    cmd = [sys.executable, str(script), *rest]
+    return subprocess.call(cmd, cwd=os.environ.get("HEXAKIT_ROOT", "."))
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))
