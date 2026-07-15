@@ -136,7 +136,6 @@ services/*
 colab-temp/
 phenotype-gauge-wtrees/
 sub-projects/
-template-commons/
 plans/
 tooling/
 tools/
@@ -160,7 +159,6 @@ kitty-specs/
 styles/
 thegent-wtrees/
 phenotype-gauge-wtrees/
-template-commons/
 vibe-kanban-wtrees/
 
 # Ghost files (exist on disk but not in git)
